@@ -82,7 +82,7 @@ export function Footer() {
           {/* brand + author */}
           <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 lg:row-span-2 xl:row-span-1">
             <Link to="/" className="inline-flex items-center gap-2.5 font-display text-lg font-bold"><Logo size={28} /> OpenFile</Link>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted">Free, open-source file tools that run entirely in your browser. No uploads, no sign-up, no watermarks.</p>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted"><span className="whitespace-nowrap">{TOOLS.length}+</span>{'\u00a0'}free, open-source file tools that run entirely in your browser. No uploads, no sign-up, no watermarks.</p>
             <MadeByCard className="mt-5 max-w-sm" />
           </div>
           <Column title="Popular tools" links={popular} more={{ to: '/tools', label: `All ${TOOLS.length} tools` }} />

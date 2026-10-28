@@ -11,11 +11,11 @@ export function Bar({ children, className }: { children: React.ReactNode; classN
   return <div className={cn('flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface p-3', className)}>{children}</div>
 }
 
-export function Status({ kind, children }: { kind: 'ok' | 'err' | 'info'; children: React.ReactNode }) {
-  const cls = kind === 'ok' ? 'border-success/30 bg-success/5 text-success' : kind === 'err' ? 'border-danger/30 bg-danger/10 text-danger' : 'border-border bg-surface text-muted'
-  const Icon = kind === 'ok' ? CheckCircle2 : kind === 'err' ? AlertTriangle : Info
+export function Status({ kind, children }: { kind: 'ok' | 'err' | 'warn' | 'info'; children: React.ReactNode }) {
+  const cls = kind === 'ok' ? 'border-success/30 bg-success/5 text-success' : kind === 'err' ? 'border-danger/30 bg-danger/10 text-danger' : kind === 'warn' ? 'border-warn/40 bg-warn/10 text-warn' : 'border-border bg-surface text-muted'
+  const Icon = kind === 'ok' ? CheckCircle2 : kind === 'err' || kind === 'warn' ? AlertTriangle : Info
   return (
-    <motion.div layout role={kind === 'err' ? 'alert' : 'status'} className={cn('flex items-start gap-2 rounded-xl border px-4 py-2.5 text-sm', cls)}>
+    <motion.div layout role={kind === 'err' || kind === 'warn' ? 'alert' : 'status'} className={cn('flex items-start gap-2 rounded-xl border px-4 py-2.5 text-sm', cls)}>
       <Icon className="mt-0.5 size-4 shrink-0" /><div className="min-w-0 break-words">{children}</div>
     </motion.div>
   )

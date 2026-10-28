@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ZoomIn, Sparkles, Zap, AlertTriangle, Cpu } from 'lucide-react'
 import { Button, ErrorNote, Label, Progress, ResultCard, Segmented, Slider, ToolGrid, cn, useJob } from '@/components/ui'
@@ -7,6 +7,20 @@ import { BeforeAfter, ImageDrop, canvas, decode, hasAlpha, outName, toCanvas, un
 type Mode = 'ai' | 'enhanced'
 let upscalerPromise: Promise<any> | null = null
 let usedDevice = ''
+let gpuCheck: Promise<boolean> | null = null
+
+/** True only when WebGPU exists and a real adapter can be obtained. `navigator.gpu` alone is not enough. */
+function hasWebGPU(): Promise<boolean> {
+  if (!gpuCheck) gpuCheck = (async () => {
+    try {
+      const gpu = (navigator as any).gpu
+      if (!gpu) return false
+      const adapter = await Promise.race([gpu.requestAdapter(), new Promise((r) => setTimeout(() => r(null), 3000))])
+      return !!adapter
+    } catch { return false }
+  })()
+  return gpuCheck
+}
 
 async function getUpscaler(onProgress: (label: string, p: number) => void, forceWasm = false) {
   if (forceWasm && usedDevice === 'webgpu') upscalerPromise = null
@@ -21,7 +35,7 @@ async function getUpscaler(onProgress: (label: string, p: number) => void, force
           onProgress(`Downloading AI model (first run only) · ${(l / 1048576).toFixed(1)} / ${(t / 1048576).toFixed(1)} MB`, t ? l / t : 0)
         }
       }
-      const devices = (navigator as any).gpu && !forceWasm ? ['webgpu', 'wasm'] : ['wasm']
+      const devices = !forceWasm && (await hasWebGPU()) ? ['webgpu', 'wasm'] : ['wasm']
       let lastErr: unknown
       for (const device of devices) {
         try { const p = await pipeline('image-to-image', 'Xenova/swin2SR-classical-sr-x2-64', { device: device as any, progress_callback: cb } as any); usedDevice = device; return p }
@@ -83,6 +97,9 @@ export default function ImageUpscaler() {
   const [label, setLabel] = useState('')
   const [result, setResult] = useState<Blob | null>(null)
   const [beforeUp, setBeforeUp] = useState<Blob | null>(null)
+  const [compat, setCompat] = useState(false)
+  const [gpu, setGpu] = useState<boolean | null>(null)
+  useEffect(() => { hasWebGPU().then(setGpu) }, [])
   const { busy, progress, error, run, setProgress } = useJob()
   const resultUrl = useObjectUrl(result)
   const beforeUrl = useObjectUrl(beforeUp)
@@ -102,7 +119,7 @@ export default function ImageUpscaler() {
 
   const go = () => run(async () => {
     if (!file) return
-    setResult(null)
+    setResult(null); setCompat(false)
     const img = await decode(file)
     const src = toCanvas(img)
     let out: HTMLCanvasElement
@@ -118,8 +135,19 @@ export default function ImageUpscaler() {
         }
         return o
       }
-      try { out = await runAll(false) }
-      catch (e) { if (usedDevice !== 'webgpu') throw e; console.warn('WebGPU inference failed, retrying on CPU', e); out = await runAll(true) }
+      let ai: HTMLCanvasElement | null = null
+      try { ai = await runAll(false) }
+      catch (e) {
+        console.warn('AI upscale failed on', usedDevice || 'first device', e)
+        if (usedDevice === 'webgpu') { try { ai = await runAll(true) } catch (e2) { console.warn('AI upscale failed on CPU too', e2) } }
+      }
+      if (!ai) {
+        // Compatibility mode: high quality multi-step resampling with sharpening. Never surface the raw engine error.
+        setCompat(true); setLabel('Running in compatibility mode'); setProgress(0.5)
+        await new Promise((r) => setTimeout(r, 30))
+        ai = enhanced(src, fac, 60)
+      }
+      out = ai
       if (hasAlpha(src)) { // restore transparency from a smooth upscale of the alpha
         const { canvas: a, ctx } = canvas(out.width, out.height)
         ctx.drawImage(src, 0, 0, out.width, out.height)
@@ -173,11 +201,12 @@ export default function ImageUpscaler() {
             <Segmented value={factor} onChange={(f) => { setFactor(f); setResult(null) }} options={mode === 'ai' ? [{ value: '2', label: '2×' }, { value: '4', label: '4× (2 passes)' }] : [{ value: '2', label: '2×' }, { value: '3', label: '3×' }, { value: '4', label: '4×' }]} />
           </div>
           {mode === 'enhanced' && <Slider label="Sharpening" value={sharp} onChange={(v) => { setSharp(v); setResult(null) }} min={0} max={100} suffix="%" />}
-          {slowWarn && !tooBig && <div className="flex gap-2 rounded-xl border border-warn/30 bg-warn/10 p-3 text-xs text-warn"><AlertTriangle className="size-4 shrink-0" /> This is a large image ({mp.toFixed(1)} MP). AI upscaling may take several minutes{!(navigator as any).gpu ? ' without WebGPU' : ''}. Try Enhanced mode or crop first for faster results.</div>}
+          {slowWarn && !tooBig && <div className="flex gap-2 rounded-xl border border-warn/30 bg-warn/10 p-3 text-xs text-warn"><AlertTriangle className="size-4 shrink-0" /> This is a large image ({mp.toFixed(1)} MP). AI upscaling may take several minutes{gpu === false ? ' without WebGPU' : ''}. Try Enhanced mode or crop first for faster results.</div>}
           {tooBig && <div className="flex gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger"><AlertTriangle className="size-4 shrink-0" /> Output would be {outW}×{outH}, beyond what browsers can hold in memory. Choose a smaller scale or resize the image first.</div>}
-          <ErrorNote error={error} />
+          {compat && <p role="status" className="flex gap-2 rounded-xl border border-border bg-surface p-3 text-xs text-muted"><Cpu className="size-4 shrink-0" /> Running in compatibility mode. The AI engine could not start in this browser, so the image was upscaled with high quality resampling and sharpening instead.</p>}
+          <ErrorNote error={!error ? null : /too large|memory/i.test(String(error)) ? 'This image is too large for the browser to hold. Choose a smaller scale or resize it first.' : 'Upscaling did not finish. Try Enhanced mode or a smaller image.'} />
           <Button size="lg" className="w-full" loading={busy} disabled={tooBig} icon={<ZoomIn className="size-4" />} onClick={go}>Upscale {fac}×</Button>
-          <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted"><Cpu className="size-3" /> {(navigator as any).gpu ? 'WebGPU acceleration available' : 'Runs on CPU (WebAssembly)'}</p>
+          <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted"><Cpu className="size-3" /> {gpu ? 'WebGPU acceleration available' : gpu === false ? 'Runs on CPU (WebAssembly)' : 'Checking for GPU'}</p>
           <Button variant="ghost" className="w-full" onClick={reset}>Start over</Button>
         </>}
       />

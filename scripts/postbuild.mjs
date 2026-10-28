@@ -173,6 +173,8 @@ function body(r) {
   } else {
     main = `<h1>${esc(r.h1 ?? r.title)}</h1><p>${esc(r.desc)}</p>`
   }
+  // Keep counts like "349+" on one line: a line break is allowed between a digit and "+", so wrap them.
+  main = main.replace(/(\d[\d,]*)\+/g, '<span style="white-space:nowrap">$1+</span>')
   return `<div id="prerender" class="pr">${nav}<main>${main}</main><p class="pr-note">OpenFile runs in your browser. Turn on JavaScript to use the tools.</p></div>`
 }
 const PR_CSS = `<style id="pr-css">.pr{max-width:860px;margin:0 auto;padding:32px 20px 64px;font:16px/1.65 Inter,ui-sans-serif,system-ui,sans-serif;color:#ECEEF1;background:#0B0D10}.pr a{color:#F5A524}.pr h1{font:700 2.25rem/1.15 "Space Grotesk",Inter,sans-serif;margin:.8em 0 .4em}.pr h2{font-size:1.3rem;margin:1.6em 0 .5em}.pr nav{font-size:14px;opacity:.85}.pr li{margin:.3em 0}.pr dt{font-weight:600;margin-top:.8em}.pr dd{margin:0 0 0 1em;color:#B6BCC5}.pr-note{margin-top:2em;font-size:13px;color:#8B929C}html[data-theme=light] .pr{background:#FAFAF7;color:#16140F}html[data-theme=light] .pr a{color:#8a5a00}</style>`
@@ -326,6 +328,7 @@ if (posts.length) {
   const rfc = (d) => new Date(d + 'T09:00:00Z').toUTCString()
   const sorted = [...posts].sort((a, b) => b.date.localeCompare(a.date))
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="${base}rss.xsl"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>OpenFile Blog</title>

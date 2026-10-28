@@ -15,13 +15,30 @@ export function CadCanvas({ doc, hidden, bg, mono, measure: allowMeasure = true,
   const drag = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null)
   const dpr = Math.min(2, window.devicePixelRatio || 1)
 
-  const fit = useCallback(() => { const c = cv.current; if (c) setView(fitView(doc, c.width, c.height)) }, [doc])
+  // Stay fitted (on load and on every resize) until the user pans or zooms. "Fit to view" turns it back on.
+  const autoFit = useRef(true)
+  const sizeCanvas = () => {
+    const el = box.current, c = cv.current; if (!el || !c) return false
+    const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return false
+    const cw = Math.round(w * dpr), ch = Math.round(h * dpr)
+    if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; c.style.width = w + 'px'; c.style.height = h + 'px' }
+    return true
+  }
+  const fit = useCallback(() => { autoFit.current = true; const c = cv.current; if (c && sizeCanvas()) setView(fitView(doc, c.width, c.height)) }, [doc])
+  const userMoved = () => { autoFit.current = false }
   useEffect(() => {
     const el = box.current!, c = cv.current!
-    const ro = new ResizeObserver(() => { c.width = el.clientWidth * dpr; c.height = el.clientHeight * dpr; c.style.width = el.clientWidth + 'px'; c.style.height = el.clientHeight + 'px'; setView((v) => v ?? fitView(doc, c.width, c.height)) })
-    ro.observe(el); return () => ro.disconnect()
+    autoFit.current = true
+    const onResize = () => {
+      if (!sizeCanvas()) return
+      setView((v) => (autoFit.current || !v ? fitView(doc, c.width, c.height) : { ...v }))
+    }
+    onResize()
+    const raf = requestAnimationFrame(onResize) // layout may settle a frame later
+    const ro = new ResizeObserver(onResize)
+    ro.observe(el); window.addEventListener('resize', onResize)
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('resize', onResize) }
   }, [doc])
-  useEffect(() => { fit() }, [doc])
 
   const toWorld = (sx: number, sy: number) => { const c = cv.current!; return [sx * dpr / view!.scale + view!.ox, (c.height - sy * dpr) / view!.scale + view!.oy] as [number, number] }
   useEffect(() => {
@@ -45,12 +62,12 @@ export function CadCanvas({ doc, hidden, bg, mono, measure: allowMeasure = true,
     }
   }, [doc, view, hidden, mono, bg, pts, cursor, measuring])
 
-  const zoomAt = (f: number, sx?: number, sy?: number) => setView((v) => {
+  const zoomAt = (f: number, sx?: number, sy?: number) => { userMoved(); setView((v) => {
     if (!v) return v; const c = cv.current!
     const px = (sx ?? c.width / dpr / 2) * dpr, py = c.height - (sy ?? c.height / dpr / 2) * dpr
     const wx = px / v.scale + v.ox, wy = py / v.scale + v.oy, ns = v.scale * f
     return { scale: ns, ox: wx - px / ns, oy: wy - py / ns }
-  })
+  }) }
   const local = (e: React.PointerEvent | React.WheelEvent) => { const r = cv.current!.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top] as [number, number] }
   const down = (e: React.PointerEvent) => {
     const [x, y] = local(e)
@@ -60,13 +77,14 @@ export function CadCanvas({ doc, hidden, bg, mono, measure: allowMeasure = true,
   const move = (e: React.PointerEvent) => {
     if (measuring) { const [x, y] = local(e); setCursor(toWorld(x, y)) }
     const d = drag.current; if (!d || !view) return
+    if (Math.abs(e.clientX - d.x) + Math.abs(e.clientY - d.y) > 2) userMoved()
     setView({ ...view, ox: d.ox - ((e.clientX - d.x) * dpr) / view.scale, oy: d.oy + ((e.clientY - d.y) * dpr) / view.scale })
   }
   const key = (e: React.KeyboardEvent) => {
     if (!view) return
     const step = (60 * dpr) / view.scale
     const m: Record<string, () => void> = { ArrowLeft: () => setView({ ...view, ox: view.ox - step }), ArrowRight: () => setView({ ...view, ox: view.ox + step }), ArrowUp: () => setView({ ...view, oy: view.oy + step }), ArrowDown: () => setView({ ...view, oy: view.oy - step }), '+': () => zoomAt(1.25), '=': () => zoomAt(1.25), '-': () => zoomAt(0.8), '0': fit, Escape: () => { setPts([]); setMeasuring(false) } }
-    if (m[e.key]) { e.preventDefault(); m[e.key]() }
+    if (m[e.key]) { e.preventDefault(); if (e.key !== '0' && e.key !== 'Escape') userMoved(); m[e.key]() }
   }
   return (
     <div ref={box} className={cn('relative overflow-hidden rounded-2xl border border-border', bg === 'transparent' && 'checker')} style={{ height }}>

@@ -89,6 +89,28 @@
           "value": "camera=(self), microphone=(self), display-capture=(self)"
         }
       ]
+    },
+    {
+      "source": "/blog/rss.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/rss.xsl",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/xsl; charset=utf-8"
+        }
+      ]
     }
   ]
 }

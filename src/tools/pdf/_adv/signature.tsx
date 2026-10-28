@@ -168,7 +168,7 @@ export function SignatureModal({ kind, defaultName, onClose, onSave }: { kind: '
 
         {mode === 'type' && (
           <div className="space-y-3">
-            <Input autoFocus value={text} onChange={(e) => setText(e.target.value)} placeholder={kind === 'initials' ? 'Your initials, e.g. A.A.' : 'Your full name'} maxLength={60} />
+            <Input autoFocus value={text} onChange={(e) => setText(e.target.value)} onInput={(e) => setText((e.target as HTMLInputElement).value)} placeholder={kind === 'initials' ? 'Your initials, e.g. A.A.' : 'Your full name'} maxLength={60} />
             <div className="grid grid-cols-2 gap-2">
               {SCRIPT_FONTS.map((f) => (
                 <button key={f} type="button" onClick={() => setFont(f)} className={cn('h-20 truncate rounded-xl border-2 bg-white px-3 text-3xl transition cursor-pointer', font === f ? 'border-accent ring-4 ring-accent/15' : 'border-border hover:border-accent/50')} style={{ fontFamily: `"${f}", cursive`, color }} title={f}>
@@ -202,7 +202,7 @@ export function SignatureModal({ kind, defaultName, onClose, onSave }: { kind: '
           <Switch checked={remember} onChange={setRemember} label={<span className="text-sm text-muted">Save on this device</span>} />
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Cancel</Button>
-            <Button disabled={!canSave} onClick={save}>Use {kind}</Button>
+            <Button disabled={!canSave} aria-disabled={!canSave} title={canSave ? undefined : mode === 'type' ? 'Type your name first' : mode === 'draw' ? 'Draw your signature first' : 'Upload an image first'} onClick={save} style={canSave ? undefined : { background: 'var(--surface-2)', color: 'var(--muted)', boxShadow: 'none', opacity: 1, cursor: 'not-allowed' }}>Use {kind}</Button>
           </div>
         </div>
       </motion.div>

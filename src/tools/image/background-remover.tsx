@@ -54,6 +54,13 @@ async function composeOnBackground(cut: Blob, bgImg: HTMLImageElement, maxSide: 
 }
 const toPng = (c: HTMLCanvasElement, type = 'image/png', q?: number) => new Promise<Blob>((r, j) => c.toBlob((b) => (b ? r(b) : j(new Error('Export failed'))), type, q))
 
+let gpuCheck: Promise<boolean> | null = null
+/** WebGPU is only usable when an adapter can actually be obtained. */
+function gpuReady(): Promise<boolean> {
+  if (!gpuCheck) gpuCheck = (async () => { try { const g = (navigator as any).gpu; return !!(g && (await g.requestAdapter())) } catch { return false } })()
+  return gpuCheck
+}
+
 export default function BackgroundRemover() {
   const { items, add, remove, clear } = useImageList()
   const [cuts, setCuts] = useState<Record<string, Cut>>({})
@@ -64,7 +71,7 @@ export default function BackgroundRemover() {
   const [bgFile, setBgFile] = useState<File | null>(null)
   const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null)
   const [quality, setQuality] = useState<'isnet_fp16' | 'isnet_quint8'>('isnet_fp16')
-  const [stage, setStage] = useState<{ label: string; p: number } | null>(null)
+  const [stage, setStage] = useState<{ id: string; label: string; p: number } | null>(null)
   const [preview, setPreview] = useState<Blob | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [zipping, setZipping] = useState(false)
@@ -81,19 +88,39 @@ export default function BackgroundRemover() {
     if (!next) return
     queue.current = true
     setCuts((s) => ({ ...s, [next.id]: { state: 'run' } }))
+    let creep = 0
     ;(async () => {
       try {
         setError(null)
-        setStage({ label: 'Loading AI engine…', p: 0.02 })
+        setStage({ id: next.id, label: 'Loading AI engine', p: 0.02 })
         const { removeBackground } = await import('@imgly/background-removal')
+        // The library reports download progress per file and only a few compute steps, so keep the bar moving
+        // slowly between reports while the model runs.
+        let last = 0.05, computing = false
+        setStage({ id: next.id, label: 'Starting AI model', p: last })
+        const files: Record<string, [number, number]> = {}
+        creep = window.setInterval(() => {
+          if (!computing) return
+          last = Math.min(0.97, last + (0.97 - last) * 0.04)
+          setStage({ id: next.id, label: 'Removing background', p: last })
+        }, 300)
         const blob = await removeBackground(next.file, {
           model: quality,
-          device: (navigator as any).gpu ? 'gpu' : 'cpu',
+          device: (await gpuReady()) ? 'gpu' : 'cpu',
           output: { format: 'image/png' },
           progress: (key: string, cur: number, total: number) => {
-            const p = total ? cur / total : 0
-            if (key.startsWith('fetch')) setStage({ label: `Downloading AI model (first run only) · ${formatBytes(cur)} / ${formatBytes(total)}`, p: p * 0.85 })
-            else setStage({ label: 'Removing background…', p: 0.85 + p * 0.15 })
+            if (key.startsWith('fetch')) {
+              files[key] = [cur, total]
+              const c = Object.values(files).reduce((a, f) => a + f[0], 0), t = Object.values(files).reduce((a, f) => a + f[1], 0)
+              last = Math.max(last, 0.05 + (t ? c / t : 0) * 0.6)
+              if (t && c >= t) { computing = true; setStage({ id: next.id, label: 'Removing background', p: last }) }
+              else setStage({ id: next.id, label: `Downloading AI model (first run only) · ${formatBytes(c)} / ${formatBytes(t)}`, p: last })
+            } else {
+              computing = true
+              const p = total ? cur / total : 0
+              last = Math.max(last, 0.65 + p * 0.3)
+              setStage({ id: next.id, label: 'Removing background', p: last })
+            }
           },
         })
         setCuts((s) => ({ ...s, [next.id]: { state: 'done', blob } }))
@@ -102,7 +129,7 @@ export default function BackgroundRemover() {
         const msg = e?.message || String(e)
         setError(`Background removal failed: ${msg}. Check your connection (the model downloads once) or try a smaller image.`)
         setCuts((s) => ({ ...s, [next.id]: { state: 'err', err: msg } }))
-      } finally { queue.current = false; setStage(null); setTick((t) => t + 1) }
+      } finally { clearInterval(creep); queue.current = false; setStage(null); setTick((t) => t + 1) }
     })()
   }, [items, cuts, quality, tick])
 
@@ -140,6 +167,7 @@ export default function BackgroundRemover() {
 
   const doneCount = items.filter((i) => cuts[i.id]?.state === 'done').length
   const curState = cur ? cuts[cur.id]?.state : undefined
+  const curStage = stage && cur && stage.id === cur.id && curState === 'run' ? stage : null
 
   return (
     <ToolGrid
@@ -153,7 +181,7 @@ export default function BackgroundRemover() {
             <div className="relative mx-auto w-fit overflow-hidden rounded-xl">
               {cur && <img src={cur.url} alt="" className="max-h-[60vh] max-w-full opacity-60 blur-[1px]" />}
               <div className="shimmer absolute inset-0" />
-              <div className="absolute inset-x-4 bottom-4 rounded-xl glass p-3 text-sm"><Progress value={stage?.p ?? 0} label={stage?.label ?? 'Waiting in queue…'} /></div>
+              <div className="absolute inset-x-4 bottom-4 rounded-xl glass p-3 text-sm"><Progress value={curStage ? curStage.p : curState === 'done' ? 1 : 0} label={curStage ? curStage.label : curState === 'done' ? 'Preparing preview' : curState === 'run' ? 'Starting AI model' : 'Waiting in queue'} /></div>
             </div>
           )}
         </div>

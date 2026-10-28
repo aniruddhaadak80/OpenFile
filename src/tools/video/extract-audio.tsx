@@ -33,7 +33,16 @@ export default function ExtractAudio() {
     if (!file) return
     setResult(null); setLabel('Extracting audio…')
     const input = 'in' + extFromBlob(file), out = `out.${fmt}`
-    const blob = await ffRun({ inputs: [{ name: input, file }], args: ['-i', input, '-map', '0:a:0', '-vn', ...(sr !== 'original' ? ['-ar', sr] : []), ...audioCodecArgs(fmt, +br), out], output: out, duration: dur || undefined, onProgress: setProgress })
+    const logs: string[] = []
+    let blob: Blob
+    try {
+      blob = await ffRun({ inputs: [{ name: input, file }], args: ['-i', input, '-map', '0:a:0', '-vn', ...(sr !== 'original' ? ['-ar', sr] : []), ...audioCodecArgs(fmt, +br), out], output: out, duration: dur || undefined, onProgress: setProgress, onLog: (l) => { logs.push(l); if (logs.length > 400) logs.shift() } })
+    } catch (e: any) {
+      const streams = logs.filter((l) => /Stream #0:\d+/.test(l))
+      const noAudio = /no matching track|no audio/i.test(String(e?.message)) || logs.some((l) => /matches no streams|does not contain any stream/i.test(l)) || (streams.length > 0 && !streams.some((l) => /Audio:/.test(l)))
+      if (noAudio) throw new Error('This video has no sound track to extract.')
+      throw e
+    }
     setResult(blob)
   })
 

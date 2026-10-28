@@ -35,7 +35,7 @@ export default function About() {
         <div className="relative mx-auto max-w-5xl px-4 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-20">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-xs font-bold uppercase tracking-widest text-accent">About OpenFile</motion.div>
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-4 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">Files are personal.<br /><span className="text-gradient">Your tools should be too.</span></motion.h1>
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-6 max-w-3xl text-lg leading-relaxed text-muted">OpenFile is an open-source workbench of {TOOLS.length}+ tools for PDFs, images, video, audio, data and code. Instead of uploading documents to someone else's server, every tool runs inside your browser using WebAssembly, Canvas, Web Workers and on-device AI models.</motion.p>
+          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-6 max-w-3xl text-lg leading-relaxed text-muted">OpenFile is an open-source workbench of <span className="whitespace-nowrap">{TOOLS.length}+</span> tools for PDFs, images, video, audio, data and code. Instead of uploading documents to someone else's server, every tool runs inside your browser using WebAssembly, Canvas, Web Workers and on-device AI models.</motion.p>
         </div>
       </section>
 

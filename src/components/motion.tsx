@@ -82,7 +82,7 @@ export function Counter({ value, suffix = '', prefix = '', className, duration =
     const c = animate(0, value, { duration, ease, onUpdate: (v) => setN(Math.round(v)) })
     return () => c.stop()
   }, [inView, value, reduce, duration])
-  return <span ref={ref} className={cn('tabular-nums', className)}>{prefix}{n.toLocaleString()}{suffix}</span>
+  return <span ref={ref} className={cn('whitespace-nowrap tabular-nums', className)}>{prefix}{n.toLocaleString()}{suffix}</span>
 }
 
 /** Infinite horizontal marquee. Content is duplicated once for a seamless loop. */

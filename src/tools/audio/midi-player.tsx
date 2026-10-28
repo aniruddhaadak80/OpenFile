@@ -33,16 +33,28 @@ function noise(ctx: BaseAudioContext) {
   return noiseBuf
 }
 
-/** Schedule all notes into a context. Returns stoppable nodes. */
-function schedule(ctx: BaseAudioContext, tracks: Track[], t0: number, rate: number, from = 0, volume = 0.8): AudioScheduledSourceNode[] {
-  const out: AudioScheduledSourceNode[] = []
+/** Master bus: gain into a compressor into the speakers. */
+function makeMaster(ctx: BaseAudioContext, volume: number) {
   const master = ctx.createGain(); master.gain.value = volume
   const comp = ctx.createDynamicsCompressor(); master.connect(comp).connect(ctx.destination)
+  return master
+}
+
+/**
+ * Schedule the notes whose song time falls in [winStart, winEnd) into a context.
+ * `from` is the song position that maps to context time `t0`. Notes already sounding at `from` are included
+ * when the window starts at `from`. Returns stoppable nodes.
+ */
+function scheduleWindow(ctx: BaseAudioContext, master: AudioNode, tracks: Track[], t0: number, rate: number, from: number, winStart: number, winEnd: number): AudioScheduledSourceNode[] {
+  const out: AudioScheduledSourceNode[] = []
   for (const tr of tracks) {
     if (!tr.on) continue
     const v = voice(tr.family)
     for (const n of tr.notes) {
       if (n.time + n.duration < from) continue
+      const inWin = n.time >= winStart && n.time < winEnd
+      const carried = winStart === from && n.time < from
+      if (!inWin && !carried) continue
       const start = t0 + Math.max(0, (n.time - from) / rate)
       const dur = Math.max(0.03, n.duration / rate)
       const g = ctx.createGain()
@@ -78,6 +90,14 @@ function schedule(ctx: BaseAudioContext, tracks: Track[], t0: number, rate: numb
   return out
 }
 
+/** Schedule the whole song at once (used for offline rendering). */
+function schedule(ctx: BaseAudioContext, tracks: Track[], t0: number, rate: number, from = 0, volume = 0.8): AudioScheduledSourceNode[] {
+  return scheduleWindow(ctx, makeMaster(ctx, volume), tracks, t0, rate, from, from, Infinity)
+}
+
+/** How far ahead (in song seconds) the live scheduler queues notes, and how often it wakes up. */
+const LOOKAHEAD = 2, TICK_MS = 250
+
 export default function MidiPlayer() {
   const [file, setFile] = useState<File | null>(null)
   const [tracks, setTracks] = useState<Track[]>([])
@@ -91,7 +111,10 @@ export default function MidiPlayer() {
   const [busy, setBusy] = useState(false)
   const [p, setP] = useState(0)
   const nodes = useRef<AudioScheduledSourceNode[]>([])
-  const clock = useRef<{ ctxStart: number; from: number } | null>(null)
+  const clock = useRef<{ ctxStart: number; from: number; perfStart: number } | null>(null)
+  const timer = useRef(0)
+  const master = useRef<GainNode | null>(null)
+  const [note, setNote] = useState<string | null>(null)
   const raf = useRef(0)
   const roll = useRef<HTMLCanvasElement>(null)
 
@@ -106,17 +129,61 @@ export default function MidiPlayer() {
     } catch (e: any) { setError(e?.message?.includes('notes') ? e.message : 'This does not look like a valid MIDI file.') }
   }
 
-  function stop() { nodes.current.forEach((n) => { try { n.stop() } catch { /* done */ } }); nodes.current = []; cancelAnimationFrame(raf.current); setPlaying(false); clock.current = null }
+  function stop() {
+    if (timer.current) { clearInterval(timer.current); timer.current = 0 }
+    nodes.current.forEach((n) => { try { n.stop() } catch { /* done */ } }); nodes.current = []
+    try { master.current?.disconnect() } catch { /* gone */ }
+    master.current = null
+    cancelAnimationFrame(raf.current); setPlaying(false); clock.current = null
+  }
   useEffect(() => () => stop(), [])
+  // The audio context must be created and resumed inside the click, or browsers keep it muted.
   const play = async (from = pos) => {
-    stop()
-    const ctx = audioCtx(); await ctx.resume()
-    const t0 = ctx.currentTime + 0.08
-    nodes.current = schedule(ctx, tracks, t0, rate, from, vol / 100)
-    clock.current = { ctxStart: t0, from }
-    setPlaying(true)
-    const tick = () => { const c = clock.current; if (!c) return; const t = c.from + (ctx.currentTime - c.ctxStart) * rate; setPos(Math.max(0, t)); if (info && t >= info.duration + 0.5) { stop(); setPos(0); return } raf.current = requestAnimationFrame(tick) }
-    raf.current = requestAnimationFrame(tick)
+    stop(); setError(null); setNote(null)
+    if (!info) return
+    let ctx: AudioContext
+    try { ctx = audioCtx() } catch { setError('Your browser does not support Web Audio, so MIDI files cannot be played here. You can still render and download them.'); return }
+    const resumed = ctx.state === 'running' ? Promise.resolve() : ctx.resume()
+    // Some browsers never settle resume() without a real gesture. Do not wait forever.
+    await Promise.race([resumed.catch(() => undefined), new Promise((r) => setTimeout(r, 600))])
+    if (ctx.state !== 'running') setNote('Audio is blocked by the browser right now. Click Play again, or check that this tab is not muted.')
+    try {
+      const m = makeMaster(ctx, vol / 100); master.current = m
+      const t0 = ctx.currentTime + 0.08
+      const perf0 = performance.now() + 80
+      clock.current = { ctxStart: t0, from, perfStart: perf0 }
+      let queued = from
+      const pump = () => {
+        if (!clock.current) return
+        const now = songTime(ctx)
+        const until = Math.min(info.duration + 1, now + LOOKAHEAD)
+        if (until > queued) {
+          nodes.current.push(...scheduleWindow(ctx, m, tracks, t0, rate, from, queued, until))
+          queued = until
+        }
+        // Drop finished nodes so the list does not grow without end.
+        if (nodes.current.length > 4000) nodes.current = nodes.current.slice(-2000)
+      }
+      pump()
+      timer.current = window.setInterval(pump, TICK_MS)
+      setPlaying(true)
+      const tick = () => {
+        if (!clock.current) return
+        const t = songTime(ctx)
+        setPos(Math.max(0, t))
+        if (t >= info.duration + 0.5) { stop(); setPos(0); return }
+        raf.current = requestAnimationFrame(tick)
+      }
+      raf.current = requestAnimationFrame(tick)
+    } catch (e: any) {
+      stop(); setError(e?.message ? `Playback could not start: ${e.message}` : 'Playback could not start in this browser.')
+    }
+  }
+  /** Current song position. Uses the audio clock when it runs, the page clock otherwise so the slider still moves. */
+  function songTime(ctx: AudioContext) {
+    const c = clock.current; if (!c) return 0
+    const elapsed = ctx.state === 'running' && ctx.currentTime > 0 ? ctx.currentTime - c.ctxStart : (performance.now() - c.perfStart) / 1000
+    return c.from + Math.max(0, elapsed) * rate
   }
 
   useEffect(() => {
@@ -161,6 +228,7 @@ export default function MidiPlayer() {
       main={<>
         <FileBar file={file} onReset={() => { stop(); setFile(null); setTracks([]); setInfo(null) }} />
         <ErrorNote error={error} />
+        {note && <p role="status" className="rounded-xl border border-border bg-surface px-3 py-2 text-xs text-muted">{note}</p>}
         {info && <>
           <canvas ref={roll} className="h-[220px] w-full rounded-2xl border border-border bg-surface" aria-label="Piano roll" />
           <div className="flex items-center gap-3 rounded-xl border border-border bg-surface p-3">
@@ -179,7 +247,7 @@ export default function MidiPlayer() {
       side={<>
         {info && <div className="grid grid-cols-3 gap-2"><Stat label="Length" value={fmtTime(info.duration, 0)} /><Stat label="Tempo" value={`${info.bpm} bpm`} /><Stat label="Tracks" value={tracks.length} /></div>}
         <Slider label="Speed" value={rate} onChange={(v) => { setRate(v); if (playing) setTimeout(() => play(), 0) }} min={0.5} max={2} step={0.05} suffix="x" />
-        <Slider label="Volume" value={vol} onChange={setVol} min={10} max={100} suffix="%" />
+        <Slider label="Volume" value={vol} onChange={(v) => { setVol(v); if (master.current) master.current.gain.value = v / 100 }} min={10} max={100} suffix="%" />
         <div><Label>Save as</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'wav', label: 'WAV' }, { value: 'ogg', label: 'OGG' }]} /></div>
         <Button size="lg" className="w-full" icon={<Download className="size-5" />} onClick={render} loading={busy} disabled={!info}>Render and download</Button>
         {busy && <Progress value={p} />}

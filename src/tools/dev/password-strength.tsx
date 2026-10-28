@@ -44,7 +44,7 @@ export default function PasswordStrength() {
             <Badge>{Math.round(r.guesses_log10 * 10) / 10} on a log10 guess scale</Badge>
             <Badge>{entropyBits(pw)} bits if fully random</Badge>
           </div>
-          {r.feedback.warning && <Status kind="err">{r.feedback.warning}</Status>}
+          {r.feedback.warning && <Status kind="warn">{r.feedback.warning}</Status>}
           {r.feedback.suggestions.length > 0 && <ul className="list-inside list-disc space-y-1 text-sm">{r.feedback.suggestions.map((s) => <li key={s}>{s}</li>)}</ul>}
           <div className="grid gap-2 sm:grid-cols-2">
             <KV label="Online attack, 10 guesses a second" value={String(r.crack_times_display.online_no_throttling_10_per_second)} copy={false} />
