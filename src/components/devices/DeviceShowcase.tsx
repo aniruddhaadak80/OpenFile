@@ -52,6 +52,13 @@ export function DeviceShowcase() {
   }
   useEffect(() => () => { if (hoverT.current) clearTimeout(hoverT.current) }, [])
 
+  const tabsRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const list = tabsRef.current
+    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]')
+    if (!list || !tab || list.scrollWidth <= list.clientWidth) return
+    list.scrollTo({ left: tab.offsetLeft - (list.clientWidth - tab.offsetWidth) / 2, behavior: reduced ? 'auto' : 'smooth' })
+  }, [device, reduced])
   const idx = SHOWCASE.indexOf(device)
   const go = (d: number) => setDevice(SHOWCASE[(idx + d + SHOWCASE.length) % SHOWCASE.length])
 
@@ -63,7 +70,7 @@ export function DeviceShowcase() {
   const bx2 = useTransform(sx, [-0.5, 0.5], [-12, 12]), by2 = useTransform(sy, [-0.5, 0.5], [-9, 9])
   const tilt = !reduced
   const onMove = (e: React.PointerEvent) => {
-    if (!tilt || e.pointerType !== 'mouse') return
+    if (!tilt || e.pointerType === 'touch') return
     const r = e.currentTarget.getBoundingClientRect()
     px.set((e.clientX - r.left) / r.width - 0.5); py.set((e.clientY - r.top) / r.height - 0.5)
   }
@@ -76,14 +83,14 @@ export function DeviceShowcase() {
   return (
     <div className="relative mx-auto w-full min-w-0 max-w-[620px]">
       {/* switcher */}
-      <div role="tablist" aria-label="Choose a device" className="-mx-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1"
+      <div role="tablist" ref={tabsRef} aria-label="Choose a device" className="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1 [mask-image:linear-gradient(90deg,#000_85%,transparent)] [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible sm:[mask-image:none] [&::-webkit-scrollbar]:hidden"
         onKeyDown={(e) => { if (e.key === 'ArrowRight') { e.preventDefault(); go(1) } if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1) } }}>
         {SHOWCASE.map((id) => {
           const I = ICON[id]
           const on = id === device
           return (
             <button key={id} role="tab" aria-selected={on} tabIndex={on ? 0 : -1} onClick={() => setDevice(id)}
-              className={cn('relative inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors', on ? 'text-on-accent' : 'text-muted hover:text-fg')}>
+              className={cn('relative inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors sm:min-h-9 sm:px-2.5', on ? 'text-on-accent' : 'text-muted hover:text-fg')}>
               {on && <motion.span layoutId="device-pill" className="absolute inset-0 rounded-full bg-accent" transition={{ type: 'spring', stiffness: 380, damping: 30 }} />}
               <I className="relative size-4" /><span className="relative">{DEVICES[id].short}</span>
               {id === detected && <span className={cn('relative size-1.5 rounded-full', on ? 'bg-on-accent' : 'bg-emerald')} title="Your device" />}
@@ -112,8 +119,8 @@ export function DeviceShowcase() {
           )}
         </div>
         {/* floating badges */}
-        <Badge style={{ x: bx, y: by }} className="left-0 top-1 sm:-left-2" delay={0.5} reduced={reduced} tone="emerald"><WifiOff className="size-3.5" /> Works offline</Badge>
-        <Badge style={{ x: bx2, y: by2 }} className="right-0 top-[38%] sm:-right-2" delay={0.7} reduced={reduced} tone="accent"><ShieldCheck className="size-3.5" /> Files stay on device</Badge>
+        <Badge style={{ x: bx, y: by }} className="left-0 top-1" delay={0.5} reduced={reduced} tone="emerald"><WifiOff className="size-3.5" /> Works offline</Badge>
+        <Badge style={{ x: bx2, y: by2 }} className="right-0 top-[38%]" delay={0.7} reduced={reduced} tone="accent"><ShieldCheck className="size-3.5" /> Files stay on device</Badge>
         <Badge style={{ x: bx, y: by2 }} className="bottom-1 left-2 sm:left-6" delay={0.9} reduced={reduced} tone="sky"><Zap className="size-3.5" /> Installs in seconds</Badge>
         {/* phone arrows */}
         <button onClick={() => go(-1)} aria-label="Previous device" className="absolute left-0 top-1/2 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-border bg-surface/80 backdrop-blur sm:hidden"><ChevronLeft className="size-4" /></button>

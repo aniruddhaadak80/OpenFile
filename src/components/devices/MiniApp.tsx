@@ -100,7 +100,7 @@ function ToolTile({ d, i, active, phone, interactive, onHover, onPick }: { d: De
   const cat = catOf(d.tool.category)
   return (
     <button type="button" tabIndex={interactive ? 0 : -1} aria-label={`Play the ${d.tool.name} demo`}
-      onPointerEnter={(e) => { if (e.pointerType === 'mouse') onHover?.(i) }} onPointerLeave={() => onHover?.(null)}
+      onPointerEnter={(e) => { if (e.pointerType !== 'touch') onHover?.(i) }} onMouseEnter={() => onHover?.(i)} onPointerLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) onHover?.(null) }}
       onClick={(e) => { e.stopPropagation(); onPick?.(i) }}
       className={`relative flex min-w-0 items-center gap-3 rounded-2xl border bg-[var(--s-surface)] text-left transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 ${phone ? 'p-3' : 'p-3.5'} ${interactive ? 'cursor-pointer' : 'pointer-events-none'}`}
       style={{ borderColor: active ? cat.color : 'var(--s-border)', boxShadow: active ? `0 0 0 3px color-mix(in oklab, ${cat.color} 22%, transparent), 0 10px 30px -12px ${cat.color}` : undefined }}>
