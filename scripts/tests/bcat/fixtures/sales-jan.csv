@@ -1,0 +1,5 @@
+id,region,product,amount
+1,North,Pens,120
+2,South,Pens,80
+3,North,Paper,"1,200"
+4,East,Ink,45

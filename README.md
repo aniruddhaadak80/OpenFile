@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tools-360-F5A524?style=flat-square&labelColor=0B0D10" alt="360 tools"/>
+  <img src="https://img.shields.io/badge/tools-411-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
   <img src="https://img.shields.io/badge/uploads-0_bytes-10B981?style=flat-square&labelColor=0B0D10" alt="0 uploads"/>
   <img src="https://img.shields.io/badge/runs-in_your_browser-14B8A6?style=flat-square&logo=googlechrome&logoColor=14B8A6&labelColor=0B0D10" alt="runs in your browser"/>
   <img src="https://img.shields.io/badge/React-19-22D3EE?style=flat-square&logo=react&logoColor=22D3EE&labelColor=0B0D10" alt="React 19"/>
@@ -33,7 +33,7 @@
 </p>
 
 <p align="center">
-  <b>360 free, open-source tools</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data and code, <br/>
+  <b>411 free, open-source tools</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data and code, <br/>
   processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
 </p>
 
@@ -52,14 +52,14 @@
   <a href="#-built-by">Author</a>
 </p>
 
-<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="360 tools · 16 categories · 0 uploads · 100% open source"/></p>
+<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="411 tools · 21 categories · 0 uploads · 100% open source"/></p>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
 ## 🆕 What's new
 
 <!-- whatsnew:start -->
-OpenFile now has **360 tools in 16 studios**. This release adds whole new studios, more on-device AI and a smoother way to get files in.
+OpenFile now has **411 tools in 21 studios**. This release adds whole new studios, more on-device AI and a smoother way to get files in.
 
 - 🧊 **3D viewer and converter**: [3D Model Viewer](https://openfile-studio.vercel.app/3d-viewer) opens GLB, glTF, OBJ, STL, PLY, FBX and more with orbit controls. [3D Model Converter](https://openfile-studio.vercel.app/3d-converter) moves models between formats and [GLB / glTF Optimizer](https://openfile-studio.vercel.app/gltf-optimizer) shrinks them.
 - 🔤 **Fonts**: [Font Converter](https://openfile-studio.vercel.app/font-converter) (TTF, OTF, WOFF, WOFF2), [Font Viewer & Inspector](https://openfile-studio.vercel.app/font-viewer) and [Font Subsetter](https://openfile-studio.vercel.app/font-subsetter) for tiny web fonts.
@@ -240,7 +240,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 
 ## 🧰 The toolbox
 
-<p align="center"><img src="docs/assets/category-orbit.svg" width="82%" alt="16 studios orbiting the OpenFile core"/></p>
+<p align="center"><img src="docs/assets/category-orbit.svg" width="82%" alt="21 studios orbiting the OpenFile core"/></p>
 
 <!-- toolbox:start -->
 <table>
@@ -314,7 +314,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </td>
 <td width="25%" valign="top" align="center">
 <h3>🤖<br/>AI</h3>
-<img src="https://img.shields.io/badge/7-tools-FBBF24?style=flat-square&labelColor=0B0D10" alt="7 tools"/><br/>
+<img src="https://img.shields.io/badge/17-tools-FBBF24?style=flat-square&labelColor=0B0D10" alt="17 tools"/><br/>
 <sub>On-device AI for images, text and documents</sub><br/><br/>
 <a href="https://openfile-studio.vercel.app/pdf-summarizer">AI Summarizer</a><br/><a href="https://openfile-studio.vercel.app/chat-pdf">Chat with PDF</a><br/><a href="https://openfile-studio.vercel.app/object-remover">Magic Eraser (Remove Objects)</a><br/>
 <a href="https://openfile-studio.vercel.app/category/ai"><b>Browse all →</b></a>
@@ -364,13 +364,52 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 <a href="https://openfile-studio.vercel.app/category/subtitle"><b>Browse all →</b></a>
 </td>
 </tr>
+<tr>
+<td width="25%" valign="top" align="center">
+<h3>🔐<br/>Security &amp; Privacy</h3>
+<img src="https://img.shields.io/badge/8-tools-34D399?style=flat-square&labelColor=0B0D10" alt="8 tools"/><br/>
+<sub>Scrub metadata, lock files, hide messages, redact personal data</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/metadata-scrubber">Metadata Scrubber</a><br/><a href="https://openfile-studio.vercel.app/zip-encrypt">Password ZIP</a><br/><a href="https://openfile-studio.vercel.app/steganography">Steganography</a><br/>
+<a href="https://openfile-studio.vercel.app/category/privacy"><b>Browse all →</b></a>
+</td>
+<td width="25%" valign="top" align="center">
+<h3>🗺️<br/>Maps &amp; GPS</h3>
+<img src="https://img.shields.io/badge/9-tools-7DD3FC?style=flat-square&labelColor=0B0D10" alt="9 tools"/><br/>
+<sub>GPX elevation, splits, heatmaps, privacy zones and location codes</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/gpx-elevation-profile">GPX Elevation Profile</a><br/><a href="https://openfile-studio.vercel.app/gpx-splits">GPX Pace &amp; Splits</a><br/><a href="https://openfile-studio.vercel.app/gpx-merge-split">GPX Merge &amp; Split</a><br/>
+<a href="https://openfile-studio.vercel.app/category/geo"><b>Browse all →</b></a>
+</td>
+<td width="25%" valign="top" align="center">
+<h3>🗂️<br/>Office &amp; Sheets</h3>
+<img src="https://img.shields.io/badge/9-tools-F59E0B?style=flat-square&labelColor=0B0D10" alt="9 tools"/><br/>
+<sub>Merge, split, compare and pivot spreadsheets, clean Word files</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/xlsx-merger">Merge Excel Files</a><br/><a href="https://openfile-studio.vercel.app/xlsx-splitter">Split Excel Workbook</a><br/><a href="https://openfile-studio.vercel.app/spreadsheet-compare">Compare Spreadsheets</a><br/>
+<a href="https://openfile-studio.vercel.app/category/office"><b>Browse all →</b></a>
+</td>
+<td width="25%" valign="top" align="center">
+<h3>🧪<br/>Science &amp; Education</h3>
+<img src="https://img.shields.io/badge/8-tools-A3E635?style=flat-square&labelColor=0B0D10" alt="8 tools"/><br/>
+<sub>Equations, graphs, chemistry, matrices, logic and primes</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/latex-equation">LaTeX Equation Renderer</a><br/><a href="https://openfile-studio.vercel.app/function-plotter">Function Plotter</a><br/><a href="https://openfile-studio.vercel.app/periodic-table">Periodic Table</a><br/>
+<a href="https://openfile-studio.vercel.app/category/science"><b>Browse all →</b></a>
+</td>
+</tr>
+<tr>
+<td width="25%" valign="top" align="center">
+<h3>🎙️<br/>Creator Studio</h3>
+<img src="https://img.shields.io/badge/7-tools-FDBA74?style=flat-square&labelColor=0B0D10" alt="7 tools"/><br/>
+<sub>Audiograms, vertical video, carousels, word clouds and chapters</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/audiogram-maker">Audiogram Maker</a><br/><a href="https://openfile-studio.vercel.app/video-reframe">Video Reframe (9:16, 1:1, 4:5)</a><br/><a href="https://openfile-studio.vercel.app/carousel-maker">Carousel Maker</a><br/>
+<a href="https://openfile-studio.vercel.app/category/creator"><b>Browse all →</b></a>
+</td>
+</tr>
 </table>
 <!-- toolbox:end -->
 
 ### 📚 Every tool, one click away
 
 <!-- catalog:start -->
-> **360 tools across 16 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
+> **411 tools across 21 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
 > Legend: 🔥 Hot · ✨ New · 🤖 AI · ⭐ Popular · 🔁 Usable as a Workspace pipeline step
 
 <details open>
@@ -785,7 +824,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🤖 AI</b>, 7 tools · <i>On-device AI for images, text and documents</i></summary>
+<summary><b>🤖 AI</b>, 17 tools · <i>On-device AI for images, text and documents</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -796,6 +835,16 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 <tr><td><a href="https://openfile-studio.vercel.app/translate-pdf"><b>Translate PDF and Documents</b></a></td><td>Translate PDF, Word and text documents into 50+ languages on your device and save as PDF or DOCX.</td><td><sub>🤖 AI</sub></td></tr>
 <tr><td><a href="https://openfile-studio.vercel.app/question-generator"><b>Quiz and Flashcard Generator</b></a></td><td>Make flashcards and multiple-choice quizzes from notes or a document. Export to Anki.</td><td><sub>🤖 AI</sub></td></tr>
 <tr><td><a href="https://openfile-studio.vercel.app/chat-pdf"><b>Chat with PDF</b></a></td><td>Ask questions about a PDF or document and get answers with page numbers, fully offline.</td><td><sub>🤖 AI · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/image-captioner"><b>AI Image Captioner</b></a></td><td>Write captions and alt text for photos with an on-device AI model, in bulk.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/object-detector"><b>AI Object Detector</b></a></td><td>Find people, cars, animals and 70 more everyday objects in a photo, with boxes and counts.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/depth-map"><b>AI Depth Map</b></a></td><td>Turn any photo into a depth map, and add a portrait style background blur using it.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/image-segmenter"><b>AI Image Segmenter</b></a></td><td>Split a photo into labelled regions like sky, people, road and trees, then cut any of them out.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/image-tagger"><b>AI Image Tagger</b></a></td><td>Tag a batch of photos with your own labels using CLIP zero-shot AI, then export the tags.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/similar-photo-finder"><b>Similar Photo Finder</b></a></td><td>Find duplicate and look-alike photos in a big batch, keep the best one and download the rest cleaned up.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/sentiment-analyzer"><b>Sentiment Analyzer</b></a></td><td>Score reviews, comments or survey answers as positive, neutral or negative, line by line or from a CSV.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/text-classifier"><b>Zero-shot Text Classifier</b></a></td><td>Sort messages, tickets or headlines into labels you choose, with no training, on your device.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/entity-extractor"><b>Name &amp; Entity Extractor</b></a></td><td>Pull people, places, organisations, dates, money, emails and phone numbers out of any text or document.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/semantic-file-search"><b>Semantic File Search</b></a></td><td>Search many PDFs, Word files, notes and code by meaning, not just exact words, all offline.</td><td><sub>🤖 AI</sub></td></tr>
 </table>
 <p align="right"><a href="https://openfile-studio.vercel.app/category/ai">Open the AI studio ↗</a></p>
 </details>
@@ -876,6 +925,92 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </table>
 <p align="right"><a href="https://openfile-studio.vercel.app/category/subtitle">Open the Subtitles studio ↗</a></p>
 </details>
+
+<details>
+<summary><b>🔐 Security &amp; Privacy</b>, 8 tools · <i>Scrub metadata, lock files, hide messages, redact personal data</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/metadata-scrubber"><b>Metadata Scrubber</b></a></td><td>Remove hidden data from photos, PDFs, Office files and MP3s in one batch: GPS, camera, author, company and more.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/steganography"><b>Steganography</b></a></td><td>Hide a secret message or small file inside an image, with an optional password, and reveal it later.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/checksum-verifier"><b>Checksum Verifier</b></a></td><td>Check many downloads against SHA256SUMS or MD5 lists, or make your own checksum file.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/zip-encrypt"><b>Password ZIP</b></a></td><td>Make an AES-256 password-protected ZIP that opens anywhere, or unlock one you have the password for.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/pii-redactor"><b>PII Redactor</b></a></td><td>Find and mask emails, phone numbers, card numbers, IBANs, IPs, Aadhaar, PAN and SSNs in text before you share it.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/hidden-character-detector"><b>Hidden Character Detector</b></a></td><td>Reveal zero width characters, direction tricks, invisible tags and look-alike letters in text, then clean them.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/self-decrypting-file"><b>Locked HTML File</b></a></td><td>Lock a file or note inside a single HTML page that opens in any browser with your password, no app needed.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/entropy-analyzer"><b>File Entropy Analyzer</b></a></td><td>Map the entropy of any file to spot encrypted, compressed or hidden regions, with a byte histogram.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/privacy">Open the Security &amp; Privacy studio ↗</a></p>
+</details>
+
+<details>
+<summary><b>🗺️ Maps &amp; GPS</b>, 9 tools · <i>GPX elevation, splits, heatmaps, privacy zones and location codes</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/gpx-elevation-profile"><b>GPX Elevation Profile</b></a></td><td>See the elevation profile of a route with grade colours, climbs, total ascent and a map.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/gpx-splits"><b>GPX Pace &amp; Splits</b></a></td><td>Per kilometre or mile splits with pace, speed, climbing and heart rate from any GPX or TCX activity.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/gpx-merge-split"><b>GPX Merge &amp; Split</b></a></td><td>Join several GPX tracks into one, or split a long track at breaks, GPS jumps or into equal parts.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/gpx-simplifier"><b>GPX Simplifier</b></a></td><td>Cut the number of points in a track while keeping its shape, so older GPS devices and apps accept it.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/gpx-privacy-zone"><b>GPX Privacy Zones</b></a></td><td>Hide your home and the start and end of a GPS track, and remove times and heart rate before sharing it.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/photo-location-map"><b>Photo Location Map</b></a></td><td>See where your photos were taken on a map and export the places as GeoJSON, KML, GPX or CSV.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/route-heatmap"><b>Route Heatmap</b></a></td><td>Draw all your runs, rides or hikes on top of each other as a glowing heatmap poster.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/geojson-measure"><b>GeoJSON Area &amp; Length</b></a></td><td>Measure the area, perimeter and length of every shape in GeoJSON, KML or GPX, with a map and a table.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/location-code-converter"><b>Plus Code &amp; Geohash Converter</b></a></td><td>Convert between coordinates, plus codes, geohashes and Maidenhead locators, with a map.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/geo">Open the Maps &amp; GPS studio ↗</a></p>
+</details>
+
+<details>
+<summary><b>🗂️ Office &amp; Sheets</b>, 9 tools · <i>Merge, split, compare and pivot spreadsheets, clean Word files</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/xlsx-merger"><b>Merge Excel Files</b></a></td><td>Combine sheets from many Excel, ODS or CSV files into one workbook, or stack their rows into one table.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/xlsx-splitter"><b>Split Excel Workbook</b></a></td><td>Save each sheet as its own file, cut a long sheet every N rows, or split rows by the value in a column.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/spreadsheet-compare"><b>Compare Spreadsheets</b></a></td><td>Find every changed cell, added row and removed row between two Excel or CSV files.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/pivot-table"><b>Pivot Table</b></a></td><td>Summarise a spreadsheet by grouping rows and summing, counting or averaging values, like an Excel pivot table.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/docx-find-replace"><b>Word Find &amp; Replace</b></a></td><td>Replace words in many DOCX files at once, across the body, headers, footers and footnotes, keeping formatting.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/docx-cleaner"><b>Word Document Cleaner</b></a></td><td>Accept or reject all tracked changes, delete comments and hidden text, and make a clean final DOCX.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/office-media-extractor"><b>Office Media Extractor</b></a></td><td>Get every image, video and sound from Word, PowerPoint, Excel and OpenDocument files at full quality.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/ics-viewer"><b>Calendar File Viewer (ICS)</b></a></td><td>Open ICS calendar files and invites as an agenda, search them, and export to CSV, JSON or Markdown.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/vcard-converter"><b>Contacts Converter (VCF &amp; CSV)</b></a></td><td>Turn phone contacts (VCF) into a spreadsheet, or a spreadsheet into contacts, and merge duplicates.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/office">Open the Office &amp; Sheets studio ↗</a></p>
+</details>
+
+<details>
+<summary><b>🧪 Science &amp; Education</b>, 8 tools · <i>Equations, graphs, chemistry, matrices, logic and primes</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/latex-equation"><b>LaTeX Equation Renderer</b></a></td><td>Type LaTeX and get a crisp equation as PNG, SVG or JPG, or copy it as MathML for Word.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/function-plotter"><b>Function Plotter</b></a></td><td>Graph several functions of x with zoom, pan, zeros and derivatives, then export PNG or SVG.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/periodic-table"><b>Periodic Table</b></a></td><td>Interactive periodic table with masses, categories, electron configurations and shell diagrams.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/molar-mass-calculator"><b>Molar Mass Calculator</b></a></td><td>Work out the molar mass and mass percentages of any chemical formula, and convert grams to moles.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/chemical-equation-balancer"><b>Chemical Equation Balancer</b></a></td><td>Balance chemical equations, including ionic and redox ones, with exact whole number coefficients.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/matrix-calculator"><b>Matrix Calculator</b></a></td><td>Determinant, inverse, row reduction, rank, eigenvalues, products and solving A x = B, with exact fractions.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/truth-table-generator"><b>Truth Table Generator</b></a></td><td>Make the truth table of any logic expression and get its simplest form, minterms and maxterms.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/prime-factorizer"><b>Prime Factorizer</b></a></td><td>Factor big whole numbers into primes, list divisors, check primality, and find GCD and LCM.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/science">Open the Science &amp; Education studio ↗</a></p>
+</details>
+
+<details>
+<summary><b>🎙️ Creator Studio</b>, 7 tools · <i>Audiograms, vertical video, carousels, word clouds and chapters</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/audiogram-maker"><b>Audiogram Maker</b></a></td><td>Turn a podcast or voice clip into a shareable video with a moving waveform, cover art and a title.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/video-reframe"><b>Video Reframe (9:16, 1:1, 4:5)</b></a></td><td>Turn a landscape video into a vertical short, a square or a 4:5 post with a blurred or solid background.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/carousel-maker"><b>Carousel Maker</b></a></td><td>Make swipeable text carousels for LinkedIn and Instagram, and export them as PDF or PNG slides.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/post-length-checker"><b>Post Length Checker</b></a></td><td>Check your post against the limits of X, Threads, Bluesky, LinkedIn, Instagram, YouTube and more, and split long posts into threads.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/link-in-bio-builder"><b>Link in Bio Page Builder</b></a></td><td>Build a simple link in bio page with your photo and links, and download it as one HTML file you host anywhere.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/word-cloud"><b>Word Cloud Generator</b></a></td><td>Make a word cloud from any text in cloud, circle or banner shapes, and export PNG or SVG.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/chapter-maker"><b>Video Chapter Maker</b></a></td><td>Write YouTube chapters, check them against the rules, and export WebVTT, FFmpeg or podcast chapter files.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/creator">Open the Creator Studio studio ↗</a></p>
+</details>
 <!-- catalog:end -->
 
 <!-- charts:start -->
@@ -884,7 +1019,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'pie1':'#F5A524','pie2':'#F97316','pie3':'#10B981','pie4':'#38BDF8','pie5':'#14B8A6','pie6':'#22D3EE','pie7':'#84CC16','pie8':'#60A5FA','pie9':'#0EA5E9','pie10':'#FBBF24','pie11':'#2DD4BF','pie12':'#A3A3A3','pieTitleTextSize':'20px','pieTitleTextColor':'#F5A524','pieSectionTextColor':'#050505','pieLegendTextColor':'#A8A29E','pieStrokeColor':'#050505','pieStrokeWidth':'2px','pieOuterStrokeColor':'#F5A524','pieOuterStrokeWidth':'2px','pieOpacity':'1'}}}%%
 pie showData
-    title 360 tools across 16 studios
+    title 411 tools across 21 studios
     "PDF Tools" : 58
     "Convert" : 31
     "Image" : 55
@@ -894,13 +1029,18 @@ pie showData
     "Text and Data" : 42
     "Design" : 16
     "Data" : 11
-    "AI" : 7
+    "AI" : 17
     "3D" : 5
     "Archives" : 4
     "eBooks" : 4
     "Fonts" : 3
     "CAD" : 2
     "Subtitles" : 5
+    "Security and Privacy" : 8
+    "Maps and GPS" : 9
+    "Office and Sheets" : 9
+    "Science and Education" : 8
+    "Creator Studio" : 7
 ```
 
 ### 🧭 Category map
@@ -908,7 +1048,7 @@ pie showData
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#F5A524','primaryTextColor':'#050505','primaryBorderColor':'#FFB224','lineColor':'#F5A524','fontFamily':'system-ui, sans-serif','cScale0':'#F5A524','cScaleLabel0':'#050505','cScaleInv0':'#050505','cScale1':'#F97316','cScaleLabel1':'#050505','cScaleInv1':'#050505','cScale2':'#10B981','cScaleLabel2':'#050505','cScaleInv2':'#050505','cScale3':'#38BDF8','cScaleLabel3':'#050505','cScaleInv3':'#050505','cScale4':'#14B8A6','cScaleLabel4':'#050505','cScaleInv4':'#050505','cScale5':'#22D3EE','cScaleLabel5':'#050505','cScaleInv5':'#050505','cScale6':'#84CC16','cScaleLabel6':'#050505','cScaleInv6':'#050505','cScale7':'#60A5FA','cScaleLabel7':'#050505','cScaleInv7':'#050505','cScale8':'#0EA5E9','cScaleLabel8':'#050505','cScaleInv8':'#050505','cScale9':'#FBBF24','cScaleLabel9':'#050505','cScaleInv9':'#050505','cScale10':'#2DD4BF','cScaleLabel10':'#050505','cScaleInv10':'#050505','cScale11':'#A3A3A3','cScaleLabel11':'#050505','cScaleInv11':'#050505'}}}%%
 mindmap
-  root(("OpenFile · 360 tools"))
+  root(("OpenFile · 411 tools"))
     PDF
       Merge PDF · Split PDF · Compress PDF
       Sign PDF · Invoice Generator · Create Fillable PDF Form
@@ -955,6 +1095,21 @@ mindmap
     Subtitles
       Subtitle Converter · Subtitle Editor · Subtitle Shift and Sync
       Extract Subtitles · Subtitle Translator
+    Privacy
+      Metadata Scrubber · Password ZIP · Steganography
+      Checksum Verifier · PII Redactor · Hidden Character Detector
+    Maps
+      GPX Elevation Profile · GPX Pace and Splits · GPX Merge and Split
+      GPX Simplifier · GPX Privacy Zones · Photo Location Map
+    Office
+      Merge Excel Files · Split Excel Workbook · Compare Spreadsheets
+      Pivot Table · Word Find and Replace · Word Document Cleaner
+    Science
+      LaTeX Equation Renderer · Function Plotter · Periodic Table
+      Molar Mass Calculator · Chemical Equation Balancer · Matrix Calculator
+    Creator
+      Audiogram Maker · Video Reframe 916, 11, 45 · Carousel Maker
+      Post Length Checker · Link in Bio Page Builder · Word Cloud Generator
 ```
 <!-- charts:end -->
 
@@ -1013,7 +1168,7 @@ flowchart LR
     U["👤 You<br/>drop or pick files"]:::user --> BR
     subgraph BR["🌐 Your browser tab, nothing leaves it"]
         direction LR
-        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>360 tools · import.meta.glob"]:::ui
+        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>411 tools · import.meta.glob"]:::ui
         REG --> E1["📄 pdf-lib · PDF.js<br/>@cantoo/pdf-lib"]:::pdf
         REG --> E2["🎬 ffmpeg.wasm<br/>MediaRecorder · Web Audio"]:::media
         REG --> E3["🔤 Tesseract.js OCR"]:::ai
@@ -1064,7 +1219,7 @@ sequenceDiagram
     Note over U,B: The file never crosses the network. Closing the tab frees all memory.
 ```
 
-- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 360 tools.
+- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 411 tools.
 - **Heavy engines load on demand** (ffmpeg core, OCR language data, AI weights) and are cached by the browser and the service worker.
 - **Zero-upload guarantee:** the optional Vercel functions (`/api/health`, `/api/fetch-page`, `/api/meta`) only ever receive a **URL you type**, never a file.
 
@@ -1304,11 +1459,11 @@ OpenFile/
 │  ├─ pages/                 # Home, Tools, ToolPage, Workspace, Docs, Blog, History, Settings
 │  │  └─ workspace/steps.ts  # pipeline steps + presets
 │  └─ tools/
-│     ├─ registry.ts         # the catalog, 360 tools, 16 categories
-│     ├─ batches/            # more catalog entries: b1, b10, b11, b12, b2, b3, b4, b5
+│     ├─ registry.ts         # the catalog, 411 tools, 21 categories
+│     ├─ batches/            # more catalog entries: b-cat1, b-cat2, b-cat3, b1, b10, b11, b12, b2, b3, b4, b5
 │     ├─ engines.ts · guides.ts  # "How it works" content for every tool page
-│     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/
-│        data/ ai/ 3d/ archive/ ebook/ font/ cad/ subtitle/
+│     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/ data/ ai/ 3d/
+│        archive/ ebook/ font/ cad/ subtitle/ privacy/ geo/ office/ science/ creator/
 ├─ .github/workflows/        # GitHub Pages deploy
 ├─ CHANGELOG.md              # release notes
 └─ vercel.json               # SPA rewrites + security headers
@@ -1352,7 +1507,7 @@ timeline
         v1.0 core : First in-browser studios : Command palette and smart drop
         Power features : Batch Workspace : Presets and saved recipes : On-device AI
         Everywhere : Installable PWA : Offline mode : Vercel and GitHub Pages
-        v2.0 catalog : 360 in-browser tools : 16 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
+        v2.0 catalog : 411 in-browser tools : 21 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
         v2.0 polish : Per-tool preview videos : Drop anything and share target : Compare tools and new hero
     section Next
         Desktop : Tauri app : Native file system access
@@ -1360,7 +1515,7 @@ timeline
         Global : UI translations i18n
 ```
 
-- [x] 360 in-browser tools across 16 studios
+- [x] 411 in-browser tools across 21 studios
 - [x] Batch Workspace with presets and saved recipes
 - [x] On-device AI, background removal, OCR, upscaling, transcription
 - [x] Installable PWA + offline mode

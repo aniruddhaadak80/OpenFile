@@ -5,7 +5,7 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 
 ## Categories
 <!-- categories:start -->
-16 categories, 360 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
+21 categories, 411 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
 
 | Id | Studio | Tools | What it covers |
 |---|---|--:|---|
@@ -18,13 +18,18 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 | `text` | 📝 Text & Data | 42 | Diff, count, convert tables, format text |
 | `design` | 🖌️ Design | 16 | Colors, CSS, favicons, SVG, whiteboards |
 | `data` | 📊 Data | 11 | CSV, Excel, JSON, SQLite, Parquet, maps and GPS |
-| `ai` | 🤖 AI | 7 | On-device AI for images, text and documents |
+| `ai` | 🤖 AI | 17 | On-device AI for images, text and documents |
 | `3d` | 🧊 3D | 5 | View and convert GLB, GLTF, OBJ, STL, PLY and more |
 | `archive` | 🗜️ Archives | 4 | Open and create ZIP, 7Z, TAR, GZ and RAR |
 | `ebook` | 📚 eBooks | 4 | Read and convert EPUB, MOBI, FB2 and comics |
 | `font` | 🔤 Fonts | 3 | Convert, inspect and subset TTF, OTF, WOFF |
 | `cad` | 📐 CAD | 2 | View and convert DXF and other drawings |
 | `subtitle` | 💬 Subtitles | 5 | Convert, sync and edit SRT, VTT, ASS |
+| `privacy` | 🔐 Security & Privacy | 8 | Scrub metadata, lock files, hide messages, redact personal data |
+| `geo` | 🗺️ Maps & GPS | 9 | GPX elevation, splits, heatmaps, privacy zones and location codes |
+| `office` | 🗂️ Office & Sheets | 9 | Merge, split, compare and pivot spreadsheets, clean Word files |
+| `science` | 🧪 Science & Education | 8 | Equations, graphs, chemistry, matrices, logic and primes |
+| `creator` | 🎙️ Creator Studio | 7 | Audiograms, vertical video, carousels, word clouds and chapters |
 <!-- categories:end -->
 
 New entries can go in `src/tools/registry.ts` or in one of the batch files (`src/tools/batches/bN.ts`, each exporting `BATCH_N`), which the registry spreads into `TOOLS`. Shared logic for a batch goes in `src/lib/bN/` and its tests in `scripts/tests/bN/`. After adding or renaming a tool, run `node scripts/gen-readme-catalog.mjs` to refresh the README catalog, the stats artwork and this list.

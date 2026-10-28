@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"name":"Square park"},"geometry":{"type":"Polygon","coordinates":[[[0,0],[0.01,0],[0.01,0.01],[0,0.01],[0,0]]]}},{"type":"Feature","properties":{"name":"Path"},"geometry":{"type":"LineString","coordinates":[[0,0],[0.01,0]]}}]}

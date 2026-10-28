@@ -55,6 +55,28 @@ export const HEAVY_ENGINES = ['ffmpeg.wasm', 'Tesseract.js', 'IMG.LY background 
 type Override = Pick<ToolMeta, 'how' | 'steps' | 'tips' | 'faq' | 'related' | 'inputs' | 'outputs'>
 
 const CAT_DEFAULTS: Partial<Record<Category, { steps: (t: ToolMeta) => string[]; tips: string[]; inputs?: string[] }>> = {
+  privacy: {
+    steps: (t) => [`Open ${t.name} and add your file or text.`, 'Pick the options in the side panel.', 'Run it and check the result on screen.', 'Download or copy the result.'],
+    tips: ['Nothing is uploaded, so you can use these tools on sensitive files.', 'Share passwords a different way than the file itself.', 'Always check a cleaned or redacted file before you send it.'],
+  },
+  geo: {
+    steps: (t) => [`Drop a GPX, TCX, KML or GeoJSON file onto ${t.name}.`, 'Check the track on the map.', 'Adjust the options in the side panel.', 'Download the result.'],
+    tips: ['The map has no background tiles by default, so your location area is not sent anywhere. Turn on the map background if you want street detail.', 'Most watches and apps export GPX. Look for Export or Share in the activity menu.'],
+    inputs: ['GPX', 'TCX', 'KML', 'GEOJSON'],
+  },
+  office: {
+    steps: (t) => [`Drop your file onto ${t.name}.`, 'Pick sheets, columns or options in the side panel.', 'Check the preview.', 'Download the new file. Your original is not changed.'],
+    tips: ['Excel, ODS and CSV all work. Formulas are read as their last saved values.', 'For CSV files with odd characters, save them as UTF-8 first.'],
+    inputs: ['XLSX', 'XLS', 'ODS', 'CSV', 'DOCX'],
+  },
+  science: {
+    steps: (t) => [`Type your input into ${t.name}, or pick an example.`, 'The result updates as you type.', 'Copy the result or download it.'],
+    tips: ['Exact fractions are used where rounding would give wrong answers.', 'Every tool works offline once the page has loaded.'],
+  },
+  creator: {
+    steps: (t) => [`Open ${t.name} and add your media or text.`, 'Pick a size, style and colours.', 'Preview the result.', 'Download it and post it.'],
+    tips: ['Video tools encode on your device, so short clips finish much faster.', 'Square and 4:5 sizes take the most space in feeds. 9:16 is for stories, reels and shorts.'],
+  },
   pdf: {
     steps: (t) => [`Drop your PDF onto the ${t.name} area, or click to choose it.`, 'Wait a moment while page thumbnails render locally.', 'Choose the pages and options you need. Previews update as you go.', 'Press the main action button and download the finished PDF.'],
     tips: ['Encrypted PDFs must be unlocked first with Unlock PDF.', 'Large scanned PDFs are mostly images. Compress PDF shrinks them the most.', 'Your original file is never modified; you always download a new copy.'],

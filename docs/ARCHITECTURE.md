@@ -2,7 +2,7 @@
 
 <p align="center"><img src="assets/privacy.svg" width="100%" alt="Files never leave your device"/></p>
 
-OpenFile is a static single-page app. Every one of its 360 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
+OpenFile is a static single-page app. Every one of its 411 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
 
 ## 1. The big picture
 
@@ -49,14 +49,19 @@ flowchart TB
 | 📝 Text & Data | 42 |
 | 🖌️ Design | 16 |
 | 📊 Data | 11 |
-| 🤖 AI | 7 |
+| 🤖 AI | 17 |
 | 🧊 3D | 5 |
 | 🗜️ Archives | 4 |
 | 📚 eBooks | 4 |
 | 🔤 Fonts | 3 |
 | 📐 CAD | 2 |
 | 💬 Subtitles | 5 |
-| **Total** | **360** |
+| 🔐 Security & Privacy | 8 |
+| 🗺️ Maps & GPS | 9 |
+| 🗂️ Office & Sheets | 9 |
+| 🧪 Science & Education | 8 |
+| 🎙️ Creator Studio | 7 |
+| **Total** | **411** |
 <!-- arch-counts:end -->
 
 ## 3. Engines

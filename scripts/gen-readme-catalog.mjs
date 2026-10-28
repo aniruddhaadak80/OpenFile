@@ -117,9 +117,10 @@ async function loadCatalog() {
 const EMOJI = {
   pdf: '📄', convert: '🔄', image: '🖼️', video: '🎬', audio: '🎧', dev: '🧑‍💻', text: '📝', design: '🖌️',
   data: '📊', ai: '🤖', '3d': '🧊', archive: '🗜️', ebook: '📚', font: '🔤', cad: '📐', subtitle: '💬',
+  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️',
 }
 // Short labels for the orbit and mindmap where the full name is too long.
-const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles' }
+const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator' }
 
 // Colors that must never appear (brand rule). Anything in this range is swapped for gold.
 function safeColor(hex) {

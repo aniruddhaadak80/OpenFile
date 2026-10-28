@@ -23,7 +23,7 @@
   <text clip-path="url(#c4)" x="44" y="226" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700"></tspan><tspan fill="#22D3EE">  VITE ready  ➜  Local:  http://localhost:5173/</tspan></text>
   <clipPath id="c5"><rect x="40" y="239" width="491" height="34">
     <animate attributeName="width" values="0;0;491;491" keyTimes="0;0.507;0.520;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
-  <text clip-path="url(#c5)" x="44" y="260" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700"></tspan><tspan fill="#F5A524">  ➜  Drop a file: 360 tools, 0 uploads</tspan></text>
+  <text clip-path="url(#c5)" x="44" y="260" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700"></tspan><tspan fill="#F5A524">  ➜  Drop a file: 411 tools, 0 uploads</tspan></text>
   <rect x="44" y="279" width="10" height="19" fill="#FFB224"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.5;.5;1" dur="1s" repeatCount="indefinite"/></rect>
   </g>
 </svg>
