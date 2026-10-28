@@ -60,7 +60,7 @@ async function viaFoliate(file: File, onProgress?: (p: number) => void): Promise
   const book = await makeBook(file).catch((e: any) => { throw new Error(/not supported/i.test(e?.message) ? 'This e-book format is not supported, or the file has DRM.' : 'Could not open this e-book. It may be damaged or protected with DRM.') })
   const images = new Map<string, Blob>(); const seen = new Map<string, string>()
   const tocTitles = new Map<number, string>()
-  const flat = (items: any[] = []): any[] => items.flatMap((i) => [i, ...flat(i.subitems)])
+  const flat = (items?: any[] | null): any[] => (items ?? []).flatMap((i) => [i, ...flat(i.subitems)])
   for (const t of flat(book.toc)) { try { const r = book.resolveHref?.(t.href); if (r && !tocTitles.has(r.index)) tocTitles.set(r.index, String(t.label ?? '').trim()) } catch { /* ignore */ } }
   const chapters: BookChapter[] = []
   const secs: any[] = book.sections ?? []

@@ -35,7 +35,7 @@ export default function OrganizePdf() {
       try {
         const d = await openPdfJs(file)
         const srcIdx = srcCount.current++
-        setSources((s) => [...s, { file, thumbs: [], sizes: [], pages: d.numPages, hue: [262, 199, 152, 32, 340][srcIdx % 5] }])
+        setSources((s) => [...s, { file, thumbs: [], sizes: [], pages: d.numPages, hue: [40, 199, 152, 20, 175][srcIdx % 5] }])
         const newItems: Item[] = Array.from({ length: d.numPages }, (_, i) => ({ id: nid(), kind: 'page', src: srcIdx, page: i, rotate: 0 }))
         if (srcIdx === 0) setHist({ items: newItems, past: [], future: [] }); else commit((cur) => [...cur, ...newItems])
         const thumbs: string[] = [], sizes: [number, number][] = []

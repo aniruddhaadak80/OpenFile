@@ -31,8 +31,13 @@ function fft(re: Float32Array, im: Float32Array) {
     for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let j = 0; j < len / 2; j++) { const ur = re[i + j], ui = im[i + j], vr = re[i + j + len / 2] * cr - im[i + j + len / 2] * ci, vi = re[i + j + len / 2] * ci + im[i + j + len / 2] * cr; re[i + j] = ur + vr; im[i + j] = ui + vi; re[i + j + len / 2] = ur - vr; im[i + j + len / 2] = ui - vi; const t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t } }
   }
 }
-// dark to gold heat map
-const heat = (v: number) => { const t = Math.max(0, Math.min(1, v)); const r = Math.round(255 * Math.min(1, t * 1.6)), g = Math.round(255 * Math.max(0, Math.min(1, (t - 0.25) * 1.5))), b = Math.round(255 * Math.max(0, t - 0.75) * 3 + 40 * (1 - t)); return `rgb(${r},${g},${Math.min(255, b)})` }
+// dark to gold heat map: black, ember brown, orange, gold, cream. Every stop sits between hue 0 and 50, so no purple or pink tints.
+const HEAT: [number, number, number, number][] = [[0, 6, 5, 4], [0.3, 66, 22, 4], [0.55, 194, 65, 12], [0.8, 245, 165, 36], [1, 255, 244, 204]]
+const heat = (v: number) => {
+  const t = Math.max(0, Math.min(1, v)); let k = 1; while (k < HEAT.length - 1 && t > HEAT[k][0]) k++
+  const [t0, r0, g0, b0] = HEAT[k - 1], [t1, r1, g1, b1] = HEAT[k], f = (t - t0) / (t1 - t0 || 1)
+  return `rgb(${Math.round(r0 + (r1 - r0) * f)},${Math.round(g0 + (g1 - g0) * f)},${Math.round(b0 + (b1 - b0) * f)})`
+}
 
 function mix(buf: AudioBuffer) { const a = buf.getChannelData(0); if (buf.numberOfChannels < 2) return a; const b = buf.getChannelData(1); const m = new Float32Array(a.length); for (let i = 0; i < a.length; i++) m[i] = (a[i] + b[i]) / 2; return m }
 

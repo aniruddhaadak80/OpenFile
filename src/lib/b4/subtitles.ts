@@ -65,7 +65,7 @@ export function detectFormat(text: string, name = ''): SubFormat {
   const ext = (name.split('.').pop() || '').toLowerCase()
   const t = normNl(text).trimStart()
   if (/^WEBVTT/.test(t)) return 'vtt'
-  if (/^\[Script Info\]/i.test(t) || /^\[V4\+? Styles\]/im.test(t)) return /ScriptType:\s*v4\.00\+/i.test(t) || /\[V4\+ Styles\]/i.test(t) ? 'ass' : 'ssa'
+  if (/^\[Script Info\]/i.test(t) || /^\s*\[V4\+? Styles\]/im.test(t)) return /ScriptType:\s*v4\.00\+/i.test(t) || /\[V4\+ Styles\]/i.test(t) ? 'ass' : 'ssa'
   if (/<sami/i.test(t)) return 'smi'
   if (/<tt[\s>]/i.test(t)) return 'ttml'
   if (/^[[{]/.test(t)) { try { JSON.parse(t); return 'json' } catch { /* not json */ } }
@@ -95,7 +95,7 @@ function parseSrtLike(text: string): Cue[] {
 }
 
 function parseAss(text: string): { cues: Cue[]; header: string } {
-  const lines = normNl(text).split('\n')
+  const lines = normNl(text).split('\n').map((l) => l.replace(/^[ \t]+/, ''))
   let fmt: string[] = ['layer', 'start', 'end', 'style', 'name', 'marginl', 'marginr', 'marginv', 'effect', 'text']
   const cues: Cue[] = []
   let headerEnd = lines.length

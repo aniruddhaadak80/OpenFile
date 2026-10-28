@@ -40,6 +40,7 @@ export default function DxfViewer() {
           {[['Entities', doc.entityCount.toLocaleString()], ['Units', doc.units], ['Width', `${+w.toPrecision(6)}`], ['Height', `${+h.toPrecision(6)}`]].map(([k, v]) => <div key={k} className="rounded-lg border border-border bg-surface-2/50 px-2.5 py-1.5"><div className="text-muted">{k}</div><div className="font-medium">{v}</div></div>)}
           {dist !== null && <div className="col-span-2 rounded-lg border border-accent/40 bg-accent/10 px-2.5 py-1.5"><div className="text-muted">Measured distance</div><div className="font-mono font-semibold text-accent">{+dist.toPrecision(8)} {doc.units === 'unitless' ? '' : doc.units}</div></div>}
         </div>
+        {doc.space !== 'Model' && <p className="text-[11px] text-muted">{doc.space === 'Block library' ? 'This file only holds block definitions, so each block is shown on its own with its name.' : `This file has no model space drawing, so the paper layout is shown (${doc.space}).`}</p>}
         <LayerPanel layers={doc.layers} hidden={hidden} setHidden={setHidden} />
         <Field label="Background"><Segmented value={bg} onChange={setBg} options={[{ value: '#111111', label: 'Dark' }, { value: '#ffffff', label: 'Light' }, { value: '#0b2540', label: 'Blueprint' }]} /></Field>
         <Switch checked={mono} onChange={setMono} label="Single colour lines" />

@@ -1,5 +1,7 @@
 /* Web Audio helpers: decoding, WAV encoding and buffer operations (no dependencies). */
 import { ffRun, extFromBlob } from './engine'
+import { audioCodecArgs } from './codec-args'
+export { audioCodecArgs }
 
 let shared: AudioContext | null = null
 export function audioCtx(): AudioContext {
@@ -113,18 +115,6 @@ export async function encodeBuffer(b: AudioBuffer, fmt: 'wav' | 'mp3' | 'ogg' | 
   const wav = bufferToWav(b)
   if (fmt === 'wav') return wav
   return ffRun({ inputs: [{ name: 'in.wav', file: wav }], args: ['-i', 'in.wav', ...audioCodecArgs(fmt, bitrate), `out.${fmt}`], output: `out.${fmt}`, duration: b.duration, onProgress })
-}
-
-export function audioCodecArgs(fmt: string, bitrate: number): string[] {
-  switch (fmt) {
-    case 'mp3': return ['-c:a', 'libmp3lame', '-b:a', `${bitrate}k`]
-    case 'ogg': return ['-c:a', 'libvorbis', '-b:a', `${bitrate}k`]
-    case 'aac': return ['-c:a', 'aac', '-b:a', `${bitrate}k`, '-f', 'adts']
-    case 'm4a': return ['-c:a', 'aac', '-b:a', `${bitrate}k`, '-movflags', '+faststart']
-    case 'flac': return ['-c:a', 'flac', '-compression_level', '5']
-    case 'opus': return ['-c:a', 'libopus', '-b:a', `${bitrate}k`]
-    default: return ['-c:a', 'pcm_s16le']
-  }
 }
 
 /** Resolve a CSS variable to a color string usable in canvas. */

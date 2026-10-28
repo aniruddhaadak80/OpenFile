@@ -62,6 +62,13 @@ export function cancelEngine() {
   set({ status: 'idle', loaded: 0 })
 }
 
+function resetBroken(ff: FFmpeg) {
+  if (instance !== ff) return
+  try { ff.terminate() } catch { /* ignore */ }
+  instance = null; loading = null; gen++
+  set({ status: 'idle', loaded: 0 })
+}
+
 export interface RunOpts {
   inputs: { name: string; file: Blob | Uint8Array }[]
   args: string[]
@@ -107,7 +114,14 @@ async function exec(opts: RunOpts, collect: (ff: FFmpeg) => Promise<{ name: stri
       if (dir) await ff.createDir(dir).catch(() => {})
       await ff.writeFile(i.name, i.file instanceof Uint8Array ? i.file : await fetchFile(i.file))
     }
-    const code = await ff.exec(opts.args)
+    let code: number
+    try { code = await ff.exec(opts.args) } catch (e) {
+      if (cancelled) throw new CancelledError()
+      // A trap inside the wasm core (out of bounds, unreachable, abort) leaves that instance unusable,
+      // so drop it and let the next job start from a fresh core instead of failing every later file.
+      resetBroken(ff)
+      throw new Error(friendly([...lines, String((e as any)?.message || e)], -1))
+    }
     if (cancelled) throw new CancelledError()
     if (code !== 0) throw new Error(friendly(lines, code))
     const out = await collect(ff)
@@ -170,6 +184,7 @@ export async function ffProbe(file: Blob, name = 'probe' + extFromBlob(file)): P
     await ff.deleteFile(name).catch(() => {})
   } catch (e) {
     if (cancelled) throw new CancelledError()
+    if (ff) resetBroken(ff)
     throw e
   } finally {
     busy = false

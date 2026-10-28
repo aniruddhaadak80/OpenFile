@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Search, ArrowRight, ShieldCheck, Zap, Cpu, Workflow, Sparkles, GraduationCap, Users, Palette, Store, Check, X, Upload, Download, Lock, Infinity as Inf, Play, Star, ChevronDown, WifiOff, Code2, Layers, Command } from 'lucide-react'
 import { CATEGORIES, TOOLS, toolBySlug, type ToolMeta } from '@/tools/registry'
-import { ToolCard } from '@/components/ToolCard'
+import { ToolCard, BADGE_COLORS } from '@/components/ToolCard'
 import { getIcon } from '@/components/icons'
 import { searchTools } from '@/components/CommandPalette'
 import { Button, cn } from '@/components/ui'
@@ -208,7 +208,7 @@ function CategoryExplorer() {
                 <motion.div key={t.slug} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 12) * 0.03 }}>
                   <Link to={`/${t.slug}`} className="group flex h-full items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-3 transition hover:border-transparent hover:bg-surface-2">
                     <span data-cat={t.category} className="icon-anim mt-0.5 shrink-0" style={{ color: c.color }}><I className="size-4" /></span>
-                    <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="rounded px-1 text-[9px] font-bold" style={{ background: c.color + '22', color: c.color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{t.desc}</span></span>
+                    <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="rounded px-1 text-[9px] font-bold" style={{ background: (BADGE_COLORS[t.badge] ?? c.color) + '22', color: BADGE_COLORS[t.badge] ?? c.color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{t.desc}</span></span>
                   </Link>
                 </motion.div>) })}
               {list.length > top.length && (

@@ -75,6 +75,7 @@ export default function CadConverter() {
           {(to === 'png' || to === 'jpg') && <Field label="Image width (px)"><Input type="number" min={100} max={16000} value={width} onChange={(e) => setWidth(Number(e.target.value))} /></Field>}
           <Field label="Background"><Segmented value={bg} onChange={setBg} options={[{ value: '#ffffff', label: 'White' }, { value: '#111111', label: 'Dark' }, ...(to !== 'jpg' && to !== 'pdf' ? [{ value: 'transparent', label: 'None' }] : [])]} /></Field>
           <Switch checked={mono} onChange={setMono} label="Black and white lines (best for print)" />
+          {doc.space !== 'Model' && <p className="text-[11px] text-muted">{doc.space === 'Block library' ? 'This file only holds block definitions, so each block is drawn on its own with its name.' : `This file has no model space drawing, so the paper layout is converted (${doc.space}).`}</p>}
           <LayerPanel layers={doc.layers} hidden={hidden} setHidden={setHidden} />
           <ErrorNote error={error} />
           <Button size="lg" className="w-full" loading={busy} icon={<RefreshCw className="size-4" />} onClick={convert}>Convert to {to.toUpperCase()}</Button>

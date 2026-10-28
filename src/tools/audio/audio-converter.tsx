@@ -4,11 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Dropzone, Label, Segmented, Select, ToolGrid, Progress, cn } from '@/components/ui'
 import { baseName, downloadBlob, formatBytes, zipFiles } from '@/lib/files'
 import { ffRun, extFromBlob, isCancel } from '@/tools/video/_media/engine'
-import { audioCodecArgs } from '@/tools/video/_media/audio'
+import { convertArgs, type Fmt } from './convert-args'
 import { useMediaJob } from '@/tools/video/_media/media'
 import { JobPanel, Note } from '@/tools/video/_media/ui'
 
-type Fmt = 'mp3' | 'wav' | 'ogg' | 'aac' | 'flac' | 'm4a' | 'opus' | 'aiff' | 'alac' | 'wma' | 'ac3' | 'caf' | 'au' | 'm4b' | 'm4r' | 'mp2' | 'weba' | 'voc'
 type Item = { id: string; file: File; status: 'queued' | 'working' | 'done' | 'error'; progress: number; out?: Blob; error?: string }
 const FORMATS: Record<Fmt, { label: string; sub: string; lossless: boolean; more?: boolean }> = {
   mp3: { label: 'MP3', sub: 'Universal', lossless: false },
@@ -29,24 +28,6 @@ const FORMATS: Record<Fmt, { label: string; sub: string; lossless: boolean; more
   mp2: { label: 'MP2', sub: 'MPEG Layer II', lossless: false, more: true },
   weba: { label: 'WEBA', sub: 'WebM audio (Opus)', lossless: false, more: true },
   voc: { label: 'VOC', sub: 'Creative Voice', lossless: true, more: true },
-}
-/** File extension and codec arguments for every output format. Pure, unit tested. */
-export function convertArgs(fmt: Fmt, bitrate: number): { ext: string; args: string[] } {
-  switch (fmt) {
-    case 'opus': return { ext: 'opus', args: ['-c:a', 'libopus', '-b:a', `${Math.min(bitrate, 256)}k`, '-vbr', 'on'] }
-    case 'aiff': return { ext: 'aiff', args: ['-c:a', 'pcm_s16be', '-f', 'aiff'] }
-    case 'alac': return { ext: 'm4a', args: ['-c:a', 'alac', '-f', 'ipod'] }
-    case 'wma': return { ext: 'wma', args: ['-c:a', 'wmav2', '-b:a', `${bitrate}k`, '-f', 'asf'] }
-    case 'ac3': return { ext: 'ac3', args: ['-c:a', 'ac3', '-b:a', `${Math.max(bitrate, 192)}k`] }
-    case 'caf': return { ext: 'caf', args: ['-c:a', 'pcm_s16le', '-f', 'caf'] }
-    case 'au': return { ext: 'au', args: ['-c:a', 'pcm_s16be', '-f', 'au'] }
-    case 'm4b': return { ext: 'm4b', args: ['-c:a', 'aac', '-b:a', `${bitrate}k`, '-f', 'ipod'] }
-    case 'm4r': return { ext: 'm4r', args: ['-c:a', 'aac', '-b:a', `${bitrate}k`, '-t', '40', '-f', 'ipod'] }
-    case 'mp2': return { ext: 'mp2', args: ['-c:a', 'mp2', '-b:a', `${Math.max(bitrate, 128)}k`] }
-    case 'weba': return { ext: 'weba', args: ['-c:a', 'libopus', '-b:a', `${Math.min(bitrate, 256)}k`, '-f', 'webm'] }
-    case 'voc': return { ext: 'voc', args: ['-c:a', 'pcm_u8', '-ar', '22050', '-ac', '1', '-f', 'voc'] }
-    default: return { ext: fmt, args: audioCodecArgs(fmt, bitrate) }
-  }
 }
 const ACCEPT = 'audio/*,video/*,.mp3,.wav,.ogg,.oga,.m4a,.m4b,.m4r,.flac,.aac,.opus,.wma,.aiff,.aif,.aifc,.caf,.au,.snd,.ac3,.eac3,.dts,.mp2,.mpa,.amr,.awb,.ape,.tta,.wv,.mka,.weba,.webm,.voc,.spx,.gsm,.ra,.mpc,.dsf,.dff,.3ga,.mkv,.mp4,.mov'
 const PRESETS = [{ label: 'Smallest (64k)', br: '64' }, { label: 'Voice (96k)', br: '96' }, { label: 'Good (128k)', br: '128' }, { label: 'Great (192k)', br: '192' }, { label: 'Best (320k)', br: '320' }]
