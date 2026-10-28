@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-warn: #f59e0b;
+}
+
+:root {
+  --bg: #f7f7fb; --surface: #ffffff; --surface-2: #f0f1f7; --border: #e3e5ee;
+  --fg: #0d0f1a; --muted: #5d6275; --accent: #6d4aff; --accent-2: #06b6d4;
+  color-scheme: light;
+}
+.dark {
+  --bg: #07080d; --surface: #0f1119; --surface-2: #161a26; --border: #232838;
+  --fg: #eef0f8; --muted: #8b91a8; --accent: #8b6cff; --accent-2: #22d3ee;
+  color-scheme: dark;
+}
+
+html, body, #root { min-height: 100%; }
+body { @apply bg-bg text-fg font-sans antialiased; }
+::selection { background: color-mix(in oklab, var(--accent) 35%, transparent); }
+
+.text-gradient { background: linear-gradient(100deg, var(--accent), var(--accent-2) 60%, #f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.bg-gradient-brand { background: linear-gradient(120deg, var(--accent), var(--accent-2)); }
+.grid-bg { background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 44px 44px; mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%); }
+.glass { background: color-mix(in oklab, var(--surface) 72%, transparent); backdrop-filter: blur(14px) saturate(1.4); }
+.checker { background-image: conic-gradient(#8883 25%, transparent 0 50%, #8883 0 75%, transparent 0); background-size: 16px 16px; }
+.scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+@keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+.animate-float { animation: float 6s ease-in-out infinite; }
+@keyframes shimmer { from { background-position: -200% 0 } to { background-position: 200% 0 } }
+.shimmer { background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 25%, transparent), transparent); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; }
+.prose-of h1 { @apply text-3xl font-bold mt-6 mb-3; } .prose-of h2 { @apply text-2xl font-semibold mt-5 mb-2; } .prose-of h3 { @apply text-xl font-semibold mt-4 mb-2; }
+.prose-of p { @apply my-2 leading-relaxed; } .prose-of ul { @apply list-disc pl-6 my-2; } .prose-of ol { @apply list-decimal pl-6 my-2; }
+.prose-of code { @apply font-mono text-sm bg-surface-2 px-1 py-0.5 rounded; } .prose-of pre { @apply bg-surface-2 p-3 rounded-lg overflow-auto my-3; } .prose-of pre code { @apply bg-transparent p-0; }
+.prose-of blockquote { @apply border-l-4 border-accent pl-4 italic text-muted my-3; } .prose-of a { @apply text-accent underline; }
+.prose-of table { @apply border-collapse my-3; } .prose-of th, .prose-of td { @apply border border-border px-3 py-1.5; } .prose-of img { @apply max-w-full rounded; } .prose-of hr { @apply my-6 border-border; }
