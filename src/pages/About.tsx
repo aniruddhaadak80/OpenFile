@@ -41,7 +41,7 @@ export default function About() {
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <Stagger className="relative mt-8 grid gap-4 sm:mt-10 sm:grid-cols-3">
-          {[[ShieldCheck, 'Zero uploads', 'Your files never touch a server.'], [Cpu, 'Local compute', 'WebAssembly and WebGPU on your hardware.'], [Code2, 'Open source', 'MIT licensed on GitHub.']].map(([I, t, d]: any) => (
+          {[[ShieldCheck, 'Zero uploads', 'Your files never touch a server.'], [Cpu, 'Local compute', 'Runs on your own device.'], [Code2, 'Open source', 'MIT licensed on GitHub.']].map(([I, t, d]: any) => (
             <StaggerItem key={t}><div onPointerMove={spotlightMove} className="spotlight flex h-full flex-col rounded-2xl border border-border bg-surface p-6"><span className="grid size-11 place-items-center rounded-xl bg-accent/10"><I className="size-5 text-accent" /></span><div className="mt-4 font-semibold">{t}</div><div className="mt-1 text-sm leading-relaxed text-muted">{d}</div></div></StaggerItem>
           ))}
         </Stagger>

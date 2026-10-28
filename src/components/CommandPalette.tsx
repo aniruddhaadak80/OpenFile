@@ -54,9 +54,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   return (
     <div className="fixed inset-0 z-[90] flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="group relative flex items-center gap-3 border-b border-border px-4 transition-colors focus-within:border-accent/60 focus-within:bg-accent/[0.04] after:pointer-events-none after:absolute after:inset-x-6 after:-bottom-px after:h-px after:bg-gradient-to-r after:from-transparent after:via-accent after:to-transparent after:opacity-0 after:transition-opacity focus-within:after:opacity-100">
+        <div className="border-b border-border p-2"><div className="group relative flex items-center gap-3 rounded-xl border border-transparent px-3 transition-[border-color,background-color,box-shadow] focus-within:border-accent/70 focus-within:bg-accent/[0.05] focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_22%,transparent)]">
           <Search className="size-5 text-muted transition-colors group-focus-within:text-accent" />
-          <input ref={inputRef} data-palette-input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${TOOLS.length} tools, pages and docs`} className="h-14 flex-1 bg-transparent text-base outline-none placeholder:text-muted focus:outline-none focus-visible:outline-none"
+          <input ref={inputRef} data-palette-input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${TOOLS.length} tools, pages and docs`} className="h-12 flex-1 min-w-0 bg-transparent text-base outline-none placeholder:text-muted focus:outline-none focus-visible:outline-none"
             onKeyDown={(e) => {
               if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(results.length - 1, i + 1)) }
               if (e.key === 'ArrowUp') { e.preventDefault(); setIdx((i) => Math.max(0, i - 1)) }
@@ -64,7 +64,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
               if (e.key === 'Escape') onClose()
             }} />
           <kbd className="rounded border border-border px-1.5 text-[10px] text-muted">ESC</kbd>
-        </div>
+        </div></div>
         <div ref={listRef} className="max-h-[50vh] overflow-auto p-2 scrollbar-thin">
           {results.length === 0 && <div className="p-6 text-center text-sm text-muted">Nothing matches “{q}”.</div>}
           {results.map((r, i) => {
