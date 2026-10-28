@@ -24,13 +24,13 @@ function layout(words: { word: string; count: number }[], W: number, H: number, 
     const size = Math.round((12 + Math.pow(t, 0.7) * 96) * opts.scale * (W / 1200))
     const rot = opts.rotate && r() < 0.3 ? -90 : 0
     m.font = `700 ${size}px ${opts.font}`
-    const tw = Math.ceil(m.measureText(w.word).width), th = Math.ceil(size * 1.05)
+    const tw = Math.ceil(m.measureText(w.word).width) + 4, th = Math.ceil(size * 1.3)
     const bw = rot ? th : tw, bh = rot ? tw : th
     // draw the word into a small bitmap for pixel collision
     const sc = document.createElement('canvas'); sc.width = bw + 2; sc.height = bh + 2
     const s = sc.getContext('2d', { willReadFrequently: true })!; s.font = m.font; s.textBaseline = 'middle'; s.textAlign = 'center'; s.translate(sc.width / 2, sc.height / 2); if (rot) s.rotate(-Math.PI / 2); s.fillText(w.word, 0, 0)
     const px = s.getImageData(0, 0, sc.width, sc.height).data
-    const pts: number[] = []; for (let yy = 0; yy < sc.height; yy += 2) for (let xx = 0; xx < sc.width; xx += 2) if (px[(yy * sc.width + xx) * 4 + 3] > 40) pts.push(xx, yy)
+    const pts: number[] = []; for (let yy = 0; yy < sc.height; yy++) for (let xx = 0; xx < sc.width; xx++) if (px[(yy * sc.width + xx) * 4 + 3] > 8) pts.push(xx, yy)
     let placed = false
     for (let k = 0, a = r() * 6.28; k < 4000 && !placed; k++) {
       a += 0.15; const rad = 2 + k * 0.9 * (W / 1200)
@@ -40,7 +40,7 @@ function layout(words: { word: string; count: number }[], W: number, H: number, 
       let hit = false
       for (let p = 0; p < pts.length && !hit; p += 2) if (occ[(cy + pts[p + 1]) * W + cx + pts[p]]) hit = true
       if (hit) continue
-      for (let p = 0; p < pts.length; p += 2) { const X = cx + pts[p], Y = cy + pts[p + 1]; for (let dy = -1; dy <= 2; dy++) for (let dx = -1; dx <= 2; dx++) { const q = (Y + dy) * W + X + dx; if (q >= 0 && q < occ.length) occ[q] = 1 } }
+      const gap = Math.max(2, Math.round(W / 300)); for (let p = 0; p < pts.length; p += 2) { const X = cx + pts[p], Y = cy + pts[p + 1]; for (let dy = -gap; dy <= gap; dy++) for (let dx = -gap; dx <= gap; dx++) { const x2 = X + dx, y2 = Y + dy; if (x2 >= 0 && x2 < W && y2 >= 0 && y2 < H) occ[y2 * W + x2] = 1 } }
       out.push({ word: w.word, x: cx + sc.width / 2, y: cy + sc.height / 2, size, rot, color: THEMES[opts.theme].c[i % THEMES[opts.theme].c.length] })
       placed = true
     }

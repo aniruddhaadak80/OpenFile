@@ -36,11 +36,20 @@ export default function LatexEquation() {
   const bgColor = bg === 'dark' ? '#0a0a0a' : bg === 'light' ? '#ffffff' : undefined
   const image = async (kind: 'png' | 'svg' | 'jpg') => {
     const h2i = await import('html-to-image')
-    const node = box.current!
-    const opts = { pixelRatio: +scale, backgroundColor: bgColor ?? (kind === 'jpg' ? '#ffffff' : undefined), style: { color, padding: '12px' } as any }
-    if (kind === 'svg') { const url = await h2i.toSvg(node, opts); return new Blob([decodeURIComponent(url.split(',')[1])], { type: 'image/svg+xml' }) }
-    const url = kind === 'png' ? await h2i.toPng(node, opts) : await h2i.toJpeg(node, { ...opts, quality: 0.95 })
-    return (await fetch(url)).blob()
+    // export a tight copy sized to the equation itself, so wide equations are never clipped and there is no empty band
+    const node = document.createElement('div')
+    node.innerHTML = out?.html ?? ''
+    node.style.cssText = `position:fixed;left:-100000px;top:0;display:inline-block;width:max-content;padding:12px;margin:0;font-size:${size}px;color:${color};line-height:1.2`
+    node.querySelectorAll<HTMLElement>('.katex-display').forEach((el) => { el.style.margin = '0' })
+    document.body.appendChild(node)
+    try {
+      if (document.fonts?.ready) await document.fonts.ready
+      const w = Math.ceil(node.scrollWidth), h = Math.ceil(node.scrollHeight)
+      const opts = { pixelRatio: +scale, width: w, height: h, backgroundColor: bgColor ?? (kind === 'jpg' ? '#ffffff' : undefined), style: { position: 'static', left: '0', top: '0' } as any }
+      if (kind === 'svg') { const url = await h2i.toSvg(node, opts); return new Blob([decodeURIComponent(url.split(',')[1])], { type: 'image/svg+xml' }) }
+      const url = kind === 'png' ? await h2i.toPng(node, opts) : await h2i.toJpeg(node, { ...opts, quality: 0.95 })
+      return (await fetch(url)).blob()
+    } finally { node.remove() }
   }
 
   return (

@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { Dropzone, Label, Textarea, ToolGrid, ErrorNote, Button } from '@/components/ui'
+import { Dropzone, Label, Segmented, Textarea, ToolGrid, ErrorNote, Button } from '@/components/ui'
 import { baseName } from '@/lib/files'
 import { toFC, bbox, type FC } from '@/lib/b5/geo'
-import { geomArea, geomLength, geomCentroid, fmtArea, fmtKm } from '@/lib/bcat/geo2'
+import { geomArea, geomLength, geomCentroid, fmtAreaIn, fmtKm } from '@/lib/bcat/geo2'
 import { TrackMap } from '@/lib/bcat/geoui'
 import { DlButton, toCsv, pal } from '@/lib/bcat/kit'
 import { Stat } from '@/tools/dev/_b5/shell'
@@ -27,6 +27,10 @@ export default function GeojsonMeasure() {
   const [name, setName] = useState('shapes')
   const [paste, setPaste] = useState('')
   const [err, setErr] = useState<string | null>(null)
+  const [units, setUnits] = useState<'metric' | 'imperial'>('metric')
+  const imp = units === 'imperial'
+  const fmtArea = (m2: number) => fmtAreaIn(m2, imp)
+  const fmtLen = (m: number) => imp ? (m >= 1609.344 ? fmtKm(m, true) : `${Math.round(m * 3.28084)} ft`) : fmtKm(m)
 
   const rows = useMemo(() => (fc?.features ?? []).map((f, i) => ({ i, name: String(f.properties?.name ?? f.properties?.NAME ?? f.properties?.title ?? `Feature ${i + 1}`), type: f.geometry?.type ?? 'none', area: geomArea(f.geometry), length: geomLength(f.geometry), c: geomCentroid(f.geometry) })), [fc])
   const box = useMemo(() => (fc ? bbox(fc) : null), [fc])
@@ -53,16 +57,17 @@ export default function GeojsonMeasure() {
     <ToolGrid
       main={
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4"><Stat label="Features" value={rows.length} /><Stat label="Total area" value={<span className="text-sm">{totalA ? fmtArea(totalA) : '-'}</span>} /><Stat label="Line length" value={totalL ? fmtKm(totalL) : '-'} /><Stat label="Bounding box" value={<span className="text-xs">{box ? box.map((v) => v.toFixed(4)).join(', ') : '-'}</span>} /></div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4"><Stat label="Features" value={rows.length} /><Stat label="Total area" value={<span className="text-sm">{totalA ? fmtArea(totalA) : '-'}</span>} /><Stat label="Line length" value={totalL ? fmtLen(totalL) : '-'} /><Stat label="Bounding box" value={<span className="text-xs">{box ? box.map((v) => v.toFixed(4)).join(', ') : '-'}</span>} /></div>
           <TrackMap layers={layers} height={360} />
           <div className="overflow-auto rounded-2xl border border-border bg-surface">
             <table className="w-full text-sm"><thead className="bg-surface-2/60 text-left text-xs text-muted"><tr><th className="px-3 py-2">Name</th><th className="px-3 py-2">Type</th><th className="px-3 py-2">Area</th><th className="px-3 py-2">Length or perimeter</th><th className="px-3 py-2">Centre</th></tr></thead>
-              <tbody>{rows.slice(0, 1000).map((r) => <tr key={r.i} className="border-t border-border"><td className="px-3 py-1.5"><span className="mr-1.5 inline-block size-2 rounded-full" style={{ background: pal(r.i) }} />{r.name}</td><td className="px-3 py-1.5 text-xs">{r.type}</td><td className="px-3 py-1.5 text-xs">{r.area ? fmtArea(r.area) : '-'}</td><td className="px-3 py-1.5 text-xs">{r.length ? fmtKm(r.length) : '-'}</td><td className="px-3 py-1.5 font-mono text-[11px]">{r.c ? `${r.c[1].toFixed(5)}, ${r.c[0].toFixed(5)}` : '-'}</td></tr>)}</tbody></table>
+              <tbody>{rows.slice(0, 1000).map((r) => <tr key={r.i} className="border-t border-border"><td className="px-3 py-1.5"><span className="mr-1.5 inline-block size-2 rounded-full" style={{ background: pal(r.i) }} />{r.name}</td><td className="px-3 py-1.5 text-xs">{r.type}</td><td className="px-3 py-1.5 text-xs">{r.area ? fmtArea(r.area) : '-'}</td><td className="px-3 py-1.5 text-xs">{r.length ? fmtLen(r.length) : '-'}</td><td className="px-3 py-1.5 font-mono text-[11px]">{r.c ? `${r.c[1].toFixed(5)}, ${r.c[0].toFixed(5)}` : '-'}</td></tr>)}</tbody></table>
           </div>
         </div>
       }
       side={
         <>
+          <div><Label>Units</Label><Segmented value={units} onChange={setUnits} options={[{ value: 'metric', label: 'Metric' }, { value: 'imperial', label: 'Imperial' }]} /></div>
           <DlButton variant="primary" className="w-full" name={`${name}-measurements.csv`} mime="text/csv" data={() => toCsv([['name', 'type', 'area_m2', 'area_ha', 'length_m', 'centroid_lat', 'centroid_lon'], ...rows.map((r) => [r.name, r.type, r.area.toFixed(2), (r.area / 1e4).toFixed(4), r.length.toFixed(2), r.c?.[1] ?? '', r.c?.[0] ?? ''])])}>Download table (CSV)</DlButton>
           <DlButton className="w-full" name={`${name}-measured.geojson`} mime="application/geo+json" data={() => JSON.stringify({ ...fc, features: fc.features.map((f, i) => ({ ...f, properties: { ...(f.properties ?? {}), area_m2: +rows[i].area.toFixed(2), length_m: +rows[i].length.toFixed(2) } })) }, null, 2)}>GeoJSON with measurements</DlButton>
           <Button variant="ghost" className="w-full" onClick={() => setFc(null)}>Start over</Button>

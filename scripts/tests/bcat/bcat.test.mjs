@@ -191,4 +191,16 @@ t('quick', () => {
   assert.ok(Q.quickTags(px, 10, 10).some((x) => x.label === 'square'))
 })
 
+t('qa round fixes', () => {
+  const m = Q.ruleEntities('Google will invest $2 billion and ₹3 crore, not $5 more.').filter((e) => e.type === 'Money').map((e) => e.text)
+  assert.deepEqual(m, ['$2 billion', '₹3 crore', '$5'])
+  const c = G.geomCentroid({ type: 'Polygon', coordinates: [[[0, 0], [0.01, 0], [0.01, 0.01], [0, 0.01], [0, 0]]] })
+  assert.ok(Math.abs(c[0] - 0.005) < 1e-12 && Math.abs(c[1] - 0.005) < 1e-12)
+  const l = G.geomCentroid({ type: 'LineString', coordinates: [[0, 0], [0, 0.01]] }); assert.ok(Math.abs(l[1] - 0.005) < 1e-12)
+  const long = ('This sentence is here to fill space for the thread splitter test. '.repeat(14) + 'Last words to download now.').trim()
+  const th = C.splitThread(long, 280)
+  assert.ok(th.every((x) => C.xLength ? C.xLength(x) <= 280 : x.length <= 280))
+  assert.ok(th.at(-1).includes('download now.'))
+  assert.equal(th.map((x) => x.replace(/ \d+\/\d+$/, '')).join(' ').replace(/\s+/g, ' '), long.replace(/\s+/g, ' '))
+})
 console.log(`bcat: ${n} tests passed`)

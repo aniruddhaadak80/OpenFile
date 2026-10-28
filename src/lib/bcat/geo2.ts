@@ -260,11 +260,25 @@ export function geomLength(g: any): number {
   return 0
 }
 export function geomCentroid(g: any): [number, number] | null {
+  // polygons: area weighted centroid (holes subtracted); everything else: mean of distinct vertices
+  const polys: number[][][][] = g?.type === 'Polygon' ? [g.coordinates] : g?.type === 'MultiPolygon' ? g.coordinates : []
+  if (polys.length) {
+    let A = 0, cx = 0, cy = 0
+    for (const poly of polys) poly.forEach((ring, ri) => {
+      let a = 0, x = 0, y = 0
+      for (let i = 0, n = ring.length; i < n; i++) { const p = ring[i], q = ring[(i + 1) % n], k = p[0] * q[1] - q[0] * p[1]; a += k; x += (p[0] + q[0]) * k; y += (p[1] + q[1]) * k }
+      const sign = ri ? -1 : 1, sa = Math.abs(a) / 2
+      if (a) { A += sign * sa; cx += sign * (x / (3 * a)) * sa; cy += sign * (y / (3 * a)) * sa }
+    })
+    if (A > 0) return [cx / A, cy / A]
+  }
   let sx = 0, sy = 0, n = 0
-  const walk = (c: any) => { if (typeof c[0] === 'number') { sx += c[0]; sy += c[1]; n++ } else c.forEach(walk) }
+  const ringOf = (c: any[]) => (c.length > 1 && typeof c[0][0] === 'number' && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1] ? c.slice(0, -1) : c)
+  const walk = (c: any) => { if (typeof c[0] === 'number') { sx += c[0]; sy += c[1]; n++ } else (Array.isArray(c[0]) && typeof c[0][0] === 'number' ? ringOf(c) : c).forEach(walk) }
   if (g?.coordinates) walk(g.coordinates); else if (g?.geometries) g.geometries.forEach((x: any) => x.coordinates && walk(x.coordinates))
   return n ? [sx / n, sy / n] : null
 }
+export const fmtAreaIn = (m2: number, imperial: boolean) => imperial ? (m2 >= 2589988.11 ? `${(m2 / 2589988.11).toFixed(3)} mi² (${(m2 / 1e6).toFixed(3)} km²)` : m2 >= 4046.856 ? `${(m2 / 4046.856).toFixed(2)} acres (${(m2 / 1e4).toFixed(2)} ha)` : `${(m2 * 10.7639).toFixed(0)} ft² (${m2.toFixed(1)} m²)`) : fmtArea(m2)
 export const fmtArea = (m2: number) => m2 >= 1e6 ? `${(m2 / 1e6).toFixed(3)} km² (${(m2 / 2589988.11).toFixed(3)} mi²)` : m2 >= 1e4 ? `${(m2 / 1e4).toFixed(2)} ha (${(m2 / 4046.856).toFixed(2)} acres)` : `${m2.toFixed(1)} m² (${(m2 * 10.7639).toFixed(0)} ft²)`
 export const fmtDur = (s?: number) => { if (s == null || !isFinite(s)) return '-'; s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return h ? `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}` : `${m}:${String(x).padStart(2, '0')}` }
 export const fmtKm = (m: number, imperial = false) => imperial ? `${(m / 1609.344).toFixed(2)} mi` : m >= 1000 ? `${(m / 1000).toFixed(2)} km` : `${Math.round(m)} m`

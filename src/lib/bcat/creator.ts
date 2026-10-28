@@ -48,8 +48,10 @@ export function splitThread(text: string, limit = 280, count: (s: string) => num
     const next = cur ? cur + ' ' + w : w
     if (count(next) + reserve > limit && cur) {
       const cut = Math.max(cur.lastIndexOf('. '), cur.lastIndexOf('? '), cur.lastIndexOf('! '))
-      if (cut > cur.length * 0.6) { posts.push(cur.slice(0, cut + 1)); cur = cur.slice(cut + 2) + ' ' + w }
-      else { posts.push(cur); cur = w }
+      if (cut > cur.length * 0.6) {
+        posts.push(cur.slice(0, cut + 1)); cur = cur.slice(cut + 2)
+        if (count(cur + ' ' + w) + reserve > limit) { posts.push(cur); cur = w } else cur = cur + ' ' + w
+      } else { posts.push(cur); cur = w }
     } else cur = next
   }
   if (cur) posts.push(cur)

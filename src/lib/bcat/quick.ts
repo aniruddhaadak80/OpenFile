@@ -44,7 +44,7 @@ const RULES: [string, RegExp][] = [
   ['Email', /[\w.+-]+@[\w-]+\.[\w.-]+/g],
   ['URL', /\bhttps?:\/\/[^\s<>"')]+/g],
   ['Date', new RegExp(`\\b(?:\\d{4}-\\d{2}-\\d{2}|\\d{1,2}[/.]\\d{1,2}[/.]\\d{2,4}|\\d{1,2} (?:${MONTHS})\\.? \\d{4}|(?:${MONTHS})\\.? \\d{1,2},? \\d{4})\\b`, 'g')],
-  ['Money', /(?:[$€£₹¥]\s?\d[\d,]*(?:\.\d+)?|\b\d[\d,]*(?:\.\d+)? ?(?:USD|EUR|GBP|INR|dollars|euros|rupees)\b)/g],
+  ['Money', /(?:[$€£₹¥]\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:thousand|million|billion|trillion|crore|lakh|bn|mn|[kKmMbB])\b)?|\b\d[\d,]*(?:\.\d+)?(?: (?:thousand|million|billion|trillion|crore|lakh))? ?(?:USD|EUR|GBP|INR|dollars|euros|rupees)\b)/gi],
   ['Phone', /(?:\+\d{1,3}[ -]?)?(?:\(\d{2,4}\)[ -]?)?\d{3,5}[ -]\d{3,4}(?:[ -]\d{3,4})?\b/g],
   ['Percent', /\b\d+(?:\.\d+)?\s?%/g],
 ]

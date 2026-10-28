@@ -22,8 +22,8 @@ export default function PhotoLocationMap() {
       setProg(i / fs.length)
       const f = fs[i]
       try {
-        const m: any = await exifr.parse(f, { gps: true, pick: ['latitude', 'longitude', 'GPSAltitude', 'DateTimeOriginal', 'CreateDate', 'Make', 'Model'] })
-        out.push({ file: f, lat: m?.latitude, lon: m?.longitude, ele: m?.GPSAltitude, time: (m?.DateTimeOriginal ?? m?.CreateDate)?.getTime?.(), camera: [m?.Make, m?.Model].filter(Boolean).join(' ') || undefined })
+        const m: any = await exifr.parse(f, { gps: true, pick: ['GPSLatitude', 'GPSLatitudeRef', 'GPSLongitude', 'GPSLongitudeRef', 'GPSAltitude', 'GPSAltitudeRef', 'DateTimeOriginal', 'CreateDate', 'Make', 'Model'] })
+        out.push({ file: f, lat: m?.latitude, lon: m?.longitude, ele: typeof m?.GPSAltitude === 'number' ? ((m?.GPSAltitudeRef === 1 || m?.GPSAltitudeRef?.[0] === 1) ? -m.GPSAltitude : m.GPSAltitude) : undefined, time: (m?.DateTimeOriginal ?? m?.CreateDate)?.getTime?.(), camera: [m?.Make, m?.Model].filter(Boolean).join(' ') || undefined })
       } catch { out.push({ file: f }) }
     }
     setPhotos((p) => [...p, ...out].sort((a, b) => (a.time ?? 0) - (b.time ?? 0))); setProg(null)
