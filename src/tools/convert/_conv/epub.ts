@@ -109,7 +109,7 @@ async function inlineCssUrls(zip: JSZipType, css: string, cssPath: string, cache
     const d = cache.get(p)
     out = out.split(m[0]).join(d ? `url("${d}")` : 'none')
   }
-  // @import of other sheets is rare in EPUBs — drop it
+  // @import of other sheets is rare in EPUBs, drop it
   return out.replace(/@import[^;]+;/g, '')
 }
 

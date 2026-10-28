@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Settings as SettingsIcon, Sun, Moon, Monitor, Sparkles, Image as ImageIcon, FileSignature, ShieldCheck, Database, Download, Upload, RotateCcw, Trash2, HardDrive, History as HistoryIcon, Star, Check, WifiOff } from 'lucide-react'
+import { Settings as SettingsIcon, Sun, Sparkles, Image as ImageIcon, FileSignature, ShieldCheck, Database, Download, Upload, RotateCcw, Trash2, HardDrive, History as HistoryIcon, Star, Check, WifiOff } from 'lucide-react'
 import { TOOLS } from '@/tools/registry'
 import { Button, Input, Segmented, Slider, Switch, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { downloadBlob, formatBytes } from '@/lib/files'
-import { applyNaming, DEFAULT_PREFS } from '@/lib/prefs'
+import { applyNaming, DEFAULT_PREFS, FONTS, type FontPref } from '@/lib/prefs'
+import { AccentSwatches, ThemeModes } from '@/components/ThemeSwitcher'
 import { useSettings, useFavorites, useRecent, useHistory, exportData, importData, clearFavorites, clearRecents, clearHistory } from '@/lib/store'
 import { setPageMeta } from '@/lib/seo'
 
@@ -15,7 +16,7 @@ const TOKENS: [string, string][] = [['{name}', 'original name'], ['{tool}', 'too
 const PRESETS = ['{name}', '{name}-openfile', '{date}-{name}', '{name}-{tool}', '{name}-{date}-{time}']
 
 export default function Settings() {
-  useEffect(() => { setPageMeta('Settings | OpenFile', 'Theme, motion, default image quality, download names and backup of your OpenFile settings.') }, [])
+  useEffect(() => { setPageMeta('Settings | OpenFile', 'Theme, accent, motion, default image quality, download names and backup of your OpenFile settings.') }, [])
   const { prefs, update, reset } = useSettings()
   const { fav } = useFavorites()
   const { recent } = useRecent()
@@ -26,6 +27,7 @@ export default function Settings() {
   const [cacheSize, setCacheSize] = useState<number | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   useEffect(() => setNaming(prefs.outputNaming), [prefs.outputNaming])
+  useEffect(() => { const id = location.hash.slice(1); if (id) setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150) }, [])
 
   const refreshStorage = async () => {
     try { const e = await navigator.storage?.estimate?.(); if (e) setStorage({ usage: e.usage ?? 0, quota: e.quota ?? 0 }) } catch { /* ignore */ }
@@ -61,19 +63,32 @@ export default function Settings() {
           <nav className="sticky top-24 space-y-1 text-sm">
             {SECTIONS.map(([id, l]) => <a key={id} href={`#${id}`} onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} className="block rounded-lg px-3 py-2 text-muted hover:bg-surface-2 hover:text-fg">{l}</a>)}
             <Link to="/history" className="mt-4 flex items-center gap-2 rounded-lg px-3 py-2 text-muted hover:bg-surface-2 hover:text-fg"><HistoryIcon className="size-4" /> History</Link>
-            <Link to="/docs/local-data" className="block rounded-lg px-3 py-2 text-xs text-muted hover:text-fg">How local data works →</Link>
+            <Link to="/docs/local-data" className="block rounded-lg px-3 py-2 text-xs text-muted hover:text-fg">How local data works</Link>
           </nav>
         </aside>
 
         <div className="min-w-0">
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid size-14 place-items-center rounded-2xl bg-gradient-brand text-white shadow-lg shadow-accent/25"><SettingsIcon className="size-7" /></motion.div>
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid size-14 place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-lg shadow-accent/25"><SettingsIcon className="size-7" /></motion.div>
           <h1 className="mt-4 font-display text-4xl font-bold tracking-tight">Settings</h1>
           <p className="mt-1.5 max-w-xl text-muted">Preferences are saved instantly in this browser’s local database. Nothing is synced or uploaded.</p>
 
           <div className="mt-10 space-y-6">
-            <Section id="appearance" icon={Sun} title="Appearance" sub="How OpenFile looks and moves.">
-              <Row title="Theme" sub="System follows your operating system setting.">
-                <Segmented value={prefs.theme} onChange={(v) => void update({ theme: v })} options={[{ value: 'system', label: <span className="flex items-center gap-1.5"><Monitor className="size-3.5" />System</span> }, { value: 'light', label: <span className="flex items-center gap-1.5"><Sun className="size-3.5" />Light</span> }, { value: 'dark', label: <span className="flex items-center gap-1.5"><Moon className="size-3.5" />Dark</span> }]} />
+            <Section id="appearance" icon={Sun} title="Appearance" sub="How OpenFile looks and moves. Changes apply instantly.">
+              <div className="py-4">
+                <div className="mb-3"><div className="font-medium">Theme</div><p className="text-sm text-muted">Black is true black for OLED screens. Sun is a warm light theme. System follows your operating system.</p></div>
+                <div className="max-w-md"><ThemeModes value={prefs.theme} onChange={(v) => void update({ theme: v })} /></div>
+              </div>
+              <Row title="Accent color" sub="Used for buttons, links, focus rings and highlights.">
+                <AccentSwatches value={prefs.accent} onChange={(a) => void update({ accent: a })} />
+              </Row>
+              <Row title="Density" sub="Compact fits more on screen by tightening spacing.">
+                <Segmented value={prefs.density} onChange={(v) => void update({ density: v })} options={[{ value: 'comfortable', label: 'Comfortable' }, { value: 'compact', label: 'Compact' }]} />
+              </Row>
+              <Row title="Corners" sub="Rounded or sharp corners on cards, buttons and inputs.">
+                <Segmented value={prefs.radius} onChange={(v) => void update({ radius: v })} options={[{ value: 'rounded', label: 'Rounded' }, { value: 'sharp', label: 'Sharp' }]} />
+              </Row>
+              <Row title="Font" sub="Interface font. Code always uses a monospace font.">
+                <Segmented value={prefs.font} onChange={(v) => void update({ font: v })} options={(Object.keys(FONTS) as FontPref[]).map((k) => ({ value: k, label: <span style={{ fontFamily: FONTS[k].stack }}>{FONTS[k].name}</span> }))} />
               </Row>
               <Row title="Motion" sub="Reduced turns off animations and transitions everywhere.">
                 <Segmented value={prefs.reducedMotion} onChange={(v) => void update({ reducedMotion: v })} options={[{ value: 'system', label: 'System' }, { value: 'reduce', label: 'Reduced' }, { value: 'full', label: <span className="flex items-center gap-1.5"><Sparkles className="size-3.5" />Full</span> }]} />
@@ -101,7 +116,7 @@ export default function Settings() {
                   <span className="mx-1 text-border">|</span>
                   {PRESETS.map((p) => <button key={p} onClick={() => saveNaming(p)} className={cn('rounded-md px-2 py-0.5 font-mono text-[11px] cursor-pointer', prefs.outputNaming === p ? 'bg-accent/15 text-accent' : 'text-muted hover:text-fg')}>{p}</button>)}
                 </div>
-                <div className="mt-3 rounded-xl border border-border bg-surface-2/40 px-3 py-2 font-mono text-xs"><span className="text-muted">invoice.pdf → </span><span className="text-success">{sample}</span></div>
+                <div className="mt-3 rounded-xl border border-border bg-surface-2/40 px-3 py-2 font-mono text-xs"><span className="text-muted">invoice.pdf to </span><span className="text-success">{sample}</span></div>
               </div>
             </Section>
 
@@ -143,7 +158,7 @@ export default function Settings() {
                 </div>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border py-4">
-                <div><div className="font-medium">Reset preferences</div><p className="text-sm text-muted">Restore theme, motion, quality ({DEFAULT_PREFS.imageQuality}%) and naming defaults. Favorites and history are kept.</p></div>
+                <div><div className="font-medium">Reset preferences</div><p className="text-sm text-muted">Restore theme, accent, layout, motion, quality ({DEFAULT_PREFS.imageQuality}%) and naming defaults. Favorites and history are kept.</p></div>
                 <Button variant="ghost" icon={<RotateCcw className="size-4" />} onClick={() => { void reset(); toast('Preferences reset') }}>Reset</Button>
               </div>
             </Section>

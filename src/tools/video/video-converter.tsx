@@ -11,10 +11,10 @@ import { FileBar, JobPanel, Note, Reveal, ToolLink, VideoStage } from './_media/
 type Fmt = 'mp4' | 'webm' | 'mov' | 'mkv' | 'avi'
 type Q = 'high' | 'medium' | 'low'
 const FORMATS: Record<Fmt, { label: string; codecs: string; note: string; args: (crf: number) => string[] }> = {
-  mp4: { label: 'MP4', codecs: 'H.264 + AAC', note: 'The universal choice — plays on every phone, browser, TV and editor.', args: (crf) => [...X264, '-crf', String(crf), '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart'] },
+  mp4: { label: 'MP4', codecs: 'H.264 + AAC', note: 'The universal choice, plays on every phone, browser, TV and editor.', args: (crf) => [...X264, '-crf', String(crf), '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart'] },
   webm: { label: 'WEBM', codecs: 'VP8 + Vorbis', note: 'Open format for the web. Great in browsers; not supported by some Apple apps.', args: (crf) => [...VP8, '-crf', String(Math.max(4, crf - 12)), '-b:v', crf <= 20 ? '4M' : crf <= 26 ? '2M' : '1M', '-c:a', 'libvorbis', '-b:a', '128k'] },
-  mov: { label: 'MOV', codecs: 'H.264 + AAC', note: 'QuickTime container — best for Final Cut, iMovie and Apple workflows.', args: (crf) => [...X264, '-crf', String(crf), '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart'] },
-  mkv: { label: 'MKV', codecs: 'H.264 + AAC', note: 'Flexible Matroska container — ideal for archiving and media players like VLC/Plex.', args: (crf) => [...X264, '-crf', String(crf), '-c:a', 'aac', '-b:a', '160k'] },
+  mov: { label: 'MOV', codecs: 'H.264 + AAC', note: 'QuickTime container, best for Final Cut, iMovie and Apple workflows.', args: (crf) => [...X264, '-crf', String(crf), '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart'] },
+  mkv: { label: 'MKV', codecs: 'H.264 + AAC', note: 'Flexible Matroska container, ideal for archiving and media players like VLC/Plex.', args: (crf) => [...X264, '-crf', String(crf), '-c:a', 'aac', '-b:a', '160k'] },
   avi: { label: 'AVI', codecs: 'MPEG-4 Part 2 + MP3', note: 'Legacy format for old players, DVD players and older software. Larger files.', args: (crf) => ['-c:v', 'mpeg4', '-q:v', String(crf <= 20 ? 3 : crf <= 26 ? 5 : 8), '-vtag', 'xvid', '-c:a', 'libmp3lame', '-b:a', '192k'] },
 }
 const CRF: Record<Q, number> = { high: 20, medium: 24, low: 29 }
@@ -54,13 +54,13 @@ export default function VideoConverter() {
       setLabel(`Converting to ${FORMATS[fmt].label}…`); setProgress(0)
       blob = await ffRun({ inputs: [{ name: input, file }], args: ['-i', input, '-map', '0:v:0?', '-map', '0:a:0?', ...FORMATS[fmt].args(CRF[q]), out], output: out, duration: dur, onProgress: setProgress })
     }
-    if (copied) toast('Remuxed instantly — no quality lost', 'success')
+    if (copied) toast('Remuxed instantly, no quality lost', 'success')
     setResult({ blob, name: `${baseName(file.name)}.${fmt}`, copied })
   })
 
   if (!file) return (
     <div className="space-y-4">
-      <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v,.flv,.wmv,.3gp,.ts,.mts" onFiles={(f) => setFile(f[0])} label="Drop a video to convert" sub="MP4, WEBM, MOV, MKV, AVI, FLV, WMV, 3GP… — stays on your device." />
+      <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v,.flv,.wmv,.3gp,.ts,.mts" onFiles={(f) => setFile(f[0])} label="Drop a video to convert" sub="MP4, WEBM, MOV, MKV, AVI, FLV, WMV, 3GP…, stays on your device." />
       <ToolLink to="/video-to-gif" title="Need an animated GIF?" sub="Use Video to GIF for an optimized palette and loop control." />
     </div>
   )

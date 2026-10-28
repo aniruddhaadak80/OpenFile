@@ -273,7 +273,7 @@ export default function ScreenRecorder() {
           {!live && <>
             <div className="border-t border-border pt-4"><Switch checked={useCountdown} onChange={setUseCountdown} label={<span className="inline-flex items-center gap-1.5"><Timer className="size-4 text-muted" />3-second countdown</span>} /></div>
             <Button size="lg" className="w-full" icon={<MonitorPlay className="size-5" />} onClick={start}>Start recording</Button>
-            <p className="text-xs text-muted">Nothing is uploaded — the video is built in your browser. System audio capture works in Chrome & Edge (tick "Share audio").</p>
+            <p className="text-xs text-muted">Nothing is uploaded, the video is built in your browser. System audio capture works in Chrome & Edge (tick "Share audio").</p>
           </>}
         </>}
       />

@@ -180,7 +180,7 @@ export function renderInvoice(doc: jsPDF, family: string, inv: Invoice) {
     y += 22
   } else {
     F('normal', 8, mid); doc.setCharSpace(2.5); doc.text(inv.title.toUpperCase(), M, y + 6); doc.setCharSpace(0)
-    F('bold', 20, dark); doc.text(inv.number || '—', M, y + 30)
+    F('bold', 20, dark); doc.text(inv.number || '-', M, y + 30)
     const lw = inv.logo ? 0 : 0
     void lw
     const rightX = W - M
@@ -213,7 +213,7 @@ export function renderInvoice(doc: jsPDF, family: string, inv: Invoice) {
   const metaRows = tpl !== 'classic' ? meta.filter(([k]) => k !== 'Invoice No') : meta
   for (const [k, v] of metaRows) {
     F('normal', 8.5, mid); doc.text(k, W - M - 150, my + 2)
-    F('bold', 8.5, dark); doc.text(v || '—', W - M, my + 2, { align: 'right', maxWidth: 90 })
+    F('bold', 8.5, dark); doc.text(v || '-', W - M, my + 2, { align: 'right', maxWidth: 90 })
     my += 15
   }
   y = Math.max(cy, sy, my) + 18
@@ -247,7 +247,7 @@ export function renderInvoice(doc: jsPDF, family: string, inv: Invoice) {
   header()
   inv.items.forEach((it, i) => {
     F('normal', 9, dark)
-    const descLines = doc.splitTextToSize(it.desc || '—', cols[1].w - pad * 2) as string[]
+    const descLines = doc.splitTextToSize(it.desc || '-', cols[1].w - pad * 2) as string[]
     const rowH = Math.max(22, descLines.length * 11.5 + 11)
     if (y + rowH > bottomLimit) { doc.addPage(); y = M; header() }
     if (tpl !== 'classic' && i % 2 === 1) { doc.setFillColor(...(tpl === 'modern' ? tint(inv.accent, 0.95) : [248, 249, 251] as [number, number, number])); doc.rect(M, y, W - 2 * M, rowH, 'F') }

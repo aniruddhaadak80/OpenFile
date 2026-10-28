@@ -4,7 +4,7 @@ import { Search, CornerDownLeft } from 'lucide-react'
 import { TOOLS, CATEGORIES } from '@/tools/registry'
 import { getIcon } from './icons'
 import { DOC_NAV } from '@/docs/nav'
-import { BookOpen, History, Settings, ScrollText, Workflow, LayoutGrid, Info, ShieldCheck, Activity, type LucideIcon } from 'lucide-react'
+import { Newspaper, BookOpen, History, Settings, ScrollText, Workflow, LayoutGrid, Info, ShieldCheck, Activity, type LucideIcon } from 'lucide-react'
 import { cn } from './ui'
 
 export function searchTools(q: string) {
@@ -21,12 +21,13 @@ export function searchTools(q: string) {
 
 const PAGES: { name: string; sub: string; path: string; icon: LucideIcon; keywords: string }[] = [
   { name: 'Docs', sub: 'Guides, API reference and self-hosting', path: '/docs', icon: BookOpen, keywords: 'documentation help guide manual' },
+  { name: 'Blog', sub: 'Guides, tips and how OpenFile works', path: '/blog', icon: Newspaper, keywords: 'blog posts articles tips guides news rss' },
   { name: 'History', sub: 'Recent tools, favorites and activity', path: '/history', icon: History, keywords: 'recent activity log favorites starred' },
-  { name: 'Settings', sub: 'Theme, motion, image quality, file names, backup', path: '/settings', icon: Settings, keywords: 'preferences dark light theme export import reduced motion quality naming' },
+  { name: 'Settings', sub: 'Theme, accent, motion, image quality, file names, backup', path: '/settings', icon: Settings, keywords: 'preferences dark light black amoled sun accent font density radius theme export import reduced motion quality naming' },
   { name: 'Changelog', sub: 'What’s new in OpenFile', path: '/changelog', icon: ScrollText, keywords: 'release notes new version updates' },
   { name: 'Workspace', sub: 'Batch pipelines for images and PDFs', path: '/workspace', icon: Workflow, keywords: 'batch pipeline recipe automate' },
   { name: 'All tools', sub: 'Browse every tool', path: '/tools', icon: LayoutGrid, keywords: 'catalog browse' },
-  { name: 'About OpenFile', sub: 'The project and its stack', path: '/about', icon: Info, keywords: 'about project' },
+  { name: 'About OpenFile', sub: 'The project, its stack and its author', path: '/about', icon: Info, keywords: 'about project' },
   { name: 'Privacy', sub: 'How your files stay on your device', path: '/privacy', icon: ShieldCheck, keywords: 'privacy policy' },
   { name: 'Status', sub: 'API status and browser capabilities', path: '/status', icon: Activity, keywords: 'status health capabilities webgpu' },
 ]

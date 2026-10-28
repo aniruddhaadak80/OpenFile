@@ -80,7 +80,7 @@ export default function NumberBase() {
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm font-semibold">Bit view</span>
               <Segmented value={width} onChange={setWidth} options={['8', '16', '32', '64', '128'].map((w) => ({ value: w as any, label: `${w}-bit` }))} />
-              {overflow && <span className="text-xs text-warn">Value doesn't fit in {width} bits — showing the low {width} bits</span>}
+              {overflow && <span className="text-xs text-warn">Value doesn't fit in {width} bits, showing the low {width} bits</span>}
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-2 font-mono">
               {Array.from({ length: Number(width) / 8 }, (_, byte) => (
@@ -89,7 +89,7 @@ export default function NumberBase() {
                     {bits.slice(byte * 8, byte * 8 + 8).map((b, k) => {
                       const i = byte * 8 + k
                       return <motion.button key={i} whileTap={{ scale: 0.85 }} onClick={() => flip(i)} title={`bit ${Number(width) - 1 - i}`}
-                        className={cn('grid h-7 w-5 place-items-center rounded text-xs font-semibold transition cursor-pointer', b === '1' ? 'bg-accent text-white shadow-sm shadow-accent/40' : 'bg-surface-2 text-muted hover:bg-border', i === 0 && 'ring-1 ring-warn/60')}>{b}</motion.button>
+                        className={cn('grid h-7 w-5 place-items-center rounded text-xs font-semibold transition cursor-pointer', b === '1' ? 'bg-accent text-on-accent shadow-sm shadow-accent/40' : 'bg-surface-2 text-muted hover:bg-border', i === 0 && 'ring-1 ring-warn/60')}>{b}</motion.button>
                     })}
                   </div>
                   <span className="text-[10px] text-muted">{(Number(width) - 1 - byte * 8)}–{Number(width) - 8 - byte * 8} · 0x{parseInt(bits.slice(byte * 8, byte * 8 + 8).join(''), 2).toString(16).toUpperCase().padStart(2, '0')}</span>
@@ -114,7 +114,7 @@ export default function NumberBase() {
           <Switch checked={upper} onChange={setUpper} label="Uppercase digits" />
           <Switch checked={grouped} onChange={setGrouped} label="Show digit grouping" />
           <div className="space-y-1 text-xs text-muted">
-            <p>Arbitrary precision — powered by BigInt, so 100+ digit numbers convert exactly.</p>
+            <p>Arbitrary precision, powered by BigInt, so 100+ digit numbers convert exactly.</p>
             <p>Negative numbers work in every base (with a leading −). Prefixes 0x / 0b / 0o and separators like _ or spaces are accepted.</p>
           </div>
           <div className="flex flex-wrap gap-1.5">

@@ -14,11 +14,13 @@ const NotFound = lazy(() => import('@/pages/NotFound'))
 const Docs = lazy(() => import('@/pages/Docs'))
 const History = lazy(() => import('@/pages/History'))
 const Settings = lazy(() => import('@/pages/Settings'))
+const Blog = lazy(() => import('@/pages/Blog'))
+const BlogPost = lazy(() => import('@/pages/BlogPost'))
 
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-      <Suspense fallback={<div className="grid h-[60vh] place-items-center"><Spinner label="Loading…" /></div>}>
+      <Suspense fallback={<div className="grid h-[60vh] place-items-center"><Spinner label="Loading" /></div>}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
@@ -33,6 +35,8 @@ export default function App() {
             <Route path="changelog" element={<Docs />} />
             <Route path="history" element={<History />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogPost />} />
             <Route path=":slug" element={<ToolPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>

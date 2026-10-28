@@ -23,7 +23,7 @@ export default function MuteVideo() {
     setResult(blob)
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to mute" sub="Removes the sound without re-encoding — original quality, done in seconds." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to mute" sub="Removes the sound without re-encoding, original quality, done in seconds." />
 
   return (
     <div className="space-y-6">

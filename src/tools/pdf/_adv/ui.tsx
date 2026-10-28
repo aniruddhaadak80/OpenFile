@@ -7,13 +7,13 @@ import type { PageInfo } from './pages'
 export function ToolBtn({ active, onClick, title, children, disabled, className }: { active?: boolean; onClick: () => void; title: string; children: React.ReactNode; disabled?: boolean; className?: string }) {
   return (
     <button type="button" title={title} aria-label={title} aria-pressed={active} disabled={disabled} onClick={onClick}
-      className={cn('grid size-9 shrink-0 place-items-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:pointer-events-none', active ? 'bg-accent text-white shadow-md shadow-accent/30' : 'text-muted hover:bg-surface-2 hover:text-fg', className)}>
+      className={cn('grid size-9 shrink-0 place-items-center rounded-lg transition cursor-pointer disabled:opacity-40 disabled:pointer-events-none', active ? 'bg-accent text-on-accent shadow-md shadow-accent/30' : 'text-muted hover:bg-surface-2 hover:text-fg', className)}>
       {children}
     </button>
   )
 }
 
-export const SWATCHES = ['#111111', '#1d4ed8', '#e11d48', '#16a34a', '#f59e0b', '#7c3aed', '#ffffff']
+export const SWATCHES = ['#111111', '#1d4ed8', '#ef4444', '#16a34a', '#f59e0b', '#14b8a6', '#ffffff']
 
 export function ColorPicker({ value, onChange, colors = SWATCHES, allowNone, label }: { value: string | null | undefined; onChange: (c: string | null) => void; colors?: string[]; allowNone?: boolean; label?: string }) {
   return (

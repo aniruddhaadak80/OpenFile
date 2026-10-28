@@ -126,7 +126,7 @@ export default function CollageMaker() {
           </div>
         </div>
         <ThumbGrid items={items} onRemove={(id) => { remove(id); setOrder([]) }} onAdd={onFiles} />
-        {items.length > cells.length && <p className="text-xs text-warn">This layout shows {cells.length} photos — the last {items.length - cells.length} aren't used. Pick a larger layout or swap them in.</p>}
+        {items.length > cells.length && <p className="text-xs text-warn">This layout shows {cells.length} photos, the last {items.length - cells.length} aren't used. Pick a larger layout or swap them in.</p>}
       </>}
       side={<>
         <div>

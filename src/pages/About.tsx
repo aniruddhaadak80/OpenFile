@@ -1,33 +1,111 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShieldCheck, Cpu, Code2, Heart } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ShieldCheck, Cpu, Code2, MapPin, GraduationCap, Bot, GitPullRequest, Newspaper, ArrowUpRight, Heart } from 'lucide-react'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
-import { Logo, Github } from '@/components/Logo'
+import { Github } from '@/components/Logo'
 import { REPO_URL } from '@/components/Layout'
+import { AUTHOR } from '@/lib/author'
+import { SocialIcon } from '@/components/Author'
+import { Aurora, GoldRing, Reveal, Stagger, StaggerItem, Magnetic, spotlightMove } from '@/components/motion'
+import { setPageMeta } from '@/lib/seo'
+import { Button } from '@/components/ui'
 
 export default function About() {
-  useEffect(() => { document.title = 'About — OpenFile' }, [])
-  const stack = ['React 19', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'pdf-lib', 'PDF.js', 'ffmpeg.wasm', 'Tesseract.js', 'Transformers.js (Whisper)', 'IMG.LY background removal', 'fflate', 'SheetJS', 'docx / mammoth', 'Vercel Functions']
+  useEffect(() => { setPageMeta('About | OpenFile', `OpenFile is an open-source workbench of ${TOOLS.length}+ file tools that run in your browser, made by ${AUTHOR.name}.`) }, [])
+  useEffect(() => { if (location.hash === '#author') setTimeout(() => document.getElementById('author')?.scrollIntoView({ behavior: 'smooth' }), 120) }, [])
+  const stack = ['React 19', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Framer Motion', 'pdf-lib', 'PDF.js', 'ffmpeg.wasm', 'Tesseract.js', 'Transformers.js', 'Kokoro TTS', 'IMG.LY background removal', 'fflate', 'SheetJS', 'docx and mammoth', 'Dexie', 'Vercel Functions']
+  const facts = [
+    { i: MapPin, t: 'From West Bengal, India', d: 'Kolkata area.' },
+    { i: GraduationCap, t: 'B.Tech, Computer Science and Engineering', d: 'Class of 2026.' },
+    { i: Bot, t: 'Agentic harnesses', d: 'Builds harnesses and production-grade agent skills.' },
+    { i: GitPullRequest, t: 'Open source and hackathons', d: 'Active contributor and frequent hackathon builder: MLH Global Hack Week, Hacktoberfest and DEV challenges.' },
+    { i: Newspaper, t: 'Daily AI news', d: 'Writes a daily AI news roundup on DEV.' },
+  ]
   return (
-    <div className="mx-auto max-w-4xl px-4 pt-16 sm:px-6">
-      <Logo size={56} />
-      <h1 className="mt-6 font-display text-5xl font-bold tracking-tight">Files are personal.<br /><span className="text-gradient">Your tools should be too.</span></h1>
-      <p className="mt-6 text-lg leading-relaxed text-muted">OpenFile is an open-source workbench of {TOOLS.length}+ utilities for PDFs, images, video, audio, data and code. Instead of uploading documents to someone else’s server, every tool runs inside your browser using WebAssembly, Canvas, Web Workers and on-device AI models.</p>
-      <div className="mt-12 grid gap-4 sm:grid-cols-3">
-        {[[ShieldCheck, 'Zero uploads', 'Your files never touch a server.'], [Cpu, 'Local compute', 'WASM + WebGPU on your hardware.'], [Code2, 'Open source', 'MIT licensed on GitHub.']].map(([I, t, d]: any) => (
-          <div key={t} className="rounded-2xl border border-border bg-surface p-5"><I className="size-6 text-accent" /><div className="mt-3 font-semibold">{t}</div><div className="text-sm text-muted">{d}</div></div>
-        ))}
-      </div>
-      <h2 className="mt-16 font-display text-2xl font-bold">What’s inside</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {CATEGORIES.map((c) => <Link key={c.id} to={`/category/${c.id}`} className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 hover:border-accent"><span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: c.color }} />{c.name}</span><span className="text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} tools</span></Link>)}
-      </div>
-      <h2 className="mt-16 font-display text-2xl font-bold">Built with</h2>
-      <div className="mt-4 flex flex-wrap gap-2">{stack.map((s) => <span key={s} className="rounded-lg border border-border bg-surface px-3 py-1.5 text-sm">{s}</span>)}</div>
-      <div className="mt-16 rounded-2xl border border-border bg-surface p-6">
-        <div className="flex items-center gap-2 font-semibold"><Heart className="size-4 text-danger" /> Made by Aniruddha Adak</div>
-        <p className="mt-2 text-sm text-muted">Found a bug or want a new tool? Open an issue or a pull request — contributions are very welcome.</p>
-        <a href={REPO_URL} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-fg px-4 py-2 text-sm font-medium text-bg"><Github className="size-4" /> aniruddhaadak80/OpenFile</a>
+    <div className="relative">
+      {/* -------- intro -------- */}
+      <section className="relative overflow-hidden">
+        <Aurora density={30} />
+        <div className="dot-bg pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto max-w-5xl px-4 pb-10 pt-16 sm:px-6">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-xs font-bold uppercase tracking-widest text-accent">About OpenFile</motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-4 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">Files are personal.<br /><span className="text-gradient">Your tools should be too.</span></motion.h1>
+          <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-6 max-w-3xl text-lg leading-relaxed text-muted">OpenFile is an open-source workbench of {TOOLS.length}+ tools for PDFs, images, video, audio, data and code. Instead of uploading documents to someone else's server, every tool runs inside your browser using WebAssembly, Canvas, Web Workers and on-device AI models.</motion.p>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        <Stagger className="grid gap-4 sm:grid-cols-3">
+          {[[ShieldCheck, 'Zero uploads', 'Your files never touch a server.'], [Cpu, 'Local compute', 'WebAssembly and WebGPU on your hardware.'], [Code2, 'Open source', 'MIT licensed on GitHub.']].map(([I, t, d]: any) => (
+            <StaggerItem key={t}><div onPointerMove={spotlightMove} className="spotlight h-full rounded-2xl border border-border bg-surface p-5"><I className="size-6 text-accent" /><div className="mt-3 font-semibold">{t}</div><div className="text-sm text-muted">{d}</div></div></StaggerItem>
+          ))}
+        </Stagger>
+
+        {/* -------- author -------- */}
+        <section id="author" className="scroll-mt-24 pt-24">
+          <Reveal>
+            <div className="on-dark relative overflow-hidden rounded-[2rem] border border-border bg-black text-white">
+              <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(520px 320px at 22% 40%, color-mix(in oklab, var(--accent-glow) 22%, transparent), transparent 70%)' }} />
+              <div className="relative grid items-center gap-10 p-8 sm:p-12 md:grid-cols-[auto_1fr]">
+                <div className="mx-auto">
+                  <GoldRing size={300}>
+                    <motion.img src={AUTHOR.photo} alt={`Portrait of ${AUTHOR.name}`} width={196} height={196} loading="lazy" decoding="async"
+                      initial={{ scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                      className="size-[196px] rounded-full object-cover" style={{ boxShadow: '0 0 0 3px var(--accent), 0 0 60px 8px color-mix(in oklab, var(--accent-glow) 50%, transparent)' }} />
+                  </GoldRing>
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-accent">The author</div>
+                  <h2 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">{AUTHOR.name}</h2>
+                  <p className="mt-3 max-w-xl text-lg text-white/75">Open-source developer from West Bengal, India. I build agentic harnesses and production-grade agent skills, contribute to open source, and write daily AI news on DEV.</p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {AUTHOR.links.map((l, i) => (
+                      <motion.a key={l.id} href={l.url} target="_blank" rel="noreferrer me" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.05 }}
+                        className="group flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm transition hover:-translate-y-0.5 hover:border-accent hover:text-accent">
+                        <SocialIcon id={l.id} className="size-4" />{l.label}<ArrowUpRight className="size-3 opacity-50 transition group-hover:opacity-100" />
+                      </motion.a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="relative grid gap-px border-t border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-5">
+                {facts.map(({ i: I, t, d }, k) => (
+                  <motion.div key={t} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: k * 0.06 }} className="bg-black p-5">
+                    <I className="size-5 text-accent" />
+                    <div className="mt-3 text-sm font-semibold">{t}</div>
+                    <div className="mt-1 text-xs leading-relaxed text-white/60">{d}</div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* -------- inside -------- */}
+        <section className="pt-24">
+          <Reveal><h2 className="font-display text-2xl font-bold">What is inside</h2></Reveal>
+          <Stagger className="mt-4 grid gap-3 sm:grid-cols-2">
+            {CATEGORIES.map((c) => (
+              <StaggerItem key={c.id}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: c.color }} />{c.name}</span><span className="text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} tools</span></Link></StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+
+        <section className="pt-20">
+          <Reveal><h2 className="font-display text-2xl font-bold">Built with</h2></Reveal>
+          <Stagger className="mt-4 flex flex-wrap gap-2">{stack.map((s) => <StaggerItem key={s}><span className="block rounded-lg border border-border bg-surface px-3 py-1.5 text-sm transition hover:border-accent">{s}</span></StaggerItem>)}</Stagger>
+        </section>
+
+        <Reveal className="mt-20">
+          <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-border bg-surface p-6">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 font-semibold"><Heart className="size-4 text-accent" /> Contributions welcome</div>
+              <p className="mt-2 text-sm text-muted">Found a bug or want a new tool? Open an issue or a pull request. Every tool is one file, so it is a friendly codebase to start with.</p>
+            </div>
+            <Magnetic><a href={REPO_URL} target="_blank" rel="noreferrer"><Button icon={<Github className="size-4" />}>aniruddhaadak80/OpenFile</Button></a></Magnetic>
+          </div>
+        </Reveal>
       </div>
     </div>
   )

@@ -8,7 +8,7 @@ import { BeforeAfter, ColorInput, ImageDrop, StatusPill, ThumbGrid, blurCanvas, 
 
 type BgMode = 'transparent' | 'color' | 'blur' | 'image'
 type Cut = { state: 'run' | 'done' | 'err'; blob?: Blob; err?: string }
-const SWATCHES = ['#ffffff', '#000000', '#f43f5e', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#e5e7eb']
+const SWATCHES = ['#ffffff', '#000000', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#14b8a6', '#e5e7eb']
 
 async function compose(orig: Blob, cut: Blob, mode: BgMode, color: string, blur: number, bgImg: HTMLImageElement | null, maxSide = 0) {
   const [o, c] = await Promise.all([decode(orig), decode(cut)])
@@ -101,7 +101,7 @@ export default function BackgroundRemover() {
   const reset = () => { clear(); setCuts({}); setSel(null); setPreview(null); setError(null) }
   const retry = (id: string) => setCuts((s) => { const n = { ...s }; delete n[id]; return n })
 
-  if (!items.length) return <ImageDrop onFiles={onFiles} label="Drop photos to remove the background" sub="Runs an AI model on your device — the model (~40 MB) downloads once, your images never leave the browser." />
+  if (!items.length) return <ImageDrop onFiles={onFiles} label="Drop photos to remove the background" sub="Runs an AI model on your device, the model (~40 MB) downloads once, your images never leave the browser." />
 
   const doneCount = items.filter((i) => cuts[i.id]?.state === 'done').length
   const curState = cur ? cuts[cur.id]?.state : undefined

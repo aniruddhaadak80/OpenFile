@@ -86,7 +86,7 @@ export default function OrganizePdf() {
   })
 
   const save = () => job.run(async (setP) => {
-    if (!items.length) throw new Error('There are no pages left — undo or add a PDF.')
+    if (!items.length) throw new Error('There are no pages left, undo or add a PDF.')
     const o = await ops()
     const bytes = await Promise.all(sources.map((s) => readBytes(s.file)))
     setP(0.3)

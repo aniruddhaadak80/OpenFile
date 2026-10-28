@@ -70,13 +70,13 @@ export default function VideoUpscaler() {
     const blob = await ffRun({ inputs: [{ name: input, file }], args: ['-i', input, '-vf', vf, ...X264, '-crf', '18', '-c:a', 'copy', '-movflags', '+faststart', 'out.mp4'], output: 'out.mp4', duration: dur || undefined, onProgress: setProgress })
       .catch(async (e) => {
         if (e?.name === 'CancelledError') throw e
-        // audio codec may not fit MP4 — retry with AAC
+        // audio codec may not fit MP4, retry with AAC
         return ffRun({ inputs: [{ name: input, file }], args: ['-i', input, '-vf', vf, ...X264, '-crf', '18', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'out.mp4'], output: 'out.mp4', duration: dur || undefined, onProgress: setProgress })
       })
     setResult(blob)
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to upscale" sub="Lanczos resampling + unsharp mask, up to 4K — runs entirely on your device." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to upscale" sub="Lanczos resampling + unsharp mask, up to 4K, runs entirely on your device." />
 
   return (
     <div className="space-y-6">
@@ -92,15 +92,15 @@ export default function VideoUpscaler() {
             </Reveal>
           ) : <VideoStage ref={video} src={url} playable={meta?.playable !== false} />}
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Stat label="Source" value={w ? `${w}×${h}` : '—'} />
+            <Stat label="Source" value={w ? `${w}×${h}` : '-'} />
             <Stat label="Output" value={outW ? `${outW}×${outH}` : LABEL[target]} />
-            <Stat label="Duration" value={dur ? fmtTime(dur, 0) : '—'} />
-            <Stat label="Scale" value={short ? `${(tShort / short).toFixed(2)}×` : '—'} />
+            <Stat label="Duration" value={dur ? fmtTime(dur, 0) : '-'} />
+            <Stat label="Scale" value={short ? `${(tShort / short).toFixed(2)}×` : '-'} />
           </div>
         </>}
         side={<>
           <div><Label>Target resolution</Label><Segmented value={target} onChange={setTarget} options={(Object.keys(LABEL) as Target[]).map((t) => ({ value: t, label: LABEL[t] }))} /></div>
-          {already && <Note tone="warn">This video is already {short}p — pick a higher target to upscale.</Note>}
+          {already && <Note tone="warn">This video is already {short}p, pick a higher target to upscale.</Note>}
           <Slider label="Sharpening" value={sharp} onChange={setSharp} min={0} max={1.5} step={0.1} />
           <Button variant="outline" className="w-full" icon={previewBusy ? undefined : <Eye className="size-4" />} onClick={makePreview} disabled={previewBusy || job.busy}>{previewBusy ? <Spinner label="Rendering frame…" /> : 'Preview a frame'}</Button>
           {previewBusy && engine.status === 'loading' && <Progress value={engine.loaded / engine.total} label={`Loading video engine (~30 MB, first time only) · ${formatBytes(engine.loaded)}`} />}

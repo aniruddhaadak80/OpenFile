@@ -4,7 +4,7 @@
 import { useSyncExternalStore } from 'react'
 import { liveQuery } from 'dexie'
 import { db, dbReady, pruneHistory, type FavoriteRow, type HistoryRow, type RecentRow, type ActivityKind } from './db'
-import { getPrefs, subscribePrefs, writePrefsCache, resolvedTheme, resolvedReduceMotion, normalizePrefs, applyNaming, currentToolSlug, type Prefs } from './prefs'
+import { getPrefs, subscribePrefs, writePrefsCache, resolvedTheme, resolvedMode, resolvedReduceMotion, normalizePrefs, applyNaming, DEFAULT_PREFS, currentToolSlug, type Prefs } from './prefs'
 import { setDownloadHooks } from './files'
 import { toolBySlug } from '@/tools/registry'
 
@@ -98,13 +98,13 @@ export async function updatePrefs(patch: Partial<Prefs>) {
 export function useSettings() {
   if (typeof window !== 'undefined') void loadPrefsFromDb()
   const prefs = useSyncExternalStore(subscribePrefs, getPrefs, getPrefs)
-  return { prefs, update: updatePrefs, reset: () => updatePrefs({ theme: 'system', reducedMotion: 'system', imageQuality: 90, outputNaming: '{name}', historyEnabled: true }) }
+  return { prefs, update: updatePrefs, reset: () => updatePrefs({ ...DEFAULT_PREFS }) }
 }
 
 export function useTheme() {
   const { prefs } = useSettings()
   const theme = resolvedTheme(prefs)
-  return { theme, pref: prefs.theme, toggle: () => void updatePrefs({ theme: theme === 'dark' ? 'light' : 'dark' }), set: (t: Prefs['theme']) => void updatePrefs({ theme: t }) }
+  return { theme, pref: prefs.theme, toggle: () => void updatePrefs({ theme: theme === 'dark' ? 'light' : 'dark' }), mode: resolvedMode(prefs), set: (t: Prefs['theme']) => void updatePrefs({ theme: t }) }
 }
 export function useReducedMotion() {
   const { prefs } = useSettings()

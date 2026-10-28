@@ -14,7 +14,7 @@ const FLOW: { kind: ShapeKind; label: string; w: number; h: number; text: string
   { kind: 'diamond', label: 'Decision', w: 170, h: 120, text: 'Decision?', fill: '#ffec99', preview: '<path d="M12 3l9 9-9 9-9-9z"/>' },
   { kind: 'pill', label: 'Start / End', w: 170, h: 70, text: 'Start', fill: '#b2f2bb', preview: '<rect x="2" y="7" width="20" height="10" rx="5"/>' },
   { kind: 'document', label: 'Document', w: 170, h: 100, text: 'Document', fill: '#e9ecef', preview: '<path d="M3 5h18v11c-3-2-6 2-9 0s-6-2-9 0z"/>' },
-  { kind: 'parallelogram', label: 'Data (I/O)', w: 180, h: 80, text: 'Input / Output', fill: '#eebefa', preview: '<path d="M7 6h14l-4 12H3z"/>' },
+  { kind: 'parallelogram', label: 'Data (I/O)', w: 180, h: 80, text: 'Input / Output', fill: '#ccfbf1', preview: '<path d="M7 6h14l-4 12H3z"/>' },
   { kind: 'cylinder', label: 'Database', w: 120, h: 130, text: 'DB', fill: '#99e9f2', preview: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/>' },
   { kind: 'hexagon', label: 'Preparation', w: 180, h: 90, text: 'Prepare', fill: '#ffc9c9', preview: '<path d="M7 5h10l5 7-5 7H7l-5-7z"/>' },
   { kind: 'ellipse', label: 'Connector', w: 70, h: 70, text: 'A', fill: '#ffffff', preview: '<circle cx="12" cy="12" r="8"/>' },

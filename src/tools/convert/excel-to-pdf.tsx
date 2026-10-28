@@ -52,7 +52,7 @@ export default function ExcelToPdf() {
 
   const opts = useDebounced(JSON.stringify({ active, allSheets, size, orient, fontSize, gridlines, header, repeat, zebra, fit, marginMm, font, title, numbers }), 350)
 
-  // regenerate the real PDF on every change (fast — vector text)
+  // regenerate the real PDF on every change (fast, vector text)
   useEffect(() => {
     if (!sheets.length) return
     let off = false
@@ -84,7 +84,7 @@ export default function ExcelToPdf() {
   const preview = useMemo(() => sheet?.rows.slice(0, 101) ?? [], [sheet])
   const reset = () => { setFile(null); setSheets([]); setPdf(null) }
 
-  if (!file) return <Dropzone accept=".xlsx,.xls,.xlsm,.ods,.csv,.tsv" onFiles={(f) => setFile(f[0])} label="Drop an Excel or CSV file" sub="XLSX, XLS, ODS, CSV — converted 100% in your browser." />
+  if (!file) return <Dropzone accept=".xlsx,.xls,.xlsm,.ods,.csv,.tsv" onFiles={(f) => setFile(f[0])} label="Drop an Excel or CSV file" sub="XLSX, XLS, ODS, CSV, converted 100% in your browser." />
 
   return (
     <div className="space-y-5">
@@ -116,7 +116,7 @@ export default function ExcelToPdf() {
                     ))}
                   </tbody>
                 </table>
-                {sheet && sheet.rows.length > 101 && <div className="p-3 text-center text-xs text-muted">Showing first 100 rows of {sheet.rows.length.toLocaleString()} — the PDF includes all of them.</div>}
+                {sheet && sheet.rows.length > 101 && <div className="p-3 text-center text-xs text-muted">Showing first 100 rows of {sheet.rows.length.toLocaleString()}, the PDF includes all of them.</div>}
               </div>
             )}
           </>}
@@ -145,7 +145,7 @@ export default function ExcelToPdf() {
           </div>
           {pdf && <ResultCard blob={pdf.blob} filename={`${baseName(file.name)}${allSheets || sheets.length < 2 ? '' : '-' + sheet?.name}.pdf`} title={`${pdf.pages} page${pdf.pages > 1 ? 's' : ''}`} />}
           {!pdf && <Button size="lg" className="w-full" disabled icon={<FileDown className="size-5" />}>Preparing PDF…</Button>}
-          <p className="text-[11px] text-muted">Real vector text — selectable and searchable. <Badge>Live</Badge> Preview updates as you change options.</p>
+          <p className="text-[11px] text-muted">Real vector text, selectable and searchable. <Badge>Live</Badge> Preview updates as you change options.</p>
         </>}
       />
     </div>

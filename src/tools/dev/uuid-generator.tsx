@@ -45,8 +45,8 @@ function parseUuid(s: string) {
   if (!/^[0-9a-f]{32}$/.test(h)) return { valid: false as const, reason: 'Must be 32 hex digits (optionally hyphenated 8-4-4-4-12, braces or urn:uuid: prefix).' }
   if (clean.includes('-') && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean)) return { valid: false as const, reason: 'Hyphens are in the wrong positions (expected 8-4-4-4-12).' }
   const std = fmt36(h)
-  if (h === '0'.repeat(32)) return { valid: true as const, std, version: 'NIL', variant: '—', info: [] as [string, string][] }
-  if (h === 'f'.repeat(32)) return { valid: true as const, std, version: 'MAX', variant: '—', info: [] as [string, string][] }
+  if (h === '0'.repeat(32)) return { valid: true as const, std, version: 'NIL', variant: '-', info: [] as [string, string][] }
+  if (h === 'f'.repeat(32)) return { valid: true as const, std, version: 'MAX', variant: '-', info: [] as [string, string][] }
   const version = parseInt(h[12], 16)
   const vn = parseInt(h[16], 16)
   const variant = vn < 8 ? 'NCS (reserved)' : vn < 12 ? 'RFC 9562 / 4122' : vn < 14 ? 'Microsoft (reserved)' : 'Future (reserved)'
@@ -127,7 +127,7 @@ export default function UuidGenerator() {
           <div>
             <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Version</div>
             <Segmented value={ver} onChange={setVer} options={[{ value: 'v4', label: 'v4 random' }, { value: 'v7', label: 'v7 time' }, { value: 'v1', label: 'v1' }, { value: 'nil', label: 'NIL' }]} />
-            <p className="mt-2 text-xs text-muted">{ver === 'v4' ? '122 random bits from crypto.getRandomValues.' : ver === 'v7' ? 'Unix-ms timestamp prefix — sortable, great for database keys. Monotonic within a millisecond.' : ver === 'v1' ? 'Gregorian timestamp + clock sequence + random node ID (no MAC address is used).' : 'All zeros — a placeholder value.'}</p>
+            <p className="mt-2 text-xs text-muted">{ver === 'v4' ? '122 random bits from crypto.getRandomValues.' : ver === 'v7' ? 'Unix-ms timestamp prefix, sortable, great for database keys. Monotonic within a millisecond.' : ver === 'v1' ? 'Gregorian timestamp + clock sequence + random node ID (no MAC address is used).' : 'All zeros, a placeholder value.'}</p>
           </div>
           {ver !== 'nil' && <div className="space-y-2">
             <Slider label="How many" value={count} onChange={setCount} min={1} max={1000} />

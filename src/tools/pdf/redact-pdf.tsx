@@ -84,7 +84,7 @@ export default function RedactPdf() {
       return next
     })
     setFound(matches.length)
-    if (!matches.length) toast(pages.length && !(await hasText(doc)) ? 'No selectable text found — this looks like a scanned PDF. Run OCR PDF first or draw boxes manually.' : 'No matches found', 'info')
+    if (!matches.length) toast(pages.length && !(await hasText(doc)) ? 'No selectable text found, this looks like a scanned PDF. Run OCR PDF first or draw boxes manually.' : 'No matches found', 'info')
     else toast(`Marked ${matches.length} match${matches.length === 1 ? '' : 'es'} for redaction`)
     if (matches.length && !(items[cur]?.length)) { const first = matches[0].page; setCur(first) }
     void added
@@ -135,7 +135,7 @@ export default function RedactPdf() {
     if (out) { setResult(out); toast('Redactions applied permanently') }
   }
 
-  if (!file) return <Dropzone accept="application/pdf,.pdf" onFiles={(f) => setFile(f[0])} label="Drop a PDF to redact" sub="Hidden text is truly removed — pages are flattened, not just covered." />
+  if (!file) return <Dropzone accept="application/pdf,.pdf" onFiles={(f) => setFile(f[0])} label="Drop a PDF to redact" sub="Hidden text is truly removed, pages are flattened, not just covered." />
 
   if (result) return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
@@ -176,7 +176,7 @@ export default function RedactPdf() {
         ) : !loadErr && <div className="grid h-96 place-items-center rounded-2xl border border-border bg-surface-2/40"><Spinner label="Rendering pages…" /></div>}
         {total > 0 && <PageNav pages={pages} total={total} current={cur} onChange={(i) => { setCur(i); setSel(null) }}
           badge={(i) => items[i]?.length ? <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-fg px-1 text-[9px] font-bold text-bg">{items[i].length}</span> : null} />}
-        <p className="text-xs text-muted">Drag on the page to cover anything — text, images, signatures. Switch to select to move or resize boxes; press <b>Delete</b> to remove one.</p>
+        <p className="text-xs text-muted">Drag on the page to cover anything, text, images, signatures. Switch to select to move or resize boxes; press <b>Delete</b> to remove one.</p>
       </div>
 
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -213,7 +213,7 @@ export default function RedactPdf() {
                 {finder.busy && <Progress value={finder.progress} label="Scanning text…" />}
                 <ErrorNote error={finder.error} />
                 <Button variant="outline" className="w-full" icon={<ScanSearch className="size-4" />} loading={finder.busy} disabled={!doc || !!custom.error} onClick={autoFind}>Find & mark</Button>
-                {found !== null && <div className="text-center text-xs text-muted">{found ? `${found} match${found === 1 ? '' : 'es'} marked — review them on each page.` : 'Nothing found with these settings.'}</div>}
+                {found !== null && <div className="text-center text-xs text-muted">{found ? `${found} match${found === 1 ? '' : 'es'} marked, review them on each page.` : 'Nothing found with these settings.'}</div>}
               </motion.div>
             ) : (
               <motion.div key="list" initial={{ opacity: 0, x: 6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="space-y-2">

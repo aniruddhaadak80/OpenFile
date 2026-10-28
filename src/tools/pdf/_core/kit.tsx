@@ -78,7 +78,7 @@ export function Thumb({ src, label, rotation = 0, selected, dim, onClick, badge,
           : <div className="flex h-full w-full items-center justify-center"><Loader2 className="size-5 animate-spin text-muted" /></div>}
       </div>
       {label !== undefined && <div className="mt-1.5 truncate text-center text-xs font-medium text-muted">{label}</div>}
-      {selected && <div className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-white shadow"><Check className="size-3.5" /></div>}
+      {selected && <div className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-on-accent shadow"><Check className="size-3.5" /></div>}
       {badge}
       {children}
     </div>

@@ -84,7 +84,7 @@ export default function PdfGrayscale() {
       <ToolGrid
         main={<div className="rounded-2xl border border-border bg-surface p-4">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <div className="text-sm font-medium">Before / after <span className="text-xs font-normal text-muted">— drag the slider</span></div>
+            <div className="text-sm font-medium">Before / after <span className="text-xs font-normal text-muted">(drag the slider)</span></div>
             {numPages > 1 && <PageStepper page={page} total={numPages} onChange={setPage} />}
           </div>
           {error ? <div className="text-sm text-danger">{error}</div> : before && after ? (
@@ -92,7 +92,7 @@ export default function PdfGrayscale() {
               <div className="relative inline-block max-w-full select-none overflow-hidden shadow-2xl" style={{ aspectRatio: `${before.width}/${before.height}`, width: `min(100%, calc(70vh * ${before.width / before.height}))` }}>
                 <img src={beforeUrl} alt="Original" className="absolute inset-0 h-full w-full bg-white" draggable={false} />
                 <motion.img src={after} alt="Converted" initial={{ opacity: 0.7 }} animate={{ opacity: 1 }} className="absolute inset-0 h-full w-full bg-white" style={{ clipPath: `inset(0 0 0 ${split}%)` }} draggable={false} />
-                <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-accent shadow" style={{ left: `${split}%` }}><div className="absolute top-1/2 left-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-accent text-white shadow-lg"><Contrast className="size-4" /></div></div>
+                <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-accent shadow" style={{ left: `${split}%` }}><div className="absolute top-1/2 left-1/2 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-accent text-on-accent shadow-lg"><Contrast className="size-4" /></div></div>
                 <input type="range" min={0} max={100} value={split} onChange={(e) => setSplit(+e.target.value)} aria-label="Compare" className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0" />
                 <span className="absolute left-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">ORIGINAL</span>
                 <span className="absolute right-2 top-2 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">{mode === 'bw' ? 'B&W' : 'GRAY'}</span>

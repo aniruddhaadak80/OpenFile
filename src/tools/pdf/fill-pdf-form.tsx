@@ -104,7 +104,7 @@ export default function FillPdfForm() {
           </div>
         ) : !loadErr && <div className="grid h-96 place-items-center rounded-2xl border border-border bg-surface-2/40"><Spinner label="Rendering pages…" /></div>}
         {total > 0 && <PageNav pages={pages} total={total} current={cur} onChange={setCur}
-          badge={(i) => { const n = fillable.filter((f) => f.widgets[0]?.page === i).length; return n ? <span className="absolute right-1 top-1 rounded-full bg-accent px-1 text-[9px] font-bold text-white">{n}</span> : null }} />}
+          badge={(i) => { const n = fillable.filter((f) => f.widgets[0]?.page === i).length; return n ? <span className="absolute right-1 top-1 rounded-full bg-accent px-1 text-[9px] font-bold text-on-accent">{n}</span> : null }} />}
       </div>
 
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -180,7 +180,7 @@ function FieldInput({ f, value, onChange }: { f: FieldInfo; value: FieldValue | 
   }
   if (f.kind === 'checkbox') return (
     <button type="button" disabled={dis} onClick={() => onChange(!value)} className={cn('flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition cursor-pointer disabled:opacity-50', value ? 'border-accent bg-accent/10 text-fg' : 'border-border text-muted hover:border-accent/40')}>
-      <span className={cn('grid size-4 place-items-center rounded border', value ? 'border-accent bg-accent text-white' : 'border-border')}>{value && <CheckSquare className="size-3" />}</span>{value ? 'Checked' : 'Not checked'}
+      <span className={cn('grid size-4 place-items-center rounded border', value ? 'border-accent bg-accent text-on-accent' : 'border-border')}>{value && <CheckSquare className="size-3" />}</span>{value ? 'Checked' : 'Not checked'}
     </button>
   )
   if (f.kind === 'radio') return (
@@ -198,7 +198,7 @@ function FieldInput({ f, value, onChange }: { f: FieldInfo; value: FieldValue | 
     return (
       <div className="space-y-1.5">
         <Select value={opts.includes(s) ? s : s ? '__custom' : ''} onChange={(v) => onChange(v === '__custom' ? s || ' ' : v)}
-          options={[{ value: '', label: '— Select —' }, ...opts.map((o) => ({ value: o, label: o })), ...(f.editable ? [{ value: '__custom', label: 'Other…' }] : [])]} />
+          options={[{ value: '', label: '(select)' }, ...opts.map((o) => ({ value: o, label: o })), ...(f.editable ? [{ value: '__custom', label: 'Other…' }] : [])]} />
         {f.editable && s && !opts.includes(s) && <Input value={s.trim()} onChange={(e) => onChange(e.target.value)} placeholder="Custom value" />}
       </div>
     )

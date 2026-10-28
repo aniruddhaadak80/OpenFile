@@ -49,7 +49,7 @@ export function sampleResume(): Resume {
       { id: rid(), group: 'Backend & Cloud', items: 'Node.js, PostgreSQL, Redis, Docker, AWS, GitHub Actions' },
     ],
     education: [{ id: rid(), degree: 'B.Tech in Computer Science & Engineering', school: 'Jadavpur University', location: 'Kolkata', start: '2017', end: '2021', grade: 'CGPA 8.7/10', details: 'Coursework: Data Structures, Operating Systems, Distributed Systems' }],
-    certifications: [{ id: rid(), name: 'AWS Certified Developer – Associate', issuer: 'Amazon Web Services', date: '2023', link: '' }],
+    certifications: [{ id: rid(), name: 'AWS Certified Developer: Associate', issuer: 'Amazon Web Services', date: '2023', link: '' }],
     links: [],
   }
 }
@@ -167,7 +167,7 @@ export function renderResume(doc: jsPDF, family: string, r: Resume) {
     }
     y += 2
   }
-  const range = (s: string, e: string, cur?: boolean) => [s, cur ? 'Present' : e].filter(Boolean).join(' – ')
+  const range = (s: string, e: string, cur?: boolean) => [s, cur ? 'Present' : e].filter(Boolean).join(', ')
 
   for (const key of r.order) {
     if (r.hidden.includes(key)) continue
@@ -218,7 +218,7 @@ export function renderResume(doc: jsPDF, family: string, r: Resume) {
         ensure(14)
         F('bold', 9.8, dark); doc.text(ct.name || 'Certification', M, y)
         const nx = M + doc.getTextWidth(ct.name || 'Certification')
-        if (ct.issuer) { F('normal', 9.4, mid); doc.text(` — ${ct.issuer}`, nx, y) }
+        if (ct.issuer) { F('normal', 9.4, mid); doc.text(`, ${ct.issuer}`, nx, y) }
         if (ct.date) { F('normal', 9, mid); doc.text(ct.date, W - M, y, { align: 'right' }) }
         if (ct.link) { y += 11; F('normal', 8.8, accent); doc.textWithLink(ct.link.replace(/^https?:\/\//, ''), M, y, { url: url(ct.link) }) }
         y += 9.8 * LH + 2
@@ -239,5 +239,5 @@ export function renderResume(doc: jsPDF, family: string, r: Resume) {
   const n = doc.getNumberOfPages()
   if (tpl === 'modern') for (let p = 2; p <= n; p++) { doc.setPage(p); doc.setFillColor(...accent); doc.rect(0, 0, 8, H, 'F') }
   if (n > 1) for (let p = 1; p <= n; p++) { doc.setPage(p); F('normal', 8, mid); doc.text(`${c.name || ''}  ·  ${p}/${n}`, W - M, H - 24, { align: 'right' }) }
-  doc.setProperties({ title: `${c.name || 'Resume'} — Resume`, subject: c.title, author: c.name, keywords: r.skills.map((s) => s.items).join(', '), creator: 'OpenFile Resume Builder' })
+  doc.setProperties({ title: `${c.name || 'Resume'} | Resume`, subject: c.title, author: c.name, keywords: r.skills.map((s) => s.items).join(', '), creator: 'OpenFile Resume Builder' })
 }

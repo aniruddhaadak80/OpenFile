@@ -81,7 +81,7 @@ export default function PasswordGenerator() {
   const anySet = Object.values(sets).some(Boolean)
 
   const colored = useMemo(() => (main?.pw ?? '').split('').map((c, i) => (
-    <span key={i} className={/[0-9]/.test(c) ? 'text-[#06b6d4]' : /[a-zA-Z]/.test(c) ? '' : 'text-[#f472b6]'}>{c}</span>
+    <span key={i} className={/[0-9]/.test(c) ? 'text-[#06b6d4]' : /[a-zA-Z]/.test(c) ? '' : 'text-[#fdba74]'}>{c}</span>
   )), [main?.pw])
 
   return (
@@ -107,7 +107,7 @@ export default function PasswordGenerator() {
             <div><div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Entropy</div><div className="font-mono font-semibold">{(main?.bits ?? 0).toFixed(1)} bits</div></div>
             <div><div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Time to crack</div><div className="font-semibold">{crackTime(main?.bits ?? 0)}</div></div>
           </div>
-          <p className="mt-3 text-[11px] text-muted">Crack time assumes an offline attacker making 10 billion guesses/second against a fast hash. Generated with crypto.getRandomValues — never leaves your device.</p>
+          <p className="mt-3 text-[11px] text-muted">Crack time assumes an offline attacker making 10 billion guesses/second against a fast hash. Generated with crypto.getRandomValues, never leaves your device.</p>
         </Card>
 
         {list.length > 1 && (
@@ -160,7 +160,7 @@ export default function PasswordGenerator() {
               <Field label="Separator"><Select value={sep} onChange={setSep} options={[{ value: '-', label: 'Hyphen  -' }, { value: ' ', label: 'Space' }, { value: '.', label: 'Dot  .' }, { value: '_', label: 'Underscore  _' }, { value: '', label: 'None' }, { value: ',', label: 'Comma  ,' }]} /></Field>
               <Switch checked={cap} onChange={setCap} label="Capitalize words" />
               <Switch checked={num} onChange={setNum} label="Add a digit" />
-              <p className="text-xs text-muted">From a built-in list of {WORDS.length.toLocaleString()} memorable words (EFF short list) — ~{Math.log2(WORDS.length).toFixed(1)} bits per word.</p>
+              <p className="text-xs text-muted">From a built-in list of {WORDS.length.toLocaleString()} memorable words (EFF short list), ~{Math.log2(WORDS.length).toFixed(1)} bits per word.</p>
             </>
           )}
           <Field label="Bulk generate"><Select value={bulk} onChange={setBulk} options={['1', '5', '10', '25', '50', '100'].map((v) => ({ value: v, label: v === '1' ? 'Just one' : `${v} at once` }))} /></Field>

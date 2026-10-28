@@ -12,7 +12,7 @@ function quantDesc(q: string): string {
   let d = base === '*' ? 'zero or more times' : base === '+' ? 'one or more times' : base === '?' ? 'optionally (zero or one time)' : ''
   const m = /^\{(\d+)(,(\d*))?\}$/.exec(base)
   if (m) d = m[2] === undefined ? `exactly ${m[1]} times` : m[3] === '' ? `${m[1]} or more times` : `between ${m[1]} and ${m[3]} times`
-  return d + (lazy ? ' (lazy — as few as possible)' : '')
+  return d + (lazy ? ' (lazy, as few as possible)' : '')
 }
 
 export function explainRegex(src: string): Tok[] {
@@ -44,10 +44,10 @@ export function explainRegex(src: string): Tok[] {
     if (c === '(') {
       let text = '(', desc = ''
       if (src.startsWith('(?:', i)) { text = '(?:'; desc = 'start of a non-capturing group' }
-      else if (src.startsWith('(?=', i)) { text = '(?='; desc = 'start of a positive lookahead — followed by…' }
-      else if (src.startsWith('(?!', i)) { text = '(?!'; desc = 'start of a negative lookahead — NOT followed by…' }
-      else if (src.startsWith('(?<=', i)) { text = '(?<='; desc = 'start of a positive lookbehind — preceded by…' }
-      else if (src.startsWith('(?<!', i)) { text = '(?<!'; desc = 'start of a negative lookbehind — NOT preceded by…' }
+      else if (src.startsWith('(?=', i)) { text = '(?='; desc = 'start of a positive lookahead, followed by…' }
+      else if (src.startsWith('(?!', i)) { text = '(?!'; desc = 'start of a negative lookahead: NOT followed by…' }
+      else if (src.startsWith('(?<=', i)) { text = '(?<='; desc = 'start of a positive lookbehind, preceded by…' }
+      else if (src.startsWith('(?<!', i)) { text = '(?<!'; desc = 'start of a negative lookbehind: NOT preceded by…' }
       else if (src.startsWith('(?<', i)) { const e = src.indexOf('>', i); text = src.slice(i, e + 1); groupNo++; desc = `start of capture group #${groupNo} named “${src.slice(i + 3, e)}”` }
       else { groupNo++; desc = `start of capture group #${groupNo}` }
       out.push({ text, desc, kind: text.length > 2 && text[2] !== '<' ? 'look' : 'group' }); i += text.length; continue
@@ -60,7 +60,7 @@ export function explainRegex(src: string): Tok[] {
     if (c === '^') { out.push({ text: '^', desc: 'start of the string (or line, with the m flag)', kind: 'anchor' }); i++; continue }
     if (c === '$') { out.push({ text: '$', desc: 'end of the string (or line, with the m flag)', kind: 'anchor' }); i++; continue }
     if (c === '.') { out.push({ text: '.', desc: 'any character except a newline (any at all with the s flag)', kind: 'class' }); i++; continue }
-    if (c === '|') { out.push({ text: '|', desc: 'OR — match either the left side or the right side', kind: 'alt' }); i++; continue }
+    if (c === '|') { out.push({ text: '|', desc: 'OR, match either the left side or the right side', kind: 'alt' }); i++; continue }
     // merge consecutive literals
     let j = i; while (j < src.length && !'\\[]().*+?{}^$|'.includes(src[j])) j++
     if (j === i) j = i + 1
@@ -74,7 +74,7 @@ export function explainRegex(src: string): Tok[] {
 }
 
 export const TOK_COLOR: Record<Tok['kind'], string> = {
-  anchor: '#f472b6', class: '#22d3ee', quant: '#f59e0b', group: '#8b6cff', escape: '#a3e635', literal: 'var(--fg)', alt: '#ef4444', set: '#06b6d4', backref: '#fb923c', look: '#c084fc',
+  anchor: '#fdba74', class: '#22d3ee', quant: '#f59e0b', group: '#f5a524', escape: '#a3e635', literal: 'var(--fg)', alt: '#ef4444', set: '#06b6d4', backref: '#fb923c', look: '#5eead4',
 }
 
 export const LIBRARY: { name: string; pattern: string; flags: string; sample: string }[] = [
@@ -86,7 +86,7 @@ export const LIBRARY: { name: string; pattern: string; flags: string; sample: st
   { name: 'Date DD/MM/YYYY', pattern: '(0[1-9]|[12]\\d|3[01])\\/(0[1-9]|1[0-2])\\/\\d{4}', flags: 'g', sample: 'Due 28/10/2026 and 01/01/2027' },
   { name: 'Time 24h HH:MM', pattern: '\\b([01]\\d|2[0-3]):[0-5]\\d\\b', flags: 'g', sample: 'Meet at 09:30 or 18:45.' },
   { name: 'IPv4 address', pattern: '\\b(?:(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1?\\d?\\d)\\b', flags: 'g', sample: 'Server 192.168.1.10, gateway 10.0.0.1, bad 999.1.1.1' },
-  { name: 'Hex color', pattern: '#(?:[0-9a-fA-F]{3}){1,2}\\b', flags: 'g', sample: 'Colors: #fff, #6d4aff, #06B6D4' },
+  { name: 'Hex color', pattern: '#(?:[0-9a-fA-F]{3}){1,2}\\b', flags: 'g', sample: 'Colors: #fff, #f5a524, #06B6D4' },
   { name: 'Indian PIN code', pattern: '\\b[1-9]\\d{2}\\s?\\d{3}\\b', flags: 'g', sample: 'Kolkata 700137, Medinipur 721 137' },
   { name: 'PAN card', pattern: '\\b[A-Z]{5}\\d{4}[A-Z]\\b', flags: 'g', sample: 'PAN: ABCDE1234F' },
   { name: 'GSTIN', pattern: '\\b\\d{2}[A-Z]{5}\\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]\\b', flags: 'g', sample: 'GSTIN 19ABCDE1234F1Z5' },

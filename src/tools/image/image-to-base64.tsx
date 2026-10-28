@@ -64,7 +64,7 @@ function Encoder() {
           <Segmented value={kind} onChange={setKind} options={SNIPS} />
           <CopyButton text={text} size="md" variant="secondary" />
         </div>
-        <Textarea readOnly value={big ? text.slice(0, 200000) + '\n\n… (truncated in preview — Copy/Download include everything)' : text} className="h-72 break-all" onFocus={(e) => e.currentTarget.select()} />
+        <Textarea readOnly value={big ? text.slice(0, 200000) + '\n\n… (truncated in preview: Copy/Download include everything)' : text} className="h-72 break-all" onFocus={(e) => e.currentTarget.select()} />
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
           <span>Original {formatBytes(cur.size)} → Base64 {formatBytes(text.length)} <span className="text-warn">(+{((text.length / cur.size - 1) * 100).toFixed(0)}%)</span></span>
           <Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={() => downloadBlob(text, `${baseName(cur.name)}.${kind === 'css' ? 'css' : kind === 'html' ? 'html' : kind === 'md' ? 'md' : kind === 'json' ? 'json' : 'txt'}`, 'text/plain')}>Save as file</Button>
@@ -97,7 +97,7 @@ function Decoder() {
       const sniffed = sniffMime(bytes)
       if (!sniffed && !mime?.startsWith('image/')) throw new Error("Decoded fine, but it doesn't look like an image (unknown file signature).")
       setBlob(new Blob([bytes], { type: sniffed ?? mime! }))
-    } catch (e: any) { setErr(e?.name === 'InvalidCharacterError' ? 'This is not valid Base64 — check for missing or extra characters.' : e?.message || String(e)) }
+    } catch (e: any) { setErr(e?.name === 'InvalidCharacterError' ? 'This is not valid Base64, check for missing or extra characters.' : e?.message || String(e)) }
   }, [input])
   return (
     <div className="grid gap-6 lg:grid-cols-2">

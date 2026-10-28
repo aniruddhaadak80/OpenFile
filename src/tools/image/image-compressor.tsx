@@ -65,7 +65,7 @@ export default function ImageCompressor() {
   const done = items.filter((i) => res[i.id]?.state === 'done')
   const progress = items.length ? done.length / items.length : 0
   const working = items.some((i) => res[i.id]?.state === 'run')
-  const results: Result[] = done.map((i) => ({ id: i.id, name: outName(i.file.name, res[i.id].fmt ?? 'png', res[i.id].kept ? '' : '-min'), blob: res[i.id].blob, originalSize: i.file.size, url: res[i.id].url, note: res[i.id].kept ? 'already optimal — kept original' : `${res[i.id].w}×${res[i.id].h}` }))
+  const results: Result[] = done.map((i) => ({ id: i.id, name: outName(i.file.name, res[i.id].fmt ?? 'png', res[i.id].kept ? '' : '-min'), blob: res[i.id].blob, originalSize: i.file.size, url: res[i.id].url, note: res[i.id].kept ? 'already optimal, kept original' : `${res[i.id].w}×${res[i.id].h}` }))
   const cmp = compare ? items.find((i) => i.id === compare) : null
   const avifOk = fmtSupported('avif')
 

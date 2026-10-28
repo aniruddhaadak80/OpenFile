@@ -139,7 +139,7 @@ export default function OcrPdf() {
       toast(`Recognised text on ${n} page${n === 1 ? '' : 's'}`)
     } catch (e: any) {
       if (!cancel.current.stop) {
-        const msg = /fetch|network|Failed to load/i.test(e?.message || '') ? 'Could not download the OCR engine or language data. Check your internet connection (only the language model is downloaded — your file stays local).' : e?.message || String(e)
+        const msg = /fetch|network|Failed to load/i.test(e?.message || '') ? 'Could not download the OCR engine or language data. Check your internet connection (only the language model is downloaded, your file stays local).' : e?.message || String(e)
         setError(msg); toast(msg, 'error')
       }
     } finally { setRunning(false); setStage('') }
@@ -163,7 +163,7 @@ export default function OcrPdf() {
         {pages.length === 0 ? (
           <div className="grid min-h-72 place-items-center rounded-2xl border border-dashed border-border bg-surface-2/30 p-8 text-center">
             <div className="space-y-3">
-              <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-brand text-white shadow-xl shadow-accent/30"><ScanText className="size-7" /></div>
+              <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-xl shadow-accent/30"><ScanText className="size-7" /></div>
               <div className="font-semibold">{name} · {total} page{total === 1 ? '' : 's'}</div>
               <p className="max-w-md text-sm text-muted">Choose the document languages on the right, then start. You'll get copyable text, a .txt file and a searchable PDF with an invisible text layer.</p>
             </div>
@@ -246,7 +246,7 @@ export default function OcrPdf() {
                 <button key={l.code} type="button" disabled={running} onClick={() => toggleLang(l.code)} className={cn('rounded-lg border px-2 py-1 text-xs transition cursor-pointer disabled:opacity-50', langs.includes(l.code) ? 'border-accent bg-accent/10 font-medium text-fg' : 'border-border text-muted hover:border-accent/40')}>{l.label}</button>
               ))}
             </div>
-            {langs.length > 2 && <p className="mt-1.5 text-xs text-warn">Each extra language slows recognition — pick only those in the document.</p>}
+            {langs.length > 2 && <p className="mt-1.5 text-xs text-warn">Each extra language slows recognition, pick only those in the document.</p>}
           </div>
           <div>
             <Label>Accuracy</Label>
@@ -314,6 +314,6 @@ async function buildSearchablePdf(results: PageRes[]): Promise<{ blob: Blob; war
     }
   }
   out.setTitle('OCR searchable document'); out.setProducer('OpenFile OCR (tesseract.js)')
-  const warn = skippedWords ? `${skippedWords} word${skippedWords === 1 ? '' : 's'} in non-Latin scripts couldn't be added to the PDF text layer — use the copied text or .txt for those.` : null
+  const warn = skippedWords ? `${skippedWords} word${skippedWords === 1 ? '' : 's'} in non-Latin scripts couldn't be added to the PDF text layer, use the copied text or .txt for those.` : null
   return { blob: pdfBlob(await out.save()), warn }
 }

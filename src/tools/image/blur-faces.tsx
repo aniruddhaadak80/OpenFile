@@ -62,7 +62,7 @@ export default function BlurFaces() {
   const hasFD = typeof window !== 'undefined' && 'FaceDetector' in window
 
   const detect = useCallback(async (c: HTMLCanvasElement) => {
-    if (!('FaceDetector' in window)) { setNote('Automatic face detection needs the browser Face Detection API (available in Chrome on Android/macOS, or with chrome://flags "Experimental Web Platform features"). Draw over faces manually with the ellipse, rectangle or brush tools — it only takes a second.'); return }
+    if (!('FaceDetector' in window)) { setNote('Automatic face detection needs the browser Face Detection API (available in Chrome on Android/macOS, or with chrome://flags "Experimental Web Platform features"). Draw over faces manually with the ellipse, rectangle or brush tools, it only takes a second.'); return }
     setDetecting(true)
     try {
       const fd = new (window as any).FaceDetector({ fastMode: false, maxDetectedFaces: 100 })
@@ -145,11 +145,11 @@ export default function BlurFaces() {
       </>}
       side={<>
         <Button variant="outline" className="w-full" loading={detecting} icon={<ScanFace className="size-4" />} onClick={() => full && detect(full)}>{hasFD ? 'Detect faces automatically' : 'Try automatic face detection'}</Button>
-        {!hasFD && <p className="-mt-3 text-[11px] text-muted">Your browser doesn't expose face detection — manual tools are ready.</p>}
+        {!hasFD && <p className="-mt-3 text-[11px] text-muted">Your browser doesn't expose face detection, manual tools are ready.</p>}
         <div><Label>Effect</Label><Segmented value={effect} onChange={setEffect} options={[{ value: 'blur', label: 'Blur' }, { value: 'pixelate', label: 'Pixelate' }, { value: 'box', label: 'Solid box' }]} /></div>
         {effect !== 'box' ? <Slider label="Intensity" value={intensity} onChange={setIntensity} min={5} max={100} suffix="%" /> : <div><Label>Box color</Label><ColorInput value={color} onChange={setColor} /></div>}
         {tool === 'brush' && <Slider label="Brush size" value={brush} onChange={setBrush} min={1} max={20} />}
-        <div className={cn('rounded-xl bg-surface-2/60 p-3 text-[11px] text-muted')}>Tip: for true privacy use <b>Pixelate</b> at high intensity or <b>Solid box</b> — light blur can sometimes be reversed.</div>
+        <div className={cn('rounded-xl bg-surface-2/60 p-3 text-[11px] text-muted')}>Tip: for true privacy use <b>Pixelate</b> at high intensity or <b>Solid box</b>, light blur can sometimes be reversed.</div>
         <ErrorNote error={error} />
         <Button size="lg" className="w-full" loading={busy} disabled={!shapes.length} icon={<Download className="size-4" />} onClick={exportImg}>Download redacted image</Button>
         <Button variant="ghost" className="w-full" onClick={reset}>Start over</Button>

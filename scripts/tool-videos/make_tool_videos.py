@@ -1,0 +1,1680 @@
+#!/usr/bin/env python3
+"""
+OpenFile per-tool preview videos.
+
+Reads every tool from src/tools/registry.ts and renders, for each slug:
+  public/media/tools/<slug>.mp4   960x540, 30 fps, H.264 yuv420p + AAC, faststart, 8-12 s, target <= 350 KB
+  public/media/tools/<slug>.jpg   480x270 poster
+and writes public/media/tools/index.json  (slug -> {video, poster, duration, voice}).
+
+Each video: animated title, a motion-graphic demo of what the tool does (per-category templates with a
+per-tool action, varied by a seed taken from the slug), a voiceover of the one-sentence description with a
+different voice per tool (Kokoro TTS, rotating US/UK female/male voices, then light 80/20 blends), and a
+procedural music bed seeded by the slug (key, tempo, lead timbre, pad brightness, groove).
+
+Usage:
+  python3 scripts/tool-videos/make_tool_videos.py                 # render tools that are missing
+  python3 scripts/tool-videos/make_tool_videos.py --force         # re-render everything
+  python3 scripts/tool-videos/make_tool_videos.py --only merge-pdf,json-formatter
+  python3 scripts/tool-videos/make_tool_videos.py --still merge-pdf 4.0 /tmp/f.png   # one frame, no audio
+  options: --jobs N (default: all cores)
+
+Writing rule for on-screen text and voice scripts: no em dashes, no exclamation marks, plain words.
+Palette: gold-on-black with teal / cyan / emerald / sky accents. No purple, violet, magenta or pink.
+"""
+import argparse, json, math, os, re, subprocess, sys, time, traceback
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'media-lib'))
+from ofmedia import *  # noqa
+from ofmedia import _add
+
+W, H, FPS = 960, 540, 30
+OUT = os.path.join(REPO, 'public', 'media', 'tools')
+TMP = os.path.join(CACHE_DIR, 'tools')
+PAPER = hexrgb('#F2EFE8')
+PAPER_LINE = hexrgb('#CFC9BD')
+INK = hexrgb('#1A1C20')
+
+
+def clean_copy(s):
+    s = s.replace('—', ', ').replace('–', ' to ').replace('!', '.')
+    return re.sub(r'\s+', ' ', s).strip()
+
+
+# ============================================================================= primitives
+def page(c, x, y, w, h, alpha=1.0, accent=GOLD, rot=0.0, lines=7, gray=0.0, seed=0, header=True, img=False, scale=1.0):
+    """Light document page centred at x,y."""
+    if alpha <= 0.01:
+        return
+    c.save(); c.translate(x, y); c.rotate(rot); c.scale(scale, scale)
+    rrect(c, -w / 2 + 4, -h / 2 + 8, w, h, 6, fill=(0, 0, 0), alpha=alpha * 0.5)
+    rrect(c, -w / 2, -h / 2, w, h, 6, fill=PAPER, alpha=alpha)
+    ac = mix(accent, (150, 150, 150), gray)
+    pad = w * 0.12
+    yy = -h / 2 + pad
+    if header:
+        rrect(c, -w / 2 + pad, yy, w * 0.45, h * 0.06, 2, fill=ac, alpha=alpha)
+        yy += h * 0.12
+    if img:
+        rrect(c, -w / 2 + pad, yy, w - 2 * pad, h * 0.22, 3, fill=mix(mix(TEAL, (140, 140, 140), gray), PAPER, 0.35), alpha=alpha)
+        yy += h * 0.27
+    rnd = (seed * 7919) % 97
+    for i in range(lines):
+        if yy > h / 2 - pad:
+            break
+        ww = (w - 2 * pad) * (0.55 + 0.45 * (((rnd + i * 37) % 10) / 10))
+        rrect(c, -w / 2 + pad, yy, ww, max(2, h * 0.025), 1.5, fill=PAPER_LINE, alpha=alpha)
+        yy += h * 0.07
+    c.restore()
+
+
+_PHOTOS = {}
+
+
+def photo_img(seed, w=320, h=220):
+    key = (seed % 6, w, h)
+    if key in _PHOTOS:
+        return _PHOTOS[key]
+    rng = np.random.default_rng(seed % 6)
+    y = np.linspace(0, 1, h)[:, None]
+    top = np.array(mix(hexrgb('#0E3B44'), hexrgb('#123a5a'), rng.random()), np.float32)
+    bot = np.array(mix(GOLD, hexrgb('#F7C46C'), rng.random()), np.float32)
+    sky = top * (1 - y ** 1.4) + bot * (y ** 1.4)
+    img = np.repeat(sky[:, None, :] if sky.ndim == 2 else sky, w, axis=1) if False else np.broadcast_to(sky[:, None, :], (h, w, 3)).copy()
+    im = Image.fromarray(img.astype(np.uint8), 'RGB')
+    d = ImageDraw.Draw(im)
+    sx, sy = w * rng.uniform(0.3, 0.7), h * rng.uniform(0.45, 0.6)
+    sr = h * 0.13
+    glow = Image.new('L', (w, h), 0)
+    ImageDraw.Draw(glow).ellipse((sx - sr * 2.4, sy - sr * 2.4, sx + sr * 2.4, sy + sr * 2.4), fill=110)
+    glow = glow.filter(ImageFilter.GaussianBlur(sr))
+    im.paste(Image.new('RGB', (w, h), hexrgb('#FFE2A0')), (0, 0), glow)
+    d.ellipse((sx - sr, sy - sr, sx + sr, sy + sr), fill=hexrgb('#FFF1CF'))
+    for li, col in enumerate([hexrgb('#0F4C4C'), hexrgb('#0B3437'), hexrgb('#06191B')]):
+        base = h * (0.6 + li * 0.13)
+        pts = [(0, h)]
+        ph = rng.random() * 6
+        for xx in range(0, w + 8, 8):
+            pts.append((xx, base - h * 0.12 * (math.sin(xx / w * (3 + li) + ph) * 0.6 + math.sin(xx / w * 9 + ph * 2) * 0.25)))
+        pts.append((w, h))
+        d.polygon(pts, fill=col)
+    _PHOTOS[key] = im
+    return im
+
+
+_PSPR = {}
+
+
+def photo_sprite(seed, w, h, gray=0.0, pixel=0, hue=0.0, bright=1.0):
+    key = (seed % 6, int(w), int(h), round(gray, 2), int(pixel), round(hue, 2), round(bright, 2))
+    sp = _PSPR.get(key)
+    if sp:
+        return sp
+    im = photo_img(seed).resize((max(2, int(w)), max(2, int(h))), Image.LANCZOS)
+    if pixel > 1:
+        sm = im.resize((max(1, int(w / pixel)), max(1, int(h / pixel))), Image.BILINEAR)
+        im = sm.resize(im.size, Image.NEAREST)
+    a = np.asarray(im, np.float32)
+    if hue:
+        # rotate within the warm/teal family only (swap towards cyan), never towards magenta
+        a = a * (1 - hue) + a[..., [2, 1, 0]] * hue * np.array([0.6, 1.0, 1.1])
+    if gray:
+        g = a.mean(axis=2, keepdims=True)
+        a = a * (1 - gray) + g * gray
+    a = np.clip(a * bright, 0, 255)
+    im = Image.fromarray(a.astype(np.uint8)).convert('RGBA')
+    sp = Sprite(pil_to_surface(im), w / 2, h / 2)
+    if len(_PSPR) > 400:
+        _PSPR.clear()
+    _PSPR[key] = sp
+    return sp
+
+
+def photo(c, x, y, w, h, seed, alpha=1.0, r=8, gray=0.0, pixel=0, hue=0.0, bright=1.0, stroke=None):
+    sp = photo_sprite(seed, w, h, gray, pixel, hue, bright)
+    c.save()
+    rrect_path(c, x - w / 2, y - h / 2, w, h, r)
+    c.clip()
+    draw_sprite(c, sp, x, y, alpha)
+    c.restore()
+    if stroke:
+        rrect(c, x - w / 2, y - h / 2, w, h, r, stroke=stroke, lw=2, alpha=alpha)
+
+
+def filmstrip(c, x, y, w, h, seed, offset=0.0, alpha=1.0, n=6, accent=CYAN):
+    rrect(c, x, y, w, h, 6, fill=hexrgb('#0A0C0E'), stroke=mix(LINE, accent, 0.3), lw=1.5, alpha=alpha)
+    c.save(); rrect_path(c, x, y, w, h, 6); c.clip()
+    fw = w / n
+    hole = h * 0.09
+    off = (offset % 1.0) * fw
+    for i in range(-1, n + 1):
+        fx = x + i * fw - off
+        photo(c, fx + fw / 2, y + h / 2, fw - 8, h - hole * 4.2, seed + i, alpha, r=3)
+    for i in range(int(w / 14) + 2):
+        hx = x + i * 14 - (offset * fw) % 14
+        rrect(c, hx + 3, y + hole * 0.6, 7, hole, 1.5, fill=hexrgb('#3A3F46'), alpha=alpha)
+        rrect(c, hx + 3, y + h - hole * 1.6, 7, hole, 1.5, fill=hexrgb('#3A3F46'), alpha=alpha)
+    c.restore()
+
+
+def wave_vals(seed, n):
+    rng = np.random.default_rng(seed)
+    x = np.linspace(0, 1, n)
+    env = 0.35 + 0.65 * np.abs(np.sin(x * math.pi * rng.uniform(2, 5) + rng.random() * 3)) ** 0.7
+    return np.clip(env * (0.45 + 0.55 * rng.random(n)), 0.06, 1)
+
+
+def waveform(c, x, y, w, h, seed, color=TEAL, alpha=1.0, progress=1.0, n=64, t=0.0, live=False, gain=1.0, play=None, dim_out=None):
+    vals = wave_vals(seed, n)
+    bw = w / n
+    for i, v in enumerate(vals):
+        if i / n > progress:
+            break
+        if live:
+            v = v * (0.6 + 0.4 * math.sin(t * 8 + i * 0.7) ** 2)
+        hh = max(2, v * h * gain)
+        col = color
+        a = alpha
+        if play is not None and i / n > play:
+            col = mix(color, DIM, 0.6)
+        if dim_out and not (dim_out[0] <= i / n <= dim_out[1]):
+            a *= 0.25
+        rrect(c, x + i * bw + bw * 0.2, y - hh / 2, bw * 0.6, hh, bw * 0.3, fill=col, alpha=a)
+
+
+def window(c, x, y, w, h, title='', alpha=1.0, accent=GOLD):
+    rrect(c, x + 4, y + 8, w, h, 12, fill=(0, 0, 0), alpha=alpha * 0.5)
+    rrect(c, x, y, w, h, 12, fill=hexrgb('#0E1115'), stroke=mix(LINE, accent, 0.35), lw=1.5, alpha=alpha)
+    c.save(); rrect_path(c, x, y, w, 30, 12); c.clip()
+    c.rectangle(x, y, w, 30); c.set_source_rgba(*rgbf(SURF2, alpha)); c.fill()
+    c.restore()
+    for i, col in enumerate((GOLD, TEAL, EMERALD)):
+        circle(c, x + 18 + i * 16, y + 15, 4.5, fill=col, alpha=alpha * 0.9)
+    if title:
+        text(c, title, font(MONO, 13, 'Medium'), x + w / 2, y + 15, color=MUTED, alpha=alpha)
+    return x + 16, y + 44
+
+
+TOK = re.compile(r'("(?:[^"\\]|\\.)*"\s*:)|("(?:[^"\\]|\\.)*")|(\b\d[\w.]*\b)|(\b(?:true|false|null|SELECT|FROM|WHERE|JOIN|ON|AND|ORDER|BY|GROUP|const|let|await|fetch|import|def|return|curl|requests)\b)|([{}\[\]():,;=<>/|*+.-])')
+
+
+def code_line(c, s, x, y, alpha=1.0, size=15, base=TEXT):
+    f = font(MONO, size, 'Medium')
+    pos = 0
+    xx = x
+    for m in TOK.finditer(s):
+        if m.start() > pos:
+            seg = s[pos:m.start()]
+            text(c, seg, f, xx, y, color=base, alpha=alpha, anchor='lm'); xx += f.getlength(seg)
+        seg = m.group(0)
+        col = SKY if m.group(1) else EMERALD if m.group(2) else GOLD if m.group(3) else CYAN if m.group(4) else MUTED
+        text(c, seg, f, xx, y, color=col, alpha=alpha, anchor='lm'); xx += f.getlength(seg)
+        pos = m.end()
+    if pos < len(s):
+        text(c, s[pos:], f, xx, y, color=base, alpha=alpha, anchor='lm'); xx += f.getlength(s[pos:])
+    return xx
+
+
+def typed_lines(c, lines, x, y, t, cps=38, lh=22, size=15, alpha=1.0, cursor=True):
+    budget = int(max(0, t) * cps)
+    last = (x, y)
+    for i, ln in enumerate(lines):
+        if budget <= 0:
+            break
+        part = ln[:budget]
+        budget -= len(ln) + 4
+        xx = code_line(c, part, x, y + i * lh, alpha, size)
+        last = (xx, y + i * lh)
+    if cursor and int(t * 2.5) % 2 == 0:
+        rrect(c, last[0] + 2, last[1] - size * 0.6, 8, size * 1.2, 1, fill=GOLD, alpha=alpha)
+
+
+def arrow(c, x0, y, x1, color, alpha=1.0, t=0.0, lw=3):
+    c.set_dash([8, 8], -t * 30)
+    line(c, x0, y, x1 - 10, y, color, lw, alpha)
+    c.set_dash([])
+    c.move_to(x1, y); c.line_to(x1 - 14, y - 9); c.line_to(x1 - 14, y + 9); c.close_path()
+    c.set_source_rgba(*rgbf(color, alpha)); c.fill()
+
+
+def badge(c, x, y, label, color, alpha=1.0, size=16, dark=True, anchor='m'):
+    f = font(SANS, size, 'Bold')
+    tw = f.getlength(label) + size * 1.4
+    hh = size * 1.9
+    x0 = x - tw / 2 if anchor == 'm' else x
+    rrect(c, x0, y - hh / 2, tw, hh, hh / 2, fill=color, alpha=alpha)
+    text(c, label, f, x0 + tw / 2, y, color=BLACK if dark else TEXT, alpha=alpha)
+    return tw
+
+
+def fmt_card(c, x, y, label, color, alpha=1.0, kind='doc', seed=0, scale=1.0, w=150, h=190):
+    c.save(); c.translate(x, y); c.scale(scale, scale)
+    if kind == 'img':
+        photo(c, 0, 0, w, h * 0.8, seed, alpha, r=10, stroke=color)
+    elif kind == 'film':
+        filmstrip(c, -w / 2 - 20, -h * 0.3, w + 40, h * 0.6, seed, 0, alpha, n=3, accent=color)
+    elif kind == 'audio':
+        rrect(c, -w / 2, -h * 0.35, w, h * 0.7, 12, fill=SURF, stroke=color, lw=2, alpha=alpha)
+        waveform(c, -w / 2 + 12, 0, w - 24, h * 0.45, seed, color, alpha, n=20)
+    elif kind == 'data':
+        rrect(c, -w / 2, -h / 2, w, h, 10, fill=SURF, stroke=color, lw=2, alpha=alpha)
+        for r_ in range(5):
+            for col in range(3):
+                rrect(c, -w / 2 + 12 + col * (w - 24) / 3, -h / 2 + 18 + r_ * 30, (w - 24) / 3 - 6, 20, 3,
+                      fill=mix(SURF2, color, 0.35 if r_ == 0 else 0.1), alpha=alpha)
+    else:
+        page(c, 0, 0, w, h, alpha, color, seed=seed)
+    badge(c, 0, h / 2 + 4, label, color, alpha, 15)
+    c.restore()
+
+
+def size_str(kb):
+    return f'{kb / 1024:.1f} MB' if kb >= 1024 else f'{int(kb)} KB'
+
+
+# ============================================================================= demo templates
+# Every demo draws inside the stage (x 40..920, y 100..440) given local time t (s), length d and params P.
+SX, SY, SW, SH = 40, 100, 880, 340
+CX, CY = W / 2, SY + SH / 2
+
+
+def d_merge(c, g, t, d, P):
+    kind = P['kind']
+    n = 3 + P['r'] % 2
+    colors = P['cols']
+    k = ease_in_out((t - 0.6) / 1.6)
+    for i in range(n):
+        sx = CX + (i - (n - 1) / 2) * 190
+        sy = CY - 10
+        tx = CX - 190 + i * 6
+        ty = CY - 6 - i * 6
+        x, y = lerp(sx, tx, k), lerp(sy, ty, k)
+        a = ease_out((t - i * 0.15) / 0.4)
+        if kind == 'doc':
+            page(c, x, y, 120, 160, a, colors[i % 3], rot=(1 - k) * (i - 1) * 0.08, seed=i + P['seed'])
+        elif kind == 'img':
+            photo(c, x, y, 140, 100, P['seed'] + i, a, stroke=colors[i % 3])
+        elif kind == 'film':
+            filmstrip(c, x - 80, y - 32, 160, 64, P['seed'] + i * 3, 0, a, n=3, accent=colors[i % 3])
+        else:
+            rrect(c, x - 80, y - 32, 160, 64, 10, fill=SURF, stroke=colors[i % 3], lw=2, alpha=a)
+            waveform(c, x - 70, y, 140, 44, P['seed'] + i, colors[i % 3], a, n=18)
+    if t > 2.0:
+        kk = ease_out_back((t - 2.0) / 0.6)
+        x = CX + 40
+        arrow(c, CX - 90, CY, x - 20, GOLD, clamp(kk), t)
+        if kind in ('doc', 'img'):
+            page(c, x + 80, CY, 140, 186, clamp(kk), GOLD, seed=P['seed'], img=(kind == 'img'), scale=0.85 + 0.15 * clamp(kk))
+            badge(c, x + 80, CY + 112, f'{n} in 1', GOLD, clamp(kk))
+        elif kind == 'film':
+            filmstrip(c, x, CY - 40, 260, 80, P['seed'], t * 0.6, clamp(kk), n=4, accent=GOLD)
+            badge(c, x + 130, CY + 66, f'{n} clips joined', GOLD, clamp(kk))
+        else:
+            rrect(c, x, CY - 40, 260, 80, 12, fill=SURF, stroke=GOLD, lw=2, alpha=clamp(kk))
+            waveform(c, x + 10, CY, 240, 56, P['seed'] + 9, GOLD, clamp(kk), n=40, play=(t - 2) / 3)
+            badge(c, x + 130, CY + 66, 'one track', GOLD, clamp(kk))
+        circle(g, x + 90, CY, 110, fill=GLOW, alpha=0.10 * clamp(kk))
+
+
+def d_split(c, g, t, d, P):
+    kind = P['kind']
+    k = ease_out((t - 1.0) / 1.2)
+    if kind == 'grid':      # image splitter
+        n = 3
+        tw, th = 240 / n, 240 / n
+        for r_ in range(n):
+            for cc in range(n):
+                gap = 14 * k
+                x = CX - 120 + cc * (tw + gap) - gap
+                y = CY - 120 + r_ * (th + gap) - gap
+                c.save(); c.rectangle(x, y, tw, th); c.clip()
+                draw_sprite(c, photo_sprite(P['seed'], 240, 240), CX - 120 + 120 + cc * gap - gap, CY - 120 + 120 + r_ * gap - gap, 1)
+                c.restore()
+                rrect(c, x, y, tw, th, 2, stroke=GOLD, lw=1.5, alpha=k)
+        badge(c, CX, CY + 150, '3 x 3 tiles', GOLD, ease_out((t - 1.6) / 0.4))
+        return
+    if kind == 'frames':
+        filmstrip(c, SX + 40, CY - 120, SW - 80, 90, P['seed'], t * 0.4, 1)
+        for i in range(5):
+            kk = ease_out_back((t - 0.8 - i * 0.3) / 0.5)
+            if kk > 0:
+                photo(c, SX + 120 + i * 165, CY + 70 + (1 - clamp(kk)) * -60, 140, 90, P['seed'] + i, clamp(kk), stroke=P['cols'][i % 3])
+                text(c, f'frame_{i + 1:03d}.png', font(MONO, 12), SX + 120 + i * 165, CY + 130, color=MUTED, alpha=clamp(kk))
+        return
+    n = P['n']
+    # single doc splits into n pages fanning out
+    for i in range(n):
+        x = lerp(CX, CX + (i - (n - 1) / 2) * 150, k)
+        rot = lerp(0, (i - (n - 1) / 2) * 0.06, k)
+        a = 1 if kind != 'extract' or i in (1, 3) or k < 0.5 else 1 - 0.7 * ease_out((t - 2) / 0.6)
+        page(c, x, CY - 10 + (i % 2) * 8 * k, 118, 156, a, P['cols'][i % 3], rot=rot, seed=i + P['seed'])
+        if k > 0.95:
+            text(c, str(i + 1), font(MONO, 14, 'Bold'), x, CY + 86, color=MUTED, alpha=a)
+    # scissor sweep
+    sx = lerp(SX, SX + SW, clamp((t - 0.2) / 0.9))
+    if t < 1.3:
+        line(c, sx, SY + 20, sx, SY + SH - 20, GOLD, 2, 0.9)
+        line(g, sx, SY + 20, sx, SY + SH - 20, GLOW, 10, 0.8)
+        draw_sprite(c, icon_sprite('Scissors', 34, GOLD), sx, SY + 14)
+    lab = {'extract': 'pages 2, 4 to new PDF', 'delete': 'pages removed'}.get(kind, f'{n} files in a ZIP')
+    badge(c, CX, SY + SH - 14, lab, GOLD, ease_out((t - 2.2) / 0.4))
+
+
+def d_compress(c, g, t, d, P):
+    kind = P['kind']
+    before, after = P['kb']
+    k = ease_in_out((t - 0.8) / 2.0)
+    sc = lerp(1.0, 0.62, k)
+    x = CX - 150
+    if kind == 'img':
+        photo(c, x, CY - 10, 260 * sc, 180 * sc, P['seed'], 1, stroke=GOLD)
+    elif kind == 'film':
+        filmstrip(c, x - 140 * sc, CY - 10 - 50 * sc, 280 * sc, 100 * sc, P['seed'], t * 0.5, 1, n=3)
+    else:
+        page(c, x, CY - 10, 170, 220, 1, P['cols'][0], seed=P['seed'], img=True, scale=sc)
+    # compress clamps
+    for s in (-1, 1):
+        off = lerp(170, 170 * 0.62, k)
+        line(c, x + s * off, CY - 80, x + s * off, CY + 60, GOLD, 4, 0.9)
+        line(g, x + s * off, CY - 80, x + s * off, CY + 60, GLOW, 12, 0.6)
+    # counter + ring
+    kb = lerp(before, after, k)
+    rx = CX + 190
+    arc(c, rx, CY - 20, 80, 0, 2 * math.pi, LINE, 10)
+    arc(c, rx, CY - 20, 80, -math.pi / 2, -math.pi / 2 + 2 * math.pi * k * (1 - after / before), EMERALD, 10)
+    arc(g, rx, CY - 20, 80, -math.pi / 2, -math.pi / 2 + 2 * math.pi * k * (1 - after / before), EMERALD, 18, 0.7)
+    text(c, f'-{int(round(100 * k * (1 - after / before)))}%', font(DISPLAY, 40, 'Bold'), rx, CY - 22, color=TEXT)
+    text(c, size_str(kb), font(MONO, 24, 'Bold'), rx, CY + 92, color=GOLD)
+    text(c, f'from {size_str(before)}', font(MONO, 14, 'Medium'), rx, CY + 120, color=MUTED)
+
+
+FMT_KIND = {'PDF': 'doc', 'WORD': 'doc', 'DOCX': 'doc', 'TXT': 'doc', 'TEXT': 'doc', 'MD': 'doc', 'HTML': 'doc', 'EPUB': 'doc',
+            'PPTX': 'doc', 'IMAGE': 'img', 'RAW': 'img', 'TIFF': 'img', 'JXL': 'img', 'SVG': 'img', 'ICO': 'img', 'ICNS': 'img', 'CUR': 'img', 'JPG': 'img', 'PNG': 'img', 'WEBP': 'img', 'HEIC': 'img', 'AVIF': 'img', 'GIF': 'img',
+            'XLSX': 'data', 'CSV': 'data', 'JSON': 'data', 'MP4': 'film', 'WEBM': 'film', 'MOV': 'film', 'MKV': 'film',
+            'MP3': 'audio', 'WAV': 'audio', 'OGG': 'audio', 'FLAC': 'audio', 'AAC': 'audio', 'M4A': 'audio'}
+
+
+def d_convert(c, g, t, d, P):
+    seq = P['fmts']
+    a_in = ease_out(t / 0.5)
+    fx, tx = CX - 220, CX + 220
+    src = seq[0]
+    fmt_card(c, fx, CY - 16, src, P['cols'][0], a_in, FMT_KIND.get(src, 'doc'), P['seed'])
+    # cycling targets
+    targets = seq[1:]
+    per = max(1.1, (d - 1.6) / max(1, len(targets)))
+    idx = min(len(targets) - 1, int(max(0, t - 1.0) / per))
+    lt = max(0, t - 1.0) - idx * per
+    arrow(c, fx + 100, CY - 16, tx - 100, GOLD, a_in, t)
+    # particles travelling
+    for i in range(6):
+        ph = (t * 0.9 + i / 6) % 1
+        circle(c, lerp(fx + 100, tx - 100, ph), CY - 16 + math.sin(ph * 6.28 + i) * 10, 3.5, fill=GLOW, alpha=0.9 * a_in)
+        circle(g, lerp(fx + 100, tx - 100, ph), CY - 16, 8, fill=GLOW, alpha=0.6)
+    if t > 1.0:
+        tg = targets[idx]
+        kk = ease_out_back(lt / 0.5)
+        fmt_card(c, tx, CY - 16, tg, P['cols'][1 + idx % 2], clamp(kk), FMT_KIND.get(tg, 'doc'), P['seed'] + 3, scale=0.85 + 0.15 * clamp(kk))
+        rrect(g, tx - 90, CY - 120, 180, 220, 20, fill=GLOW, alpha=0.12 * clamp(kk))
+    if len(targets) > 1:
+        f = font(MONO, 14, 'Bold')
+        x = CX - (len(targets) * 64) / 2
+        for i, tg in enumerate(targets):
+            on = i == idx and t > 1.0
+            rrect(c, x + i * 64, SY + SH - 22, 56, 24, 12, fill=GOLD if on else SURF, stroke=GOLD if on else LINE, lw=1)
+            text(c, tg, f, x + i * 64 + 28, SY + SH - 10, color=BLACK if on else MUTED)
+
+
+def d_doc(c, g, t, d, P):
+    """Single big page with a tool-specific action."""
+    act = P['act']
+    px, py, pw, ph = CX - (110 if P['mirror'] else -110) * 0 , CY, 210, 290
+    if act in ('compare',):
+        for s, xx in ((-1, CX - 130), (1, CX + 130)):
+            page(c, xx, CY, 200, 280, 1, GOLD, seed=P['seed'] + (s > 0), lines=0, header=True)
+            for i in range(9):
+                y = CY - 95 + i * 22
+                diff = i in (2, 5, 6)
+                col = (EMERALD if s > 0 else GOLD) if diff else PAPER_LINE
+                k = ease_out((t - 1.0 - i * 0.12) / 0.4) if diff else 1
+                if diff:
+                    rrect(c, xx - 88, y - 7, 176 * k, 16, 3, fill=col, alpha=0.35)
+                rrect(c, xx - 76, y - 2, 120 + (i * 13) % 30, 5, 2, fill=INK if diff else PAPER_LINE, alpha=0.8 if diff else 1)
+        badge(c, CX, SY + SH - 6, '3 changes found', GOLD, ease_out((t - 2.4) / 0.4))
+        return
+    if act in ('organize', 'delete', 'insert', 'nup', 'rotate_grid'):
+        n = 6
+        order = list(range(n))
+        k = ease_in_out((t - 1.0) / 1.0)
+        for i in range(n):
+            col, row = i % 3, i // 3
+            x = CX - 170 + col * 170
+            y = CY - 75 + row * 150
+            j = i
+            if act == 'organize' and i in (1, 4):
+                o = 4 if i == 1 else 1
+                x2, y2 = CX - 170 + (o % 3) * 170, CY - 75 + (o // 3) * 150
+                x, y = lerp(x, x2, k), lerp(y, y2, k) - math.sin(k * math.pi) * 30
+            a = 1.0
+            sc = 1.0
+            if act == 'delete' and i == 2:
+                a = 1 - k; sc = 1 - 0.3 * k
+            if act == 'insert' and i >= 3:
+                pass
+            if act == 'nup':
+                x = lerp(x, CX - 50 + col * 50, k); y = lerp(y, CY - 40 + row * 70, k); sc = lerp(1, 0.38, k)
+            page(c, x, y, 100, 130, a, P['cols'][i % 3], seed=i + P['seed'], scale=sc)
+            if act == 'delete' and i == 2 and 0 < k < 1:
+                draw_sprite(c, icon_sprite('Trash2', 40, GOLD), x, y, 1 - k)
+            if act != 'nup':
+                text(c, str(i + 1), font(MONO, 13, 'Bold'), x, y + 78, color=MUTED, alpha=a)
+        if act == 'nup':
+            k2 = ease_out((t - 2.2) / 0.5)
+            rrect(c, CX - 105, CY - 105, 210, 200, 6, stroke=GOLD, lw=2, alpha=k2)
+            badge(c, CX, CY + 130, '6 pages on 1 sheet', GOLD, k2)
+        if act == 'insert':
+            k2 = ease_out_back((t - 1.6) / 0.6)
+            page(c, CX + 170 + 120, CY - 75, 100, 130, clamp(k2), GOLD, lines=0, header=False)
+            rrect(c, CX + 170 + 70, CY - 140, 100, 130, 6, stroke=GOLD, lw=2, alpha=clamp(k2))
+            badge(c, CX + 290, CY + 10, 'blank page', GOLD, clamp(k2), 13)
+        return
+    rot = 0.0
+    if act == 'rotate':
+        rot = ease_in_out((t - 1.0) / 0.8) * math.pi / 2 + ease_in_out((t - 2.6) / 0.8) * math.pi / 2
+    gray = ease_in_out((t - 1.0) / 1.2) if act == 'grayscale' else 0
+    page(c, CX, CY, pw, ph, 1, P['cols'][0], rot=rot, seed=P['seed'], img=act in ('grayscale', 'crop', 'flatten'), gray=gray)
+    x0, y0 = CX - pw / 2, CY - ph / 2
+    if act == 'rotate':
+        draw_sprite(c, icon_sprite('RotateCw', 40, GOLD), CX + 170, CY - 120)
+    elif act == 'grayscale':
+        badge(c, CX + 200, CY, 'Grayscale', TEXT, gray)
+    elif act == 'sign':
+        # handwritten signature drawn progressively
+        k = clamp((t - 0.8) / 1.8)
+        pts = [(x0 + 30 + i * 2.6, y0 + 230 + 14 * math.sin(i * 0.33) * math.exp(-i / 70) - (i % 23) * 0.6) for i in range(int(60 * k))]
+        if len(pts) > 1:
+            c.move_to(*pts[0])
+            for p in pts[1:]:
+                c.line_to(*p)
+            c.set_source_rgba(*rgbf(hexrgb('#0F3F6E'))); c.set_line_width(3); c.stroke()
+        line(c, x0 + 24, y0 + 252, x0 + 190, y0 + 252, PAPER_LINE, 1.5)
+        if pts:
+            draw_sprite(c, icon_sprite('PenTool', 30, GOLD), pts[-1][0] + 12, pts[-1][1] - 14)
+        text(c, 'Signed  28 Oct 2026', font(SANS, 11, 'Medium'), x0 + 30, y0 + 268, color=INK, alpha=ease_out((t - 2.8) / 0.4), anchor='lm')
+    elif act == 'edit':
+        k = ease_out((t - 0.8) / 0.6)
+        rrect(c, x0 + 22, y0 + 84, 150 * k, 14, 2, fill=GOLD, alpha=0.45)
+        k2 = ease_out((t - 1.5) / 0.5)
+        rrect(c, x0 + 110, y0 + 160, 80, 60, 6, stroke=TEAL, lw=3, alpha=k2)
+        k3 = ease_out((t - 2.1) / 0.5)
+        text(c, 'Looks good', font(SANS, 16, 'Bold'), x0 + 28, y0 + 245, color=hexrgb('#0F6E64'), alpha=k3, anchor='lm')
+        for i, ic in enumerate(['Type', 'Square', 'Highlighter', 'Image', 'PenLine']):
+            on = int(t * 1.2) % 5 == i
+            rrect(c, CX + 150, CY - 120 + i * 50, 42, 42, 10, fill=GOLD if on else SURF, stroke=LINE, lw=1)
+            draw_sprite(c, icon_sprite(ic, 22, BLACK if on else TEXT), CX + 171, CY - 99 + i * 50)
+    elif act == 'watermark':
+        k = ease_out((t - 1.0) / 0.8)
+        for r_ in range(3):
+            text(c, 'CONFIDENTIAL', font(DISPLAY, 22, 'Bold'), CX, y0 + 70 + r_ * 80, color=GOLD, alpha=0.55 * k, rot=-0.5)
+    elif act == 'numbers':
+        for i in range(3):
+            xx = CX + (i - 1) * 70
+            page(c, xx, CY, 120, 160, 1, P['cols'][i % 3], seed=i, scale=1)
+            k = ease_out_back((t - 1.0 - i * 0.3) / 0.4)
+            if k > 0:
+                text(c, f'{i + 1} / 3', font(MONO, 12, 'Bold'), xx, CY + 66, color=hexrgb('#8A5A0B'), alpha=clamp(k))
+    elif act == 'header':
+        k = ease_out((t - 0.9) / 0.6)
+        rrect(c, x0 + 14, y0 + 8, (pw - 28) * k, 16, 3, fill=GOLD, alpha=0.3)
+        text(c, 'Q3 Report', font(SANS, 10, 'Bold'), x0 + 20, y0 + 16, color=INK, alpha=k, anchor='lm')
+        k2 = ease_out((t - 1.4) / 0.6)
+        rrect(c, x0 + 14, y0 + ph - 22, (pw - 28) * k2, 14, 3, fill=TEAL, alpha=0.3)
+        text(c, 'Page 1 of 12', font(SANS, 9, 'Bold'), x0 + pw - 20, y0 + ph - 15, color=INK, alpha=k2, anchor='rm')
+    elif act == 'protect' or act == 'unlock':
+        k = ease_in_out((t - 1.0) / 0.7)
+        closed = k if act == 'protect' else 1 - k
+        circle(g, CX, CY, 70, fill=GLOW, alpha=0.5)
+        rrect(c, CX - 46, CY - 10, 92, 74, 12, fill=GOLD)
+        c.new_sub_path(); c.arc(CX, CY - 10 - 14 * (1 - closed), 30, math.pi, 2 * math.pi)
+        c.set_source_rgba(*rgbf(GOLD)); c.set_line_width(10); c.stroke()
+        if closed < 0.98:
+            pass
+        circle(c, CX, CY + 22, 9, fill=BLACK)
+        lab = 'AES-256 encrypted' if act == 'protect' else 'Password removed'
+        badge(c, CX, CY + 160, lab, GOLD, ease_out((t - 1.8) / 0.4))
+        for i in range(8 if act == 'protect' else 0):
+            text(c, '•', font(SANS, 30, 'Bold'), CX - 84 + i * 24, CY - 100, color=GOLD, alpha=ease_out((t - 0.3 - i * 0.08) / 0.2))
+    elif act == 'redact':
+        for i in range(4):
+            k = ease_out((t - 1.0 - i * 0.25) / 0.4)
+            rrect(c, x0 + 24, y0 + 70 + i * 40, (120 + (i * 31) % 50) * k, 16, 2, fill=INK)
+        badge(c, CX + 200, CY - 60, 'email', GOLD, ease_out((t - 1.0) / 0.3), 13)
+        badge(c, CX + 200, CY - 20, 'phone', TEAL, ease_out((t - 1.3) / 0.3), 13)
+        badge(c, CX + 200, CY + 20, 'card no.', EMERALD, ease_out((t - 1.6) / 0.3), 13)
+    elif act == 'crop':
+        k = ease_in_out((t - 0.9) / 1.0)
+        m = 30 * k
+        c.save(); c.rectangle(x0, y0, pw, ph); c.rectangle(x0 + m, y0 + m * 1.2, pw - 2 * m, ph - 2.4 * m); c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+        c.set_source_rgba(0, 0, 0, 0.55); c.fill(); c.restore()
+        rrect(c, x0 + m, y0 + m * 1.2, pw - 2 * m, ph - 2.4 * m, 2, stroke=GOLD, lw=2)
+        for cx_, cy_ in ((x0 + m, y0 + m * 1.2), (x0 + pw - m, y0 + m * 1.2), (x0 + m, y0 + ph - m * 1.2), (x0 + pw - m, y0 + ph - m * 1.2)):
+            rrect(c, cx_ - 6, cy_ - 6, 12, 12, 3, fill=GOLD)
+    elif act == 'flatten':
+        for i in range(3):
+            k = ease_in_out((t - 0.9) / 1.0)
+            off = (1 - k) * (i + 1) * 26
+            rrect(c, x0 + 30 + off, y0 + 120 - off, 130, 30, 5, fill=[GOLD, TEAL, SKY][i], alpha=0.45, stroke=[GOLD, TEAL, SKY][i], lw=2)
+        badge(c, CX + 210, CY, 'one layer', GOLD, ease_out((t - 2) / 0.4))
+    elif act in ('metadata', 'form', 'resume', 'invoice'):
+        fields = {'metadata': [('Title', 'Annual Report'), ('Author', 'A. Adak'), ('Subject', 'Finance'), ('Keywords', 'q3, plan')],
+                  'form': [('Name', 'Riya Sen'), ('Email', 'riya@mail.com'), ('City', 'Kolkata'), ('Agree', '✓')],
+                  'resume': [('Name', 'Riya Sen'), ('Role', 'Frontend Dev'), ('Skills', 'React, TS'), ('Template', 'Clean')],
+                  'invoice': [('Design work', '12,000'), ('Hosting', '2,400'), ('GST 18%', '2,592'), ('Total', '16,992')]}[act]
+        wx, wy = CX + 20, CY - 120
+        window(c, wx, wy, 330, 250, {'metadata': 'properties', 'form': 'form fields', 'resume': 'details', 'invoice': 'invoice'}[act])
+        page(c, CX - 170, CY, 170, 230, 1, P['cols'][0], seed=P['seed'], scale=1)
+        for i, (k_, v) in enumerate(fields):
+            y = wy + 60 + i * 44
+            text(c, k_, font(SANS, 14, 'Medium'), wx + 18, y, color=MUTED, anchor='lm')
+            rrect(c, wx + 120, y - 14, 190, 28, 6, fill=SURF2, stroke=LINE, lw=1)
+            s = typed(v, t - 0.8 - i * 0.55, 18)
+            hot = act == 'invoice' and i == 3
+            text(c, s, font(MONO if act == 'invoice' else SANS, 14, 'Bold' if hot else 'Medium'), wx + 130 if act != 'invoice' else wx + 300, y,
+                 color=GOLD if hot else TEXT, anchor='lm' if act != 'invoice' else 'rm')
+    elif act == 'ocr':
+        k = clamp((t - 0.6) / 1.6)
+        y = y0 + ph * k
+        line(c, x0 - 10, y, x0 + pw + 10, y, CYAN, 2)
+        line(g, x0 - 10, y, x0 + pw + 10, y, CYAN, 14, 0.8)
+        for i in range(6):
+            yy = y0 + 60 + i * 30
+            if yy < y:
+                rrect(c, x0 + 22, yy - 6, 150, 14, 3, fill=CYAN, alpha=0.28)
+        if t > 2.0:
+            window(c, CX + 140, CY - 90, 200, 170, 'text')
+            typed_lines(c, ['Invoice No. 2041', 'Date 12/09/2026', 'Total 4,560.00'], CX + 156, CY - 40, t - 2.1, size=13, cps=30)
+    elif act == 'reader':
+        k = ease_in_out((t - 1.0) / 1.2)
+        rrect(c, x0 + 22, y0 + 116, 90, 14, 3, fill=GOLD, alpha=0.5 * k)
+        window(c, CX + 140, CY - 130, 220, 44, '')
+        text(c, typed('budget', t - 0.6, 10), font(SANS, 15, 'Medium'), CX + 160, CY - 100, anchor='lm')
+        text(c, '3 matches', font(MONO, 12), CX + 340, CY - 100, color=GOLD, anchor='rm', alpha=k)
+        for i in range(4):
+            page(c, CX - 200, CY - 105 + i * 70, 50, 64, 1 if i else 1, GOLD if i == 1 else LINE, seed=i, lines=3)
+    elif act == 'repair':
+        k = ease_out((t - 1.0) / 1.0)
+        c.save()
+        for i, (dx, dy, r) in enumerate([(-30, -20, -0.2), (30, 10, 0.15), (0, 40, 0.1)]):
+            pass
+        c.restore()
+        if k < 1:
+            for i in range(5):
+                rrect(c, x0 + 10 + (i * 37) % 160 + (1 - k) * (i - 2) * 30, y0 + 40 + i * 45 + (1 - k) * ((i % 2) * 2 - 1) * 20, 60, 30, 3,
+                      fill=hexrgb('#3A2A10'), alpha=0.6 * (1 - k))
+        draw_sprite(c, icon_sprite('Wrench', 40, GOLD), CX + 170, CY - 60, 1, rot=math.sin(t * 6) * 0.3 * (1 - k))
+        badge(c, CX + 170, CY + 20, 'Rebuilt', EMERALD, ease_out((t - 2) / 0.4))
+
+
+def d_image(c, g, t, d, P):
+    act = P['act']
+    s = P['seed']
+    pw, ph = 330, 220
+    if act == 'resize':
+        k = ease_in_out((t - 0.8) / 1.4)
+        w_, h_ = lerp(380, 220, k), lerp(250, 146, k)
+        photo(c, CX - 80, CY, w_, h_, s, 1, stroke=GOLD)
+        for sx_ in (-1, 1):
+            for sy_ in (-1, 1):
+                rrect(c, CX - 80 + sx_ * w_ / 2 - 6, CY + sy_ * h_ / 2 - 6, 12, 12, 3, fill=GOLD)
+        text(c, f'{int(lerp(3840, 1080, k))} x {int(lerp(2560, 720, k))}', font(MONO, 26, 'Bold'), CX + 250, CY - 10, color=TEXT)
+        text(c, 'pixels', font(SANS, 14), CX + 250, CY + 20, color=MUTED)
+    elif act == 'crop':
+        photo(c, CX, CY, 400, 260, s, 1)
+        k = ease_in_out((t - 0.8) / 1.0)
+        circ = P['r'] % 2 == 0
+        bw, bh = lerp(400, 200, k), lerp(260, 200, k)
+        c.save(); c.rectangle(CX - 200, CY - 130, 400, 260)
+        if circ and k > 0.99:
+            c.new_sub_path(); c.arc(CX, CY, 100, 0, 2 * math.pi)
+        else:
+            c.rectangle(CX - bw / 2, CY - bh / 2, bw, bh)
+        c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD); c.set_source_rgba(0, 0, 0, 0.6); c.fill(); c.restore()
+        rrect(c, CX - bw / 2, CY - bh / 2, bw, bh, 2, stroke=GOLD, lw=2)
+        badge(c, CX, CY + 150, '1 : 1', GOLD, ease_out((t - 1.6) / 0.4))
+    elif act == 'rotate':
+        k = ease_in_out((t - 0.8) / 0.8)
+        k2 = ease_in_out((t - 2.0) / 0.6)
+        c.save(); c.translate(CX, CY); c.rotate(k * math.pi / 2); c.scale(1 - 2 * k2, 1); c.translate(-CX, -CY)
+        photo(c, CX, CY, 300, 200, s, 1, stroke=GOLD)
+        c.restore()
+        draw_sprite(c, icon_sprite('RotateCw', 36, GOLD), CX + 220, CY - 80, ease_out(t / 0.5))
+        draw_sprite(c, icon_sprite('FlipHorizontal', 36, TEAL), CX + 220, CY + 20, ease_out((t - 1.6) / 0.5))
+    elif act == 'bgremove':
+        k = ease_in_out((t - 0.9) / 1.3)
+        x0, y0 = CX - pw / 2, CY - ph / 2
+        # checkerboard on the revealed side
+        c.save(); c.rectangle(x0, y0, pw * k, ph); c.clip()
+        for i in range(0, pw, 16):
+            for j in range(0, ph, 16):
+                c.rectangle(x0 + i, y0 + j, 16, 16)
+                v = 0.17 if (i // 16 + j // 16) % 2 else 0.11
+                c.set_source_rgb(v, v, v); c.fill()
+        c.restore()
+        c.save(); c.rectangle(x0 + pw * k, y0, pw * (1 - k) + 1, ph); c.clip()
+        photo(c, CX, CY, pw, ph, s, 1, r=0)
+        c.restore()
+        # subject (a simple portrait silhouette)
+        circle(c, CX, CY - 30, 42, fill=hexrgb('#E9C9A0'))
+        c.new_sub_path(); c.arc(CX, CY + 110, 90, math.pi, 2 * math.pi); c.set_source_rgba(*rgbf(TEAL)); c.fill()
+        line(c, x0 + pw * k, y0, x0 + pw * k, y0 + ph, GOLD, 3)
+        line(g, x0 + pw * k, y0, x0 + pw * k, y0 + ph, GLOW, 12)
+        rrect(c, x0, y0, pw, ph, 4, stroke=LINE, lw=1.5)
+        badge(c, CX + 250, CY, 'on-device AI', GOLD, ease_out((t - 0.4) / 0.4), 13)
+    elif act == 'compare':
+        x0 = CX - pw / 2
+        k = 0.5 + 0.38 * math.sin((t - 0.6) * 1.5) if t > 0.6 else 0.5
+        photo(c, CX, CY, pw, ph, s, 1, gray=0.85)
+        c.save(); c.rectangle(x0, CY - ph / 2, pw * k, ph); c.clip(); photo(c, CX, CY, pw, ph, s, 1); c.restore()
+        line(c, x0 + pw * k, CY - ph / 2, x0 + pw * k, CY + ph / 2, GOLD, 3)
+        circle(c, x0 + pw * k, CY, 14, fill=GOLD)
+        text(c, 'before', font(SANS, 13, 'SemiBold'), x0 + 30, CY + ph / 2 + 18, color=MUTED)
+        text(c, 'after', font(SANS, 13, 'SemiBold'), x0 + pw - 30, CY + ph / 2 + 18, color=MUTED)
+    elif act == 'upscale':
+        k = clamp((t - 0.9) / 1.4)
+        x0 = CX - pw / 2
+        photo(c, CX, CY, pw, ph, s, 1, pixel=12)
+        c.save(); c.rectangle(x0, CY - ph / 2, pw * ease_in_out(k), ph); c.clip(); photo(c, CX, CY, pw, ph, s, 1); c.restore()
+        line(c, x0 + pw * ease_in_out(k), CY - ph / 2, x0 + pw * ease_in_out(k), CY + ph / 2, GOLD, 3)
+        text(c, f'{1 + 3 * ease_in_out(k):.1f}x', font(DISPLAY, 40, 'Bold'), CX + 260, CY, gradient=GOLD_GRAD)
+    elif act in ('watermark', 'text', 'meme'):
+        photo(c, CX, CY, 380, 250, s, 1)
+        k = ease_out_back((t - 1.0) / 0.6)
+        if act == 'watermark':
+            for i in range(3):
+                text(c, '© your brand', font(DISPLAY, 22, 'Bold'), CX - 110 + i * 110, CY - 60 + i * 60, color=TEXT, alpha=0.5 * clamp(k), rot=-0.35)
+        elif act == 'text':
+            text(c, 'Golden hour', font(DISPLAY, 46, 'Bold'), CX, CY - 70, color=TEXT, alpha=clamp(k), scale=0.8 + 0.2 * clamp(k), shadow=(4, (0, 0, 0), 0.8))
+        else:
+            text(c, 'ME, FIXING ONE BUG', font(DISPLAY, 30, 'Bold'), CX, CY - 100, alpha=clamp(k), shadow=(2, (0, 0, 0), 1))
+            text(c, 'NOW THERE ARE NINE', font(DISPLAY, 30, 'Bold'), CX, CY + 100, alpha=ease_out_back((t - 1.6) / 0.6) if t > 1.6 else 0, shadow=(2, (0, 0, 0), 1))
+    elif act == 'rounded':
+        k = ease_in_out((t - 0.8) / 1.4)
+        size = 230
+        rad = lerp(0, size / 2, k)
+        c.save(); rrect_path(c, CX - size / 2, CY - size / 2, size, size, rad); c.clip()
+        photo(c, CX, CY, size, size, s, 1, r=0)
+        c.restore()
+        rrect(c, CX - size / 2, CY - size / 2, size, size, rad, stroke=GOLD, lw=2)
+        text(c, f'radius {int(rad)} px', font(MONO, 20, 'Bold'), CX + 250, CY, color=TEXT)
+    elif act == 'filters':
+        k = 0.5 + 0.5 * math.sin((t - 0.8) * 1.6) if t > 0.8 else 0.5
+        photo(c, CX - 120, CY, 340, 230, s, 1, bright=round(0.75 + 0.5 * k, 2), hue=round(0.4 * (1 - k), 2))
+        for i, lab in enumerate(['Brightness', 'Contrast', 'Saturation', 'Warmth']):
+            y = CY - 75 + i * 50
+            v = [k, 1 - k * 0.6, 0.3 + 0.5 * k, 0.6][i]
+            text(c, lab, font(SANS, 13, 'Medium'), CX + 110, y - 12, color=MUTED, anchor='lm')
+            rrect(c, CX + 110, y, 230, 6, 3, fill=LINE)
+            rrect(c, CX + 110, y, 230 * v, 6, 3, fill=P['cols'][i % 3])
+            circle(c, CX + 110 + 230 * v, y + 3, 8, fill=TEXT)
+    elif act in ('blur', 'exif'):
+        photo(c, CX - 90, CY, 340, 230, s, 1)
+        if act == 'blur':
+            k = ease_out((t - 1.0) / 0.6)
+            rx, ry = CX - 90 + 30, CY - 20
+            c.save(); rrect_path(c, rx - 50, ry - 50, 100, 100, 10); c.clip()
+            draw_sprite(c, photo_sprite(s, 340, 230, pixel=int(1 + 15 * k)), CX - 90, CY)
+            c.restore()
+            rrect(c, rx - 50, ry - 50, 100, 100, 10, stroke=GOLD, lw=2, alpha=k)
+            badge(c, CX + 190, CY, 'face detected', GOLD, k, 13)
+        else:
+            wx = CX + 110
+            window(c, wx, CY - 110, 230, 220, 'metadata')
+            rows = ['Camera  Pixel 9', 'GPS  22.42, 87.32', 'Date  2026:10:12', 'Lens  24mm f/1.8']
+            for i, r_ in enumerate(rows):
+                y = CY - 50 + i * 36
+                text(c, r_, font(MONO, 12, 'Medium'), wx + 16, y, anchor='lm')
+                k = ease_out((t - 1.2 - i * 0.3) / 0.4)
+                line(c, wx + 14, y, wx + 14 + 200 * k, y, GOLD, 2)
+            badge(c, wx + 115, CY + 140, 'Stripped', EMERALD, ease_out((t - 2.6) / 0.4))
+    elif act == 'svg':
+        k = ease_in_out((t - 0.8) / 1.5)
+        photo(c, CX - 160, CY, 240, 180, s, 1)
+        arrow(c, CX - 30, CY, CX + 40, GOLD, 1, t)
+        # vector rendition: layered polygons + nodes
+        bx = CX + 160
+        pts = [(bx - 120 + i * 20, CY + 30 - 40 * math.sin(i * 0.7 + 1)) for i in range(13)]
+        for li, col in enumerate([TEAL, hexrgb('#0F4C4C')]):
+            c.move_to(bx - 120, CY + 90)
+            for x, y in pts:
+                c.line_to(x, y + li * 30)
+            c.line_to(bx + 120, CY + 90); c.close_path()
+            c.set_source_rgba(*rgbf(col, k)); c.fill()
+        circle(c, bx, CY - 40, 26, fill=GOLD, alpha=k)
+        for x, y in pts:
+            rrect(c, x - 3, y - 3, 6, 6, 1, fill=TEXT, alpha=k)
+        rrect(c, bx - 120, CY - 90, 240, 180, 8, stroke=GOLD, lw=2, alpha=k)
+    elif act == 'screenshot':
+        k = ease_in_out((t - 0.8) / 1.2)
+        pad = 40 * k
+        linear_fill(c, CX - 220, CY - 150, CX + 220, CY + 150, [(0, hexrgb('#0F4C4C'), k), (1, GOLD_DEEP, k)])
+        rrect_path(c, CX - 220, CY - 150, 440, 300, 18); c.fill()
+        window(c, CX - 220 + pad, CY - 150 + pad, 440 - 2 * pad, 300 - 2 * pad, 'app.tsx')
+        typed_lines(c, ['const app = createApp()', 'app.mount("#root")'], CX - 200 + pad, CY - 90 + pad, t, size=13)
+    elif act == 'collage':
+        k = ease_in_out((t - 0.6) / 1.4)
+        cells = [(-150, -60, 150, 160), (20, -60, 130, 75), (20, 25, 130, 75), (170, -60, 110, 160)]
+        rng_ = np.random.default_rng(s)
+        for i, (x, y, w_, h_) in enumerate(cells):
+            sx_, sy_ = rng_.uniform(-300, 300), rng_.uniform(-150, 150)
+            photo(c, lerp(CX + sx_, CX + x + w_ / 2 - 60, k), lerp(CY + sy_, CY + y + h_ / 2 - 10, k), w_, h_, s + i, 1, r=6, stroke=TEXT if k > 0.98 else None)
+    elif act == 'gif':
+        frames = 4
+        i = int(t * 6) % frames
+        for j in range(frames):
+            photo(c, CX - 240 + j * 80, CY + 120, 70, 48, s + j, 1 if j == i else 0.4, r=4, stroke=GOLD if j == i else None)
+        photo(c, CX, CY - 30, 300, 190, s + i, 1, stroke=GOLD)
+        badge(c, CX + 210, CY - 110, 'GIF', GOLD, 1)
+    elif act == 'base64':
+        photo(c, CX - 200, CY, 200, 140, s, 1)
+        arrow(c, CX - 80, CY, CX - 10, GOLD, 1, t)
+        window(c, CX, CY - 100, 260, 200, 'data URI')
+        rng_ = np.random.default_rng(s)
+        al = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+        lines_ = ['data:image/png;base64,'] + [''.join(al[k_] for k_ in rng_.integers(0, 64, 26)) for _ in range(5)]
+        typed_lines(c, lines_, CX + 16, CY - 50, t - 0.6, cps=60, size=12, lh=20)
+    elif act == 'splitter':
+        d_split(c, g, t, d, dict(P, kind='grid'))
+    elif act == 'picker':
+        photo(c, CX - 80, CY, 380, 250, s, 1)
+        px_ = CX - 80 + math.sin(t * 0.9) * 120
+        py_ = CY + math.cos(t * 1.1) * 60
+        col = photo_img(s).resize((380, 250)).getpixel((int(px_ - (CX - 80) + 190), int(py_ - CY + 125)))
+        circle(c, px_, py_, 34, fill=col[:3], stroke=TEXT, lw=3)
+        circle(c, px_, py_, 3, fill=TEXT)
+        rrect(c, CX + 160, CY - 40, 140, 80, 12, fill=col[:3], stroke=TEXT, lw=2)
+        text(c, '#%02X%02X%02X' % col[:3], font(MONO, 18, 'Bold'), CX + 230, CY + 64, color=TEXT)
+    else:
+        photo(c, CX, CY, pw, ph, s, 1, stroke=GOLD)
+
+
+def d_video(c, g, t, d, P):
+    act = P['act']
+    s = P['seed']
+    if act in ('record', 'webcam'):
+        window(c, CX - 260, SY + 10, 520, 300, 'screen' if act == 'record' else 'camera')
+        if act == 'record':
+            typed_lines(c, ['function launch() {', '  return "OpenFile"', '}'], CX - 240, SY + 80, t * 1.2, size=16)
+            circle(c, CX + 190, SY + 240, 44, fill=SURF2, stroke=GOLD, lw=3)
+            circle(c, CX + 190, SY + 230, 14, fill=hexrgb('#E9C9A0')); c.new_sub_path(); c.arc(CX + 190, SY + 268, 24, math.pi, 2 * math.pi)
+            c.set_source_rgba(*rgbf(TEAL)); c.fill()
+        else:
+            photo(c, CX, SY + 170, 500, 260, s, 1, r=4)
+            n = 3 - int(t - 0.6)
+            if 0 < n <= 3 and t > 0.6:
+                text(c, str(n), font(DISPLAY, 90, 'Bold'), CX, SY + 170, color=TEXT, alpha=1 - ((t - 0.6) % 1))
+        on = int(t * 2) % 2 == 0
+        circle(c, CX - 220, SY + 52, 7, fill=GOLD, alpha=1 if on else 0.3)
+        text(c, f'REC  00:{int(max(0, t - 1)):02d}', font(MONO, 14, 'Bold'), CX - 205, SY + 52, color=TEXT, anchor='lm')
+        return
+    # timeline with filmstrip
+    fx, fw = SX + 60, SW - 120
+    sp = 0.15
+    if act == 'speed':
+        sp = 0.15 * (1 + 3 * ease_in_out((t - 1.0) / 1.5))
+    filmstrip(c, fx, CY - 110, fw, 100, s, t * sp, 1, n=6)
+    ty = CY + 40
+    rrect(c, fx, ty, fw, 8, 4, fill=LINE)
+    if act == 'trim':
+        k = ease_in_out((t - 0.8) / 1.2)
+        a_, b_ = lerp(0, 0.22, k), lerp(1, 0.7, k)
+        c.save(); c.rectangle(fx, CY - 110, fw * a_, 100); c.rectangle(fx + fw * b_, CY - 110, fw * (1 - b_), 100)
+        c.set_source_rgba(0, 0, 0, 0.6); c.fill(); c.restore()
+        rrect(c, fx + fw * a_, CY - 114, fw * (b_ - a_), 108, 6, stroke=GOLD, lw=3)
+        for xx in (a_, b_):
+            rrect(c, fx + fw * xx - 6, CY - 114, 12, 108, 4, fill=GOLD)
+        rrect(c, fx + fw * a_, ty, fw * (b_ - a_), 8, 4, fill=GOLD)
+        text(c, f'00:{int(lerp(0, 12, k)):02d} to 00:{int(lerp(54, 38, k)):02d}', font(MONO, 18, 'Bold'), CX, ty + 50, color=TEXT)
+    elif act == 'speed':
+        mult = 1 + 3 * ease_in_out((t - 1.0) / 1.5)
+        cx_, cy_ = CX, ty + 70
+        arc(c, cx_, cy_, 50, math.pi, 2 * math.pi, LINE, 8)
+        arc(c, cx_, cy_, 50, math.pi, math.pi + math.pi * (mult - 0.25) / 3.75, GOLD, 8)
+        text(c, f'{mult:.2f}x', font(MONO, 20, 'Bold'), cx_, cy_ - 8, color=TEXT)
+    elif act in ('extract', 'mute'):
+        k = ease_in_out((t - 1.0) / 1.0)
+        yy = lerp(ty, ty + 70, k) if act == 'extract' else ty + 40
+        gain = 1.0 if act == 'extract' else 1 - 0.95 * k
+        waveform(c, fx + 40, yy, fw - 80, 50, s, TEAL, 1, n=70, gain=gain)
+        ic = 'Music' if act == 'extract' else ('VolumeX' if k > 0.5 else 'Volume2')
+        draw_sprite(c, icon_sprite(ic, 30, GOLD), fx + 10, yy)
+        if act == 'extract':
+            badge(c, fx + fw - 40, yy + 46, 'MP3', GOLD, k, 13)
+    elif act == 'upscale':
+        k = ease_in_out((t - 0.8) / 1.4)
+        labels = ['720p', '1080p', '1440p', '4K']
+        i = min(3, int(k * 3.99))
+        for j, lab in enumerate(labels):
+            badge(c, CX - 180 + j * 120, ty + 60, lab, GOLD if j == i else SURF2, 1, 15, dark=j == i)
+    elif act == 'gif':
+        k = ease_out((t - 1.0) / 0.6)
+        photo(c, CX, ty + 70, 150, 90, s + int(t * 6) % 3, k, stroke=GOLD)
+        badge(c, CX + 120, ty + 70, 'GIF  1.2 MB', GOLD, k, 13)
+    elif act == 'merge':
+        k = ease_in_out((t - 0.8) / 1.2)
+        for i in range(3):
+            x = lerp(fx + i * (fw / 3) + i * 30 - 30, fx + i * (fw / 3), k)
+            rrect(c, x, ty - 4, fw / 3 - 4, 16, 6, fill=P['cols'][i], alpha=0.9)
+    else:
+        play = (t / d) % 1
+        rrect(c, fx, ty, fw * play, 8, 4, fill=GOLD)
+        circle(c, fx + fw * play, ty + 4, 9, fill=TEXT)
+    # playhead
+    if act not in ('trim',):
+        x = fx + fw * ((t * 0.18) % 1)
+        line(c, x, CY - 118, x, ty + 14, GOLD, 2, 0.9)
+
+
+def d_audio(c, g, t, d, P):
+    act = P['act']
+    s = P['seed']
+    wx, ww = SX + 60, SW - 120
+    if act == 'record':
+        n = 60
+        prog = clamp(t / (d * 0.8))
+        waveform(c, wx, CY - 10, ww, 150, s, TEAL, 1, progress=prog, n=n, t=t, live=True)
+        circle(c, CX, CY + 120, 22, fill=GOLD)
+        circle(g, CX, CY + 120, 34 + 6 * math.sin(t * 6), fill=GLOW, alpha=0.8)
+        draw_sprite(c, icon_sprite('Mic', 24, BLACK), CX, CY + 120)
+        text(c, f'00:{int(t):02d}', font(MONO, 18, 'Bold'), CX + 70, CY + 120, color=TEXT, anchor='lm')
+    elif act == 'transcribe':
+        waveform(c, wx, CY - 80, ww, 90, s, TEAL, 1, n=70, play=clamp(t / (d - 1)))
+        lines_ = ['00:01  Welcome back to the show.', '00:04  Today we talk about privacy', '00:07  and tools that run offline.']
+        for i, ln in enumerate(lines_):
+            text(c, typed(ln, t - 0.8 - i * 1.0, 24), font(MONO, 16, 'Medium'), wx + 40, CY + 30 + i * 32, color=TEXT if i < 2 else MUTED, anchor='lm')
+        badge(c, wx + ww - 60, CY + 120, 'SRT', GOLD, ease_out((t - 3) / 0.4))
+    elif act == 'tts':
+        s_ = 'Hello, this is your text read aloud.'
+        text(c, typed(s_, t - 0.4, 22), font(SANS, 24, 'Medium'), CX, CY - 80, color=TEXT)
+        k = ease_out((t - 1.2) / 0.8)
+        waveform(c, wx + 100, CY + 40, ww - 200, 100 * k, s, GOLD, 1, n=50, t=t, live=True)
+    elif act == 'merge':
+        k = ease_in_out((t - 0.9) / 1.2)
+        waveform(c, lerp(wx - 40, wx, k), CY - 30, ww / 2, 90, s, TEAL, 1, n=32)
+        waveform(c, lerp(wx + ww / 2 + 40, wx + ww / 2, k), CY - 30, ww / 2, 90, s + 1, GOLD, 1, n=32)
+        badge(c, CX, CY + 90, 'one track', GOLD, ease_out((t - 2.2) / 0.4))
+    elif act == 'convert':
+        waveform(c, wx, CY - 40, ww, 120, s, TEAL, 1, n=64, play=clamp(t / (d - 1)))
+        fm = ['MP3', 'WAV', 'OGG', 'AAC', 'FLAC', 'M4A']
+        i = int(max(0, t - 0.8) / 0.9) % len(fm)
+        for j, f_ in enumerate(fm):
+            badge(c, CX - 225 + j * 90, CY + 100, f_, GOLD if j == i else SURF2, 1, 14, dark=j == i)
+    else:  # editor
+        k = ease_in_out((t - 0.8) / 1.2)
+        a_, b_ = lerp(0, 0.15, k), lerp(1, 0.8, k)
+        waveform(c, wx, CY - 20, ww, 160, s, TEAL, 1, n=80, dim_out=(a_, b_))
+        rrect(c, wx + ww * a_, CY - 110, ww * (b_ - a_), 180, 8, stroke=GOLD, lw=2)
+        # fade envelope
+        c.move_to(wx + ww * a_, CY + 70); c.line_to(wx + ww * (a_ + 0.08), CY - 110)
+        c.line_to(wx + ww * (b_ - 0.08), CY - 110); c.line_to(wx + ww * b_, CY + 70)
+        c.set_source_rgba(*rgbf(GOLD, 0.9 * k)); c.set_line_width(2); c.stroke()
+        text(c, 'fade in', font(SANS, 12, 'Medium'), wx + ww * a_ + 30, CY + 95, color=MUTED, alpha=k)
+        text(c, 'fade out', font(SANS, 12, 'Medium'), wx + ww * b_ - 30, CY + 95, color=MUTED, alpha=k)
+
+
+DEV_SNIPPETS = {
+    'json-formatter': (['{', '  "name": "OpenFile",', '  "tools": 117,', '  "private": true,', '  "tags": ["pdf", "image"]', '}'], 'formatted'),
+    'jwt-decoder': (['header  {"alg": "HS256"}', 'payload {"sub": "42",', '         "exp": 1798000000}', 'expires in 3 days'], 'decoded'),
+    'hash-generator': (['input  "hello world"', 'MD5    5eb63bbbe01eeed0', 'SHA1   2aae6c35c94fcfb4', 'SHA256 b94d27b9934d3e08'], 'hashed'),
+    'uuid-generator': (['0193f1c2-7a4e-7b1d-9c3e-2f4a', '0193f1c2-7a4f-71a0-8e11-9b2c', '0193f1c2-7a50-7d5e-a0c4-11de', '0193f1c2-7a51-7f02-b7a9-3c8f'], 'v7'),
+    'url-encoder': (['in   name=Riya Sen&city=Kolkata', 'out  name=Riya%20Sen&city=Kolkata', '', 'name  Riya Sen', 'city  Kolkata'], 'encoded'),
+    'base64': (['text   OpenFile is free', 'base64 T3BlbkZpbGUgaXMgZnJlZQ==', '', 'decode -> OpenFile is free'], 'base64'),
+    'curl-to-code': (['curl -X POST api.dev/v1/files \\', '  -H "Auth: token"', '', 'await fetch("api.dev/v1/files", {', '  method: "POST" })'], 'JavaScript'),
+    'timestamp-converter': (['1798000000', '-> Fri, 21 Dec 2026 09:46 UTC', '-> 15:16 IST', '-> 2 months from now'], 'epoch'),
+    'cron-parser': (['*/15 9-17 * * 1-5', '', 'Every 15 minutes, 9:00 to 17:59,', 'Monday to Friday', 'next  Thu 09:15'], 'explained'),
+    'yaml-json': (['name: OpenFile', 'private: true', 'tools: 117', '', '{"name": "OpenFile", "private": true}'], 'converted'),
+    'sql-formatter': (['SELECT name, size', 'FROM files', 'WHERE size > 1024', 'ORDER BY size DESC;'], 'formatted'),
+    'html-entities': (['<p>Fish & Chips</p>', '', '&lt;p&gt;Fish &amp; Chips&lt;/p&gt;'], 'escaped'),
+    'number-base': (['dec  2026', 'hex  0x7EA', 'oct  0o3752', 'bin  0b11111101010'], 'converted'),
+    'regex-tester': (['/(\\w+)@(\\w+)\\.com/g', '', 'riya@mail.com, dev@open.com', '2 matches, 4 groups'], 'matched'),
+    'regex-builder': (['starts with  "INV-"', 'then digits  4 times', 'end of line', '', '/^INV-\\d{4}$/'], 'built'),
+    'password-generator': (['k7#Qm2!vRz9&Lp4x', '', 'amber-river-candle-north'], 'strong'),
+}
+
+
+def d_dev(c, g, t, d, P):
+    slug = P['slug']
+    if slug in ('qr-generator', 'qr-scanner'):
+        rng = np.random.default_rng(P['seed'])
+        n = 21
+        cell = 11
+        x0, y0 = CX - n * cell / 2 - (120 if slug == 'qr-generator' else 0), CY - n * cell / 2
+        m = rng.random((n, n)) > 0.52
+        for (fx, fy) in ((0, 0), (n - 7, 0), (0, n - 7)):
+            m[fy:fy + 7, fx:fx + 7] = False
+            for i in range(7):
+                for j in range(7):
+                    if i in (0, 6) or j in (0, 6) or (2 <= i <= 4 and 2 <= j <= 4):
+                        m[fy + i, fx + j] = True
+        rrect(c, x0 - 14, y0 - 14, n * cell + 28, n * cell + 28, 10, fill=PAPER)
+        prog = clamp((t - 0.4) / 1.6) if slug == 'qr-generator' else 1
+        for i in range(n):
+            for j in range(n):
+                if m[i, j] and (i + j) / (2 * n) <= prog:
+                    c.rectangle(x0 + j * cell, y0 + i * cell, cell - 0.5, cell - 0.5)
+        c.set_source_rgba(*rgbf(INK)); c.fill()
+        if slug == 'qr-scanner':
+            y = y0 + (n * cell) * (0.5 + 0.5 * math.sin(t * 2.4))
+            line(c, x0 - 20, y, x0 + n * cell + 20, y, CYAN, 3)
+            line(g, x0 - 20, y, x0 + n * cell + 20, y, CYAN, 14)
+            for (cx_, cy_, sx_, sy_) in ((x0 - 24, y0 - 24, 1, 1), (x0 + n * cell + 24, y0 - 24, -1, 1), (x0 - 24, y0 + n * cell + 24, 1, -1), (x0 + n * cell + 24, y0 + n * cell + 24, -1, -1)):
+                line(c, cx_, cy_, cx_ + 24 * sx_, cy_, GOLD, 4); line(c, cx_, cy_, cx_, cy_ + 24 * sy_, GOLD, 4)
+            badge(c, CX, y0 + n * cell + 60, 'openfile-studio.vercel.app', GOLD, ease_out((t - 1.8) / 0.4), 13)
+        else:
+            for i, (lab, col) in enumerate([('Link', GOLD), ('Wi-Fi', TEAL), ('vCard', SKY)]):
+                badge(c, CX + 150, CY - 60 + i * 50, lab, col, ease_out((t - 0.3 - i * 0.2) / 0.4), 15, anchor='l')
+        return
+    if slug == 'barcode-generator':
+        rng = np.random.default_rng(P['seed'])
+        x = CX - 180
+        prog = clamp((t - 0.4) / 1.5)
+        rrect(c, CX - 210, CY - 100, 420, 200, 10, fill=PAPER)
+        widths = rng.integers(1, 5, 70)
+        xx = x
+        for i, w_ in enumerate(widths):
+            if xx > x + 360 * prog:
+                break
+            if i % 2 == 0:
+                c.rectangle(xx, CY - 70, w_ * 1.3, 120)
+            xx += w_ * 1.3 + 1
+        c.set_source_rgba(*rgbf(INK)); c.fill()
+        text(c, typed('OPENFILE-2026', t - 1.2, 18), font(MONO, 18, 'Bold'), CX, CY + 72, color=INK)
+        return
+    if slug == 'erd-diagram':
+        tables = [('users', ['id', 'email', 'name'], CX - 280, CY - 100), ('files', ['id', 'user_id', 'size'], CX - 40, CY - 40), ('tools', ['slug', 'category'], CX + 200, CY - 110)]
+        for i, (nm, cols, x, y) in enumerate(tables):
+            k = ease_out_back((t - 0.3 - i * 0.3) / 0.5)
+            if k <= 0:
+                continue
+            rrect(c, x, y, 160, 34 + 26 * len(cols), 8, fill=SURF, stroke=P['cols'][i], lw=2, alpha=clamp(k))
+            rrect(c, x, y, 160, 30, 8, fill=P['cols'][i], alpha=0.25 * clamp(k))
+            text(c, nm, font(MONO, 15, 'Bold'), x + 12, y + 15, alpha=clamp(k), anchor='lm')
+            for j, col in enumerate(cols):
+                text(c, col, font(MONO, 13), x + 12, y + 46 + j * 26, color=MUTED, alpha=clamp(k), anchor='lm')
+        k = ease_in_out((t - 1.4) / 0.8)
+        if k > 0:
+            c.move_to(CX - 120, CY - 20); c.curve_to(CX - 80, CY - 20, CX - 80, CY + 20, CX - 40 * k - 40 * (1 - k), CY + 18)
+            c.set_source_rgba(*rgbf(GOLD, k)); c.set_line_width(2); c.stroke()
+        badge(c, CX, SY + SH - 10, 'export SQL, Prisma, Drizzle', GOLD, ease_out((t - 2.2) / 0.4), 13)
+        return
+    lines_, tag = DEV_SNIPPETS.get(slug, (['// ' + P['name']], 'done'))
+    wx, wy, ww, wh = CX - 300, SY + 4, 600, 300
+    ox, oy = window(c, wx, wy, ww, wh, P['slug'] + ('.json' if 'json' in slug else ''))
+    typed_lines(c, lines_, ox + 8, oy + 14, t - 0.4, cps=34, lh=32, size=18)
+    if slug == 'password-generator':
+        k = ease_out((t - 1.0) / 1.2)
+        rrect(c, ox + 8, oy + 130, 400, 10, 5, fill=LINE)
+        rrect(c, ox + 8, oy + 130, 400 * k, 10, 5, fill=EMERALD)
+        text(c, 'Very strong', font(SANS, 15, 'Bold'), ox + 420, oy + 135, color=EMERALD, anchor='lm', alpha=k)
+    done = sum(len(l) + 4 for l in lines_) / 34 + 0.6
+    badge(c, wx + ww - 70, wy + wh - 26, tag, GOLD, ease_out((t - done) / 0.4), 13)
+
+
+def d_text(c, g, t, d, P):
+    slug = P['slug']
+    if slug == 'diff-checker':
+        L = ['const size = 42', 'const name = "doc"', 'export default size', 'console.log(size)']
+        R = ['const size = 64', 'const name = "doc"', 'export { size, name }', 'console.log(size)']
+        for side, (lines_, xx) in enumerate(((L, CX - 300), (R, CX + 10))):
+            ox, oy = window(c, xx, SY + 20, 290, 240, ['before', 'after'][side])
+            for i, ln in enumerate(lines_):
+                diff = i in (0, 2)
+                k = ease_out((t - 0.8 - i * 0.2) / 0.4)
+                if diff:
+                    rrect(c, xx + 4, oy + 8 + i * 40 - 14, 282 * k, 28, 4, fill=GOLD if side == 0 else EMERALD, alpha=0.22)
+                    text(c, '-' if side == 0 else '+', font(MONO, 14, 'Bold'), xx + 12, oy + 8 + i * 40, color=GOLD if side == 0 else EMERALD, alpha=k)
+                code_line(c, ln, ox + 14, oy + 8 + i * 40, size=13)
+        return
+    if slug == 'word-counter':
+        para = 'Plain words win. Short lines help readers move fast and remember more.'
+        ox, oy = window(c, CX - 320, SY + 20, 360, 250, 'draft.txt')
+        shown = typed(para, t - 0.3, 26)
+        words = shown.split(' ')
+        ln, y = '', oy + 10
+        for w_ in words:
+            if font(SANS, 17).getlength(ln + ' ' + w_) > 320:
+                text(c, ln, font(SANS, 17, 'Medium'), ox + 4, y, anchor='lm'); y += 28; ln = w_
+            else:
+                ln = (ln + ' ' + w_).strip()
+        text(c, ln, font(SANS, 17, 'Medium'), ox + 4, y, anchor='lm')
+        stats = [('words', len([w_ for w_ in words if w_])), ('characters', len(shown)), ('sentences', shown.count('.')), ('read time', '1 min')]
+        for i, (lab, v) in enumerate(stats):
+            x, y = CX + 90 + (i % 2) * 140, SY + 60 + (i // 2) * 110
+            rrect(c, x, y, 128, 92, 12, fill=SURF, stroke=mix(LINE, P['cols'][i % 3], 0.5), lw=1.5)
+            text(c, str(v), font(DISPLAY, 30, 'Bold'), x + 64, y + 38, color=P['cols'][i % 3])
+            text(c, lab, font(SANS, 13, 'Medium'), x + 64, y + 70, color=MUTED)
+        return
+    if slug == 'case-converter':
+        forms = ['open file studio', 'OPEN FILE STUDIO', 'Open File Studio', 'openFileStudio', 'open_file_studio', 'open-file-studio']
+        i = int(max(0, t - 0.6) / 0.9) % len(forms)
+        lt = (max(0, t - 0.6)) % 0.9
+        k = ease_out(lt / 0.3)
+        text(c, forms[i], font(MONO, 40, 'Bold'), CX, CY - 30 + (1 - k) * 16, color=TEXT, alpha=k)
+        x = CX - 3 * 110 + 55
+        for j, lab in enumerate(['lower', 'UPPER', 'Title', 'camel', 'snake', 'kebab']):
+            badge(c, x + j * 110, CY + 70, lab, GOLD if j == i else SURF2, 1, 14, dark=j == i)
+        return
+    if slug == 'date-calculator':
+        x0, y0 = CX - 260, SY + 20
+        ox, oy = window(c, x0, y0, 300, 280, 'October 2026')
+        for i in range(31):
+            col, row = (i + 3) % 7, (i + 3) // 7
+            x, y = ox + 8 + col * 38, oy + 10 + row * 38
+            inr = 5 <= i <= 5 + int(clamp((t - 0.8) / 1.5) * 16)
+            if inr:
+                rrect(c, x - 2, y - 14, 34, 28, 6, fill=GOLD, alpha=0.85 if i in (5, 21) else 0.25)
+            text(c, str(i + 1), font(SANS, 13, 'Medium'), x + 15, y, color=BLACK if i in (5, 21) and inr else TEXT)
+        k = clamp((t - 0.8) / 1.5)
+        text(c, f'{int(16 * k)} days', font(DISPLAY, 46, 'Bold'), CX + 180, CY - 30, gradient=GOLD_GRAD)
+        text(c, f'{int(12 * k)} business days', font(SANS, 18, 'Medium'), CX + 180, CY + 20, color=MUTED)
+        return
+    if slug == 'unit-converter':
+        rows = [('Length', 5, 'km', 3.107, 'mi'), ('Weight', 70, 'kg', 154.3, 'lb'), ('Temp', 37, '°C', 98.6, '°F')]
+        for i, (lab, a_, ua, b_, ub) in enumerate(rows):
+            y = SY + 60 + i * 95
+            k = ease_out((t - 0.5 - i * 0.4) / 0.8)
+            rrect(c, CX - 320, y - 34, 640, 70, 14, fill=SURF, stroke=LINE, lw=1, alpha=clamp(k * 2))
+            text(c, lab, font(SANS, 15, 'Medium'), CX - 296, y, color=MUTED, anchor='lm', alpha=clamp(k * 2))
+            text(c, f'{a_} {ua}', font(MONO, 24, 'Bold'), CX - 110, y, alpha=clamp(k * 2))
+            arrow(c, CX - 20, y, CX + 50, P['cols'][i % 3], clamp(k * 2), t)
+            text(c, f'{b_ * k:.1f} {ub}', font(MONO, 24, 'Bold'), CX + 170, y, color=P['cols'][i % 3], alpha=clamp(k * 2))
+        return
+    if slug == 'text-cleaner':
+        lines_ = ['banana', '  apple ', 'cherry', 'apple', 'banana', 'date']
+        k = ease_in_out((t - 1.0) / 1.2)
+        res = ['apple', 'banana', 'cherry', 'date']
+        ox, oy = window(c, CX - 320, SY + 20, 260, 260, 'input')
+        for i, ln in enumerate(lines_):
+            dup = i in (3, 4)
+            text(c, ln, font(MONO, 16, 'Medium'), ox + 6, oy + 10 + i * 34, color=MUTED if dup else TEXT, anchor='lm', alpha=1 - 0.6 * k if dup else 1)
+            if dup:
+                line(c, ox + 4, oy + 10 + i * 34, ox + 4 + 80 * k, oy + 10 + i * 34, GOLD, 2)
+        arrow(c, CX - 40, CY, CX + 40, GOLD, 1, t)
+        ox2, oy2 = window(c, CX + 60, SY + 20, 260, 260, 'clean')
+        for i, ln in enumerate(res):
+            kk = ease_out((t - 1.8 - i * 0.2) / 0.4)
+            text(c, ln, font(MONO, 16, 'Medium'), ox2 + 6, oy2 + 10 + i * 34, color=EMERALD, anchor='lm', alpha=kk)
+        return
+    if slug in ('markdown-editor', 'lorem-ipsum'):
+        if slug == 'lorem-ipsum':
+            ox, oy = window(c, CX - 300, SY + 10, 600, 300, 'placeholder')
+            para = ('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore '
+                    'et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.')
+            shown = typed(para, t - 0.3, 60)
+            ln, y = '', oy + 12
+            for w_ in shown.split(' '):
+                if font(SANS, 18).getlength(ln + ' ' + w_) > 560:
+                    text(c, ln, font(SANS, 18, 'Regular'), ox + 4, y, color=TEXT, anchor='lm'); y += 32; ln = w_
+                else:
+                    ln = (ln + ' ' + w_).strip()
+            text(c, ln, font(SANS, 18, 'Regular'), ox + 4, y, color=TEXT, anchor='lm')
+            return
+        ox, oy = window(c, CX - 320, SY + 10, 310, 300, 'note.md')
+        src = ['# Launch notes', '', '- **Free** for all', '- Works offline', '', '> Plain words win.']
+        typed_lines(c, src, ox + 4, oy + 10, t - 0.3, cps=30, lh=32, size=15)
+        ox2, oy2 = window(c, CX + 10, SY + 10, 310, 300, 'preview')
+        k = clamp((t - 0.3) * 30 / 70)
+        if k > 0.15:
+            text(c, 'Launch notes', font(DISPLAY, 26, 'Bold'), ox2 + 4, oy2 + 14, anchor='lm')
+        if k > 0.45:
+            text(c, '•  Free for all', font(SANS, 16, 'Medium'), ox2 + 4, oy2 + 74, anchor='lm')
+            text(c, '•  Works offline', font(SANS, 16, 'Medium'), ox2 + 4, oy2 + 106, anchor='lm')
+        if k > 0.8:
+            line(c, ox2 + 4, oy2 + 154, ox2 + 4, oy2 + 182, GOLD, 3)
+            text(c, 'Plain words win.', font(SANS, 16, 'Medium'), ox2 + 16, oy2 + 168, color=MUTED, anchor='lm')
+        return
+    d_dev(c, g, t, d, P)
+
+
+def d_design(c, g, t, d, P):
+    slug = P['slug']
+    s = P['seed']
+    if slug == 'color-palette':
+        photo(c, CX - 170, CY, 300, 210, s, 1)
+        im = photo_img(s)
+        cols = [im.getpixel((int(im.width * fx), int(im.height * fy)))[:3] for fx, fy in ((0.2, 0.15), (0.5, 0.5), (0.8, 0.7), (0.3, 0.85), (0.5, 0.95))]
+        for i, col in enumerate(cols):
+            k = ease_out_back((t - 0.8 - i * 0.2) / 0.5)
+            if k <= 0:
+                continue
+            y = SY + 30 + i * 58
+            rrect(c, CX + 40, y, 60, 46, 10, fill=col, alpha=clamp(k))
+            text(c, '#%02X%02X%02X' % col, font(MONO, 17, 'Bold'), CX + 116, y + 23, alpha=clamp(k), anchor='lm')
+        return
+    if slug == 'color-converter':
+        col = mix(GOLD, TEAL, 0.5 + 0.5 * math.sin(t * 0.8)) if t > 1 else GOLD
+        rrect(c, CX - 300, SY + 30, 220, 220, 24, fill=col)
+        text(c, 'Aa', font(DISPLAY, 70, 'Bold'), CX - 190, SY + 140, color=BLACK)
+        r, g_, b = col
+        rows = [('HEX', '#%02X%02X%02X' % col), ('RGB', f'{r}, {g_}, {b}'), ('HSL', 'calc'), ('OKLCH', '0.79 0.15 75')]
+        import colorsys
+        hh, ll, ss = colorsys.rgb_to_hls(r / 255, g_ / 255, b / 255)
+        rows[2] = ('HSL', f'{int(hh * 360)} {int(ss * 100)}% {int(ll * 100)}%')
+        for i, (k_, v) in enumerate(rows):
+            y = SY + 50 + i * 48
+            text(c, k_, font(MONO, 14, 'Bold'), CX - 40, y, color=MUTED, anchor='lm')
+            text(c, v, font(MONO, 20, 'Bold'), CX + 50, y, anchor='lm')
+        badge(c, CX + 20, SY + 270, 'AA  contrast 9.1 : 1', EMERALD, ease_out((t - 1.4) / 0.4), 14, anchor='l')
+        return
+    if slug == 'gradient-generator':
+        k = t * 0.5
+        a_ = 0.15 + 0.1 * math.sin(k)
+        b_ = 0.85 - 0.1 * math.sin(k * 1.3)
+        linear_fill(c, CX - 320, 0, CX + 320, 0, [(0, GOLD), (a_ + 0.3, TEAL), (b_, CYAN)])
+        rrect_path(c, CX - 320, SY + 20, 640, 190, 20); c.fill()
+        for p_, col in ((0, GOLD), (a_ + 0.3, TEAL), (b_, CYAN)):
+            x = CX - 320 + 640 * p_
+            circle(c, x, SY + 240, 12, fill=col, stroke=TEXT, lw=3)
+        text(c, f'linear-gradient(90deg, #F5A524, #14B8A6 {int((a_ + 0.3) * 100)}%, #22D3EE)', font(MONO, 14, 'Medium'), CX, SY + 290, color=MUTED)
+        return
+    if slug == 'css-studio':
+        k = 0.5 + 0.5 * math.sin(max(0, t - 0.6) * 1.4)
+        blur = 10 + 40 * k
+        for i in range(6, 0, -1):
+            rrect(c, CX - 110 + i * k * 3, SY + 60 + i * k * 4, 220, 180, 24, fill=(0, 0, 0), alpha=0.06 * (blur / 50))
+        rrect(c, CX - 110, SY + 50, 220, 180, 24, fill=SURF2, stroke=mix(LINE, GOLD, k), lw=1.5)
+        rrect(g, CX - 110, SY + 50, 220, 180, 24, stroke=GOLD, lw=8, alpha=0.4 * k)
+        text(c, f'box-shadow: 0 {int(8 + 16 * k)}px {int(blur)}px', font(MONO, 15, 'Medium'), CX, SY + 280, color=MUTED)
+        return
+    if slug == 'favicon-generator':
+        sizes = [16, 32, 48, 96, 180]
+        x = CX - 270
+        for i, sz in enumerate(sizes):
+            k = ease_out_back((t - 0.4 - i * 0.2) / 0.5)
+            if k <= 0:
+                x += max(sz, 40) + 50; continue
+            box = sz * 0.8 + 10
+            rrect(c, x, CY - box / 2, box, box, box * 0.22, fill=GOLD, alpha=clamp(k))
+            draw_sprite(c, icon_sprite('FileText', max(10, int(box * 0.6)), BLACK, 2.4), x + box / 2, CY, clamp(k))
+            text(c, f'{sz}px', font(MONO, 13, 'Bold'), x + box / 2, CY + 100, color=MUTED, alpha=clamp(k))
+            x += box + 50
+        return
+    if slug == 'svg-optimizer':
+        k = ease_in_out((t - 0.8) / 1.4)
+        ox, oy = window(c, CX - 320, SY + 10, 300, 280, 'icon.svg')
+        lines_ = ['<svg viewBox="0 0 24 24">', '  <!-- editor junk -->', '  <path d="M12.000 2.000', '    L22.000 22.000"/>', '</svg>']
+        for i, ln in enumerate(lines_):
+            code_line(c, ln, ox, oy + 10 + i * 30, 1 - (0.7 * k if i == 1 else 0), size=12)
+        text(c, size_str(lerp(14.2, 3.1, k)), font(DISPLAY, 46, 'Bold'), CX + 160, CY - 30, gradient=GOLD_GRAD)
+        text(c, f'-{int(78 * k)}%', font(MONO, 22, 'Bold'), CX + 160, CY + 30, color=EMERALD)
+        return
+    if slug == 'sketch-board':
+        k = clamp((t - 0.4) / 2.0)
+        pts = [(CX - 250 + i * 6, CY + 40 * math.sin(i * 0.12)) for i in range(int(70 * k))]
+        if len(pts) > 1:
+            c.move_to(*pts[0])
+            for p in pts[1:]:
+                c.line_to(*p)
+            c.set_source_rgba(*rgbf(GOLD)); c.set_line_width(4); c.set_line_cap(cairo.LINE_CAP_ROUND); c.stroke()
+        kk = ease_out_back((t - 1.0) / 0.5)
+        rrect(c, CX + 120, CY - 120, 150, 120, 6, fill=hexrgb('#F7D774'), alpha=clamp(kk))
+        text(c, 'ship it', font(SANS, 20, 'Bold'), CX + 195, CY - 60, color=INK, alpha=clamp(kk))
+        k3 = ease_out((t - 1.6) / 0.5)
+        rrect(c, CX - 80, CY + 60, 160, 70, 12, stroke=TEAL, lw=3, alpha=k3)
+        arrow(c, CX + 85, CY + 95, CX + 180, SKY, k3, t)
+        return
+    if slug == 'placeholder-image':
+        k = ease_in_out((t - 0.6) / 1.4)
+        w_, h_ = lerp(200, 480, k), lerp(150, 270, k)
+        rrect(c, CX - w_ / 2, CY - h_ / 2, w_, h_, 8, fill=SURF2, stroke=LINE, lw=2)
+        line(c, CX - w_ / 2, CY - h_ / 2, CX + w_ / 2, CY + h_ / 2, LINE, 1.5)
+        line(c, CX - w_ / 2, CY + h_ / 2, CX + w_ / 2, CY - h_ / 2, LINE, 1.5)
+        text(c, f'{int(lerp(400, 1200, k))} x {int(lerp(300, 675, k))}', font(MONO, 26, 'Bold'), CX, CY, color=GOLD)
+        return
+    # generic layers
+    for i in range(4):
+        k = ease_out((t - 0.4 - i * 0.2) / 0.6)
+        c.save(); c.translate(CX, CY + 60 - i * 40 * k); c.scale(1, 0.5); c.rotate(math.pi / 4)
+        rrect(c, -110, -110, 220, 220, 20, fill=P['cols'][i % 3], alpha=0.35 * k, stroke=P['cols'][i % 3], lw=2)
+        c.restore()
+
+
+def d_extra(c, g, t, d, P):
+    """Templates for the newer categories: data, ai, 3d, archive, ebook, font, cad, subtitle."""
+    cat = P['cat']
+    s = P['seed']
+    cols = P['cols']
+    if cat == '3d':
+        ang = t * 0.9
+        pts = [(-1, -1, -1), (1, -1, -1), (1, 1, -1), (-1, 1, -1), (-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1)]
+        PP = []
+        for x, y, z in pts:
+            x, z = x * math.cos(ang) - z * math.sin(ang), x * math.sin(ang) + z * math.cos(ang)
+            b = 0.5
+            y, z = y * math.cos(b) - z * math.sin(b), y * math.sin(b) + z * math.cos(b)
+            f = 4 / (4 + z)
+            PP.append((CX - 120 + x * 90 * f, CY + y * 90 * f))
+        for e0, e1 in [(0, 1), (1, 2), (2, 3), (3, 0), (4, 5), (5, 6), (6, 7), (7, 4), (0, 4), (1, 5), (2, 6), (3, 7)]:
+            line(c, *PP[e0], *PP[e1], cols[1] if cols[1] != GOLD else CYAN, 2.5)
+            line(g, *PP[e0], *PP[e1], CYAN, 8, 0.6)
+        for p in PP:
+            circle(c, *p, 4, fill=TEXT)
+        for i, f_ in enumerate(['GLB', 'OBJ', 'STL']):
+            badge(c, CX + 170, CY - 70 + i * 60, f_, GOLD if int(t) % 3 == i else SURF2, ease_out((t - 0.3 - i * 0.2) / 0.4), 15, dark=int(t) % 3 == i, anchor='l')
+        return
+    if cat == 'archive':
+        k = ease_in_out((t - 0.6) / 1.6)
+        rrect(c, CX - 90, CY - 20, 180, 130, 14, fill=SURF, stroke=GOLD, lw=2.5)
+        rrect(c, CX - 100, CY - 50, 200, 40, 10, fill=mix(SURF, GOLD, 0.35), stroke=GOLD, lw=2.5)
+        for i in range(6):
+            ph = clamp(k * 1.6 - i * 0.12)
+            sx_ = CX + (i - 2.5) * 130
+            x, y = lerp(sx_, CX, ease_in_out(ph)), lerp(CY - 120, CY + 10, ease_in_out(ph))
+            page(c, x, y, 54, 70, 1 - 0.9 * ease_in_out(clamp((ph - 0.8) / 0.2)), cols[i % 3], seed=i, lines=3, scale=1 - 0.4 * ph)
+        text(c, 'ZIP', font(DISPLAY, 30, 'Bold'), CX, CY + 50, color=GOLD)
+        badge(c, CX, CY + 140, '6 files packed', GOLD, ease_out((t - 2.2) / 0.4))
+        return
+    if cat == 'font':
+        glyphs = 'Aa Bb Gg Qq 01'
+        text(c, 'Aa', font(DISPLAY, 150, 'Bold'), CX - 170, CY - 10, gradient=GOLD_GRAD)
+        for i, w_ in enumerate(['Light', 'Regular', 'Medium', 'Bold']):
+            k = ease_out((t - 0.4 - i * 0.25) / 0.4)
+            text(c, 'The quick brown fox', font(SANS, 26, w_), CX + 20, CY - 90 + i * 52, alpha=k, anchor='lm')
+        badge(c, CX - 170, CY + 110, 'TTF  OTF  WOFF2', GOLD, ease_out((t - 1.6) / 0.4), 13)
+        return
+    if cat == 'ebook':
+        k = (t * 0.6) % 1
+        c.save(); c.translate(CX, CY)
+        rrect(c, -200, -120, 200, 240, 6, fill=PAPER); rrect(c, 0, -120, 200, 240, 6, fill=PAPER)
+        for i in range(7):
+            rrect(c, -180, -90 + i * 28, 150 - (i * 17) % 40, 6, 3, fill=PAPER_LINE)
+            rrect(c, 20, -90 + i * 28, 150 - (i * 23) % 40, 6, 3, fill=PAPER_LINE)
+        w_ = 200 * math.cos(k * math.pi)
+        rrect(c, min(0, w_), -120, abs(w_), 240, 6, fill=mix(PAPER, PAPER_LINE, 0.4 + 0.4 * abs(math.sin(k * math.pi))))
+        line(c, 0, -120, 0, 120, PAPER_LINE, 2)
+        c.restore()
+        badge(c, CX, CY + 150, 'EPUB to PDF', GOLD, ease_out((t - 0.6) / 0.4), 13)
+        return
+    if cat == 'subtitle':
+        filmstrip(c, SX + 80, CY - 120, SW - 160, 120, s, t * 0.2, 1, n=5)
+        cues = [('00:00:01,200', 'Welcome back.'), ('00:00:03,800', 'Let us get started.'), ('00:00:06,100', 'Everything stays on your device.')]
+        i = min(2, int(t / 1.4))
+        rrect(c, CX - 220, CY + 20, 440, 44, 8, fill=(0, 0, 0), alpha=0.7)
+        text(c, cues[i][1], font(SANS, 20, 'SemiBold'), CX, CY + 42)
+        text(c, f'{cues[i][0]}  -->  SRT  VTT  ASS', font(MONO, 14, 'Medium'), CX, CY + 100, color=MUTED)
+        return
+    if cat == 'cad':
+        c.set_source_rgba(*rgbf(hexrgb('#0A2235'))); rrect_path(c, CX - 300, SY + 10, 600, 300, 10); c.fill()
+        for i in range(0, 600, 30):
+            line(c, CX - 300 + i, SY + 10, CX - 300 + i, SY + 310, SKY, 1, 0.12)
+        for j in range(0, 300, 30):
+            line(c, CX - 300, SY + 10 + j, CX + 300, SY + 10 + j, SKY, 1, 0.12)
+        k = clamp((t - 0.3) / 1.8)
+        segs = [(-200, 100, -200, -80), (-200, -80, 60, -80), (60, -80, 60, 100), (60, 100, -200, 100), (60, 10, 200, 10), (200, 10, 200, 100)]
+        for n_, (x0, y0, x1, y1) in enumerate(segs):
+            kk = clamp(k * len(segs) - n_)
+            if kk > 0:
+                line(c, CX + x0, CY + y0, CX + lerp(x0, x1, kk), CY + lerp(y0, y1, kk), SKY, 2.5)
+        text(c, '4200 mm', font(MONO, 14, 'Bold'), CX - 70, CY - 100, color=GOLD, alpha=ease_out((t - 2) / 0.4))
+        return
+    if cat == 'ai':
+        nodes = [[(CX - 220, CY - 80 + i * 80) for i in range(3)], [(CX - 40, CY - 120 + i * 80) for i in range(4)], [(CX + 140, CY - 40 + i * 80) for i in range(2)]]
+        for a_, b_ in ((0, 1), (1, 2)):
+            for p in nodes[a_]:
+                for q in nodes[b_]:
+                    ph = (t * 0.8 + p[1] / 300) % 1
+                    line(c, *p, *q, LINE, 1.5)
+                    circle(c, lerp(p[0], q[0], ph), lerp(p[1], q[1], ph), 2.5, fill=GOLD, alpha=0.8)
+        for li, layer in enumerate(nodes):
+            for p in layer:
+                circle(c, *p, 14, fill=SURF, stroke=[TEAL, GOLD, CYAN][li], lw=3)
+                circle(g, *p, 18, fill=[TEAL, GOLD, CYAN][li], alpha=0.5)
+        draw_sprite(c, icon_sprite('Sparkles', 46, GOLD), CX + 260, CY, 1, rot=math.sin(t) * 0.1)
+        badge(c, CX + 260, CY + 60, 'on-device', GOLD, ease_out((t - 0.8) / 0.4), 13)
+        return
+    # data (and anything unknown): animated bar chart + table
+    vals = wave_vals(s, 8)
+    for i, v in enumerate(vals):
+        k = ease_out((t - 0.3 - i * 0.08) / 0.6)
+        hh = 200 * v * k
+        rrect(c, CX - 300 + i * 46, CY + 110 - hh, 32, hh, 6, fill=cols[i % 3])
+    window(c, CX + 80, SY + 20, 240, 260, 'data.csv')
+    for r_ in range(6):
+        for cc in range(3):
+            k = ease_out((t - 0.6 - r_ * 0.12) / 0.4)
+            rrect(c, CX + 96 + cc * 74, SY + 70 + r_ * 34, 64, 22, 4, fill=mix(SURF2, cols[cc], 0.35 if r_ == 0 else 0.12), alpha=k)
+
+
+# ----------------------------------------------------------------------------- per-tool plan
+def plan(tool):
+    slug, cat, name = tool['slug'], tool['category'], tool['name']
+    seed = seed_of(slug)
+    rng = np.random.default_rng(seed)
+    pal = [GOLD, TEAL, CYAN, EMERALD, SKY]
+    cols = [pal[(seed + i * (1 + seed % 3)) % 5] for i in range(3)]
+    if cols[0] != GOLD and rng.random() < 0.5:
+        cols[0] = GOLD
+    P = dict(slug=slug, name=name, cat=cat, seed=seed % 1000, r=seed % 7, cols=cols, mirror=bool(seed & 1), n=3 + seed % 3)
+    fn = None
+    # ---- action routing (slug first, then category defaults)
+    if slug in ('merge-pdf', 'image-to-pdf'):
+        fn, P['kind'] = d_merge, ('img' if slug == 'image-to-pdf' else 'doc')
+        if slug == 'image-to-pdf':
+            fn, P['fmts'] = d_convert, ['JPG', 'PDF']
+    elif slug == 'merge-videos':
+        fn, P['kind'] = d_merge, 'film'
+    elif slug == 'audio-merger':
+        fn, P['act'] = d_audio, 'merge'
+    elif slug in ('split-pdf',):
+        fn, P['kind'] = d_split, 'pages'
+    elif slug == 'extract-pdf-pages':
+        fn, P['kind'] = d_split, 'extract'
+    elif slug in ('compress-pdf', 'image-compressor', 'video-compressor', 'compress-to-size'):
+        fn = d_compress
+        P['kind'] = {'compress-pdf': 'doc', 'image-compressor': 'img', 'video-compressor': 'film', 'compress-to-size': 'img'}[slug]
+        b = int(rng.integers(2400, 9800)) if slug != 'video-compressor' else int(rng.integers(60000, 180000))
+        P['kb'] = (b, b * rng.uniform(0.12, 0.3))
+    elif cat == 'convert':
+        fn = d_convert
+    if fn is None:
+        doc_acts = {'organize-pdf': 'organize', 'delete-pdf-pages': 'delete', 'rotate-pdf': 'rotate', 'pdf-page-numbers': 'numbers',
+                    'pdf-watermark': 'watermark', 'pdf-header-footer': 'header', 'sign-pdf': 'sign', 'edit-pdf': 'edit',
+                    'protect-pdf': 'protect', 'unlock-pdf': 'unlock', 'redact-pdf': 'redact', 'pdf-grayscale': 'grayscale',
+                    'crop-pdf': 'crop', 'flatten-pdf': 'flatten', 'pdf-metadata': 'metadata', 'fill-pdf-form': 'form',
+                    'compare-pdf': 'compare', 'nup-pdf': 'nup', 'ocr-pdf': 'ocr', 'pdf-reader': 'reader', 'add-blank-pages': 'insert',
+                    'repair-pdf': 'repair', 'invoice-generator': 'invoice', 'resume-builder': 'resume'}
+        img_acts = {'image-resizer': 'resize', 'image-cropper': 'crop', 'background-remover': 'bgremove', 'image-upscaler': 'upscale',
+                    'image-rotate-flip': 'rotate', 'image-watermark': 'watermark', 'add-text-to-image': 'text', 'rounded-corners': 'rounded',
+                    'image-filters': 'filters', 'blur-faces': 'blur', 'image-metadata-remover': 'exif', 'image-to-svg': 'svg',
+                    'screenshot-studio': 'screenshot', 'collage-maker': 'collage', 'meme-generator': 'meme', 'gif-maker': 'gif',
+                    'image-to-base64': 'base64', 'image-splitter': 'splitter', 'color-picker-image': 'picker',
+                    'passport-photo': 'crop', 'image-compare': 'compare'}
+        vid_acts = {'video-trimmer': 'trim', 'video-to-gif': 'gif', 'extract-audio': 'extract', 'mute-video': 'mute', 'video-speed': 'speed',
+                    'video-upscaler': 'upscale', 'screen-recorder': 'record', 'webcam-recorder': 'webcam'}
+        aud_acts = {'audio-editor': 'editor', 'audio-converter': 'convert', 'voice-recorder': 'record', 'audio-transcriber': 'transcribe',
+                    'text-to-speech': 'tts'}
+        if slug in doc_acts:
+            fn, P['act'] = d_doc, doc_acts[slug]
+        elif slug in img_acts:
+            fn, P['act'] = d_image, img_acts[slug]
+        elif slug == 'video-frames':
+            fn, P['kind'] = d_split, 'frames'
+        elif slug in vid_acts:
+            fn, P['act'] = d_video, vid_acts[slug]
+        elif slug in aud_acts:
+            fn, P['act'] = d_audio, aud_acts[slug]
+        elif slug in ('image-converter', 'video-converter', 'heic-converter', 'raw-converter', 'pro-image-converter', 'svg-converter', 'icon-converter'):
+            fn = d_convert
+        elif cat == 'dev':
+            fn = d_dev
+        elif cat == 'text':
+            fn = d_text
+        elif cat == 'design':
+            fn = d_design
+        elif cat in ('data', 'ai', '3d', 'archive', 'ebook', 'font', 'cad', 'subtitle'):
+            fn = d_extra
+        elif cat == 'image':
+            fn, P['act'] = d_image, 'plain'
+        elif cat == 'video':
+            fn, P['act'] = d_video, 'play'
+        elif cat == 'audio':
+            fn, P['act'] = d_audio, 'editor'
+        else:
+            fn, P['act'] = d_doc, 'reader'
+    if fn is d_convert and 'fmts' not in P:
+        P['fmts'] = convert_formats(tool)
+    return fn, P
+
+
+def convert_formats(tool):
+    slug, name = tool['slug'], tool['name']
+    fixed = {'image-converter': ['PNG', 'JPG', 'WEBP', 'AVIF', 'GIF'], 'video-converter': ['MP4', 'WEBM', 'MOV', 'MKV'],
+             'heic-converter': ['HEIC', 'JPG', 'PNG', 'WEBP'], 'raw-converter': ['RAW', 'JPG', 'PNG', 'TIFF'],
+             'pro-image-converter': ['PNG', 'JPG', 'WEBP', 'AVIF', 'JXL'], 'svg-converter': ['SVG', 'PNG', 'PDF'],
+             'icon-converter': ['PNG', 'ICO', 'ICNS', 'CUR'], 'table-converter': ['CSV', 'XLSX', 'JSON', 'MD'],
+             'pdf-to-image': ['PDF', 'PNG', 'JPG', 'WEBP'], 'pdf-to-text': ['PDF', 'TXT'], 'pdf-to-word': ['PDF', 'DOCX'],
+             'word-to-pdf': ['DOCX', 'PDF'], 'pdf-to-ppt': ['PDF', 'PPTX'], 'excel-to-pdf': ['XLSX', 'PDF'], 'pdf-to-excel': ['PDF', 'XLSX'],
+             'markdown-to-pdf': ['MD', 'PDF'], 'html-to-pdf': ['HTML', 'PDF'], 'text-to-pdf': ['TXT', 'PDF'], 'epub-to-pdf': ['EPUB', 'PDF']}
+    if slug in fixed:
+        return fixed[slug]
+    m = re.match(r'(\w+) to (\w+)', name)
+    if m:
+        return [m.group(1).upper()[:5], m.group(2).upper()[:5]]
+    return ['FILE', 'PDF']
+
+
+# ----------------------------------------------------------------------------- frame composition
+class Renderer:
+    def __init__(self, tool, dur, vo_at):
+        self.tool = tool
+        self.dur = dur
+        self.vo_at = vo_at
+        self.fn, self.P = plan(tool)
+        seed = seed_of(tool['slug'])
+        self.seed = seed
+        self.acc = CAT_COLORS[tool['category']]
+        gp = ((0.2 + (seed % 7) / 10), 0.25 + (seed % 5) / 20)
+        self.bg = make_background(W, H, glow_pos=gp, glow2=(1 - gp[0], 0.95), c1=GOLD, c2=self.P['cols'][1] if self.P['cols'][1] != GOLD else TEAL, strength=0.9)
+        self.parts = Particles(40, W, H, seed=seed % 997, speed=8, size=(0.6, 1.6))
+        self.surf = surface(W, H)
+        self.ctx = cairo.Context(self.surf)
+        self.gl = GlowLayer(W, H, 4)
+        self.demo_start = 1.7
+        self.outro = dur - 1.5
+        self.desc = clean_copy(tool['desc'])
+
+    def caption_lines(self):
+        f = font(SANS, 18, 'Medium')
+        out, cur = [], ''
+        for w_ in self.desc.split():
+            if f.getlength(cur + ' ' + w_) > 760:
+                out.append(cur); cur = w_
+            else:
+                cur = (cur + ' ' + w_).strip()
+        out.append(cur)
+        return out[:2]
+
+    def frame(self, t):
+        c = self.ctx
+        c.set_operator(cairo.OPERATOR_SOURCE); c.set_source_surface(self.bg, 0, 0); c.paint(); c.set_operator(cairo.OPERATOR_OVER)
+        g = self.gl.begin(); self.gl.dirty = True
+        self.parts.draw(c, t, 0.45)
+        tool = self.tool
+        # ---- title: big centred intro -> header
+        k_move = ease_in_out((t - 1.15) / 0.6)
+        out_k = ease_in_out((t - self.outro) / 0.5)
+        # icon ring
+        ix, iy = lerp(W / 2, 52, k_move), lerp(205, 50, k_move)
+        ir = lerp(54, 24, k_move)
+        a_ring = ease_out(t / 0.6) * (1 - out_k)
+        gold_ring(c, g, ix, iy, ir, t, alpha=a_ring, progress=ease_in_out(t / 0.8), lw=lerp(4.5, 2.6, k_move), orbit=k_move < 0.5)
+        draw_sprite(c, icon_sprite(tool['icon'] or 'File', int(lerp(56, 26, k_move)), self.acc, 2.0), ix, iy, ease_out((t - 0.3) / 0.4) * (1 - out_k))
+        # name
+        if k_move < 1:
+            a_ = (1 - k_move)
+            sz_ = 58 if len(tool['name']) < 20 else 46
+            while font(DISPLAY, sz_, 'Bold').getlength(tool['name']) > 860 and sz_ > 26:
+                sz_ -= 2
+            fs = font(DISPLAY, sz_, 'Bold')
+            kinetic_words(c, tool['name'], fs, W / 2, 320, t - 0.35, gradient=GOLD_GRAD, rise=26, alpha=a_)
+            chip_a = ease_out((t - 0.7) / 0.4) * a_
+            if chip_a > 0:
+                lab = CAT_NAMES[tool['category']].upper() + (f'  ·  {tool["badge"]}' if tool.get('badge') else '')
+                text(c, lab, font(MONO, 15, 'Bold'), W / 2, 380, color=self.acc, alpha=chip_a, tracking=3)
+        if k_move > 0:
+            a_ = k_move * (1 - out_k)
+            hs = 28
+            while font(DISPLAY, hs, 'Bold').getlength(tool['name']) > 640 and hs > 18:
+                hs -= 1
+            text(c, tool['name'], font(DISPLAY, hs, 'Bold'), 90, 50, color=TEXT, alpha=a_, anchor='lm')
+            lab = CAT_NAMES[tool['category']]
+            f = font(SANS, 14, 'SemiBold')
+            tw = f.getlength(lab) + 28
+            rrect(c, W - 40 - tw, 36, tw, 28, 14, fill=self.acc, stroke=self.acc, lw=1.5, falpha=0.12, salpha=0.7, alpha=a_)
+            text(c, lab, f, W - 40 - tw / 2, 50, alpha=a_)
+            line(c, 40, 84, W - 40, 84, LINE, 1, a_ * 0.8)
+        # ---- demo stage
+        if t > self.demo_start - 0.2:
+            dt = t - self.demo_start
+            a_ = ease_out((dt + 0.2) / 0.5) * (1 - out_k)
+            if a_ > 0.01:
+                c.push_group()
+                try:
+                    self.fn(c, g, max(0, dt), self.outro - self.demo_start, self.P)
+                except Exception:
+                    traceback.print_exc()
+                    raise
+                c.pop_group_to_source()
+                c.paint_with_alpha(a_)
+        # ---- caption (description) in sync with the voice
+        ca = ease_out((t - self.vo_at - 0.1) / 0.5) * (1 - out_k)
+        if ca > 0:
+            lines_ = self.caption_lines()
+            y0 = 478 if len(lines_) == 2 else 492
+            for i, ln in enumerate(lines_):
+                text(c, ln, font(SANS, 18, 'Medium'), W / 2, y0 + i * 27, color=hexrgb('#D9D5CC'), alpha=ca)
+        # ---- outro
+        if out_k > 0:
+            ot = t - self.outro
+            logo_mark(c, g, W / 2, 220, 120, t, alpha=out_k, progress=ease_in_out(ot / 0.8))
+            text(c, 'OpenFile', font(DISPLAY, 54, 'Bold'), W / 2, 340, gradient=GOLD_GRAD, alpha=ease_out((ot - 0.2) / 0.5))
+            text(c, 'Free. Private. Runs in your browser.', font(SANS, 20, 'Medium'), W / 2, 392, color=MUTED, alpha=ease_out((ot - 0.4) / 0.5))
+        self.gl.apply(c, radius=5, strength=0.9, passes=1)
+        # global fade in / out
+        fade = min(ease_in_out(t / 0.25), ease_in_out((self.dur - t) / 0.35))
+        if fade < 1:
+            c.set_source_rgba(0, 0, 0, 1 - fade); c.paint()
+        return self.surf
+
+
+# ----------------------------------------------------------------------------- one tool
+_TTS = None
+
+
+def get_tts(threads):
+    global _TTS
+    if _TTS is None:
+        _TTS = TTS(threads=threads)
+    return _TTS
+
+
+def render_tool(job):
+    tool, voice_spec, threads = job['tool'], tuple(job['voice']), job['threads']
+    slug = tool['slug']
+    t0 = time.time()
+    try:
+        os.makedirs(TMP, exist_ok=True)
+        tts = get_tts(threads)
+        vo_text = clean_copy(f"{tool['name']}. {tool['desc']}")
+        speed = 1.0
+        voice = tts.say(vo_text, voice_spec, speed)
+        if len(voice) / SR > 8.0:
+            speed = min(1.25, len(voice) / SR / 7.6)
+            voice = tts.say(vo_text, voice_spec, speed)
+        vo_at = 0.55
+        dur = clamp(vo_at + len(voice) / SR + 2.2, 8.0, 12.0)
+        dur = round(dur * FPS) / FPS
+        seed = seed_of(slug)
+        music, info = make_music(dur, seed=seed, intro=1.2, outro=1.6, beat_start=1.6, beat_end=dur - 1.4)
+        vbuf = np.zeros(int(dur * SR), np.float32)
+        _add(vbuf, vo_at * SR, voice)
+        mixed = duck_mix(music, vbuf, 1.0, 0.42, 0.55)[:, :int(dur * SR)]
+        raw = os.path.join(TMP, f'{slug}_raw.wav')
+        write_wav(raw, mixed)
+        norm = os.path.join(TMP, f'{slug}.wav')
+        loudnorm_two_pass(raw, norm, I=-16, TP=-1.5)
+        # video
+        R = Renderer(tool, dur, vo_at)
+        vtmp = os.path.join(TMP, f'{slug}_v.mp4')
+        pipe = FFPipe(vtmp, W, H, FPS, crf=28, preset='medium', maxrate='300k', tune='animation', extra=['-g', '90', '-threads', '1'])
+        nfr = int(round(dur * FPS))
+        for i in range(nfr):
+            pipe.write(R.frame(i / FPS))
+        pipe.close()
+        out = os.path.join(OUT, f'{slug}.mp4')
+        part = out + '.part.mp4'
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', vtmp, '-i', norm, '-map', '0:v', '-map', '1:a', '-c:v', 'copy',
+                        '-c:a', 'aac', '-b:a', '48k', '-ac', '1', '-ar', '44100', '-shortest', '-movflags', '+faststart', part], check=True)
+        os.replace(part, out)
+        # poster: mid-demo frame
+        pt = min(R.outro - 0.4, R.demo_start + 2.6)
+        img = Image.frombuffer('RGBA', (W, H), bytes(R.frame(pt).get_data()), 'raw', 'BGRA', 0, 1).convert('RGB')
+        img.resize((480, 270), Image.LANCZOS).save(os.path.join(OUT, f'{slug}.jpg'), quality=84, optimize=True, progressive=True)
+        for f in (raw, norm, vtmp):
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+        size = os.path.getsize(out)
+        return dict(slug=slug, ok=True, duration=round(dur, 2), voice=voice_name(voice_spec), size=size, music=info, secs=round(time.time() - t0, 1))
+    except Exception as e:
+        traceback.print_exc()
+        return dict(slug=slug, ok=False, error=repr(e))
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--force', action='store_true')
+    ap.add_argument('--only', default='')
+    ap.add_argument('--jobs', type=int, default=os.cpu_count() or 2)
+    ap.add_argument('--still', nargs=3, metavar=('SLUG', 'T', 'PNG'))
+    a = ap.parse_args()
+    tools = load_registry()
+    voices = voice_sequence(len(tools))
+    vmap = {t['slug']: v for t, v in zip(tools, voices)}
+    if a.still:
+        tool = next(t for t in tools if t['slug'] == a.still[0])
+        R = Renderer(tool, 9.0, 0.55)
+        R.frame(float(a.still[1])).write_to_png(a.still[2])
+        return
+    os.makedirs(OUT, exist_ok=True)
+    idx_path = os.path.join(OUT, 'index.json')
+    index = json.load(open(idx_path)) if os.path.exists(idx_path) else {}
+    only = set(s for s in a.only.split(',') if s)
+    todo = []
+    for t in tools:
+        if only and t['slug'] not in only:
+            continue
+        exists = os.path.exists(os.path.join(OUT, t['slug'] + '.mp4')) and os.path.exists(os.path.join(OUT, t['slug'] + '.jpg'))
+        if exists and not a.force and not only:
+            if t['slug'] not in index:   # rendered earlier but the index was not written: backfill the entry
+                pth = os.path.join(OUT, t['slug'] + '.mp4')
+                dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', pth],
+                                           capture_output=True, text=True).stdout.strip() or 0)
+                index[t['slug']] = dict(video=f"media/tools/{t['slug']}.mp4", poster=f"media/tools/{t['slug']}.jpg",
+                                        duration=round(dur, 2), voice=voice_name(vmap[t['slug']]), bytes=os.path.getsize(pth))
+            continue
+        spec = vmap[t['slug']]
+        todo.append(dict(tool=t, voice=list(spec), threads=1 if a.jobs > 1 else None))
+    print(f'{len(tools)} tools in registry, rendering {len(todo)} with {a.jobs} jobs', flush=True)
+    results = []
+    if a.jobs > 1 and len(todo) > 1:
+        import multiprocessing as mp
+        with mp.get_context('fork').Pool(a.jobs, maxtasksperchild=12) as pool:
+            for r in pool.imap_unordered(render_tool, todo):
+                print(json.dumps({k: r.get(k) for k in ('slug', 'ok', 'size', 'duration', 'voice', 'secs', 'error')}), flush=True)
+                results.append(r)
+                _update_index(index, r, idx_path)
+    else:
+        for j in todo:
+            r = render_tool(j)
+            print(json.dumps({k: r.get(k) for k in ('slug', 'ok', 'size', 'duration', 'voice', 'secs', 'error')}), flush=True)
+            results.append(r)
+            _update_index(index, r, idx_path)
+    # prune removed tools from the index, keep registry order
+    slugs = [t['slug'] for t in tools]
+    index = {s: index[s] for s in slugs if s in index}
+    json.dump(index, open(idx_path, 'w'), indent=2)
+    bad = [r['slug'] for r in results if not r['ok']]
+    print('done', len(results) - len(bad), 'ok', ('failed: ' + ','.join(bad)) if bad else '')
+
+
+def _update_index(index, r, path):
+    if not r.get('ok'):
+        return
+    s = r['slug']
+    index[s] = dict(video=f'media/tools/{s}.mp4', poster=f'media/tools/{s}.jpg', duration=r['duration'], voice=r['voice'],
+                    bytes=r['size'], music=f"{r['music']['key']} {r['music']['bpm']} bpm {r['music']['lead']}")
+    json.dump(index, open(path, 'w'), indent=2)
+
+
+if __name__ == '__main__':
+    main()

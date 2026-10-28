@@ -40,7 +40,7 @@ export function Waveform({ buffer, view, onView, selection, onSelection, playhea
     const ctx = c.getContext('2d')!
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.clearRect(0, 0, width, height)
-    const accent = cssVar('--accent', '#7c5cff'), muted = cssVar('--muted', '#888'), border = cssVar('--border', '#333'), fg = cssVar('--fg', '#fff')
+    const accent = cssVar('--accent', '#14b8a6'), muted = cssVar('--muted', '#888'), border = cssVar('--border', '#333'), fg = cssVar('--fg', '#fff')
     const ruler = 18, H = height - ruler, mid = ruler + H / 2
 
     // ruler

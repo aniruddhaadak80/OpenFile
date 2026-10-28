@@ -73,7 +73,7 @@ export default function CompressPdf() {
     if (ok) toast(`Compressed ${ok} file${ok > 1 ? 's' : ''}`, 'success')
   })
 
-  if (!rows.length) return <Dropzone accept={PDF_ACCEPT} multiple onFiles={add} label="Drop PDFs to compress" sub="One file or a whole batch — everything runs locally in your browser." />
+  if (!rows.length) return <Dropzone accept={PDF_ACCEPT} multiple onFiles={add} label="Drop PDFs to compress" sub="One file or a whole batch, everything runs locally in your browser." />
 
   const done = rows.filter((r) => r.out)
   const before = done.reduce((a, r) => a + r.file.size, 0), after = done.reduce((a, r) => a + r.out!.size, 0)
@@ -154,7 +154,7 @@ export default function CompressPdf() {
           </div>}
         </>}
         <Switch checked={strip} onChange={(v) => { setStrip(v); resetOutputs() }} label="Strip XMP metadata" />
-        <div className="text-xs text-muted">The smallest result wins — if compression wouldn't help, your original is kept so the file never grows.</div>
+        <div className="text-xs text-muted">The smallest result wins, if compression wouldn't help, your original is kept so the file never grows.</div>
         {job.busy && <Progress value={job.progress} label={`Compressing ${rows.length > 1 ? `${rows.length} files` : ''}…`} />}
         <ErrorNote error={job.error} />
         <Button className="w-full" size="lg" icon={<Minimize2 className="size-5" />} loading={job.busy} onClick={run}>Compress {rows.length > 1 ? `${rows.length} PDFs` : 'PDF'}</Button>
@@ -168,7 +168,7 @@ function BeforeAfter({ original, compressed }: { original: File; compressed: Blo
   const ia = usePageImage(a.doc, 1, 520), ib = usePageImage(b.doc, 1, 520)
   return (
     <div className="rounded-2xl border border-border bg-surface p-4">
-      <div className="mb-3 text-sm font-medium">Page 1 — before / after</div>
+      <div className="mb-3 text-sm font-medium">Page 1, before / after</div>
       <div className="grid grid-cols-2 gap-3">
         {[['Before', ia, original.size], ['After', ib, compressed.size]].map(([l, im, sz]: any) => (
           <div key={l} className="space-y-1.5">

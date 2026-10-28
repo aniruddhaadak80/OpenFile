@@ -210,7 +210,7 @@ export function extFromBlob(b: Blob): string {
 /** seconds -> ffmpeg time string */
 export const ts = (s: number) => Math.max(0, s).toFixed(3)
 
-/** atempo only accepts 0.5–2 per instance on older builds — chain to reach any factor. */
+/** atempo only accepts 0.5–2 per instance on older builds, chain to reach any factor. */
 export function atempoChain(speed: number): string {
   const parts: string[] = []
   let s = speed

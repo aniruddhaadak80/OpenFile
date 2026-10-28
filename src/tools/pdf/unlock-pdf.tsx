@@ -99,7 +99,7 @@ export default function UnlockPdf() {
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
       <ResultCard blob={result.blob} filename={renameExt(file.name, 'pdf', '-unlocked')} originalSize={file.size} title="Your PDF is unlocked" onReset={reset}>
         <p className="text-sm text-muted">{result.method === 'decrypt'
-          ? 'The encryption was removed losslessly — text, links and forms are intact. Anyone can now open, print and copy it.'
+          ? 'The encryption was removed losslessly, text, links and forms are intact. Anyone can now open, print and copy it.'
           : 'This file used encryption that could not be removed losslessly, so each page was re-rendered as a high-quality image. Text is no longer selectable; run OCR PDF if you need it searchable.'}</p>
       </ResultCard>
     </motion.div>
@@ -123,8 +123,8 @@ export default function UnlockPdf() {
           {status === 'checking' && <Spinner label="Checking protection…" />}
           {status === 'locked' && !unlocked && <Note icon={Lock} tone="accent">This PDF needs a password to open. Enter it to remove the protection.</Note>}
           {status === 'restricted' && <Note icon={ShieldAlert} tone="warn">This PDF opens without a password but has owner restrictions (printing, copying or editing may be blocked). Unlocking removes them.</Note>}
-          {status === 'open' && <Note icon={Info} tone="muted">This PDF isn't password-protected or restricted — there's nothing to unlock.</Note>}
-          {status === 'error' && <ErrorNote error="This file could not be read as a PDF. It may be damaged — try Repair PDF." />}
+          {status === 'open' && <Note icon={Info} tone="muted">This PDF isn't password-protected or restricted, there's nothing to unlock.</Note>}
+          {status === 'error' && <ErrorNote error="This file could not be read as a PDF. It may be damaged, try Repair PDF." />}
           {unlocked && status === 'locked' && <Note icon={ShieldCheck} tone="success">Password verified. Ready to create an unprotected copy.</Note>}
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function UnlockPdf() {
                 <motion.div key={shake} animate={shake ? { x: [0, -8, 8, -6, 6, 0] } : {}} transition={{ duration: 0.35 }}>
                   <PasswordInput value={pw} onChange={(v) => { setPw(v); setWrong(false) }} placeholder="Enter the password" autoFocus invalid={wrong} onEnter={check} autoComplete="current-password" />
                 </motion.div>
-                {wrong && <div className="text-xs text-danger">Incorrect password. Passwords are case-sensitive — check Caps Lock.</div>}
+                {wrong && <div className="text-xs text-danger">Incorrect password. Passwords are case-sensitive, check Caps Lock.</div>}
                 <Button className="w-full" icon={<KeyRound className="size-4" />} disabled={!pw} onClick={check}>Verify password</Button>
               </motion.div>
             )}

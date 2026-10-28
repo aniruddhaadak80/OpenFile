@@ -8,7 +8,7 @@ import { newDoc, LivePdfPreview } from './_adv/jspdf'
 import { renderResume, emptyResume, sampleResume, SECTION_TITLES, DEFAULT_ORDER, type Resume, type SectionKey, type ResumeTemplate } from './_adv/resume'
 
 const KEY = 'openfile.resume.v1'
-const ACCENTS = ['#2563eb', '#7c3aed', '#0d9488', '#dc2626', '#ea580c', '#111827']
+const ACCENTS = ['#2563eb', '#f5a524', '#0d9488', '#dc2626', '#ea580c', '#111827']
 const ICONS: Record<SectionKey, React.ElementType> = { summary: AlignLeft, experience: Briefcase, education: GraduationCap, skills: Wrench, projects: FolderGit2, certifications: Award, links: Link2 }
 const rid = () => Math.random().toString(36).slice(2, 9)
 
@@ -67,7 +67,7 @@ export default function ResumeBuilder() {
             <Input value={e.location} onChange={(x) => u({ location: x.target.value })} placeholder="Location / Remote" />
             <div className="flex items-center"><Switch checked={e.current} onChange={(v) => u({ current: v })} label={<span className="text-sm">I work here now</span>} /></div>
           </div>
-          <Textarea value={e.bullets} onChange={(x) => u({ bullets: x.target.value })} placeholder={'One achievement per line — start with a verb, add numbers\nLed …\nImproved … by 30%'} className="min-h-24 font-sans" />
+          <Textarea value={e.bullets} onChange={(x) => u({ bullets: x.target.value })} placeholder={'One achievement per line, start with a verb, add numbers\nLed …\nImproved … by 30%'} className="min-h-24 font-sans" />
         </>)} />
       case 'education': return <List items={r.education} onChange={(v) => set('education', v)} addLabel="Add education"
         make={() => ({ id: rid(), degree: '', school: '', location: '', start: '', end: '', grade: '', details: '' })}
@@ -101,7 +101,7 @@ export default function ResumeBuilder() {
             <Input value={p.link} onChange={(x) => u({ link: x.target.value })} placeholder="Link (github.com/…)" />
           </div>
           <Input value={p.tech} onChange={(x) => u({ tech: x.target.value })} placeholder="Tech stack" />
-          <Textarea value={p.description} onChange={(x) => u({ description: x.target.value })} placeholder="What it does & impact — one point per line" className="min-h-16 font-sans" />
+          <Textarea value={p.description} onChange={(x) => u({ description: x.target.value })} placeholder="What it does & impact, one point per line" className="min-h-16 font-sans" />
         </>)} />
       case 'certifications': return <List items={r.certifications} onChange={(v) => set('certifications', v)} addLabel="Add certification"
         make={() => ({ id: rid(), name: '', issuer: '', date: '', link: '' })}

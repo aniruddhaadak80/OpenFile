@@ -55,8 +55,8 @@ export async function renderMarkdown(md: string): Promise<string> {
   return purify.sanitize(raw, { ADD_ATTR: ['target', 'class', 'id', 'align', 'start'], FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form'] })
 }
 
-const HL_LIGHT = '.hl-c{color:#6a737d;font-style:italic}.hl-s{color:#032f62}.hl-n{color:#005cc5}.hl-k{color:#d73a49;font-weight:600}.hl-f{color:#6f42c1}.hl-t{color:#22863a}'
-const HL_DARK = '.hl-c{color:#8b949e;font-style:italic}.hl-s{color:#a5d6ff}.hl-n{color:#79c0ff}.hl-k{color:#ff7b72;font-weight:600}.hl-f{color:#d2a8ff}.hl-t{color:#7ee787}'
+const HL_LIGHT = '.hl-c{color:#6a737d;font-style:italic}.hl-s{color:#032f62}.hl-n{color:#005cc5}.hl-k{color:#ef4444;font-weight:600}.hl-f{color:#14b8a6}.hl-t{color:#22863a}'
+const HL_DARK = '.hl-c{color:#8b949e;font-style:italic}.hl-s{color:#a5d6ff}.hl-n{color:#79c0ff}.hl-k{color:#ff7b72;font-weight:600}.hl-f{color:#5eead4}.hl-t{color:#7ee787}'
 const BASE = '.page-break{break-before:page;height:0;}pre.code{position:relative;}pre.code .lang{position:absolute;top:6px;right:10px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;font-family:Arial,sans-serif;}img{max-width:100%;height:auto;}table{border-collapse:collapse;}input[type=checkbox]{margin:0 .4em 0 0;vertical-align:middle;}li:has(> input[type=checkbox]){list-style:none;margin-left:-1.3em;}'
 
 export const THEMES = {
@@ -79,8 +79,8 @@ blockquote{margin:.8em 2em;font-size:10.5pt;color:#333;}table{margin:1em auto;bo
     label: 'Minimal', page: '#ffffff',
     css: `${BASE}${HL_LIGHT}body{font-family:'Inter','Helvetica Neue',Arial,sans-serif;font-size:10.5pt;line-height:1.7;color:#27272a;background:#fff;}
 h1{font-size:24pt;font-weight:800;letter-spacing:-.02em;margin:0 0 .5em;color:#09090b;}h2{font-size:15pt;font-weight:700;margin:1.6em 0 .5em;color:#09090b;}h3{font-size:12pt;font-weight:600;margin:1.3em 0 .4em;}
-p,ul,ol,pre,table,blockquote{margin:0 0 1em;}a{color:#7c3aed;}code{font-family:'JetBrains Mono',Menlo,monospace;font-size:88%;color:#7c3aed;}pre{background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;padding:14px;font-size:9pt;white-space:pre-wrap;}pre code{color:inherit;}
-blockquote{border-left:3px solid #7c3aed;padding-left:1em;color:#52525b;margin-left:0;}th,td{border-bottom:1px solid #e4e4e7;padding:6px 12px;text-align:left;}th{font-size:9pt;text-transform:uppercase;letter-spacing:.05em;color:#71717a;}hr{border:0;border-top:1px solid #e4e4e7;margin:2em 0;}`,
+p,ul,ol,pre,table,blockquote{margin:0 0 1em;}a{color:#f5a524;}code{font-family:'JetBrains Mono',Menlo,monospace;font-size:88%;color:#f5a524;}pre{background:#fafafa;border:1px solid #e4e4e7;border-radius:10px;padding:14px;font-size:9pt;white-space:pre-wrap;}pre code{color:inherit;}
+blockquote{border-left:3px solid #f5a524;padding-left:1em;color:#52525b;margin-left:0;}th,td{border-bottom:1px solid #e4e4e7;padding:6px 12px;text-align:left;}th{font-size:9pt;text-transform:uppercase;letter-spacing:.05em;color:#71717a;}hr{border:0;border-top:1px solid #e4e4e7;margin:2em 0;}`,
   },
   dark: {
     label: 'Dark', page: '#0d1117',
@@ -98,13 +98,13 @@ export const SAMPLE_MD = `# OpenFile Markdown to PDF
 
 ## Why it's nice
 
-- **Private** — everything happens in your browser
+- **Private**, everything happens in your browser
 - Four themes: *GitHub*, *Academic*, *Minimal* and *Dark*
 - Smart page breaks: lines, code blocks, tables and images are never cut in half
 - [x] Task lists
 - [ ] Footnotes (coming soon)
 
-> "Simplicity is prerequisite for reliability." — Edsger W. Dijkstra
+> "Simplicity is prerequisite for reliability." (Edsger W. Dijkstra)
 
 ## Code
 
@@ -140,5 +140,5 @@ Use \`\\pagebreak\` (or \`<!-- pagebreak -->\`) on its own line to force a page 
 
 ---
 
-That's it — hit **Export PDF**.
+That's it, hit **Export PDF**.
 `

@@ -240,7 +240,7 @@ export default function PdfReader() {
     f.onload = () => { try { f.contentWindow?.focus(); f.contentWindow?.print() } catch { window.open(url, '_blank') } setTimeout(() => { f.remove(); URL.revokeObjectURL(url) }, 60000) }
     document.body.appendChild(f)
   }
-  const copyPage = async () => { if (!doc) return; const t = await pageText(doc, current); if (!t.trim()) toast('No text on this page (it may be a scan — try OCR PDF)', 'info'); else if (await copyText(t)) toast(`Copied text of page ${current}`, 'success') }
+  const copyPage = async () => { if (!doc) return; const t = await pageText(doc, current); if (!t.trim()) toast('No text on this page (it may be a scan, try OCR PDF)', 'info'); else if (await copyText(t)) toast(`Copied text of page ${current}`, 'success') }
 
   const resolveDest = async (dest: any): Promise<number | null> => {
     if (!doc || !dest) return null

@@ -50,7 +50,7 @@ export default function VideoFrames() {
 
   const grabSingle = async () => {
     const v = video.current
-    if (!v || !meta?.playable) return toast('Preview unavailable for this format — use the interval modes.', 'error')
+    if (!v || !meta?.playable) return toast('Preview unavailable for this format, use the interval modes.', 'error')
     const w = W ? Math.min(W, v.videoWidth) : v.videoWidth, h = Math.round((w / v.videoWidth) * v.videoHeight)
     const c = document.createElement('canvas'); c.width = w; c.height = h
     c.getContext('2d')!.drawImage(v, 0, 0, w, h)
@@ -112,7 +112,7 @@ export default function VideoFrames() {
             <Button size="lg" className="w-full" icon={<Camera className="size-5" />} onClick={grabSingle} disabled={!meta?.playable}>Capture frame at {fmtTime(cur)}</Button>
           ) : (
             <>
-              <div className={cn('rounded-xl px-3 py-2 text-sm', count > MAX_FRAMES ? 'bg-danger/10 text-danger' : 'bg-surface-2/60 text-muted')}>Will extract <b className="text-fg">{count}</b> frame{count > 1 ? 's' : ''}{count > MAX_FRAMES ? ` — max is ${MAX_FRAMES}` : ''}</div>
+              <div className={cn('rounded-xl px-3 py-2 text-sm', count > MAX_FRAMES ? 'bg-danger/10 text-danger' : 'bg-surface-2/60 text-muted')}>Will extract <b className="text-fg">{count}</b> frame{count > 1 ? 's' : ''}{count > MAX_FRAMES ? `, max is ${MAX_FRAMES}` : ''}</div>
               <Button size="lg" className="w-full" icon={<Images className="size-5" />} onClick={extract} loading={job.busy} disabled={count > MAX_FRAMES || (!!dur && e <= s)}>Extract frames</Button>
             </>
           )}
@@ -139,7 +139,7 @@ export default function VideoFrames() {
                     <span className="flex-1 font-mono text-[11px] text-muted">{fmtTime(f.t)}</span>
                     <button onClick={() => downloadBlob(f.blob, f.name)} className="rounded p-1 text-muted hover:text-accent cursor-pointer" aria-label="Download frame"><Download className="size-3.5" /></button>
                   </div>
-                  <button onClick={() => toggle(f.id)} aria-label="Select" className={cn('absolute top-2 left-2 grid size-6 place-items-center rounded-md border transition cursor-pointer', sel.has(f.id) ? 'border-accent bg-accent text-white' : 'border-white/70 bg-black/30 text-transparent opacity-0 group-hover:opacity-100')}><Check className="size-4" /></button>
+                  <button onClick={() => toggle(f.id)} aria-label="Select" className={cn('absolute top-2 left-2 grid size-6 place-items-center rounded-md border transition cursor-pointer', sel.has(f.id) ? 'border-accent bg-accent text-on-accent' : 'border-white/70 bg-black/30 text-transparent opacity-0 group-hover:opacity-100')}><Check className="size-4" /></button>
                 </motion.div>
               ))}
             </AnimatePresence>

@@ -66,7 +66,7 @@ export default function History() {
       <div className="relative mx-auto max-w-7xl px-4 pt-10 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid size-14 place-items-center rounded-2xl bg-gradient-brand text-white shadow-lg shadow-accent/25"><HistoryIcon className="size-7" /></motion.div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid size-14 place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-lg shadow-accent/25"><HistoryIcon className="size-7" /></motion.div>
             <h1 className="mt-4 font-display text-4xl font-bold tracking-tight">History</h1>
             <p className="mt-1.5 max-w-xl text-muted">Tools you opened and files you downloaded. Stored only in this browser’s local database and never uploaded.</p>
           </div>
@@ -112,7 +112,7 @@ export default function History() {
                 <HistoryIcon className="mx-auto size-8 text-muted" />
                 <div className="mt-3 font-medium">{rows.length ? 'No activity matches your filter.' : 'No activity yet'}</div>
                 <p className="mt-1 text-sm text-muted">{rows.length ? 'Try a different search or filter.' : 'Open a tool and it will show up here.'}</p>
-                {!rows.length && <Link to="/tools" className="mt-5 inline-flex rounded-xl bg-gradient-brand px-4 py-2 text-sm font-medium text-white">Browse tools</Link>}
+                {!rows.length && <Link to="/tools" className="mt-5 inline-flex rounded-xl bg-gradient-brand px-4 py-2 text-sm font-medium text-on-accent">Browse tools</Link>}
               </div>
             ) : (
               <div className="space-y-7">

@@ -63,7 +63,7 @@ type Op =
 type Editing = { id: string; before: El[]; isNew: boolean }
 
 const TOOLS: { t: Tool; icon: any; label: string; key: string }[] = [
-  { t: 'hand', icon: Hand, label: 'Hand — pan', key: 'H' }, { t: 'select', icon: MousePointer2, label: 'Select', key: '1' },
+  { t: 'hand', icon: Hand, label: 'Hand, pan', key: 'H' }, { t: 'select', icon: MousePointer2, label: 'Select', key: '1' },
   { t: 'rectangle', icon: Square, label: 'Rectangle', key: '2' }, { t: 'diamond', icon: Diamond, label: 'Diamond', key: '3' },
   { t: 'ellipse', icon: Circle, label: 'Ellipse', key: '4' }, { t: 'arrow', icon: MoveRight, label: 'Arrow', key: '5' },
   { t: 'line', icon: Minus, label: 'Line', key: '6' }, { t: 'freedraw', icon: Pencil, label: 'Pencil', key: '7' },
@@ -187,7 +187,7 @@ export default function SketchBoard() {
       // selection overlay
       const s = selRef.current
       const selected = elsRef.current.filter((e) => s.has(e.id))
-      const accent = '#6d4aff'
+      const accent = '#f5a524'
       ctx.lineWidth = 1 / z
       if (hoverBind.current) {
         const t = elsRef.current.find((e) => e.id === hoverBind.current)
@@ -256,7 +256,7 @@ export default function SketchBoard() {
       const next = { ...idx, boards: idx.boards.map((b) => (b.id === idx.current ? { ...b, updated: Date.now() } : b)) }
       localStorage.setItem(IDX, JSON.stringify(next))
     } catch {
-      if (!storageWarned.current) { storageWarned.current = true; toast('Autosave failed — browser storage is full (large images?). Save to a file to keep your work.', 'error') }
+      if (!storageWarned.current) { storageWarned.current = true; toast('Autosave failed, browser storage is full (large images?). Save to a file to keep your work.', 'error') }
     }
   }
   const setEls = useCallback((next: El[], opts: { history?: El[] | false; ui?: boolean } = {}) => {
@@ -331,8 +331,8 @@ export default function SketchBoard() {
   const goSlide = (i: number) => { const s = slides(); if (!s.length) return; const n = Math.max(0, Math.min(s.length - 1, i)); setPresent(n); presentRef.current = n; fitBox(s[n], 24, 10) }
   const startPresent = () => {
     const s = slides()
-    if (!s.length) { toast('Nothing to present yet — draw something or add frames (F)', 'info'); return }
-    if (!elsRef.current.some((e) => e.type === 'frame')) toast('No frames found — presenting the whole board. Add frames (F) to make slides.', 'info')
+    if (!s.length) { toast('Nothing to present yet, draw something or add frames (F)', 'info'); return }
+    if (!elsRef.current.some((e) => e.type === 'frame')) toast('No frames found, presenting the whole board. Add frames (F) to make slides.', 'info')
     setSel(new Set()); setEditing(null); setLibOpen(false); setTool('laser')
     setPresent(0); presentRef.current = 0
     const p = wrapRef.current?.requestFullscreen?.()
@@ -787,7 +787,7 @@ export default function SketchBoard() {
       case 'copy': copySel(); break
       case 'group': { if (s.length < 2) return; const g = uid(); commit(els.map((e) => (ids.has(e.id) ? { ...e, groupIds: [...e.groupIds, g] } : e))); break }
       case 'ungroup': { commit(els.map((e) => (ids.has(e.id) && e.groupIds.length ? { ...e, groupIds: e.groupIds.slice(0, -1) } : e))); break }
-      case 'lock': { const lock = !s.every((e) => e.locked); commit(els.map((e) => (ids.has(e.id) ? { ...e, locked: lock } : e))); if (lock) { setSel(new Set()); toast('Locked — use the menu to unlock all', 'info') } break }
+      case 'lock': { const lock = !s.every((e) => e.locked); commit(els.map((e) => (ids.has(e.id) ? { ...e, locked: lock } : e))); if (lock) { setSel(new Set()); toast('Locked, use the menu to unlock all', 'info') } break }
       case 'front': commit([...els.filter((e) => !ids.has(e.id)), ...els.filter((e) => ids.has(e.id))]); break
       case 'back': commit([...els.filter((e) => ids.has(e.id)), ...els.filter((e) => !ids.has(e.id))]); break
       case 'forward': { const n = [...els]; for (let i = n.length - 2; i >= 0; i--) if (ids.has(n[i].id) && !ids.has(n[i + 1].id)) [n[i], n[i + 1]] = [n[i + 1], n[i]]; commit(n); break }
@@ -918,7 +918,7 @@ export default function SketchBoard() {
   const doSvg = () => { const svg = elementsToSvg(exportEls(), { bg: exportOpts.background ? (exportOpts.dark ? darkColor(bgRef.current) : bgRef.current) : null, dark: exportOpts.dark, padding: exportOpts.padding }); downloadBlob(svg, `${fileBase}.svg`, 'image/svg+xml'); toast('SVG exported') }
   const doCopyPng = async () => {
     try { const c = await renderPng(exportEls(), exportOpts); if (!c) return; const blob = await canvasToBlob(c); await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); toast('Image copied to clipboard') }
-    catch { toast('Your browser blocked clipboard images — use Download instead', 'error') }
+    catch { toast('Your browser blocked clipboard images, use Download instead', 'error') }
   }
   const share = async () => {
     if (!elsRef.current.length) { toast('Draw something first, then share', 'info'); return }
@@ -930,7 +930,7 @@ export default function SketchBoard() {
     history.replaceState(history.state, '', url)
     const ok = await copyText(url)
     const kb = Math.round(url.length / 1024)
-    toast(ok ? `Share link copied (${kb} KB)${kb > 64 ? ' — large because of images; some apps truncate long links' : ''}` : 'Share link is in the address bar', ok ? 'success' : 'info')
+    toast(ok ? `Share link copied (${kb} KB)${kb > 64 ? ', large because of images; some apps truncate long links' : ''}` : 'Share link is in the address bar', ok ? 'success' : 'info')
   }
 
   /* ---------------- boards ---------------- */
@@ -950,7 +950,7 @@ export default function SketchBoard() {
     const id = uid()
     const idx = indexRef.current
     const nm = name || `Board ${idx.boards.length + 1}`
-    try { localStorage.setItem(BKEY(id), JSON.stringify({ elements, bg: bgc })) } catch { toast('Storage is full — the new board may not persist', 'error') }
+    try { localStorage.setItem(BKEY(id), JSON.stringify({ elements, bg: bgc })) } catch { toast('Storage is full, the new board may not persist', 'error') }
     const next = { ...idx, boards: [...idx.boards, { id, name: nm, updated: Date.now() }] }
     loadBoardInto(id, next)
     return id
@@ -992,7 +992,7 @@ export default function SketchBoard() {
           const idx = indexRef.current
           const existing = idx.shares?.[key]
           if (existing && idx.boards.some((x) => x.id === existing)) { if (existing !== idx.current) switchBoard(existing) }
-          else { const id = createBoard('Shared board', sc.elements, sc.bg); persistIndex({ ...indexRef.current, shares: { ...(indexRef.current.shares ?? {}), [key]: id } }); toast('Opened shared board — it is saved in your boards list') }
+          else { const id = createBoard('Shared board', sc.elements, sc.bg); persistIndex({ ...indexRef.current, shares: { ...(indexRef.current.shares ?? {}), [key]: id } }); toast('Opened shared board, it is saved in your boards list') }
         } catch { toast('The share link looks corrupted', 'error') }
       })
     }
@@ -1053,7 +1053,7 @@ export default function SketchBoard() {
       }
       if (e.key === '?' || (e.shiftKey && k === '/')) { setHelp(true); return }
       if (mod || e.altKey) return
-      if (k === 'q') { setToolLock((l) => { toast(l ? 'Tool lock off' : 'Tool lock on — tools stay active after drawing', 'info'); return !l }); return }
+      if (k === 'q') { setToolLock((l) => { toast(l ? 'Tool lock off' : 'Tool lock on, tools stay active after drawing', 'info'); return !l }); return }
       const t = KEYMAP[k]
       if (t) { e.preventDefault(); pickTool(t) }
     }
@@ -1210,25 +1210,25 @@ export default function SketchBoard() {
           <div className="pointer-events-auto mx-auto min-w-0 overflow-x-auto scrollbar-thin" data-scroll>
             <div className={cn(panel, 'flex items-center gap-0.5 p-1')}>
               {TOOLS.map(({ t, icon: I, label, key }) => (
-                <button key={t} title={`${label} — ${key}`} onClick={() => pickTool(t)} className={cn('relative grid size-9 shrink-0 place-items-center rounded-lg transition cursor-pointer', tool === t ? 'bg-accent text-white shadow-md shadow-accent/30' : 'text-fg/75 hover:bg-surface-2 hover:text-fg')}>
+                <button key={t} title={`${label}, ${key}`} onClick={() => pickTool(t)} className={cn('relative grid size-9 shrink-0 place-items-center rounded-lg transition cursor-pointer', tool === t ? 'bg-accent text-on-accent shadow-md shadow-accent/30' : 'text-fg/75 hover:bg-surface-2 hover:text-fg')}>
                   <I className="size-[17px]" strokeWidth={tool === t ? 2.2 : 1.8} />
                   <span className={cn('absolute bottom-0.5 right-1 text-[8px] font-semibold leading-none', tool === t ? 'text-white/80' : 'text-muted')}>{key}</span>
                 </button>
               ))}
               <div className="mx-0.5 h-6 w-px bg-border" />
-              <button title="Keep tool active after drawing — Q" onClick={() => setToolLock((l) => !l)} className={cn(btn, toolLock && 'bg-accent/15 text-accent')}>{toolLock ? <Lock className="size-4" /> : <LockOpen className="size-4" />}</button>
+              <button title="Keep tool active after drawing: Q" onClick={() => setToolLock((l) => !l)} className={cn(btn, toolLock && 'bg-accent/15 text-accent')}>{toolLock ? <Lock className="size-4" /> : <LockOpen className="size-4" />}</button>
             </div>
           </div>
 
           <div className="pointer-events-auto flex shrink-0 items-center gap-1">
             <div className={cn(panel, 'hidden items-center gap-0.5 p-1 sm:flex')}>
               <button className={btn} title="Copy share link" onClick={share}><Share2 className="size-4" /></button>
-              <button className={btn} title="Present — Alt+P" onClick={startPresent}><Presentation className="size-4" /></button>
-              <button className={btn} title="Export — Ctrl+Shift+E" onClick={() => { setExportOpts((o) => ({ ...o, onlySelected: sel.size > 0 })); setExporting(true) }}><Download className="size-4" /></button>
+              <button className={btn} title="Present: Alt+P" onClick={startPresent}><Presentation className="size-4" /></button>
+              <button className={btn} title="Export: Ctrl+Shift+E" onClick={() => { setExportOpts((o) => ({ ...o, onlySelected: sel.size > 0 })); setExporting(true) }}><Download className="size-4" /></button>
             </div>
             <div className={cn(panel, 'flex items-center gap-0.5 p-1')}>
               <button className={cn(btn, libOpen && 'bg-accent/15 text-accent')} title="Stencil library" onClick={() => setLibOpen((l) => !l)}><Library className="size-4" /></button>
-              <button className={btn} title={full ? 'Exit fullscreen — Alt+Enter' : 'Fullscreen — Alt+Enter'} onClick={() => setFull((f) => !f)}>{full ? <Minimize className="size-4" /> : <Maximize className="size-4" />}</button>
+              <button className={btn} title={full ? 'Exit fullscreen: Alt+Enter' : 'Fullscreen: Alt+Enter'} onClick={() => setFull((f) => !f)}>{full ? <Minimize className="size-4" /> : <Maximize className="size-4" />}</button>
             </div>
           </div>
         </div>
@@ -1255,34 +1255,34 @@ export default function SketchBoard() {
         {/* bottom-left: zoom + history */}
         <div className="absolute bottom-2 left-2 z-30 flex items-center gap-1.5">
           <div className={cn(panel, 'flex items-center p-1')}>
-            <button className={btn} title="Zoom out — Ctrl+−" onClick={() => zoomAt(1 / 1.2)}><ZoomOut className="size-4" /></button>
-            <button className="h-9 min-w-14 rounded-lg px-1 font-mono text-xs hover:bg-surface-2 cursor-pointer" title="Reset zoom — Ctrl+0" onClick={() => zoomAt(1 / camRef.current.z)}>{zoomPct}%</button>
-            <button className={btn} title="Zoom in — Ctrl+=" onClick={() => zoomAt(1.2)}><ZoomIn className="size-4" /></button>
-            <button className={btn} title="Fit to content — Shift+1" onClick={() => fitBox(contentBox())}><Scan className="size-4" /></button>
+            <button className={btn} title="Zoom out: Ctrl+−" onClick={() => zoomAt(1 / 1.2)}><ZoomOut className="size-4" /></button>
+            <button className="h-9 min-w-14 rounded-lg px-1 font-mono text-xs hover:bg-surface-2 cursor-pointer" title="Reset zoom: Ctrl+0" onClick={() => zoomAt(1 / camRef.current.z)}>{zoomPct}%</button>
+            <button className={btn} title="Zoom in: Ctrl+=" onClick={() => zoomAt(1.2)}><ZoomIn className="size-4" /></button>
+            <button className={btn} title="Fit to content: Shift+1" onClick={() => fitBox(contentBox())}><Scan className="size-4" /></button>
           </div>
           <div className={cn(panel, 'flex items-center p-1')}>
-            <button className={btn} title="Undo — Ctrl+Z" disabled={!undoRef.current.length} onClick={undo}><Undo2 className="size-4" /></button>
-            <button className={btn} title="Redo — Ctrl+Y" disabled={!redoRef.current.length} onClick={redo}><Redo2 className="size-4" /></button>
+            <button className={btn} title="Undo: Ctrl+Z" disabled={!undoRef.current.length} onClick={undo}><Undo2 className="size-4" /></button>
+            <button className={btn} title="Redo: Ctrl+Y" disabled={!redoRef.current.length} onClick={redo}><Redo2 className="size-4" /></button>
           </div>
           <div className={cn(panel, 'hidden items-center p-1 sm:flex')}>
-            <button className={cn(btn, grid && 'text-accent')} title="Toggle grid — Ctrl+'" onClick={() => setGrid((g) => !g)}><Grid3x3 className="size-4" /></button>
-            <button className={cn(btn, snap && 'text-accent')} title="Snap to grid — Alt+S" onClick={() => setSnap((s) => !s)}><Magnet className="size-4" /></button>
+            <button className={cn(btn, grid && 'text-accent')} title="Toggle grid: Ctrl+'" onClick={() => setGrid((g) => !g)}><Grid3x3 className="size-4" /></button>
+            <button className={cn(btn, snap && 'text-accent')} title="Snap to grid: Alt+S" onClick={() => setSnap((s) => !s)}><Magnet className="size-4" /></button>
             <button className={btn} title="Dark / light canvas" onClick={() => setDark((d) => !d)}>{dark ? <Sun className="size-4" /> : <Moon className="size-4" />}</button>
           </div>
         </div>
-        {!libOpen && <button onClick={() => setHelp(true)} title="Keyboard shortcuts — ?" className={cn(panel, 'absolute bottom-2 right-2 z-30 grid size-10 place-items-center text-muted hover:text-fg cursor-pointer')}><Keyboard className="size-4" /></button>}
+        {!libOpen && <button onClick={() => setHelp(true)} title="Keyboard shortcuts, ?" className={cn(panel, 'absolute bottom-2 right-2 z-30 grid size-10 place-items-center text-muted hover:text-fg cursor-pointer')}><Keyboard className="size-4" /></button>}
       </>}
 
       {/* presentation controls */}
       {present != null && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={cn(panel, 'absolute bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-1 p-1.5')}>
-          <button className={btn} title="Previous — ←" disabled={present <= 0} onClick={() => goSlide(present - 1)}><ChevronLeft className="size-5" /></button>
+          <button className={btn} title="Previous, ←" disabled={present <= 0} onClick={() => goSlide(present - 1)}><ChevronLeft className="size-5" /></button>
           <span className="min-w-16 text-center font-mono text-sm">{present + 1} / {slideCount}</span>
-          <button className={btn} title="Next — →" disabled={present >= slideCount - 1} onClick={() => goSlide(present + 1)}><ChevronRight className="size-5" /></button>
+          <button className={btn} title="Next, →" disabled={present >= slideCount - 1} onClick={() => goSlide(present + 1)}><ChevronRight className="size-5" /></button>
           <div className="mx-1 h-6 w-px bg-border" />
-          <button className={cn(btn, tool === 'laser' && 'bg-accent/15 text-accent')} title="Laser pointer — K" onClick={() => setTool('laser')}><Wand className="size-4" /></button>
-          <button className={cn(btn, tool === 'hand' && 'bg-accent/15 text-accent')} title="Pan — H" onClick={() => setTool('hand')}><Hand className="size-4" /></button>
-          <button className={btn} title="Exit — Esc" onClick={stopPresent}><X className="size-4" /></button>
+          <button className={cn(btn, tool === 'laser' && 'bg-accent/15 text-accent')} title="Laser pointer: K" onClick={() => setTool('laser')}><Wand className="size-4" /></button>
+          <button className={cn(btn, tool === 'hand' && 'bg-accent/15 text-accent')} title="Pan: H" onClick={() => setTool('hand')}><Hand className="size-4" /></button>
+          <button className={btn} title="Exit: Esc" onClick={stopPresent}><X className="size-4" /></button>
         </motion.div>
       )}
 

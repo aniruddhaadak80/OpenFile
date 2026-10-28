@@ -10,9 +10,9 @@ type BType = 'start' | 'end' | 'boundary' | 'text' | 'digit' | 'letter' | 'lower
 interface Block { id: string; t: BType; v?: string; q: Q; min?: number; max?: number; lazy?: boolean; kids?: Block[] }
 
 const META: Record<BType, { label: string; color: string; hint: string; quant: boolean; input?: string }> = {
-  start: { label: 'Starts with', color: '#f472b6', hint: 'Anchor at the beginning (^)', quant: false },
-  end: { label: 'Ends here', color: '#f472b6', hint: 'Anchor at the end ($)', quant: false },
-  boundary: { label: 'Word boundary', color: '#f472b6', hint: 'Edge of a word (\\b)', quant: false },
+  start: { label: 'Starts with', color: '#fdba74', hint: 'Anchor at the beginning (^)', quant: false },
+  end: { label: 'Ends here', color: '#fdba74', hint: 'Anchor at the end ($)', quant: false },
+  boundary: { label: 'Word boundary', color: '#fdba74', hint: 'Edge of a word (\\b)', quant: false },
   text: { label: 'Exact text', color: '#a3e635', hint: 'Literal text, special characters escaped', quant: true, input: 'text' },
   digit: { label: 'Digit', color: '#22d3ee', hint: '0–9', quant: true },
   letter: { label: 'Letter', color: '#22d3ee', hint: 'a–z or A–Z', quant: true },
@@ -22,13 +22,13 @@ const META: Record<BType, { label: string; color: string; hint: string; quant: b
   word: { label: 'Word char', color: '#22d3ee', hint: 'letter, digit or _ (\\w)', quant: true },
   space: { label: 'Whitespace', color: '#22d3ee', hint: 'space, tab, newline (\\s)', quant: true },
   any: { label: 'Any character', color: '#22d3ee', hint: 'anything except newline (.)', quant: true },
-  anyOf: { label: 'Any of', color: '#06b6d4', hint: 'One of these characters — ranges like a-z allowed', quant: true, input: 'chars' },
+  anyOf: { label: 'Any of', color: '#06b6d4', hint: 'One of these characters, ranges like a-z allowed', quant: true, input: 'chars' },
   noneOf: { label: 'None of', color: '#06b6d4', hint: 'Any character except these', quant: true, input: 'chars' },
   or: { label: 'OR', color: '#ef4444', hint: 'Either what is before or what is after', quant: false },
-  group: { label: 'Group', color: '#8b6cff', hint: 'Group blocks together (non-capturing)', quant: true },
-  capture: { label: 'Capture', color: '#8b6cff', hint: 'Remember this part as a group (optional name)', quant: true, input: 'name' },
-  ahead: { label: 'Followed by', color: '#c084fc', hint: 'Must be followed by… (not consumed)', quant: false },
-  notAhead: { label: 'Not followed by', color: '#c084fc', hint: 'Must NOT be followed by…', quant: false },
+  group: { label: 'Group', color: '#f5a524', hint: 'Group blocks together (non-capturing)', quant: true },
+  capture: { label: 'Capture', color: '#f5a524', hint: 'Remember this part as a group (optional name)', quant: true, input: 'name' },
+  ahead: { label: 'Followed by', color: '#5eead4', hint: 'Must be followed by… (not consumed)', quant: false },
+  notAhead: { label: 'Not followed by', color: '#5eead4', hint: 'Must NOT be followed by…', quant: false },
 }
 const PALETTE: BType[] = ['start', 'end', 'text', 'digit', 'letter', 'lower', 'upper', 'alnum', 'word', 'space', 'any', 'anyOf', 'noneOf', 'boundary', 'or', 'group', 'capture', 'ahead', 'notAhead']
 const isContainer = (t: BType) => t === 'group' || t === 'capture' || t === 'ahead' || t === 'notAhead'
@@ -77,7 +77,7 @@ const PRESETS: { name: string; flags: string; sample: string; blocks: () => Bloc
   { name: 'Phone (India)', flags: 'g', sample: 'Call +91 98765 43210 or 9123456789', blocks: () => [B('group', { q: 'opt', kids: [B('text', { v: '+91' }), B('anyOf', { v: ' -', q: 'opt' })] }), B('anyOf', { v: '6-9' }), B('digit', r(4, 4)), B('anyOf', { v: ' -', q: 'opt' }), B('digit', r(5, 5))] },
   { name: 'Date (YYYY-MM-DD)', flags: 'g', sample: 'From 2026-10-28 to 2027-01-15', blocks: () => [B('capture', { v: 'year', kids: [B('digit', r(4, 4))] }), B('text', { v: '-' }), B('capture', { v: 'month', kids: [B('digit', r(2, 2))] }), B('text', { v: '-' }), B('capture', { v: 'day', kids: [B('digit', r(2, 2))] })] },
   { name: 'IPv4', flags: 'g', sample: 'Hosts 192.168.0.1 and 10.0.0.254', blocks: () => [B('boundary'), B('group', { ...r(3, 3), kids: [B('digit', { q: 'range', min: 1, max: 3 }), B('text', { v: '.' })] }), B('digit', { q: 'range', min: 1, max: 3 }), B('boundary')] },
-  { name: 'Hex color', flags: 'gi', sample: 'Palette: #fff #6d4aff #06B6D4', blocks: () => [B('text', { v: '#' }), B('group', { kids: [B('anyOf', { v: '0-9a-fA-F', ...r(6, 6) }), B('or'), B('anyOf', { v: '0-9a-fA-F', ...r(3, 3) })] }), B('boundary')] },
+  { name: 'Hex color', flags: 'gi', sample: 'Palette: #fff #f5a524 #06B6D4', blocks: () => [B('text', { v: '#' }), B('group', { kids: [B('anyOf', { v: '0-9a-fA-F', ...r(6, 6) }), B('or'), B('anyOf', { v: '0-9a-fA-F', ...r(3, 3) })] }), B('boundary')] },
   { name: 'Indian PIN', flags: 'g', sample: 'PIN 700137 or 721 137', blocks: () => [B('boundary'), B('anyOf', { v: '1-9' }), B('digit', r(2, 2)), B('space', { q: 'opt' }), B('digit', r(3, 3)), B('boundary')] },
   { name: 'PAN', flags: 'g', sample: 'PAN ABCDE1234F, invalid ABC123', blocks: () => [B('boundary'), B('upper', r(5, 5)), B('digit', r(4, 4)), B('upper'), B('boundary')] },
 ]
@@ -225,7 +225,7 @@ function BlockRow({ b, ops, first, last }: { b: Block; ops: Ops; first: boolean;
       </div>
       {cont && (
         <div className="mt-2 space-y-2 rounded-lg border border-dashed border-border bg-surface-2/30 p-2">
-          {(b.kids ?? []).length === 0 && <div className="py-2 text-center text-xs text-muted">{ops.target === b.id ? 'Selected — add blocks from the left panel' : 'Click here, then add blocks into this group'}</div>}
+          {(b.kids ?? []).length === 0 && <div className="py-2 text-center text-xs text-muted">{ops.target === b.id ? 'Selected, add blocks from the left panel' : 'Click here, then add blocks into this group'}</div>}
           <BlockList list={b.kids ?? []} ops={ops} />
         </div>
       )}

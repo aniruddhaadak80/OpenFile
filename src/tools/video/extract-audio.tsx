@@ -37,7 +37,7 @@ export default function ExtractAudio() {
     setResult(blob)
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v,.flv,.wmv" onFiles={(f) => setFile(f[0])} label="Drop a video to extract its audio" sub="Get the soundtrack as MP3, AAC, OGG or WAV — no upload." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v,.flv,.wmv" onFiles={(f) => setFile(f[0])} label="Drop a video to extract its audio" sub="Get the soundtrack as MP3, AAC, OGG or WAV, no upload." />
 
   return (
     <div className="space-y-6">

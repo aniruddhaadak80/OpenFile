@@ -14,10 +14,10 @@ const FORMATS: { key: keyof typeof fmt; label: string }[] = [
 
 export default function ColorConverter() {
   const [color, setColor] = useState<RGBA>({ r: 109, g: 74, b: 255, a: 1 })
-  const [input, setInput] = useState('#6d4aff')
+  const [input, setInput] = useState('#f5a524')
   const [bad, setBad] = useState(false)
   const [fg, setFg] = useState('#ffffff')
-  const [bg, setBg] = useState('#6d4aff')
+  const [bg, setBg] = useState('#f5a524')
   const [scaleFmt, setScaleFmt] = useState<'hex' | 'oklch' | 'rgb'>('hex')
 
   const set = (c: RGBA, fromInput = false) => { setColor(c); if (!fromInput) setInput(fmt.hex(c)); setBad(false) }
@@ -36,7 +36,7 @@ export default function ColorConverter() {
     const dir = bgL > 0.6 ? -1 : 1
     for (let L = o.l; L >= 0 && L <= 1; L += dir * 0.01) {
       const c = oklchToRgbGamut(L, o.c, o.h)
-      if (contrast(c, bgc) >= 4.5) { setFg(rgbToHex(c)); toast(`Adjusted to ${rgbToHex(c)} — passes AA`); return }
+      if (contrast(c, bgc) >= 4.5) { setFg(rgbToHex(c)); toast(`Adjusted to ${rgbToHex(c)}, passes AA`); return }
     }
     setFg(dir < 0 ? '#000000' : '#ffffff')
   }
@@ -54,7 +54,7 @@ export default function ColorConverter() {
           <div>
             <Label hint={bad ? <span className="text-danger">Unrecognised</span> : undefined}>Any CSS colour</Label>
             <div className="flex gap-2">
-              <Input value={input} onChange={(e) => onInput(e.target.value)} placeholder="#ff0080, rgb(), hsl(), oklch(), tomato…" className={cn('font-mono', bad && 'border-danger')} spellCheck={false} />
+              <Input value={input} onChange={(e) => onInput(e.target.value)} placeholder="#f97316, rgb(), hsl(), oklch(), tomato…" className={cn('font-mono', bad && 'border-danger')} spellCheck={false} />
               <Button variant="outline" size="md" title="Random colour" onClick={() => set(randomColor())} icon={<Shuffle className="size-4" />} />
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function ColorConverter() {
           </div>
           <div className="rounded-xl p-5 transition-colors" style={{ background: bg, color: fg }}>
             <div className="text-2xl font-bold">Large heading text</div>
-            <p className="mt-1 text-sm">Normal body text — the quick brown fox jumps over the lazy dog. 0123456789</p>
+            <p className="mt-1 text-sm">Normal body text, the quick brown fox jumps over the lazy dog. 0123456789</p>
             <div className="mt-3 inline-flex rounded-lg px-3 py-1.5 text-xs font-semibold" style={{ border: `2px solid ${fg}` }}>UI component</div>
           </div>
           <div className="flex flex-wrap items-center gap-4">

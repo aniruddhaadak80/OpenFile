@@ -92,7 +92,7 @@ export default function VideoTrimmer() {
         blob = await ffRun({ inputs: [{ name: input, file }], args: ['-ss', ts(s), '-i', input, '-t', ts(len), '-map', '0:v?', '-map', '0:a?', '-c', 'copy', '-avoid_negative_ts', 'make_zero', ...(fmt === 'mp4' ? ['-movflags', '+faststart'] : []), out], output: out, duration: len, onProgress: setProgress })
       } catch (err: any) {
         if (err?.name === 'CancelledError') throw err
-        toast(`Lossless copy isn't possible for this file as ${fmt.toUpperCase()} — re-encoding instead.`, 'info')
+        toast(`Lossless copy isn't possible for this file as ${fmt.toUpperCase()}, re-encoding instead.`, 'info')
       }
     }
     if (!blob) {
@@ -102,7 +102,7 @@ export default function VideoTrimmer() {
     setResult({ blob, name: `${baseName(file.name)}-trim-${fmtTime(s, 1).replace(/[:.]/g, '')}-${fmtTime(e, 1).replace(/[:.]/g, '')}.${fmt}` })
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to trim" sub="MP4, WEBM, MOV, MKV… processed locally — nothing is uploaded." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to trim" sub="MP4, WEBM, MOV, MKV… processed locally, nothing is uploaded." />
 
   const [s, e] = range
   return (
@@ -123,7 +123,7 @@ export default function VideoTrimmer() {
               <p className="text-center text-xs text-muted">Drag the handles or the highlighted range · click the strip to seek · playhead {fmtTime(cur)}</p>
             </div>
           ) : meta && !meta.playable ? (
-            <Note tone="warn">Your browser can't preview this file, so the visual timeline is unavailable. Type the start and end times on the right — trimming still works.</Note>
+            <Note tone="warn">Your browser can't preview this file, so the visual timeline is unavailable. Type the start and end times on the right, trimming still works.</Note>
           ) : null}
         </>}
         side={<>
@@ -136,7 +136,7 @@ export default function VideoTrimmer() {
           <div>
             <Label>Mode</Label>
             <Segmented value={mode} onChange={setMode} className="w-full" options={[{ value: 'copy', label: 'Fast · lossless' }, { value: 'accurate', label: 'Accurate · re-encode' }]} />
-            <p className="mt-2 text-xs text-muted">{mode === 'copy' ? 'Copies the streams as-is — instant and no quality loss. Cuts snap to the nearest keyframe, so the start may shift by up to a few seconds.' : 'Re-encodes for frame-accurate cuts. Slower, with a tiny quality cost.'}</p>
+            <p className="mt-2 text-xs text-muted">{mode === 'copy' ? 'Copies the streams as-is, instant and no quality loss. Cuts snap to the nearest keyframe, so the start may shift by up to a few seconds.' : 'Re-encodes for frame-accurate cuts. Slower, with a tiny quality cost.'}</p>
           </div>
           <div>
             <Label>Output format</Label>

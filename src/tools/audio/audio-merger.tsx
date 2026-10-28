@@ -105,7 +105,7 @@ export default function AudioMerger() {
 
   const reset = () => { stopPreview(); if (job.busy) job.cancel(); setItems([]); setResult(null); job.reset() }
 
-  if (!items.length) return <Dropzone multiple accept="audio/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.webm" onFiles={add} label="Drop the audio files to join" sub="Add two or more tracks — reorder, add gaps or crossfades, export as one file." />
+  if (!items.length) return <Dropzone multiple accept="audio/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.webm" onFiles={add} label="Drop the audio files to join" sub="Add two or more tracks, reorder, add gaps or crossfades, export as one file." />
 
   return (
     <div className="space-y-6">

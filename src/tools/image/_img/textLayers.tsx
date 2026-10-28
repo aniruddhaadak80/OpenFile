@@ -65,7 +65,7 @@ export function drawLayer(ctx: CanvasRenderingContext2D, L: TextLayer, W: number
     ctx.shadowColor = 'transparent'
   })
   if (selected) {
-    ctx.globalAlpha = 1; ctx.setLineDash([6, 4]); ctx.lineWidth = Math.max(1.5, 2 * (W / 1000)); ctx.strokeStyle = '#8b6cff'
+    ctx.globalAlpha = 1; ctx.setLineDash([6, 4]); ctx.lineWidth = Math.max(1.5, 2 * (W / 1000)); ctx.strokeStyle = '#f5a524'
     ctx.strokeRect(-m.w / 2 - 6, -m.h / 2 - 6, m.w + 12, m.h + 12)
   }
   ctx.restore()

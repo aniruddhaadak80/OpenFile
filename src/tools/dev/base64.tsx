@@ -48,7 +48,7 @@ export default function Base64Tool() {
 }
 
 function TextMode() {
-  const [input, setInput] = useState('Hello, OpenFile! 👋 नमस्ते')
+  const [input, setInput] = useState('Hello, OpenFile 👋 नमस्ते')
   const [mode, setMode] = useState<'auto' | 'encode' | 'decode'>('auto')
   const [urlSafe, setUrlSafe] = useState(false)
   const [lineWrap, setLineWrap] = useState(false)
@@ -86,8 +86,8 @@ function TextMode() {
             : <CodeArea value={res.out} readOnly lineNumbers={false} />}
         </Pane>
       </div>
-      {res.binary && <p className="text-xs text-warn">The decoded bytes aren't valid UTF-8 text — use the Files tab to save them as a file.</p>}
-      {input && !res.err && <div className="grid grid-cols-3 gap-2 sm:max-w-md"><Stat label="Input" value={formatBytes(enc.encode(input).length)} /><Stat label="Output" value={formatBytes(enc.encode(res.out).length)} /><Stat label="Ratio" value={input.length ? (res.out.length / input.length).toFixed(2) + '×' : '—'} /></div>}
+      {res.binary && <p className="text-xs text-warn">The decoded bytes aren't valid UTF-8 text, use the Files tab to save them as a file.</p>}
+      {input && !res.err && <div className="grid grid-cols-3 gap-2 sm:max-w-md"><Stat label="Input" value={formatBytes(enc.encode(input).length)} /><Stat label="Output" value={formatBytes(enc.encode(res.out).length)} /><Stat label="Ratio" value={input.length ? (res.out.length / input.length).toFixed(2) + '×' : '-'} /></div>}
     </div>
   )
 }
@@ -120,7 +120,7 @@ function FileMode() {
         <div className="flex flex-wrap gap-4"><Switch checked={dataUrl} onChange={setDataUrl} label="Include data: URL prefix" /><Switch checked={urlSafe} onChange={setUrlSafe} label="URL-safe" /></div>
         {out && <>
           {file?.type.startsWith('image/') && <img src={b64} alt="" className="checker max-h-40 rounded-lg border border-border object-contain" />}
-          <Textarea value={out.length > 200000 ? out.slice(0, 200000) + '\n… (truncated preview — use Copy or Download for the full string)' : out} readOnly className="min-h-40 break-all text-xs" />
+          <Textarea value={out.length > 200000 ? out.slice(0, 200000) + '\n… (truncated preview, use Copy or Download for the full string)' : out} readOnly className="min-h-40 break-all text-xs" />
           <div className="flex flex-wrap gap-2"><CopyButton text={out} /><DownloadButton text={out} filename={(file?.name ?? 'file') + '.b64.txt'} variant="outline" />
             {file?.type.startsWith('image/') && <CopyButton text={`<img src="${b64}" alt="" />`} label="Copy <img>" />}
             {file?.type.startsWith('image/') && <CopyButton text={`background-image: url("${b64}");`} label="Copy CSS" />}</div>

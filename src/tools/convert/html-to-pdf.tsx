@@ -10,7 +10,7 @@ const SAMPLE = `<!doctype html>
 <head>
 <style>
   body { font-family: Georgia, serif; color: #1f2937; line-height: 1.6; margin: 0; }
-  header { background: linear-gradient(120deg, #6d4aff, #06b6d4); color: #fff; padding: 48px 40px; }
+  header { background: linear-gradient(120deg, #f5a524, #06b6d4); color: #fff; padding: 48px 40px; }
   header h1 { margin: 0; font-size: 40px; }
   main { padding: 32px 40px; }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -20,7 +20,7 @@ const SAMPLE = `<!doctype html>
 </style>
 </head>
 <body>
-  <header><h1>Quarterly Update</h1><p>Generated with OpenFile — HTML to PDF</p></header>
+  <header><h1>Quarterly Update</h1><p>Generated with OpenFile: HTML to PDF</p></header>
   <main>
     <div class="grid">
       <div class="card"><h3>Revenue</h3><p>$1.2M (+18%)</p></div>
@@ -80,7 +80,7 @@ export default function HtmlToPdf() {
       toast('Page loaded', 'success')
     } catch (e: any) {
       setUrlErr(e?.message === 'deployment' || e instanceof TypeError
-        ? 'URL mode needs the OpenFile server function (available on the Vercel deployment). It is not reachable here — open the page in your browser, use "View source", copy the HTML and use Paste mode instead.'
+        ? 'URL mode needs the OpenFile server function (available on the Vercel deployment). It is not reachable here, open the page in your browser, use "View source", copy the HTML and use Paste mode instead.'
         : e?.message || 'Could not fetch that page.')
     } finally { setFetching(false) }
   }
@@ -112,7 +112,7 @@ export default function HtmlToPdf() {
         <Tabs value={mode} onChange={setMode} tabs={[{ value: 'paste', label: <span className="inline-flex items-center gap-1.5"><Code2 className="size-4" />Paste HTML</span> }, { value: 'url', label: <span className="inline-flex items-center gap-1.5"><Globe className="size-4" />From URL</span> }]} />
         {mode === 'paste' ? (
           <div className="space-y-2">
-            <Textarea value={html} onChange={(e) => setHtml(e.target.value)} placeholder="<html>…</html>  — paste a full page or a fragment. Scripts are removed for safety." className="h-56" spellCheck={false} />
+            <Textarea value={html} onChange={(e) => setHtml(e.target.value)} placeholder="<html>…</html> , paste a full page or a fragment. Scripts are removed for safety." className="h-56" spellCheck={false} />
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="ghost" icon={<Sparkles className="size-4" />} onClick={() => setHtml(SAMPLE)}>Load sample</Button>
               <label className="inline-flex"><input type="file" accept=".html,.htm,text/html" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f) setHtml(await f.text()); e.target.value = '' }} /><span className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-xl px-3 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg"><Upload className="size-4" />Open .html file</span></label>

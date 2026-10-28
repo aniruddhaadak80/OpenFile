@@ -78,7 +78,7 @@ export default function WordCounter() {
         <Card className="p-0">
           <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2">
             <span className="mr-auto text-xs font-semibold uppercase tracking-wide text-muted">Your text</span>
-            <Button size="sm" variant="ghost" icon={<ClipboardPaste className="size-4" />} onClick={async () => { try { setText(await navigator.clipboard.readText()) } catch { toast('Clipboard access denied — paste with Ctrl/⌘+V', 'info') } }}>Paste</Button>
+            <Button size="sm" variant="ghost" icon={<ClipboardPaste className="size-4" />} onClick={async () => { try { setText(await navigator.clipboard.readText()) } catch { toast('Clipboard access denied, paste with Ctrl/⌘+V', 'info') } }}>Paste</Button>
             <OpenFileButton accept=".txt,.md,.html,.csv,text/*" onText={(x) => setText(x)} />
             <Button size="sm" variant="ghost" icon={<Trash2 className="size-4" />} onClick={() => setText('')}>Clear</Button>
           </div>
@@ -87,7 +87,7 @@ export default function WordCounter() {
         </Card>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Stat label="Paragraphs" value={s.paragraphs} /><Stat label="Lines" value={s.lines} /><Stat label="Unique words" value={s.uniq} sub={s.words ? `${Math.round((s.uniq / s.words) * 100)}% lexical diversity` : undefined} />
-          <Stat label="Longest word" value={<span className="text-base">{s.longest || '—'}</span>} sub={s.longest ? `${s.longest.length} letters · avg ${s.avgLen.toFixed(1)}` : undefined} />
+          <Stat label="Longest word" value={<span className="text-base">{s.longest || '-'}</span>} sub={s.longest ? `${s.longest.length} letters · avg ${s.avgLen.toFixed(1)}` : undefined} />
         </div>
         <Card className="space-y-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted">Character limits</div>
@@ -108,8 +108,8 @@ export default function WordCounter() {
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <Card className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div><div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted"><BookOpen className="size-3" />Reading</div><div className="font-display text-xl font-semibold">{s.words ? fmtTime(s.words / Number(wpm)) : '—'}</div></div>
-            <div><div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted"><Mic className="size-3" />Speaking</div><div className="font-display text-xl font-semibold">{s.words ? fmtTime(s.words / 140) : '—'}</div></div>
+            <div><div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted"><BookOpen className="size-3" />Reading</div><div className="font-display text-xl font-semibold">{s.words ? fmtTime(s.words / Number(wpm)) : '-'}</div></div>
+            <div><div className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted"><Mic className="size-3" />Speaking</div><div className="font-display text-xl font-semibold">{s.words ? fmtTime(s.words / 140) : '-'}</div></div>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted"><Clock className="size-3.5" />Reading speed <Segmented value={wpm} onChange={setWpm} options={[{ value: '200', label: 'Slow' }, { value: '238', label: 'Avg' }, { value: '300', label: 'Fast' }]} /></div>
         </Card>

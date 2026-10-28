@@ -46,7 +46,7 @@ export function PdfPageGrid({ file, selected, onToggle, rotations, labels, class
                 <img src={src} alt={`Page ${i + 1}`} className="max-h-full max-w-full shadow transition-transform" style={{ transform: `rotate(${rotations?.[i] ?? 0}deg)` }} />
               </div>
               <div className="mt-1.5 text-center text-xs font-medium text-muted">{labels ? labels(i) : `Page ${i + 1}`}</div>
-              {sel && <div className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-white shadow"><Check className="size-3.5" /></div>}
+              {sel && <div className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-on-accent shadow"><Check className="size-3.5" /></div>}
             </button>
           )
         })}

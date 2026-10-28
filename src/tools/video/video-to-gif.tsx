@@ -61,7 +61,7 @@ export default function VideoToGif() {
     setResult(blob)
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to make a GIF" sub="Pick the moment, tune size & smoothness, get an optimized GIF — all offline." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to make a GIF" sub="Pick the moment, tune size & smoothness, get an optimized GIF, all offline." />
 
   return (
     <div className="space-y-6">

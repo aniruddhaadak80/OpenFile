@@ -55,6 +55,6 @@
   </g>
   <text x="1010" y="300" text-anchor="middle" font-size="30" font-weight="800" fill="#F5A524">0 bytes</text>
   <text x="1010" y="326" text-anchor="middle" font-size="15" fill="#A8A29E">uploaded. Ever.</text>
-  <text x="420" y="388" text-anchor="middle" font-size="17" font-weight="700" fill="#F5F3EE">Files never leave your device — processing happens inside the browser tab.</text>
+  <text x="420" y="388" text-anchor="middle" font-size="17" font-weight="700" fill="#F5F3EE">Files never leave your device, processing happens inside the browser tab.</text>
   </g>
 </svg>

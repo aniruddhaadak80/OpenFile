@@ -49,7 +49,7 @@ export default function ColorPalette() {
     setBusy(true)
     setTimeout(() => {
       const res = method === 'kmeans' ? kmeans(px, count) : medianCut(px, count)
-      if (!res.length) setError('The image is fully transparent — no colours to extract.')
+      if (!res.length) setError('The image is fully transparent, no colours to extract.')
       setSwatches((old) => [...res.map((s) => ({ id: uid++, color: s.color, share: s.share })), ...old.filter((o) => o.picked)])
       setSel(0); setBusy(false)
     }, 10)
@@ -63,7 +63,7 @@ export default function ColorPalette() {
     switch (exp) {
       case 'css': return `:root {\n${hexes.map((h, i) => `  --color-${names[i]}: ${h};`).join('\n')}\n}`
       case 'scss': return hexes.map((h, i) => `$color-${names[i]}: ${h};`).join('\n') + `\n\n$palette: (\n${hexes.map((h, i) => `  '${names[i]}': ${h},`).join('\n')}\n);`
-      case 'tailwind': return `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${hexes.map((h, i) => `        '${names[i]}': '${h}',`).join('\n')}\n      },\n    },\n  },\n}\n\n/* Tailwind v4 — in your CSS */\n@theme {\n${hexes.map((h, i) => `  --color-${names[i]}: ${h};`).join('\n')}\n}`
+      case 'tailwind': return `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${hexes.map((h, i) => `        '${names[i]}': '${h}',`).join('\n')}\n      },\n    },\n  },\n}\n\n/* Tailwind v4, in your CSS */\n@theme {\n${hexes.map((h, i) => `  --color-${names[i]}: ${h};`).join('\n')}\n}`
       case 'json': return JSON.stringify(swatches.map((s, i) => ({ name: names[i], hex: rgbToHex(s.color), rgb: [s.color.r, s.color.g, s.color.b], hsl: fmt.hsl(s.color), oklch: fmt.oklch(s.color), share: s.share != null ? +(s.share * 100).toFixed(2) : undefined })), null, 2)
     }
   }, [swatches, exp, names])
@@ -158,7 +158,7 @@ export default function ColorPalette() {
                     className="flex h-20 flex-col justify-between rounded-xl p-2 text-left text-[11px] transition enabled:hover:scale-[1.03] disabled:opacity-60 cursor-pointer disabled:cursor-default"
                     style={v.color ? { background: rgbToHex(v.color), color: textOn(v.color) } : undefined}>
                     <span className="font-semibold">{v.name}</span>
-                    <span className="font-mono">{v.color ? rgbToHex(v.color).toUpperCase() : <span className="text-muted">—</span>}</span>
+                    <span className="font-mono">{v.color ? rgbToHex(v.color).toUpperCase() : <span className="text-muted">-</span>}</span>
                   </button>
                 ))}
               </div>

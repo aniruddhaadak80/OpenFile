@@ -166,7 +166,7 @@ export default function VoiceRecorder() {
               <AnimatePresence initial={false}>
                 {recs.map((r) => (
                   <motion.div key={r.id} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5">
-                    <button onClick={() => playRec(r)} className={cn('grid size-10 shrink-0 place-items-center rounded-full transition cursor-pointer', playingId === r.id ? 'bg-accent text-white' : 'bg-accent/10 text-accent hover:bg-accent/20')} aria-label="Play">{playingId === r.id ? <Pause className="size-4" /> : <Play className="size-4" />}</button>
+                    <button onClick={() => playRec(r)} className={cn('grid size-10 shrink-0 place-items-center rounded-full transition cursor-pointer', playingId === r.id ? 'bg-accent text-on-accent' : 'bg-accent/10 text-accent hover:bg-accent/20')} aria-label="Play">{playingId === r.id ? <Pause className="size-4" /> : <Play className="size-4" />}</button>
                     <div className="min-w-0 flex-1">
                       {editing === r.id ? (
                         <form onSubmit={(e) => { e.preventDefault(); setEditing(null) }} className="flex gap-1">
@@ -207,7 +207,7 @@ export default function VoiceRecorder() {
           <div className="mb-1 font-medium text-fg">Shortcuts</div>
           <kbd className="rounded bg-surface px-1">Space</kbd> start / stop · <kbd className="rounded bg-surface px-1">P</kbd> pause
         </div>
-        <p className="text-xs text-muted">Recordings live in this tab only — download the ones you want to keep before closing it.</p>
+        <p className="text-xs text-muted">Recordings live in this tab only, download the ones you want to keep before closing it.</p>
       </>}
     />
   )

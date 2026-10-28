@@ -47,7 +47,7 @@ function decode(s: string) {
 
 export default function HtmlEntities() {
   const [dir, setDir] = useState<'encode' | 'decode'>('encode')
-  const [input, setInput] = useState('<p class="note">Fish & Chips — £4.99 © 2026 “OpenFile” → café</p>')
+  const [input, setInput] = useState('<p class="note">Fish & Chips, £4.99 © 2026 “OpenFile” → café</p>')
   const [fmt, setFmt] = useState<Fmt>('named')
   const [scope, setScope] = useState<Scope>('nonascii')
   const [nbsp, setNbsp] = useState(true)

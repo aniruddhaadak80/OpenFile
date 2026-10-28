@@ -110,7 +110,7 @@ export default function MergeVideos() {
 
   const reset = () => { if (job.busy) job.cancel(); clips.forEach((c) => URL.revokeObjectURL(c.url)); setClips([]); setResult(null); job.reset() }
 
-  if (!clips.length) return <Dropzone multiple accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={add} label="Drop the clips you want to join" sub="Add two or more videos — reorder them, then merge into one MP4." />
+  if (!clips.length) return <Dropzone multiple accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={add} label="Drop the clips you want to join" sub="Add two or more videos, reorder them, then merge into one MP4." />
 
   return (
     <div className="space-y-6">
@@ -130,7 +130,7 @@ export default function MergeVideos() {
           <div>
             <Label>When sizes differ</Label>
             <Segmented value={fit} onChange={setFit} options={[{ value: 'pad', label: 'Fit (black bars)' }, { value: 'crop', label: 'Fill (crop)' }]} />
-            {mixed && <p className="mt-1.5 text-xs text-warn">Your clips have different sizes — they'll be normalized to {target.w}×{target.h}.</p>}
+            {mixed && <p className="mt-1.5 text-xs text-warn">Your clips have different sizes, they'll be normalized to {target.w}×{target.h}.</p>}
           </div>
           <Note>All clips are re-encoded to H.264/AAC at 30 fps so they join seamlessly. Clips without sound get silent audio.</Note>
           <Button size="lg" className="w-full" icon={<Combine className="size-5" />} onClick={go} loading={job.busy} disabled={clips.length < 2}>Merge {clips.length} clips</Button>

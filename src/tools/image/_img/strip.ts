@@ -1,4 +1,4 @@
-/* Lossless metadata stripping for JPEG, PNG and WEBP (no re-encode). Pure functions — testable in node. */
+/* Lossless metadata stripping for JPEG, PNG and WEBP (no re-encode). Pure functions, testable in node. */
 
 /** Returns EXIF orientation (1..8) for a JPEG, or 1 when absent. */
 export function jpegOrientation(b: Uint8Array): number {
@@ -21,7 +21,7 @@ export function jpegOrientation(b: Uint8Array): number {
   return 1
 }
 
-/** Removes APP1–APP13, APP15 (EXIF, XMP, IPTC/Photoshop…) and COM segments. Keeps JFIF (APP0), ICC? no — APP2 ICC kept for colour accuracy, APP14 Adobe kept. */
+/** Removes APP1–APP13, APP15 (EXIF, XMP, IPTC/Photoshop…) and COM segments. Keeps JFIF (APP0), ICC? no: APP2 ICC kept for colour accuracy, APP14 Adobe kept. */
 export function stripJpeg(b: Uint8Array, keepIcc = true): Uint8Array {
   if (b[0] !== 0xff || b[1] !== 0xd8) throw new Error('Not a JPEG')
   const parts: Uint8Array[] = [b.subarray(0, 2)]

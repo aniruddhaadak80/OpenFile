@@ -19,7 +19,7 @@ export default function DeletePdfPages() {
   const run = () => job.run(async (setP) => {
     if (!file) return
     if (!sel.size) throw new Error('Click the pages you want to delete first.')
-    if (!keep) throw new Error('You cannot delete every page — keep at least one.')
+    if (!keep) throw new Error('You cannot delete every page, keep at least one.')
     const o = await ops()
     const out = await o.pick(await readBytes(file), Array.from({ length: numPages }, (_, i) => i).filter((i) => !sel.has(i)))
     setResult(pdfBlob(out)); setP(1); toast(`Removed ${sel.size} page${sel.size > 1 ? 's' : ''}`, 'success')

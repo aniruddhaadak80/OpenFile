@@ -97,11 +97,11 @@ async function renderMermaid(root: HTMLElement) {
     startOnLoad: false, securityLevel: 'strict', theme: 'base', fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
     themeVariables: {
       darkMode: dark, background: v('--surface', dark ? '#0f1119' : '#ffffff'),
-      primaryColor: dark ? '#1d1838' : '#efeaff', primaryBorderColor: v('--accent', '#6d4aff'), primaryTextColor: v('--fg', dark ? '#eef0f8' : '#0d0f1a'),
+      primaryColor: dark ? '#134e4a' : '#ccfbf1', primaryBorderColor: v('--accent', '#f5a524'), primaryTextColor: v('--fg', dark ? '#eef0f8' : '#0d0f1a'),
       secondaryColor: dark ? '#10262c' : '#e6fbff', tertiaryColor: v('--surface-2', dark ? '#161a26' : '#f0f1f7'),
       lineColor: v('--muted', '#8b91a8'), textColor: v('--fg', dark ? '#eef0f8' : '#0d0f1a'),
       clusterBkg: v('--surface-2', dark ? '#161a26' : '#f0f1f7'), clusterBorder: v('--border', '#232838'),
-      actorBkg: dark ? '#1d1838' : '#efeaff', actorBorder: v('--accent', '#6d4aff'), actorTextColor: v('--fg', '#eef0f8'), signalColor: v('--muted', '#8b91a8'), signalTextColor: v('--fg', '#eef0f8'),
+      actorBkg: dark ? '#134e4a' : '#ccfbf1', actorBorder: v('--accent', '#f5a524'), actorTextColor: v('--fg', '#eef0f8'), signalColor: v('--muted', '#8b91a8'), signalTextColor: v('--fg', '#eef0f8'),
       noteBkgColor: dark ? '#10262c' : '#e6fbff', noteBorderColor: v('--accent-2', '#06b6d4'), noteTextColor: v('--fg', '#eef0f8'),
     },
   })

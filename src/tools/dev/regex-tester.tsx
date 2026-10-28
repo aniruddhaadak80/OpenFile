@@ -70,7 +70,7 @@ function runInWorker(data: object, timeout = 1500): Promise<Result> {
   if (!workerUrl) workerUrl = URL.createObjectURL(new Blob([WORKER], { type: 'text/javascript' }))
   return new Promise((res) => {
     const w = new Worker(workerUrl!)
-    const t = setTimeout(() => { w.terminate(); res({ ok: false, error: `Timed out after ${timeout} ms — the pattern likely causes catastrophic backtracking (e.g. nested quantifiers like (a+)+).` }) }, timeout)
+    const t = setTimeout(() => { w.terminate(); res({ ok: false, error: `Timed out after ${timeout} ms, the pattern likely causes catastrophic backtracking (e.g. nested quantifiers like (a+)+).` }) }, timeout)
     w.onmessage = (e) => { clearTimeout(t); w.terminate(); res(e.data) }
     w.onerror = (e) => { clearTimeout(t); w.terminate(); res({ ok: false, error: e.message }) }
     w.postMessage(data)
@@ -177,7 +177,7 @@ export default function RegexTester() {
 
       {tab === 'replace' && (
         <Card className="space-y-3">
-          <div className="flex items-center gap-2"><Input value={replace} onChange={(e) => setReplace(e.target.value)} className="font-mono" placeholder="Replacement — use $1, $<name>, $& (whole match)" /></div>
+          <div className="flex items-center gap-2"><Input value={replace} onChange={(e) => setReplace(e.target.value)} className="font-mono" placeholder="Replacement, use $1, $<name>, $& (whole match)" /></div>
           <div className="flex flex-wrap gap-1.5 text-[11px] text-muted">{['$&', '$1', '$2', '$<name>', '$`', "$'", '$$'].map((t) => <button key={t} onClick={() => setReplace((r) => r + t)} className="rounded border border-border px-1.5 py-0.5 font-mono hover:text-fg">{t}</button>)}</div>
           <Pane title="Result" actions={res?.ok && res.replaced !== undefined ? <CopyButton text={res.replaced} variant="ghost" /> : null}>
             <pre className="scrollbar-thin max-h-80 overflow-auto whitespace-pre-wrap break-words p-4 font-mono text-[14px] leading-6">{res?.ok ? res.replaced ?? '' : ''}</pre>

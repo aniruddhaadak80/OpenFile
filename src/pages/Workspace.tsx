@@ -14,7 +14,7 @@ const uid = () => Math.random().toString(36).slice(2, 9)
 const mk = (id: string, params?: Record<string, any>): Step => { const d = STEPS.find((s) => s.id === id)!; return { uid: uid(), id, enabled: true, params: { ...Object.fromEntries(d.params.map((p) => [p.key, d.mode === 'image' && p.key === 'quality' ? getPrefs().imageQuality : p.default])), ...params } } }
 
 export default function Workspace() {
-  useEffect(() => { document.title = 'Workspace — OpenFile' }, [])
+  useEffect(() => { document.title = 'Workspace | OpenFile' }, [])
   const [mode, setMode] = useState<Mode>('image')
   const [files, setFiles] = useState<File[]>([])
   const [steps, setSteps] = useState<Step[]>(() => PRESETS[0].steps.map((s) => mk(s.id, s.params)))
@@ -48,7 +48,7 @@ export default function Workspace() {
         setStepIdx(steps.indexOf(active[i])); setProg(0)
         const ts = performance.now()
         items = await def.run(items, active[i].params, setProg)
-        setLog((l) => [...l, `✓ ${def.name} — ${items.length} file(s) in ${Math.round(performance.now() - ts)} ms`])
+        setLog((l) => [...l, `✓ ${def.name}, ${items.length} file(s) in ${Math.round(performance.now() - ts)} ms`])
       }
       setResults(items)
       toast(`Pipeline finished in ${((performance.now() - t0) / 1000).toFixed(1)}s`)
@@ -62,7 +62,7 @@ export default function Workspace() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-3 py-1 text-xs font-bold text-accent"><Workflow className="size-3.5" /> WORKSPACE</div>
           <h1 className="mt-3 font-display text-4xl font-bold tracking-tight">Batch pipelines</h1>
-          <p className="mt-1.5 max-w-xl text-muted">Chain steps into a recipe and run it on hundreds of files at once — locally, in your browser.</p>
+          <p className="mt-1.5 max-w-xl text-muted">Chain steps into a recipe and run it on hundreds of files at once, locally, in your browser.</p>
         </div>
         <Segmented value={mode} onChange={switchMode} options={[{ value: 'image', label: <span className="flex items-center gap-1.5"><ImageIcon className="size-3.5" /> Images</span> }, { value: 'pdf', label: <span className="flex items-center gap-1.5"><FileText className="size-3.5" /> PDFs</span> }]} />
       </div>
@@ -89,7 +89,7 @@ export default function Workspace() {
                 <motion.div key={s.uid} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: 30 }}>
                   <Card className={cn('p-4 transition', state === 'run' && 'border-accent ring-4 ring-accent/15', !s.enabled && 'opacity-50')}>
                     <div className="flex items-center gap-3">
-                      <div className={cn('grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold', state === 'done' ? 'bg-success text-white' : state === 'run' ? 'bg-accent text-white' : 'bg-surface-2 text-muted')}>{state === 'done' ? <Check className="size-4" /> : i + 1}</div>
+                      <div className={cn('grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold', state === 'done' ? 'bg-success text-white' : state === 'run' ? 'bg-accent text-on-accent' : 'bg-surface-2 text-muted')}>{state === 'done' ? <Check className="size-4" /> : i + 1}</div>
                       <div className="min-w-0 flex-1"><div className="font-semibold">{def.name}</div><div className="truncate text-xs text-muted">{def.desc}</div></div>
                       <Switch checked={s.enabled} onChange={(v) => setSteps((x) => x.map((y) => (y.uid === s.uid ? { ...y, enabled: v } : y)))} />
                       <button onClick={() => move(i, -1)} className="rounded p-1 text-muted hover:text-fg cursor-pointer"><ArrowUp className="size-4" /></button>

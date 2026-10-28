@@ -7,7 +7,7 @@
 //
 // Usage: node scripts/postbuild.mjs [outDir=dist]
 // Env:   VITE_BASE (optional; detected from the built index.html), SITE_URL (absolute origin + base override)
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -27,12 +27,16 @@ const site = (process.env.SITE_URL || defaultSite).replace(/\/+$/, '')
 const abs = (route) => `${site}/${route ? route.replace(/^\/+/, '') : ''}`
 
 // ---- read routes from source (regex keeps this script dependency-free) ----
-const registry = readFileSync(join(root, 'src/tools/registry.ts'), 'utf8')
+// registry.ts plus any batch files it imports (src/tools/batches/*.ts)
+const batchDir = join(root, 'src/tools/batches')
+const registry = [readFileSync(join(root, 'src/tools/registry.ts'), 'utf8'), ...(existsSync(batchDir) ? readdirSync(batchDir).filter((f) => f.endsWith('.ts')).map((f) => readFileSync(join(batchDir, f), 'utf8')) : [])].join('\n')
 const unq = (s) => s.replace(/\\'/g, "'")
-const tools = [...registry.matchAll(/\{\s*slug:\s*'([^']+)',\s*name:\s*'((?:[^'\\]|\\.)+)',\s*desc:\s*'((?:[^'\\]|\\.)+)',\s*category:\s*'(\w+)'/g)].map((m) => ({ slug: m[1], name: unq(m[2]), desc: unq(m[3]), category: m[4] }))
+const tools = [...registry.matchAll(/\{\s*slug:\s*'([^']+)',\s*name:\s*'((?:[^'\\]|\\.)+)',\s*desc:\s*'((?:[^'\\]|\\.)+)',\s*category:\s*'(\w+)'/g)].map((m) => ({ slug: m[1], name: unq(m[2]), desc: unq(m[3]), category: m[4] })).filter((t, i, a) => a.findIndex((x) => x.slug === t.slug) === i)
 const categories = [...registry.matchAll(/\{\s*id:\s*'(\w+)',\s*name:\s*'([^']+)',\s*blurb:\s*'([^']+)'/g)].map((m) => ({ id: m[1], name: m[2], blurb: m[3] }))
 const nav = readFileSync(join(root, 'src/docs/nav.ts'), 'utf8')
 const docs = [...nav.matchAll(/\{\s*id:\s*'([^']+)',\s*path:\s*'([^']+)',\s*title:\s*'((?:[^'\\]|\\.)+)',\s*description:\s*'((?:[^'\\]|\\.)+)'/g)].map((m) => ({ id: m[1], path: m[2], title: unq(m[3]), description: unq(m[4]) }))
+const blogSrc = existsSync(join(root, 'src/blog/meta.ts')) ? readFileSync(join(root, 'src/blog/meta.ts'), 'utf8') : ''
+const posts = [...blogSrc.matchAll(/\{\s*slug:\s*'([^']+)',\s*title:\s*'((?:[^'\\]|\\.)+)',\s*description:\s*'((?:[^'\\]|\\.)+)',\s*date:\s*'([\d-]+)',\s*tags:\s*\[([^\]]*)\]/g)].map((m) => ({ slug: m[1], title: unq(m[2]), description: unq(m[3]), date: m[4], tags: [...m[5].matchAll(/'([^']+)'/g)].map((t) => t[1]) }))
 if (!tools.length || !categories.length || !docs.length) { console.error(`postbuild: could not parse routes (tools=${tools.length}, categories=${categories.length}, docs=${docs.length})`); process.exit(1) }
 
 const N = tools.length
@@ -48,6 +52,8 @@ const routes = [
   ...categories.map((c) => ({ path: `category/${c.id}`, title: `${c.name} | OpenFile`, desc: `${c.blurb}. ${tools.filter((t) => t.category === c.id).length} free tools that run 100% in your browser.`, priority: '0.8', freq: 'weekly' })),
   ...docs.map((d) => ({ path: d.path.replace(/^\//, ''), title: d.id === 'changelog' ? 'Changelog | OpenFile' : `${d.title} | OpenFile Docs`, desc: d.description, priority: d.id === 'getting-started' ? '0.8' : '0.6', freq: 'monthly' })),
   { path: 'docs/getting-started', title: 'Getting started | OpenFile Docs', desc: docs.find((d) => d.id === 'getting-started')?.description ?? '', priority: '0.5', freq: 'monthly', canonical: 'docs', nositemap: true },
+  { path: 'blog', title: 'Blog | OpenFile', desc: 'Guides, tips and behind the scenes notes on private, in-browser file tools, with live demos.', priority: '0.7', freq: 'weekly' },
+  ...posts.map((p) => ({ path: `blog/${p.slug}`, title: `${p.title} | OpenFile Blog`, desc: p.description, priority: '0.6', freq: 'monthly', lastmod: p.date })),
   ...tools.map((t) => ({ path: t.slug, title: `${t.name} | Free and private in your browser | OpenFile`, desc: `${t.desc} Free, no uploads, no sign-up. Runs 100% in your browser.`, priority: '0.9', freq: 'monthly' })),
 ]
 
@@ -84,10 +90,38 @@ writeFileSync(join(outDir, '.nojekyll'), '')
 const today = new Date().toISOString().slice(0, 10)
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${routes.filter((r) => !r.noindex && !r.nositemap).map((r) => `  <url><loc>${abs(r.path)}</loc><lastmod>${today}</lastmod><changefreq>${r.freq}</changefreq><priority>${r.priority}</priority></url>`).join('\n')}
+${routes.filter((r) => !r.noindex && !r.nositemap).map((r) => `  <url><loc>${abs(r.path)}</loc><lastmod>${r.lastmod ?? today}</lastmod><changefreq>${r.freq}</changefreq><priority>${r.priority}</priority></url>`).join('\n')}
 </urlset>
 `
 writeFileSync(join(outDir, 'sitemap.xml'), sitemap)
 writeFileSync(join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: ${base}history\nDisallow: ${base}settings\n\nSitemap: ${abs('sitemap.xml')}\n`)
 
-console.log(`postbuild: base=${base} site=${site} · ${written} route pages · ${routes.filter((r) => !r.noindex && !r.nositemap).length} sitemap URLs · 404.html · robots.txt · .nojekyll`)
+// ---- RSS feed for the blog ----
+if (posts.length) {
+  const rfc = (d) => new Date(d + 'T09:00:00Z').toUTCString()
+  const sorted = [...posts].sort((a, b) => b.date.localeCompare(a.date))
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OpenFile Blog</title>
+    <link>${abs('blog')}</link>
+    <description>Guides, tips and notes on private, in-browser file tools.</description>
+    <language>en</language>
+    <lastBuildDate>${rfc(sorted[0].date)}</lastBuildDate>
+    <atom:link href="${abs('blog/rss.xml')}" rel="self" type="application/rss+xml" />
+${sorted.map((p) => `    <item>
+      <title>${esc(p.title)}</title>
+      <link>${abs('blog/' + p.slug)}</link>
+      <guid isPermaLink="true">${abs('blog/' + p.slug)}</guid>
+      <pubDate>${rfc(p.date)}</pubDate>
+      <description>${esc(p.description)}</description>
+${p.tags.map((t) => `      <category>${esc(t)}</category>`).join('\n')}
+    </item>`).join('\n')}
+  </channel>
+</rss>
+`
+  mkdirSync(join(outDir, 'blog'), { recursive: true })
+  writeFileSync(join(outDir, 'blog', 'rss.xml'), rss)
+}
+
+console.log(`postbuild: base=${base} site=${site} · ${written} route pages · ${routes.filter((r) => !r.noindex && !r.nositemap).length} sitemap URLs | ${posts.length} blog posts + rss.xml | 404.html | robots.txt | .nojekyll`)

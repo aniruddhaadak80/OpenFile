@@ -160,7 +160,7 @@ export default function ErdDiagram() {
       const r = svgString(); if (!r) return
       const img = new Image(); const url = URL.createObjectURL(new Blob([r.s], { type: 'image/svg+xml' }))
       img.onload = async () => { const k = 2; const c = document.createElement('canvas'); c.width = r.W * k; c.height = r.H * k; const ctx = c.getContext('2d')!; ctx.scale(k, k); ctx.drawImage(img, 0, 0, r.W, r.H); URL.revokeObjectURL(url); downloadBlob(await canvasToBlob(c), 'schema.png') }
-      img.onerror = () => toast('PNG export failed — try SVG', 'error'); img.src = url
+      img.onerror = () => toast('PNG export failed, try SVG', 'error'); img.src = url
     })
   }
 
@@ -288,7 +288,7 @@ function RelPath({ r, byId, selected, onSelect }: { r: Rel; byId: Map<string, Ta
   const self = a.id === b.id
   const d = self ? `M${ax} ${ay} C${ax + 70} ${ay}, ${bx + 70} ${by}, ${bx} ${by}` : `M${ax} ${ay} C${ax + ad * off} ${ay}, ${bx + bd * off} ${by}, ${bx} ${by}`
   const fc = a.cols[ai]
-  const color = selected ? 'var(--accent)' : r.kind === 'N:M' ? '#ec4899' : 'var(--muted)'
+  const color = selected ? 'var(--accent)' : r.kind === 'N:M' ? '#f97316' : 'var(--muted)'
   const mid = { x: (ax + bx) / 2 + (self ? 60 : 0), y: (ay + by) / 2 }
   return (
     <g onPointerDown={(e) => { e.stopPropagation(); onSelect() }} style={{ cursor: 'pointer' }}>
@@ -340,17 +340,17 @@ function TableEditor({ t, model, upd, remove, close }: { t: Table; model: Model;
           </div>
         ))}
       </div>
-      {rels.length > 0 && <div className="text-xs text-muted">{rels.length} relation{rels.length > 1 ? 's' : ''} — click a line on the canvas to edit.</div>}
+      {rels.length > 0 && <div className="text-xs text-muted">{rels.length} relation{rels.length > 1 ? 's' : ''}, click a line on the canvas to edit.</div>}
       <Button variant="danger" size="sm" className="w-full" icon={<Trash2 className="size-4" />} onClick={remove}>Delete table</Button>
     </div>
   )
 }
 
-/** inline "references" picker on a column — creates/updates a relation */
+/** inline "references" picker on a column, creates/updates a relation */
 function RefPicker({ t, c, model }: { t: Table; c: Col; model: Model }) {
   const ctx = useErdCommit()
   const rel = model.rels.find((r) => r.kind !== 'N:M' && r.from.t === t.id && r.from.c === c.id)
-  const options = [{ value: '', label: '— no reference —' }, ...model.tables.flatMap((x) => x.cols.filter((y) => y.pk || y.unique).map((y) => ({ value: `${x.id}|${y.id}`, label: `→ ${x.name}.${y.name}` })))]
+  const options = [{ value: '', label: '(no reference)' }, ...model.tables.flatMap((x) => x.cols.filter((y) => y.pk || y.unique).map((y) => ({ value: `${x.id}|${y.id}`, label: `→ ${x.name}.${y.name}` })))]
   if (!ctx) return null
   return (
     <Select value={rel ? `${rel.to.t}|${rel.to.c}` : ''} onChange={(v) => ctx((m) => {

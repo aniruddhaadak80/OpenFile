@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 export default function Privacy() {
-  useEffect(() => { document.title = 'Privacy — OpenFile' }, [])
+  useEffect(() => { document.title = 'Privacy | OpenFile' }, [])
   const s = [
     ['Your files stay on your device', 'All file processing happens locally in your browser. OpenFile has no file-upload endpoint, and files you open are held only in your tab’s memory until you close or reload it.'],
-    ['Downloads of engines and models', 'Some tools fetch open-source processing engines (for example ffmpeg.wasm, Tesseract language data, or AI model weights) from public CDNs the first time you use them. Only the engine is downloaded — your file is never sent.'],
+    ['Downloads of engines and models', 'Some tools fetch open-source processing engines (for example ffmpeg.wasm, Tesseract language data, or AI model weights) from public CDNs the first time you use them. Only the engine is downloaded, your file is never sent.'],
     ['Local storage', 'We store your theme, favorites, recent tools and saved Workspace recipes in your browser’s localStorage. You can clear them at any time from your browser settings.'],
     ['Optional server features', 'When deployed on Vercel, a few optional API routes exist (health check and fetching a public web page for HTML to PDF). They receive only the URL you type, never your files, and keep no logs beyond the hosting platform’s defaults.'],
     ['No accounts, no tracking', 'There are no accounts, cookies for advertising, or third-party trackers.'],

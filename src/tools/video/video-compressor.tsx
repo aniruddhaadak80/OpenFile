@@ -61,7 +61,7 @@ export default function VideoCompressor() {
     setResult(blob)
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to compress" sub="Output is H.264 MP4 — plays everywhere. Processed on your device." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to compress" sub="Output is H.264 MP4, plays everywhere. Processed on your device." />
 
   return (
     <div className="space-y-6">
@@ -71,9 +71,9 @@ export default function VideoCompressor() {
           <VideoStage src={url} playable={meta?.playable !== false} />
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Stat label="Original" value={formatBytes(file.size)} />
-            <Stat label="Resolution" value={w ? `${w}×${h}` : '—'} />
-            <Stat label="Duration" value={dur ? fmtTime(dur, 1) : '—'} />
-            <Stat label="Bitrate" value={dur ? `${Math.round((file.size * 8) / dur / 1000)} kb/s` : '—'} />
+            <Stat label="Resolution" value={w ? `${w}×${h}` : '-'} />
+            <Stat label="Duration" value={dur ? fmtTime(dur, 1) : '-'} />
+            <Stat label="Bitrate" value={dur ? `${Math.round((file.size * 8) / dur / 1000)} kb/s` : '-'} />
           </div>
         </>}
         side={<>
@@ -87,9 +87,9 @@ export default function VideoCompressor() {
               ))}
             </div>
           </div>
-          <Slider label="Fine-tune (CRF — lower is better quality)" value={crf} onChange={setCrf} min={18} max={40} />
+          <Slider label="Fine-tune (CRF, lower is better quality)" value={crf} onChange={setCrf} min={18} max={40} />
           <div><Label>Resolution</Label><Segmented value={res} onChange={setRes} options={[{ value: 'original', label: 'Original' }, { value: '1080', label: '1080p' }, { value: '720', label: '720p' }, { value: '480', label: '480p' }]} />
-            {res !== 'original' && short && short <= +res && <p className="mt-1.5 text-xs text-muted">Video is already {short}p or smaller — resolution kept.</p>}
+            {res !== 'original' && short && short <= +res && <p className="mt-1.5 text-xs text-muted">Video is already {short}p or smaller, resolution kept.</p>}
           </div>
           <div><Label>Frame rate</Label><Segmented value={fps} onChange={setFps} options={[{ value: 'original', label: 'Original' }, { value: '30', label: '30' }, { value: '24', label: '24' }, { value: '15', label: '15' }]} /></div>
           <Switch checked={noAudio} onChange={setNoAudio} label="Remove audio" />
@@ -106,7 +106,7 @@ export default function VideoCompressor() {
       />
       {result && resultUrl && (
         <Reveal k={resultUrl}>
-          <ResultCard blob={result} filename={`${baseName(file.name)}-compressed.mp4`} originalSize={file.size} title={result.size < file.size ? 'Compressed!' : 'Done — but the file did not get smaller'} onReset={reset}>
+          <ResultCard blob={result} filename={`${baseName(file.name)}-compressed.mp4`} originalSize={file.size} title={result.size < file.size ? 'Compressed' : 'Done, but the file did not get smaller'} onReset={reset}>
             {result.size >= file.size && <Note tone="warn" className="mb-3">This video is already well compressed. Try a smaller preset or a lower resolution.</Note>}
             <div className="grid gap-3 sm:grid-cols-2">
               <div><div className="mb-1 text-xs text-muted">Before · {formatBytes(file.size)}</div>{meta?.playable ? <video src={url!} controls playsInline className="aspect-video w-full rounded-xl bg-black" /> : <div className="grid aspect-video place-items-center rounded-xl bg-black text-xs text-white/60">No preview</div>}</div>

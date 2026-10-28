@@ -98,7 +98,7 @@ export default function PdfToExcel() {
             </div>
             <div className="flex items-center gap-2 text-xs text-muted">
               <Badge>{cur.length} rows × {cols} cols</Badge>
-              <span>Preview of page {view + 1} — columns are detected from text alignment.</span>
+              <span>Preview of page {view + 1}, columns are detected from text alignment.</span>
               <Button size="sm" variant="ghost" className="ml-auto" icon={<Download className="size-4" />} disabled={!cur.length} onClick={downloadCsv}>CSV</Button>
             </div>
             {cur.length ? (
@@ -117,7 +117,7 @@ export default function PdfToExcel() {
                   </tbody>
                 </table>
               </motion.div>
-            ) : <Empty><ScanText className="mx-auto mb-2 size-6 text-warn" />No text on this page — it may be a scanned image. Run OCR PDF first to make it extractable.</Empty>}
+            ) : <Empty><ScanText className="mx-auto mb-2 size-6 text-warn" />No text on this page, it may be a scanned image. Run OCR PDF first to make it extractable.</Empty>}
           </>}
         </>}
         side={<>

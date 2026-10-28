@@ -214,14 +214,14 @@ export default function TableConverter() {
                 </tbody>
               </table>
             </div>
-            {table.rows.length > shown && <div className="px-4 pb-4 text-center"><Button size="sm" variant="ghost" onClick={() => setShown((s) => s + PAGE * 5)}>Show more ({table.rows.length - shown} hidden — all rows are still converted)</Button></div>}
+            {table.rows.length > shown && <div className="px-4 pb-4 text-center"><Button size="sm" variant="ghost" onClick={() => setShown((s) => s + PAGE * 5)}>Show more ({table.rows.length - shown} hidden, all rows are still converted)</Button></div>}
             {table.rows.length <= shown && <div className="h-2" />}
           </Card>
         </motion.div>
       )}
       {!table && !parseErr && (
         <div className="grid place-items-center rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">
-          <div className="space-y-2"><Upload className="mx-auto size-6 text-accent" /><div>Paste data or upload a file — the editable grid and converted output appear instantly.</div></div>
+          <div className="space-y-2"><Upload className="mx-auto size-6 text-accent" /><div>Paste data or upload a file, the editable grid and converted output appear instantly.</div></div>
         </div>
       )}
     </div>

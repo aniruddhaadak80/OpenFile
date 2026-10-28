@@ -57,7 +57,7 @@ function Decode() {
     const t = token.trim()
     if (!t) return null
     const p = t.split('.')
-    if (p.length !== 3) return { error: `A JWT has 3 dot-separated parts — this has ${p.length}.` }
+    if (p.length !== 3) return { error: `A JWT has 3 dot-separated parts, this has ${p.length}.` }
     try {
       const header = decodeSeg(p[0]); let payload: any
       try { payload = decodeSeg(p[1]) } catch { payload = new TextDecoder().decode(b64urlToBytes(p[1])) }
@@ -89,10 +89,10 @@ function Decode() {
         {token && <Button size="sm" variant="ghost" onClick={() => setToken('')}>Clear</Button>}
       </>}>
         <div className="relative">
-          <textarea value={token} onScroll={(e) => { if (overlay.current) overlay.current.scrollTop = e.currentTarget.scrollTop }} onChange={(e) => setToken(e.target.value.replace(/^Bearer\s+/i, ''))} spellCheck={false} placeholder="Paste a JWT (eyJhbGciOi…) — a leading 'Bearer ' is stripped automatically"
+          <textarea value={token} onScroll={(e) => { if (overlay.current) overlay.current.scrollTop = e.currentTarget.scrollTop }} onChange={(e) => setToken(e.target.value.replace(/^Bearer\s+/i, ''))} spellCheck={false} placeholder="Paste a JWT (eyJhbGciOi…). A leading 'Bearer ' is stripped automatically"
             style={{ fieldSizing: 'content' } as React.CSSProperties} className="min-h-28 w-full resize-none bg-transparent p-4 font-mono text-sm text-transparent caret-fg outline-none placeholder:text-muted/60 break-all" />
           <div ref={overlay} aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-all p-4 font-mono text-sm">
-            {parts.map((p, i) => <span key={i}><span className={['text-[#f43f5e]', 'text-accent', 'text-[#06b6d4]'][i] ?? 'text-muted'}>{p}</span>{i < parts.length - 1 && <span className="text-muted">.</span>}</span>)}
+            {parts.map((p, i) => <span key={i}><span className={['text-[#ef4444]', 'text-accent', 'text-[#06b6d4]'][i] ?? 'text-muted'}>{p}</span>{i < parts.length - 1 && <span className="text-muted">.</span>}</span>)}
           </div>
         </div>
       </Pane>
@@ -102,14 +102,14 @@ function Decode() {
       {payload !== null && dec && !('error' in dec) && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge color="#8b6cff">ALG {dec.header.alg ?? '?'}</Badge>
+            <Badge color="#f5a524">ALG {dec.header.alg ?? '?'}</Badge>
             {dec.header.typ && <Badge color="#06b6d4">TYP {dec.header.typ}</Badge>}
             {exp !== null && (expired ? <Badge color="#ef4444">EXPIRED {rel(exp).toUpperCase()}</Badge> : <Badge color="#22c55e">VALID · EXPIRES {rel(exp).toUpperCase()}</Badge>)}
             {exp === null && <Badge color="#f59e0b">NO EXPIRY</Badge>}
             {notYet && <Badge color="#f59e0b">NOT ACTIVE YET</Badge>}
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
-            <Pane title={<span className="text-[#f43f5e]">Header</span>} actions={<CopyButton text={JSON.stringify(dec.header, null, 2)} variant="ghost" />}>
+            <Pane title={<span className="text-[#ef4444]">Header</span>} actions={<CopyButton text={JSON.stringify(dec.header, null, 2)} variant="ghost" />}>
               <CodeView code={JSON.stringify(dec.header, null, 2)} lang="json" />
             </Pane>
             <Pane title={<span className="text-accent">Payload</span>} actions={<CopyButton text={typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2)} variant="ghost" />}>
@@ -146,8 +146,8 @@ function Decode() {
             </div>
             <div className={cn('flex items-center gap-2 rounded-xl px-3 py-2 text-sm',
               verify === 'ok' ? 'bg-success/10 text-success' : verify === 'bad' ? 'bg-danger/10 text-danger' : 'bg-surface-2 text-muted')}>
-              {verify === 'ok' ? <><ShieldCheck className="size-4" />Signature verified — the token was signed with this secret.</>
-                : verify === 'bad' ? <><ShieldX className="size-4" />Invalid signature — wrong secret or the token was tampered with.</>
+              {verify === 'ok' ? <><ShieldCheck className="size-4" />Signature verified, the token was signed with this secret.</>
+                : verify === 'bad' ? <><ShieldX className="size-4" />Invalid signature, wrong secret or the token was tampered with.</>
                 : verify === 'unsupported' ? <><ShieldQuestion className="size-4" />Algorithm “{dec.header.alg}” uses public keys; only HMAC (HS*) verification is supported here.</>
                 : <><ShieldQuestion className="size-4" />Enter a secret to verify the signature. Nothing leaves your browser.</>}
             </div>
@@ -155,7 +155,7 @@ function Decode() {
         </motion.div>
       )}
 
-      {!token && <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">Paste a token above. Decoding happens locally — tokens are never sent anywhere.</div>}
+      {!token && <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">Paste a token above. Decoding happens locally, tokens are never sent anywhere.</div>}
     </div>
   )
 }
@@ -209,7 +209,7 @@ function Sign() {
         <Pane title="Signed JWT" actions={out ? <CopyButton text={out} /> : null}>
           {err ? <div className="p-4 text-sm text-danger">{err}</div> : (
             <div className="break-all p-4 font-mono text-sm leading-relaxed">
-              {out.split('.').map((p, i) => <span key={i}><span className={['text-[#f43f5e]', 'text-accent', 'text-[#06b6d4]'][i]}>{p}</span>{i < 2 && <span className="text-muted">.</span>}</span>)}
+              {out.split('.').map((p, i) => <span key={i}><span className={['text-[#ef4444]', 'text-accent', 'text-[#06b6d4]'][i]}>{p}</span>{i < 2 && <span className="text-muted">.</span>}</span>)}
             </div>
           )}
         </Pane>

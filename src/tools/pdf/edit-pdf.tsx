@@ -27,7 +27,7 @@ const STICKY: Tool[] = ['pen', 'highlight', 'whiteout']
 const TYPE_LABEL: Record<string, string> = { text: 'Text', rect: 'Rectangle', ellipse: 'Ellipse', line: 'Line', arrow: 'Arrow', highlight: 'Highlight', pen: 'Drawing', image: 'Image', whiteout: 'Whiteout' }
 
 type Style = { color: string; fill: string | null; strokeWidth: number; opacity: number; font: FontKey; size: number; bold: boolean; italic: boolean; highlight: string }
-const DEFAULT_STYLE: Style = { color: '#e11d48', fill: null, strokeWidth: 3, opacity: 1, font: 'Helvetica', size: 16, bold: false, italic: false, highlight: '#facc15' }
+const DEFAULT_STYLE: Style = { color: '#ef4444', fill: null, strokeWidth: 3, opacity: 1, font: 'Helvetica', size: 16, bold: false, italic: false, highlight: '#facc15' }
 
 export default function EditPdf() {
   const [file, setFile] = useState<File | null>(null)
@@ -134,7 +134,7 @@ export default function EditPdf() {
     if (bytes) { setResult(pdfBlob(bytes)); toast('Edits burned into your PDF') }
   }
 
-  if (!file) return <Dropzone accept="application/pdf,.pdf" onFiles={(f) => setFile(f[0])} label="Drop a PDF to edit" sub="Add text, shapes, highlights, images and drawings — 100% in your browser." />
+  if (!file) return <Dropzone accept="application/pdf,.pdf" onFiles={(f) => setFile(f[0])} label="Drop a PDF to edit" sub="Add text, shapes, highlights, images and drawings: 100% in your browser." />
 
   return (
     <div className="space-y-4">
@@ -170,7 +170,7 @@ export default function EditPdf() {
             </div>
           ) : !loadErr && <div className="grid h-96 place-items-center rounded-2xl border border-border bg-surface-2/40"><Spinner label="Rendering pages…" /></div>}
           {total > 0 && <PageNav pages={pages} total={total} current={cur} onChange={(i) => { setCur(i); setSel(null); setEditing(null) }} zoom={zoom} onZoom={setZoom}
-            badge={(i) => items[i]?.length ? <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-accent text-[9px] font-bold text-white">{items[i].length}</span> : null} />}
+            badge={(i) => items[i]?.length ? <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-accent text-[9px] font-bold text-on-accent">{items[i].length}</span> : null} />}
           <p className="hidden text-xs text-muted sm:block">Tips: click a tool then draw on the page · double-click text to edit · <Kbd>Shift</Kbd> keeps lines straight & shapes square · arrows nudge · <Kbd>Del</Kbd> removes.</p>
         </div>
 
@@ -204,11 +204,11 @@ export default function EditPdf() {
                   <Slider label="Opacity" value={Math.round(val('opacity', style.opacity) * 100)} min={10} max={100} onChange={(v) => setProp({ opacity: v / 100 })} suffix="%" />
                 </>)}
                 {kind === 'highlight' && (<>
-                  <div><Label>Highlighter</Label><ColorPicker colors={['#facc15', '#4ade80', '#60a5fa', '#f472b6', '#fb923c']} value={val('color', style.highlight)} onChange={(c) => c && setProp({ color: c })} /></div>
+                  <div><Label>Highlighter</Label><ColorPicker colors={['#facc15', '#4ade80', '#60a5fa', '#fdba74', '#fb923c']} value={val('color', style.highlight)} onChange={(c) => c && setProp({ color: c })} /></div>
                   {selected && <Slider label="Strength" value={Math.round(val('opacity', 0.4) * 100)} min={15} max={80} onChange={(v) => patchSelected({ opacity: v / 100 })} suffix="%" />}
                 </>)}
                 {kind === 'image' && selected && <Slider label="Opacity" value={Math.round(val('opacity', 1) * 100)} min={10} max={100} onChange={(v) => patchSelected({ opacity: v / 100 })} suffix="%" />}
-                {kind === 'whiteout' && <p className="text-xs text-muted">Whiteout paints opaque white over content. It hides it visually but the original text stays in the file — use <b>Redact PDF</b> to remove sensitive text for real.</p>}
+                {kind === 'whiteout' && <p className="text-xs text-muted">Whiteout paints opaque white over content. It hides it visually but the original text stays in the file, use <b>Redact PDF</b> to remove sensitive text for real.</p>}
                 {selected && (
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" variant="outline" icon={<Copy className="size-3.5" />} onClick={duplicate}>Duplicate</Button>

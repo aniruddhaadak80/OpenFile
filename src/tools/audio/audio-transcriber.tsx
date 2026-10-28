@@ -93,7 +93,7 @@ export default function AudioTranscriber() {
   const etaS = tProg > 0.05 && tProg < 1 ? elapsed / tProg - elapsed : 0
   const activeIdx = segs.findIndex((s) => cur >= s.start && cur < s.end)
 
-  if (!file) return <Dropzone accept="audio/*,video/*,.mp3,.wav,.m4a,.ogg,.flac,.webm,.mp4,.mov,.mkv" onFiles={(f) => setFile(f[0])} label="Drop audio or video to transcribe" sub="Whisper AI runs on your device — the recording never leaves your browser." />
+  if (!file) return <Dropzone accept="audio/*,video/*,.mp3,.wav,.m4a,.ogg,.flac,.webm,.mp4,.mov,.mkv" onFiles={(f) => setFile(f[0])} label="Drop audio or video to transcribe" sub="Whisper AI runs on your device, the recording never leaves your browser." />
 
   return (
     <div className="space-y-6">
@@ -151,7 +151,7 @@ export default function AudioTranscriber() {
           <div><Label>Task</Label><Segmented value={task} onChange={setTask} options={[{ value: 'transcribe', label: 'Transcribe' }, { value: 'translate', label: 'Translate → English' }]} /></div>
           {hasGpu && <div><Switch checked={gpu} onChange={setGpu} label={<span className="inline-flex items-center gap-1.5"><Zap className="size-4 text-warn" />GPU acceleration (WebGPU)</span>} /><p className="mt-1 text-xs text-muted">Much faster on supported GPUs; turn off if it fails.</p></div>}
           <Button size="lg" className="w-full" icon={<Captions className="size-5" />} onClick={run} loading={busy}>{segs.length ? 'Transcribe again' : 'Transcribe'}</Button>
-          {duration > 1200 && !gpu && <Note tone="warn"><Clock className="mr-1 inline size-3" />Long recording — on CPU this can take a while. Keep the tab open.</Note>}
+          {duration > 1200 && !gpu && <Note tone="warn"><Clock className="mr-1 inline size-3" />Long recording, on CPU this can take a while. Keep the tab open.</Note>}
           <Note>Runs in a background thread with Whisper by OpenAI, so the page stays responsive.</Note>
         </>}
       />

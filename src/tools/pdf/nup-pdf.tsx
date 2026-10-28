@@ -95,7 +95,7 @@ export default function NupPdf() {
           <Slider label="Outer margin" value={margin} min={0} max={72} onChange={d(setMargin)} suffix="pt" />
           <Slider label={mode === 'nup' ? 'Gap between pages' : 'Gutter (spine)'} value={gap} min={0} max={48} onChange={d(setGap)} suffix="pt" />
           <Switch checked={border} onChange={d(setBorder)} label="Draw page borders" />
-          <div className="rounded-xl bg-surface-2/60 p-3 text-xs text-muted">{numPages} pages → <span className="font-semibold text-fg">{mode === 'nup' ? `${sheetsOut} sheet${sheetsOut === 1 ? '' : 's'}` : `${pairs.length / 2 || 0} sheet${pairs.length / 2 === 1 ? '' : 's'} (${pairs.length} sides${numPages % 4 ? `, ${4 - (numPages % 4)} blank added` : ''})`}</span>. Pages stay vector — text remains sharp and selectable.</div>
+          <div className="rounded-xl bg-surface-2/60 p-3 text-xs text-muted">{numPages} pages → <span className="font-semibold text-fg">{mode === 'nup' ? `${sheetsOut} sheet${sheetsOut === 1 ? '' : 's'}` : `${pairs.length / 2 || 0} sheet${pairs.length / 2 === 1 ? '' : 's'} (${pairs.length} sides${numPages % 4 ? `, ${4 - (numPages % 4)} blank added` : ''})`}</span>. Pages stay vector, text remains sharp and selectable.</div>
           {job.busy && <Progress value={job.progress} label="Imposing…" />}
           <ErrorNote error={job.error} />
           <Button className="w-full" size="lg" icon={mode === 'nup' ? <Grid2x2 className="size-5" /> : <BookOpen className="size-5" />} loading={job.busy} disabled={!numPages} onClick={run}>{mode === 'nup' ? `Create ${per}-up PDF` : 'Create booklet'}</Button>

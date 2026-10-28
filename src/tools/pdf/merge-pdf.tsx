@@ -57,7 +57,7 @@ export default function MergePdf() {
     toast(`Merged ${valid.length} file${valid.length > 1 ? 's' : ''} · ${totalPages} pages`, 'success')
   })
 
-  if (!items.length) return <Dropzone accept={PDF_ACCEPT} multiple onFiles={add} label="Drop PDFs to merge, or click to browse" sub="Add as many as you like — reorder them by dragging. Files never leave your device." />
+  if (!items.length) return <Dropzone accept={PDF_ACCEPT} multiple onFiles={add} label="Drop PDFs to merge, or click to browse" sub="Add as many as you like, reorder them by dragging. Files never leave your device." />
 
   const fileName = /\.pdf$/i.test(name) ? name : `${name || 'merged'}.pdf`
 

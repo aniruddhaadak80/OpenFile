@@ -155,7 +155,7 @@ export default function ImageUpscaler() {
             )}
             <div className="mt-3 flex justify-center gap-6 text-xs text-muted"><span>Input <b className="font-mono text-fg">{dim.w}×{dim.h}</b></span><span>Output <b className="font-mono text-accent">{outW}×{outH}</b></span></div>
           </div>
-          {result && <ResultCard blob={result} filename={outName(file.name, 'png', `-${fac}x`)} originalSize={file.size} title={`Upscaled ${fac}× — ${outW}×${outH}`} onReset={reset} />}
+          {result && <ResultCard blob={result} filename={outName(file.name, 'png', `-${fac}x`)} originalSize={file.size} title={`Upscaled ${fac}×, ${outW}×${outH}`} onReset={reset} />}
         </>}
         side={<>
           <div>
@@ -174,7 +174,7 @@ export default function ImageUpscaler() {
           </div>
           {mode === 'enhanced' && <Slider label="Sharpening" value={sharp} onChange={(v) => { setSharp(v); setResult(null) }} min={0} max={100} suffix="%" />}
           {slowWarn && !tooBig && <div className="flex gap-2 rounded-xl border border-warn/30 bg-warn/10 p-3 text-xs text-warn"><AlertTriangle className="size-4 shrink-0" /> This is a large image ({mp.toFixed(1)} MP). AI upscaling may take several minutes{!(navigator as any).gpu ? ' without WebGPU' : ''}. Try Enhanced mode or crop first for faster results.</div>}
-          {tooBig && <div className="flex gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger"><AlertTriangle className="size-4 shrink-0" /> Output would be {outW}×{outH} — beyond what browsers can hold in memory. Choose a smaller scale or resize the image first.</div>}
+          {tooBig && <div className="flex gap-2 rounded-xl border border-danger/30 bg-danger/10 p-3 text-xs text-danger"><AlertTriangle className="size-4 shrink-0" /> Output would be {outW}×{outH}, beyond what browsers can hold in memory. Choose a smaller scale or resize the image first.</div>}
           <ErrorNote error={error} />
           <Button size="lg" className="w-full" loading={busy} disabled={tooBig} icon={<ZoomIn className="size-4" />} onClick={go}>Upscale {fac}×</Button>
           <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted"><Cpu className="size-3" /> {(navigator as any).gpu ? 'WebGPU acceleration available' : 'Runs on CPU (WebAssembly)'}</p>

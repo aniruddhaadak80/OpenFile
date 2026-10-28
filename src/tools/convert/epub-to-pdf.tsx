@@ -132,7 +132,7 @@ export default function EpubToPdf() {
 
   const reset = () => { setFile(null); setBook(null); setResult(null); setCover(null) }
 
-  if (!file) return <Dropzone accept=".epub,application/epub+zip" onFiles={(f) => setFile(f[0])} label="Drop an EPUB e-book" sub="DRM-free EPUB 2 & 3 — converted entirely in your browser." />
+  if (!file) return <Dropzone accept=".epub,application/epub+zip" onFiles={(f) => setFile(f[0])} label="Drop an EPUB e-book" sub="DRM-free EPUB 2 & 3, converted entirely in your browser." />
 
   return (
     <div className="space-y-5">
@@ -144,7 +144,7 @@ export default function EpubToPdf() {
           {book && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-5 sm:flex-row">
               <div className="mx-auto w-36 shrink-0 sm:mx-0">
-                {cover ? <img src={cover} alt="Cover" className="w-full rounded-lg shadow-xl ring-1 ring-black/10" /> : <div className="grid aspect-[2/3] place-items-center rounded-lg bg-gradient-brand text-white shadow-xl"><BookOpen className="size-10" /></div>}
+                {cover ? <img src={cover} alt="Cover" className="w-full rounded-lg shadow-xl ring-1 ring-black/10" /> : <div className="grid aspect-[2/3] place-items-center rounded-lg bg-gradient-brand text-on-accent shadow-xl"><BookOpen className="size-10" /></div>}
               </div>
               <div className="min-w-0 flex-1 space-y-3">
                 <div><div className="font-display text-xl font-bold leading-tight">{book.title}</div>{book.author && <div className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted"><User className="size-3.5" />{book.author}</div>}</div>
@@ -171,7 +171,7 @@ export default function EpubToPdf() {
           {result && <Reveal k="r" className="space-y-3"><ResultCard blob={result.blob} filename={`${baseName(file.name)}.pdf`} title={`PDF ready · ${result.pages} pages`} onReset={reset} /><PdfPreview blob={result.blob} height={640} /></Reveal>}
         </>}
         side={<>
-          {book && <div className="grid grid-cols-2 gap-2"><Stat label="Chapters" value={book.chapters.length} /><Stat label="Pages" value={result?.pages ?? '—'} /></div>}
+          {book && <div className="grid grid-cols-2 gap-2"><Stat label="Chapters" value={book.chapters.length} /><Stat label="Pages" value={result?.pages ?? '-'} /></div>}
           <div><Label>Page size</Label><Select value={size} onChange={setSize} options={(Object.keys(SIZES) as SizeKey[]).map((k) => ({ value: k, label: SIZES[k].label }))} /></div>
           <div>
             <Label>Styling</Label>

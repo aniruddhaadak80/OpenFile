@@ -2,7 +2,7 @@ import { zipSync, strToU8 } from 'fflate'
 import { getPrefs } from './prefs'
 
 export function formatBytes(bytes: number, decimals = 1) {
-  if (!Number.isFinite(bytes)) return '—'
+  if (!Number.isFinite(bytes)) return '-'
   if (bytes < 1024) return `${bytes} B`
   const k = 1024, sizes = ['KB', 'MB', 'GB', 'TB']
   let i = -1, v = bytes

@@ -153,7 +153,7 @@ export function LibraryPanel({ onInsert, onClose }: { onInsert: (id: string) => 
             <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted">{g}</div>
             <div className="grid grid-cols-3 gap-1.5">
               {items.map((s) => (
-                <button key={s.id} draggable onDragStart={(e) => { e.dataTransfer.setData('application/x-openfile-stencil', s.id); e.dataTransfer.effectAllowed = 'copy' }} onClick={() => onInsert(s.id)} title={`${s.label} — click or drag onto the board`}
+                <button key={s.id} draggable onDragStart={(e) => { e.dataTransfer.setData('application/x-openfile-stencil', s.id); e.dataTransfer.effectAllowed = 'copy' }} onClick={() => onInsert(s.id)} title={`${s.label}, click or drag onto the board`}
                   className="group flex flex-col items-center gap-1 rounded-xl border border-transparent bg-surface-2/60 p-2 transition hover:border-accent/50 hover:bg-accent/5 cursor-grab active:cursor-grabbing">
                   <svg viewBox="0 0 24 24" className="size-7 text-fg/80 transition group-hover:scale-110 group-hover:text-accent" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: s.preview }} />
                   <span className="line-clamp-2 text-center text-[10px] leading-tight text-muted">{s.label}</span>
@@ -214,15 +214,15 @@ export function ExportDialog({ hasSelection, preview, opts, setOpts, onPng, onSv
   return (
     <Modal title="Export" onClose={onClose} wide>
       <div className="grid gap-5 md:grid-cols-[1fr_260px]">
-        <div className="checker grid min-h-56 place-items-center overflow-hidden rounded-xl border border-border p-3">{preview ? <img src={preview} alt="Export preview" className="max-h-80 max-w-full object-contain shadow-lg" /> : <span className="text-sm text-muted">Nothing to export yet — draw something first.</span>}</div>
+        <div className="checker grid min-h-56 place-items-center overflow-hidden rounded-xl border border-border p-3">{preview ? <img src={preview} alt="Export preview" className="max-h-80 max-w-full object-contain shadow-lg" /> : <span className="text-sm text-muted">Nothing to export yet, draw something first.</span>}</div>
         <div className="space-y-4">
           {hasSelection && <T label="Only selected" k="onlySelected" />}
           <T label="Background" k="background" />
           <T label="Dark mode" k="dark" />
-          <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Scale</div><div className="flex gap-1">{[1, 2, 3].map((s) => <button key={s} onClick={() => setOpts({ ...opts, scale: s })} className={cn('h-8 flex-1 rounded-lg text-sm font-medium cursor-pointer', opts.scale === s ? 'bg-accent text-white' : 'bg-surface-2 hover:bg-border')}>{s}×</button>)}</div></div>
+          <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Scale</div><div className="flex gap-1">{[1, 2, 3].map((s) => <button key={s} onClick={() => setOpts({ ...opts, scale: s })} className={cn('h-8 flex-1 rounded-lg text-sm font-medium cursor-pointer', opts.scale === s ? 'bg-accent text-on-accent' : 'bg-surface-2 hover:bg-border')}>{s}×</button>)}</div></div>
           <div><div className="mb-1.5 flex justify-between text-xs font-medium uppercase tracking-wide text-muted"><span>Padding</span><span className="font-mono normal-case">{opts.padding}px</span></div><input type="range" min={0} max={120} value={opts.padding} onChange={(e) => setOpts({ ...opts, padding: +e.target.value })} className="w-full accent-[var(--accent)]" /></div>
           <div className="grid grid-cols-2 gap-2 pt-1">
-            <button disabled={!preview} onClick={onPng} className="col-span-2 flex h-10 items-center justify-center gap-2 rounded-xl bg-gradient-brand text-sm font-medium text-white shadow-lg shadow-accent/25 disabled:opacity-50 cursor-pointer"><ImageIcon className="size-4" />PNG</button>
+            <button disabled={!preview} onClick={onPng} className="col-span-2 flex h-10 items-center justify-center gap-2 rounded-xl bg-gradient-brand text-sm font-medium text-on-accent shadow-lg shadow-accent/25 disabled:opacity-50 cursor-pointer"><ImageIcon className="size-4" />PNG</button>
             <button disabled={!preview} onClick={onSvg} className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-border text-sm hover:border-accent hover:text-accent disabled:opacity-50 cursor-pointer"><Download className="size-4" />SVG</button>
             <button disabled={!preview} onClick={onCopy} className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-border text-sm hover:border-accent hover:text-accent disabled:opacity-50 cursor-pointer"><ClipboardCopy className="size-4" />Copy</button>
             <button onClick={onJson} className="col-span-2 flex h-9 items-center justify-center gap-1.5 rounded-xl border border-border text-sm hover:border-accent hover:text-accent cursor-pointer"><FileJson className="size-4" />Save .openfile.json</button>

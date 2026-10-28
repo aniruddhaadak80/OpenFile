@@ -1,7 +1,7 @@
 # Writing an OpenFile tool
 
 Every tool is one React component: `src/tools/<category>/<slug>.tsx` with a **default export** (no props).
-The registry (`src/tools/registry.ts`) already lists name/description/icon; the ToolPage renders the title, breadcrumb and badges — your component renders only the working UI underneath.
+The registry (`src/tools/registry.ts`) already lists name/description/icon; the ToolPage renders the title, breadcrumb and badges, your component renders only the working UI underneath.
 
 ## Rules
 - 100% client-side. No uploads. Use Web APIs, Canvas, WASM and the installed libraries.
@@ -11,8 +11,12 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
   `@/lib/pdf` (pdfjs, openPdfJs, renderPage, pageText, allText, loadPdfLib, pdfBlob, rasterizePdf, PDFDocument, rgb, degrees, StandardFonts),
   `@/lib/ffmpeg` (getFFmpeg, runFFmpeg({inputs,args,output,onProgress,onLog}), extOf),
   `@/components/PdfThumbs` (usePdfThumbs(file), PdfPageGrid({file, selected, onToggle, rotations, labels})).
-- Theme tokens (Tailwind): `bg-bg bg-surface bg-surface-2 border-border text-fg text-muted text-accent bg-accent text-success text-danger text-warn bg-gradient-brand text-gradient glass checker font-display font-mono`. Works in dark and light mode — never hard-code white/black backgrounds for UI chrome.
+- Theme tokens (Tailwind): `bg-bg bg-surface bg-surface-2 border-border text-fg text-muted text-accent bg-accent text-on-accent text-glow text-success text-danger text-warn bg-gradient-brand text-gradient glass checker skeleton font-display font-mono`. They work in every theme (Black, Dark, Sun and System) and with every accent, so never hard-code white or black backgrounds for UI chrome. Put `text-on-accent` (not `text-white`) on anything filled with the accent.
+- Brand palette: gold `#F5A524` (glow `#FFB224`) on black, with teal `#14B8A6`, cyan `#22D3EE`, emerald `#10B981`, sky `#38BDF8`, orange `#F97316`, lime `#84CC16`. Red `#EF4444` is for errors only. Do not use purple, violet, indigo, magenta, pink or fuchsia anywhere.
+- Motion kit (`@/components/motion`): `Reveal`, `Stagger` and `StaggerItem`, `Magnetic`, `useTilt`, `spotlightMove` (with the `spotlight` class), `Counter`, `Marquee`, `Aurora`, `GoldRing`. Animate only transform and opacity; everything respects the reduced-motion setting.
+- Preview videos: drop `public/media/tools/<slug>.mp4` and `<slug>.jpg` and list them in `public/media/tools/index.json` (`{ "<slug>": { "video": "<slug>.mp4", "poster": "<slug>.jpg", "duration": 12 } }`). The tool page and the tool card pick them up automatically and hide when there is no entry.
 - Long jobs: use `useJob()` → `{busy, progress, error, run}` and show `<Progress value={progress} label="…"/>`.
+- Writing: plain, simple words in a human tone. No em dashes, no en dashes used as dashes, and no exclamation marks in any text the user sees. Use commas, periods, colons, parentheses or "|" instead.
 - Make it polished: real previews (before/after, thumbnails, waveforms), sensible defaults, keyboard-friendly, mobile-responsive, helpful empty states, error messages that say what to do.
 - Heavy libs must be **dynamically imported** inside handlers (`const X = await import('lib')`) so the tool chunk stays small.
 

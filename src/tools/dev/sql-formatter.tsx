@@ -78,7 +78,7 @@ export default function SqlFormatter() {
         <Pane title="Input SQL" className={cn('h-[300px]', drop.over && 'ring-2 ring-accent')}><CodeArea value={input} onChange={setInput} placeholder="SELECT * FROM …" /></Pane>
         <Pane title={<span className="flex items-center gap-2">{mode === 'format' ? 'Formatted' : 'Minified'}{res && 'out' in res && <span className="font-normal normal-case text-muted">· {stmts} statement{stmts === 1 ? '' : 's'} · {formatBytes(new Blob([res.out!]).size)} (from {formatBytes(new Blob([input]).size)})</span>}</span>}
           className="min-h-[300px]" actions={res && 'out' in res ? <><CopyButton text={res.out!} /><DownloadButton text={res.out!} filename={mode === 'format' ? 'formatted.sql' : 'minified.sql'} /></> : null}>
-          {res && 'err' in res ? <div className="flex gap-2 p-4 text-sm text-danger"><AlertTriangle className="mt-0.5 size-4 shrink-0" /><pre className="whitespace-pre-wrap font-mono text-xs">{res.err}{'\n\n'}Tip: try another dialect — syntax like backticks or $1 parameters is dialect-specific.</pre></div>
+          {res && 'err' in res ? <div className="flex gap-2 p-4 text-sm text-danger"><AlertTriangle className="mt-0.5 size-4 shrink-0" /><pre className="whitespace-pre-wrap font-mono text-xs">{res.err}{'\n\n'}Tip: try another dialect, syntax like backticks or $1 parameters is dialect-specific.</pre></div>
             : res && 'out' in res ? <motion.div key={mode + dialect} initial={{ opacity: 0 }} animate={{ opacity: 1 }}><CodeView code={res.out!} lang="sql" className="max-h-[600px]" /></motion.div>
             : <div className="grid h-60 place-items-center text-sm text-muted">{lib ? 'Paste SQL above' : 'Loading formatter…'}</div>}
         </Pane>

@@ -21,7 +21,7 @@ export function decode(src: Blob | string): Promise<HTMLImageElement> {
     if (!isBlob && !url.startsWith('data:') && !url.startsWith('blob:')) img.crossOrigin = 'anonymous'
     img.decoding = 'async'
     img.onload = () => { res(img); if (isBlob) setTimeout(() => URL.revokeObjectURL(url), 1000) }
-    img.onerror = () => { if (isBlob) URL.revokeObjectURL(url); rej(new Error('Could not read this image — the format may not be supported by your browser.')) }
+    img.onerror = () => { if (isBlob) URL.revokeObjectURL(url); rej(new Error('Could not read this image, the format may not be supported by your browser.')) }
     img.src = url
   })
 }
@@ -272,7 +272,7 @@ export function buildIco(sizes: number[], pngs: Uint8Array[]): Uint8Array {
 }
 
 export async function loadGifenc(): Promise<{ GIFEncoder: any; quantize: any; applyPalette: any }> {
-  // @ts-ignore — gifenc ships without type declarations
+  // @ts-ignore, gifenc ships without type declarations
   const m: any = await import('gifenc')
   return (m.GIFEncoder ? m : m.default) as any
 }
@@ -564,7 +564,7 @@ export const FONT_CHOICES = ['Inter', 'Arial', 'Georgia', 'Times New Roman', 'Co
 export const SYSTEM_FONTS = new Set(['Arial', 'Georgia', 'Times New Roman', 'Courier New', 'Impact', 'Verdana'])
 export async function ensureFont(family: string) { if (!SYSTEM_FONTS.has(family)) await loadGoogleFont(family) }
 
-/** Reduce a canvas to N colors in place (keeps alpha) — makes PNGs compress dramatically better. */
+/** Reduce a canvas to N colors in place (keeps alpha), makes PNGs compress dramatically better. */
 export async function quantizeCanvas(c: HTMLCanvasElement, colors: number) {
   const lib = await loadGifenc()
   const ctx = c.getContext('2d')!

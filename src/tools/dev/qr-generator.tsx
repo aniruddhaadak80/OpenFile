@@ -75,7 +75,7 @@ export default function QrGenerator() {
   const qr = useMemo(() => {
     if (!QR || !text) return { m: null, err: null as string | null }
     try { const c = QR.create(text, { errorCorrectionLevel: logo && (ec === 'L' || ec === 'M') ? 'H' : ec }); return { m: c.modules, ver: c.version, err: null } }
-    catch (e: any) { return { m: null, err: e?.message?.includes('too big') || e?.message?.includes('amount of data') ? 'Too much data for a QR code — shorten the content or lower error correction.' : e?.message } }
+    catch (e: any) { return { m: null, err: e?.message?.includes('too big') || e?.message?.includes('amount of data') ? 'Too much data for a QR code, shorten the content or lower error correction.' : e?.message } }
   }, [QR, text, ec, logo])
 
   const opts = { size, margin, fg, bg, eyeColor: linkEye ? fg : eyeColor, transparent, style, eye, logo: logo?.img ?? null, logoDataUrl: logo?.url ?? null, logoScale: logoScale / 100 }
@@ -88,7 +88,7 @@ export default function QrGenerator() {
   const svg = () => { if (qr.m) downloadText(qrSvg(qr.m as any, opts), name + '.svg', 'image/svg+xml') }
   const copyImg = async () => {
     try { const b = await canvasToBlob(canvas.current!); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast('QR image copied') }
-    catch { toast('Your browser blocked image copy — use Download instead', 'error') }
+    catch { toast('Your browser blocked image copy, use Download instead', 'error') }
   }
   const onLogo = async (file?: File) => { if (!file) return; const url = await readDataUrl(file); const img = await loadImage(url); setLogo({ img, url }); if (ec === 'L' || ec === 'M') setEc('H') }
 
@@ -166,7 +166,7 @@ export default function QrGenerator() {
               : <div className="p-6 text-center text-sm text-muted">{qr.err ? <span className="text-danger">{qr.err}</span> : !QR ? 'Loading…' : 'Fill in the fields to generate your QR code'}</div>}
           </motion.div>
           {qr.m && <div className="flex justify-between text-[11px] text-muted"><span>Version {(qr as any).ver} · {qr.m.size}×{qr.m.size} modules</span><span>{text.length} chars · EC {logo && (ec === 'L' || ec === 'M') ? 'H' : ec}</span></div>}
-          {contrastLow && qr.m && !transparent && <div className="flex items-start gap-2 rounded-lg bg-warn/10 px-3 py-2 text-xs text-warn"><AlertTriangle className="mt-0.5 size-3.5 shrink-0" />Low contrast or inverted colors — some scanners may fail. Dark on light works best.</div>}
+          {contrastLow && qr.m && !transparent && <div className="flex items-start gap-2 rounded-lg bg-warn/10 px-3 py-2 text-xs text-warn"><AlertTriangle className="mt-0.5 size-3.5 shrink-0" />Low contrast or inverted colors, some scanners may fail. Dark on light works best.</div>}
           <div className="grid grid-cols-2 gap-2">
             <Button icon={<Download className="size-4" />} onClick={png} disabled={!qr.m}>PNG</Button>
             <Button variant="secondary" icon={<Download className="size-4" />} onClick={svg} disabled={!qr.m}>SVG</Button>

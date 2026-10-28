@@ -129,7 +129,7 @@ export default function ColorPickerImage() {
               <div key={k} className="flex items-center gap-2 px-3 py-2"><span className="w-9 text-[11px] font-bold text-muted">{k}</span><span className="flex-1 truncate font-mono text-sm">{v}</span><CopyButton text={v} label="" variant="ghost" /></div>
             ))}
           </div>}
-          {!picked && hover && <div className="bg-surface-2/60 px-3 py-1.5 text-[11px] text-muted">Live — click to lock this color</div>}
+          {!picked && hover && <div className="bg-surface-2/60 px-3 py-1.5 text-[11px] text-muted">Live, click to lock this color</div>}
         </div>
         <div><Label>Sample size</Label><Segmented value={sample} onChange={setSample} options={[{ value: '1', label: '1 px' }, { value: '3', label: '3×3 avg' }, { value: '5', label: '5×5 avg' }]} /></div>
         {hasEye && <Button variant="outline" className="w-full" icon={<Pipette className="size-4" />} onClick={eyeDropper}>Pick from anywhere on screen</Button>}
@@ -140,7 +140,7 @@ export default function ColorPickerImage() {
           {history.length ? (
             <div className="grid grid-cols-8 gap-1.5">
               <AnimatePresence initial={false}>
-                {history.map((h) => <motion.button layout initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} key={h} title={`${h} — click to copy`} onClick={() => { const n = parseInt(h.slice(1), 16); setPicked([(n >> 16) & 255, (n >> 8) & 255, n & 255]); copyText(h).then(() => toast(`${h} copied`)) }} className="aspect-square rounded-lg ring-1 ring-border transition hover:scale-110 cursor-pointer" style={{ background: h }} />)}
+                {history.map((h) => <motion.button layout initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} key={h} title={`${h}, click to copy`} onClick={() => { const n = parseInt(h.slice(1), 16); setPicked([(n >> 16) & 255, (n >> 8) & 255, n & 255]); copyText(h).then(() => toast(`${h} copied`)) }} className="aspect-square rounded-lg ring-1 ring-border transition hover:scale-110 cursor-pointer" style={{ background: h }} />)}
               </AnimatePresence>
             </div>
           ) : <p className="text-xs text-muted">Click the image to collect colors here.</p>}

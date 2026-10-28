@@ -11,7 +11,7 @@ const SAMPLES = [
   { name: 'File upload', cmd: `curl -u admin:s3cret \\\n  -F 'title=Quarterly report' \\\n  -F 'file=@./report.pdf;type=application/pdf' \\\n  https://files.example.com/upload` },
   { name: 'Form + cookies', cmd: `curl 'https://example.com/login' -X PUT -k -m 10 \\\n  -b 'session=abc; theme=dark' \\\n  -A 'OpenFile/1.0' \\\n  -d 'username=ada&password=p%40ss'` },
 ]
-const METHOD_COLOR: Record<string, string> = { GET: '#22c55e', POST: '#f59e0b', PUT: '#3b82f6', PATCH: '#a855f7', DELETE: '#ef4444', HEAD: '#64748b', OPTIONS: '#64748b' }
+const METHOD_COLOR: Record<string, string> = { GET: '#22c55e', POST: '#f59e0b', PUT: '#3b82f6', PATCH: '#14b8a6', DELETE: '#ef4444', HEAD: '#64748b', OPTIONS: '#64748b' }
 
 export default function CurlToCode() {
   const [cmd, setCmd] = useStored('curl-to-code:cmd', SAMPLES[0].cmd)
@@ -69,7 +69,7 @@ export default function CurlToCode() {
 
       <Pane title={L.label} actions={code ? <><CopyButton text={code} /><DownloadButton text={code} filename={`request.${L.ext}`} /></> : null}>
         {code ? <motion.div key={lang} initial={{ opacity: 0 }} animate={{ opacity: 1 }}><CodeView code={code} lang={lang === 'python' || lang === 'ruby' ? 'py' : 'js'} className="max-h-[560px]" /></motion.div>
-          : <div className="p-8 text-center text-sm text-muted">Paste a cURL command — e.g. from your browser's DevTools → Network → right-click → Copy as cURL.</div>}
+          : <div className="p-8 text-center text-sm text-muted">Paste a cURL command, e.g. from your browser's DevTools → Network → right-click → Copy as cURL.</div>}
       </Pane>
     </div>
   )

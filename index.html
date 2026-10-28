@@ -1,15 +1,16 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenFile — Every file tool, private, in your browser</title>
-    <meta name="description" content="OpenFile: 115+ free, open-source tools to merge, split, compress, sign and convert PDFs, edit images, trim video, transcribe audio and format code — 100% in your browser, zero uploads." />
-    <meta name="theme-color" content="#07080d" />
+    <title>OpenFile | Every file tool, private, in your browser</title>
+    <meta name="description" content="OpenFile: 115+ free, open-source tools to merge, split, compress, sign and convert PDFs, edit images, trim video, transcribe audio and format code. 100% in your browser, zero uploads." />
+    <meta name="theme-color" content="#000000" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta property="og:title" content="OpenFile — Every file tool, private, in your browser" />
+    <link rel="alternate" type="application/rss+xml" title="OpenFile Blog" href="/blog/rss.xml" />
+    <meta property="og:title" content="OpenFile | Every file tool, private, in your browser" />
     <meta property="og:description" content="115+ free tools for PDF, images, video, audio and developers. Nothing is uploaded." />
     <meta property="og:image" content="/og.png" />
     <meta property="og:type" content="website" />
@@ -17,6 +18,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      // apply the saved theme before first paint (full logic lives in src/lib/prefs.ts)
+      try { var p = JSON.parse(localStorage.getItem('of:prefs') || '{}'), t = p.theme || 'system', r = document.documentElement;
+        if (t === 'system') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        r.dataset.theme = t; r.classList.toggle('dark', t !== 'light'); } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

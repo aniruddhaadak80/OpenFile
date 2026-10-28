@@ -104,7 +104,7 @@ function ResultItem({ hit }: { hit: Hit }) {
           </div>
         ) : c.kind === 'upi' && c.data ? (
           <div className="grid grid-cols-[80px_1fr] gap-1 rounded-lg bg-surface-2/60 p-3 text-sm">
-            <span className="text-muted">Pay to</span><span className="break-all font-medium">{c.data.pn || '—'}</span>
+            <span className="text-muted">Pay to</span><span className="break-all font-medium">{c.data.pn || '-'}</span>
             <span className="text-muted">UPI ID</span><span className="break-all font-mono">{c.data.pa}</span>
             {c.data.am && <><span className="text-muted">Amount</span><span>₹{c.data.am}</span></>}
             {c.data.tn && <><span className="text-muted">Note</span><span>{c.data.tn}</span></>}
@@ -117,7 +117,7 @@ function ResultItem({ hit }: { hit: Hit }) {
           {c.kind === 'event' && <Button size="sm" variant="outline" icon={<CalendarDays className="size-4" />} onClick={() => { const body = /BEGIN:VCALENDAR/i.test(hit.text) ? hit.text : `BEGIN:VCALENDAR\nVERSION:2.0\n${hit.text}\nEND:VCALENDAR`; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([body], { type: 'text/calendar' })); a.download = 'event.ics'; a.click() }}>Add to calendar</Button>}
           <CopyButton text={hit.text} label={c.kind === 'wifi' ? 'Copy raw' : 'Copy'} />
         </div>
-        {c.kind === 'wifi' && <p className="text-[11px] text-muted">Browsers can't join Wi-Fi directly — copy the password, or scan this code with your phone's camera app to connect in one tap.</p>}
+        {c.kind === 'wifi' && <p className="text-[11px] text-muted">Browsers can't join Wi-Fi directly, copy the password, or scan this code with your phone's camera app to connect in one tap.</p>}
       </Card>
     </motion.div>
   )
@@ -238,7 +238,7 @@ function ImageScan({ onHit, setErr }: { onHit: (t: string, f: string, s: 'image'
 
   return (
     <div className="space-y-3">
-      <Dropzone onFiles={(f) => run(f[0])} accept="image/*" label="Drop a screenshot or photo with a QR code" sub="Or paste an image with Ctrl/⌘+V. Decoded locally — nothing is uploaded." compact={!!url} />
+      <Dropzone onFiles={(f) => run(f[0])} accept="image/*" label="Drop a screenshot or photo with a QR code" sub="Or paste an image with Ctrl/⌘+V. Decoded locally, nothing is uploaded." compact={!!url} />
       <div className="flex gap-2"><Button size="sm" variant="outline" icon={<ClipboardPaste className="size-4" />} onClick={pasteBtn}>Paste image</Button></div>
       {url && <div className="checker relative overflow-hidden rounded-2xl border border-border"><img src={url} alt="" className={cn('mx-auto max-h-[420px] object-contain transition', busy && 'opacity-50 blur-[1px]')} />{busy && <div className="shimmer absolute inset-0" />}</div>}
     </div>

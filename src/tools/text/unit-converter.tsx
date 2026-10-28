@@ -32,7 +32,7 @@ const CATS: Cat[] = [
 const toBase = (u: U, v: number) => (u.f !== undefined ? v * u.f : u.to!(v))
 const fromBase = (u: U, v: number) => (u.f !== undefined ? v / u.f : u.from!(v))
 function fmt(n: number, sig: number) {
-  if (!Number.isFinite(n)) return '—'
+  if (!Number.isFinite(n)) return '-'
   if (n === 0) return '0'
   const a = Math.abs(n)
   if (a >= 1e15 || a < 1e-6) return n.toExponential(Math.min(sig - 1, 10)).replace(/\.?0+e/, 'e')

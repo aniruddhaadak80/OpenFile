@@ -40,7 +40,7 @@ async function strip(it: Item, mode: 'lossless' | 'reencode', quality: number): 
   const bytes = new Uint8Array(await it.file.arrayBuffer())
   const kind = sniff(bytes)
   if (mode === 'lossless' && kind) {
-    if (kind === 'jpg' && jpegOrientation(bytes) !== 1) { /* rotation lives in EXIF — re-encode so the photo stays upright */ }
+    if (kind === 'jpg' && jpegOrientation(bytes) !== 1) { /* rotation lives in EXIF, re-encode so the photo stays upright */ }
     else {
       const out = kind === 'jpg' ? stripJpeg(bytes) : kind === 'png' ? stripPng(bytes) : stripWebp(bytes)
       return { blob: new Blob([out as BlobPart], { type: it.file.type || `image/${kind}` }), name: outName(it.file.name, kind, '-clean'), note: 'lossless' }
@@ -92,7 +92,7 @@ export default function ImageMetadataRemover() {
     setResults(out)
   })
 
-  if (!items.length) return <ImageDrop onFiles={onFiles} label="Drop photos to inspect & remove metadata" sub="See hidden camera, date and GPS data — then strip it. Nothing is uploaded." />
+  if (!items.length) return <ImageDrop onFiles={onFiles} label="Drop photos to inspect & remove metadata" sub="See hidden camera, date and GPS data, then strip it. Nothing is uploaded." />
   const totalWithGps = items.filter((i) => { const x = meta[i.id]; return x && x !== 'loading' && x.gps }).length
   const g = m && m !== 'loading' ? m.groups : {}
   const ifd0 = (g.ifd0 ?? {}) as any, exif = (g.exif ?? {}) as any
@@ -159,7 +159,7 @@ export default function ImageMetadataRemover() {
           <div>
             <Label>Method</Label>
             <Segmented value={mode} onChange={(v) => { setMode(v); setResults(null) }} options={[{ value: 'lossless', label: 'Lossless' }, { value: 'reencode', label: 'Re-encode' }]} />
-            <p className="mt-1.5 text-[11px] text-muted">{mode === 'lossless' ? 'Removes metadata blocks from JPEG, PNG and WEBP without touching pixels. Other formats are re-encoded.' : 'Redraws every pixel to a fresh file — guaranteed to drop everything, including embedded thumbnails.'}</p>
+            <p className="mt-1.5 text-[11px] text-muted">{mode === 'lossless' ? 'Removes metadata blocks from JPEG, PNG and WEBP without touching pixels. Other formats are re-encoded.' : 'Redraws every pixel to a fresh file, guaranteed to drop everything, including embedded thumbnails.'}</p>
           </div>
           {mode === 'reencode' && <Slider label="Quality" value={quality} onChange={setQuality} min={50} max={100} suffix="%" />}
           {busy && <Progress value={progress} label="Cleaning" />}

@@ -44,7 +44,7 @@ function Highlight({ text, q, base, active }: { text: string; q: string; base: n
   while ((idx = lower.indexOf(ql, i)) !== -1) {
     parts.push(text.slice(i, idx))
     const n = base + k++
-    parts.push(<mark key={idx} data-hit={n} className={n === active ? 'rounded bg-accent px-0.5 text-white' : 'rounded bg-warn/40 px-0.5 text-fg'}>{text.slice(idx, idx + q.length)}</mark>)
+    parts.push(<mark key={idx} data-hit={n} className={n === active ? 'rounded bg-accent px-0.5 text-on-accent' : 'rounded bg-warn/40 px-0.5 text-fg'}>{text.slice(idx, idx + q.length)}</mark>)
     i = idx + q.length
   }
   parts.push(text.slice(i))
@@ -112,7 +112,7 @@ export default function PdfToText() {
           {empty > 0 && !busy && pages.length > 0 && (
             <div className="flex items-start gap-3 rounded-xl border border-warn/30 bg-warn/10 px-4 py-3 text-sm">
               <ScanText className="mt-0.5 size-4 shrink-0 text-warn" />
-              <div>{empty === pages.length ? 'No text layer found — this looks like a scanned PDF.' : `${empty} page${empty > 1 ? 's have' : ' has'} no text layer (probably scanned).`} Try <Link to="/ocr-pdf" className="font-medium text-accent underline">OCR PDF</Link> to recognise it.</div>
+              <div>{empty === pages.length ? 'No text layer found, this looks like a scanned PDF.' : `${empty} page${empty > 1 ? 's have' : ' has'} no text layer (probably scanned).`} Try <Link to="/ocr-pdf" className="font-medium text-accent underline">OCR PDF</Link> to recognise it.</div>
             </div>
           )}
           <div ref={listRef} className="space-y-3">

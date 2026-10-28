@@ -6,20 +6,20 @@ import { downloadBlob, baseName } from '@/lib/files'
 import { ColorInput, ImageDrop, canvas, decode, exportCanvas, loadGoogleFont, usePasteImages } from './_img/kit'
 import { TextStage, measure, newLayer, renderFull, type TextLayer } from './_img/textLayers'
 
-/* six built-in templates drawn on canvas — no network, no copyright */
+/* six built-in templates drawn on canvas, no network, no copyright */
 function makeTemplate(i: number): HTMLCanvasElement {
   const W = 900, H = 900
   const { canvas: c, ctx } = canvas(W, H)
   const lg = (a: string, b: string, x1 = 0, y1 = 0, x2 = W, y2 = H) => { const g = ctx.createLinearGradient(x1, y1, x2, y2); g.addColorStop(0, a); g.addColorStop(1, b); return g }
   switch (i) {
-    case 0: { ctx.fillStyle = lg('#1e1b4b', '#7c3aed'); ctx.fillRect(0, 0, W, H); ctx.fillStyle = 'rgba(255,255,255,.08)'; for (let k = 0; k < 9; k++) { ctx.beginPath(); ctx.arc(W / 2, H / 2, 60 + k * 70, 0, Math.PI * 2); ctx.lineWidth = 18; ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.stroke() } break }
-    case 1: { ctx.fillStyle = lg('#f97316', '#db2777', 0, 0, 0, H); ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(W / 2, H * 0.62, 190, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#7c2d12'; ctx.fillRect(0, H * 0.62, W, H); ctx.fillStyle = 'rgba(0,0,0,.25)'; for (let y = H * 0.66; y < H; y += 34) ctx.fillRect(W * 0.2, y, W * 0.6, 8); break }
+    case 0: { ctx.fillStyle = lg('#134e4a', '#f5a524'); ctx.fillRect(0, 0, W, H); ctx.fillStyle = 'rgba(255,255,255,.08)'; for (let k = 0; k < 9; k++) { ctx.beginPath(); ctx.arc(W / 2, H / 2, 60 + k * 70, 0, Math.PI * 2); ctx.lineWidth = 18; ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.stroke() } break }
+    case 1: { ctx.fillStyle = lg('#f97316', '#c2410c', 0, 0, 0, H); ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#fde047'; ctx.beginPath(); ctx.arc(W / 2, H * 0.62, 190, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#7c2d12'; ctx.fillRect(0, H * 0.62, W, H); ctx.fillStyle = 'rgba(0,0,0,.25)'; for (let y = H * 0.66; y < H; y += 34) ctx.fillRect(W * 0.2, y, W * 0.6, 8); break }
     case 2: { // two-panel reaction
       ctx.fillStyle = '#fef3c7'; ctx.fillRect(0, 0, W, H / 2); ctx.fillStyle = '#dcfce7'; ctx.fillRect(0, H / 2, W, H / 2)
       ctx.fillStyle = '#ef4444'; ctx.font = '700 220px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('✕', W * 0.22, H * 0.25)
       ctx.fillStyle = '#16a34a'; ctx.fillText('✓', W * 0.22, H * 0.75); ctx.fillStyle = 'rgba(0,0,0,.15)'; ctx.fillRect(0, H / 2 - 3, W, 6); break
     }
-    case 3: { ctx.fillStyle = '#0ea5e9'; ctx.fillRect(0, 0, W / 2, H); ctx.fillStyle = '#f43f5e'; ctx.fillRect(W / 2, 0, W / 2, H); ctx.fillStyle = '#fff'; ctx.font = '900 120px Impact, Anton, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('VS', W / 2, H / 2); break }
+    case 3: { ctx.fillStyle = '#0ea5e9'; ctx.fillRect(0, 0, W / 2, H); ctx.fillStyle = '#ef4444'; ctx.fillRect(W / 2, 0, W / 2, H); ctx.fillStyle = '#fff'; ctx.font = '900 120px Impact, Anton, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('VS', W / 2, H / 2); break }
     case 4: { ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H); ctx.strokeStyle = '#fff'; ctx.lineWidth = 6; ctx.strokeRect(60, 60, W - 120, H - 260); ctx.fillStyle = lg('#374151', '#111827'); ctx.fillRect(66, 66, W - 132, H - 272); break }
     default: { ctx.fillStyle = lg('#a7f3d0', '#93c5fd'); ctx.fillRect(0, 0, W, H); for (let k = 0; k < 40; k++) { ctx.fillStyle = `hsla(${(k * 37) % 360},90%,70%,.5)`; ctx.beginPath(); ctx.arc((k * 197) % W, (k * 113) % H, 20 + ((k * 7) % 50), 0, Math.PI * 2); ctx.fill() } }
   }

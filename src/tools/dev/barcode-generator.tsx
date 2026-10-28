@@ -8,7 +8,7 @@ import { useLib, downloadText } from './_dev/kit'
 
 type Fmt = 'CODE128' | 'EAN13' | 'EAN8' | 'UPC' | 'CODE39' | 'ITF14' | 'MSI' | 'pharmacode' | 'codabar'
 const FORMATS: { v: Fmt; label: string; sample: string; hint: string }[] = [
-  { v: 'CODE128', label: 'CODE128', sample: 'OpenFile-2026', hint: 'Any ASCII text. Most versatile — shipping labels, inventory.' },
+  { v: 'CODE128', label: 'CODE128', sample: 'OpenFile-2026', hint: 'Any ASCII text. Most versatile, shipping labels, inventory.' },
   { v: 'EAN13', label: 'EAN-13', sample: '590123412345', hint: '12 digits (check digit auto-added) or 13 digits with a valid check digit. Retail products worldwide.' },
   { v: 'EAN8', label: 'EAN-8', sample: '9638507', hint: '7 digits (+ check digit) or 8 with valid check digit. Small packages.' },
   { v: 'UPC', label: 'UPC-A', sample: '12345678999', hint: '11 digits (+ check digit) or 12 with valid check digit. North American retail.' },
@@ -25,7 +25,7 @@ function explain(fmt: Fmt, v: string): string | null {
   if (len[fmt]) {
     const [a, b] = len[fmt]
     if (!/^\d+$/.test(v)) return 'Digits only.'
-    if (v.length !== a && v.length !== b) return `Needs ${a} digits (check digit added automatically) or ${b} digits — you have ${v.length}.`
+    if (v.length !== a && v.length !== b) return `Needs ${a} digits (check digit added automatically) or ${b} digits, you have ${v.length}.`
     if (v.length === b) { const c = eanCheck(v.slice(0, -1)); if (c !== Number(v.slice(-1))) return `Invalid check digit: expected ${c}, got ${v.slice(-1)}.` }
   }
   if (fmt === 'CODE39' && !/^[0-9A-Z\-. $/+%]*$/.test(v)) return 'CODE39 supports only uppercase letters, digits and - . space $ / + %.'
@@ -113,14 +113,14 @@ export default function BarcodeGenerator() {
             <div className="flex flex-wrap gap-2">
               <Button icon={<Download className="size-4" />} disabled={!valid} onClick={async () => { const b = await renderPng(value, 3); if (b) downloadBlob(b, `${safe(value)}.png`) }}>PNG</Button>
               <Button variant="secondary" icon={<Download className="size-4" />} disabled={!valid} onClick={() => { const s = renderSvg(value); if (s) downloadText(s, `${safe(value)}.svg`, 'image/svg+xml') }}>SVG</Button>
-              <Button variant="outline" icon={<Copy className="size-4" />} disabled={!valid} onClick={async () => { try { const b = await renderPng(value, 2); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b! })]); toast('Barcode image copied') } catch { toast('Clipboard image copy not supported — use Download', 'error') } }}>Copy image</Button>
+              <Button variant="outline" icon={<Copy className="size-4" />} disabled={!valid} onClick={async () => { try { const b = await renderPng(value, 2); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b! })]); toast('Barcode image copied') } catch { toast('Clipboard image copy not supported, use Download', 'error') } }}>Copy image</Button>
             </div>
           </>
         ) : (
           <Card className="space-y-3">
             <Field label="One value per line" hint={`${lines.length} values`}><Textarea value={bulk} onChange={(e) => setBulk(e.target.value)} className="min-h-56" /></Field>
             <div className="scrollbar-thin max-h-40 space-y-1 overflow-auto text-xs">
-              {bulkCheck.filter((b) => b.err).slice(0, 50).map((b, i) => <div key={i} className="flex gap-2 text-danger"><AlertCircle className="size-3.5 shrink-0" /><span className="font-mono">{b.l}</span><span className="text-muted">— {b.err}</span></div>)}
+              {bulkCheck.filter((b) => b.err).slice(0, 50).map((b, i) => <div key={i} className="flex gap-2 text-danger"><AlertCircle className="size-3.5 shrink-0" /><span className="font-mono">{b.l}</span><span className="text-muted">({b.err})</span></div>)}
               {bulkCheck.length > 0 && bulkCheck.every((b) => !b.err) && <div className="flex items-center gap-1.5 text-success"><CheckCircle2 className="size-3.5" />All values look valid for {info.label}</div>}
             </div>
             <div className="flex flex-wrap items-center gap-3">

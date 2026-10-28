@@ -1,0 +1,15 @@
+// Node test for src/lib/b2/cad.ts (run with: node --experimental-strip-types scripts/tests/b2/cad.test.mjs)
+import fs from 'node:fs'
+import assert from 'node:assert'
+const { parseDxf, cadToSvg, fitView } = await import('../../../src/lib/b2/cad.ts')
+const doc = await parseDxf(fs.readFileSync(new URL('./fixtures/simple.dxf', import.meta.url), 'utf8'))
+assert.equal(doc.units, 'mm')
+assert.ok(doc.lines.length >= 2, 'line + circle')
+assert.equal(doc.texts[0].text, 'Hello')
+assert.deepEqual(doc.layers.map((l) => l.name).sort(), ['0', 'WALLS'])
+assert.ok(doc.bbox.maxX >= 100 && doc.bbox.minX <= 0)
+const svg = cadToSvg(doc, { hidden: new Set(['WALLS']) })
+assert.ok(svg.startsWith('<svg') && svg.includes('Hello') && !svg.includes('id="WALLS"'))
+const v = fitView(doc, 800, 600)
+assert.ok(v.scale > 0)
+console.log('ok cad', doc.lines.length, 'lines', doc.texts.length, 'texts', doc.layers.length, 'layers')

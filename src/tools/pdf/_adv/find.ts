@@ -48,7 +48,7 @@ export function buildCustom(regex: string, words: string, wholeWord: boolean, ca
   if (regex.trim()) {
     try {
       const r = new RegExp(regex, flags)
-      if (r.test('')) return { res, error: 'That pattern matches empty text — make it more specific.' }
+      if (r.test('')) return { res, error: 'That pattern matches empty text. Make it more specific.' }
       res.push({ kind: 'Pattern', re: r })
     } catch (e: any) { return { res, error: 'Invalid regular expression: ' + (e?.message || '') } }
   }

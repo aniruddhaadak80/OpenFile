@@ -1,4 +1,4 @@
-/* OpenFile UI kit — every tool composes these primitives for a consistent look. */
+/* OpenFile UI kit, every tool composes these primitives for a consistent look. */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Upload, Download, Copy, Check, X, Loader2, FileIcon } from 'lucide-react'
 import { formatBytes, downloadBlob, copyText } from '@/lib/files'
@@ -10,7 +10,7 @@ export const cn = (...c: (string | false | null | undefined)[]) => c.filter(Bool
 type BtnProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'; size?: 'sm' | 'md' | 'lg'; loading?: boolean; icon?: React.ReactNode }
 export function Button({ variant = 'primary', size = 'md', loading, icon, className, children, disabled, ...rest }: BtnProps) {
   const v = {
-    primary: 'bg-gradient-brand text-white shadow-lg shadow-accent/25 hover:brightness-110',
+    primary: 'bg-gradient-brand text-on-accent font-semibold shadow-lg shadow-accent/25 hover:brightness-110 hover:shadow-accent/40',
     secondary: 'bg-surface-2 text-fg hover:bg-border',
     outline: 'border border-border bg-surface text-fg hover:border-accent hover:text-accent',
     ghost: 'text-muted hover:text-fg hover:bg-surface-2',
@@ -136,10 +136,10 @@ export function Dropzone({ onFiles, accept, multiple = false, label, sub, compac
         over ? 'border-accent bg-accent/10 scale-[1.01]' : 'border-border bg-surface hover:border-accent/60 hover:bg-accent/5', compact ? 'gap-2 p-5' : 'gap-4 p-10 sm:p-14', className)}
     >
       <input ref={ref} type="file" hidden accept={accept} multiple={multiple} onChange={(e) => { handle(e.target.files); e.target.value = '' }} />
-      <div className={cn('grid place-items-center rounded-2xl bg-gradient-brand text-white shadow-xl shadow-accent/30 transition group-hover:scale-110', compact ? 'size-10' : 'size-16')}><Upload className={compact ? 'size-5' : 'size-7'} /></div>
+      <div className={cn('grid place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-xl shadow-accent/30 transition group-hover:scale-110', compact ? 'size-10' : 'size-16')}><Upload className={compact ? 'size-5' : 'size-7'} /></div>
       <div>
         <div className={cn('font-semibold', compact ? 'text-sm' : 'text-lg')}>{label ?? (multiple ? 'Drop files here or click to browse' : 'Drop a file here or click to browse')}</div>
-        <div className="mt-1 text-xs text-muted">{sub ?? 'Files never leave your device — processed 100% in your browser.'}</div>
+        <div className="mt-1 text-xs text-muted">{sub ?? 'Files never leave your device, processed 100% in your browser.'}</div>
       </div>
     </div>
   )

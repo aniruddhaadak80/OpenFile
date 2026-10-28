@@ -160,7 +160,7 @@ function Age() {
           <Card className="bg-gradient-to-br from-accent/10 to-transparent">
             <div className="text-xs text-muted">Born {r.born}</div>
             <div className="mt-1 font-display text-4xl font-bold">{r.c.y} <span className="text-2xl font-semibold text-muted">years</span> {r.c.m} <span className="text-2xl font-semibold text-muted">months</span> {r.c.d} <span className="text-2xl font-semibold text-muted">days</span></div>
-            <div className="mt-2 text-sm">{r.until === 0 ? '🎉 Happy birthday!' : `🎂 Next birthday in ${r.until} day${r.until > 1 ? 's' : ''} — ${long(r.next)} (turning ${r.c.y + 1})`}</div>
+            <div className="mt-2 text-sm">{r.until === 0 ? '🎉 Happy birthday' : `🎂 Next birthday in ${r.until} day${r.until > 1 ? 's' : ''}, ${long(r.next)} (turning ${r.c.y + 1})`}</div>
           </Card>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4"><Stat label="Total days" value={r.days.toLocaleString()} /><Stat label="Weeks" value={r.weeks.toLocaleString()} /><Stat label="Hours" value={r.hours.toLocaleString()} /><Stat label="Zodiac" value={r.zodiac} /></div>
         </motion.div>
@@ -194,7 +194,7 @@ function Dow() {
             <div className="grid grid-cols-7 gap-1 text-center text-xs">
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((x, i) => <div key={i} className="py-1 text-muted">{x}</div>)}
               {Array.from({ length: r.first }, (_, i) => <div key={'e' + i} />)}
-              {Array.from({ length: r.dim }, (_, i) => <button key={i} onClick={() => setD(iso(new Date(r.x.getFullYear(), r.x.getMonth(), i + 1)))} className={`rounded-md py-1.5 ${i + 1 === r.x.getDate() ? 'bg-accent font-bold text-white' : 'hover:bg-surface-2'}`}>{i + 1}</button>)}
+              {Array.from({ length: r.dim }, (_, i) => <button key={i} onClick={() => setD(iso(new Date(r.x.getFullYear(), r.x.getMonth(), i + 1)))} className={`rounded-md py-1.5 ${i + 1 === r.x.getDate() ? 'bg-accent font-bold text-on-accent' : 'hover:bg-surface-2'}`}>{i + 1}</button>)}
             </div>
           </Card>
         </div>

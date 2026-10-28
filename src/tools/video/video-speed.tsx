@@ -43,7 +43,7 @@ export default function VideoSpeed() {
     setResult(blob)
   })
 
-  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to change its speed" sub="Slow motion or time-lapse from 0.25× to 4× — processed locally." />
+  if (!file) return <Dropzone accept="video/*,.mkv,.avi,.mov,.m4v" onFiles={(f) => setFile(f[0])} label="Drop a video to change its speed" sub="Slow motion or time-lapse from 0.25× to 4×, processed locally." />
 
   return (
     <div className="space-y-6">
@@ -58,12 +58,12 @@ export default function VideoSpeed() {
             <Label hint={`${speed}×`}>Speed</Label>
             <input type="range" min={-2} max={2} step={0.01} value={toSlider(speed)} onChange={(e) => setSpeed(fromSlider(+e.target.value))} className="w-full cursor-pointer accent-[var(--accent)]" aria-label="Speed" />
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {PRESETS.map((p) => <button key={p} onClick={() => setSpeed(p)} className={cn('rounded-lg px-2.5 py-1 font-mono text-xs transition cursor-pointer', speed === p ? 'bg-accent text-white' : 'bg-surface-2 text-muted hover:text-fg')}>{p}×</button>)}
+              {PRESETS.map((p) => <button key={p} onClick={() => setSpeed(p)} className={cn('rounded-lg px-2.5 py-1 font-mono text-xs transition cursor-pointer', speed === p ? 'bg-accent text-on-accent' : 'bg-surface-2 text-muted hover:text-fg')}>{p}×</button>)}
             </div>
           </div>
           <div>
             <Switch checked={keepPitch} onChange={setKeepPitch} label="Keep audio pitch" />
-            <p className="mt-1.5 text-xs text-muted">{keepPitch ? 'Voices sound natural at any speed (time-stretch).' : 'Pitch follows speed, like a tape — chipmunk when fast, deep when slow.'}</p>
+            <p className="mt-1.5 text-xs text-muted">{keepPitch ? 'Voices sound natural at any speed (time-stretch).' : 'Pitch follows speed, like a tape, chipmunk when fast, deep when slow.'}</p>
           </div>
           {dur > 0 && <div className="flex justify-between rounded-xl bg-surface-2/60 px-3 py-2 text-sm"><span className="text-muted">New length</span><span className="font-mono">{fmtTime(dur, 1)} → <span className="font-semibold text-accent">{fmtTime(dur / speed, 1)}</span></span></div>}
           <Button size="lg" className="w-full" icon={<Gauge className="size-5" />} onClick={go} loading={job.busy} disabled={speed === 1}>Apply {speed}×</Button>

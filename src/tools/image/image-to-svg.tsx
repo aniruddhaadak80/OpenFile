@@ -39,7 +39,7 @@ export default function ImageToSvg() {
     const id = ++runId.current
     setProgress(0.1)
     await new Promise((r) => setTimeout(r, 30))
-    // @ts-ignore — imagetracerjs ships without types
+    // @ts-ignore, imagetracerjs ships without types
     const { default: tracer }: any = await import('imagetracerjs')
     const w = img.naturalWidth, h = img.naturalHeight
     const s = Math.min(1, maxSide / Math.max(w, h))

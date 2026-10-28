@@ -10,7 +10,7 @@ const PRESETS: [string, string][] = [
   ['30 18 * * FRI', 'Fridays 18:30'], ['0 0 * * 0', 'Weekly (Sun midnight)'], ['0 0 1 * *', 'Monthly (1st)'], ['0 12 L * *', 'Last day of month'], ['0 10 * * 1#1', 'First Monday 10:00'],
   ['0 0 1 1 *', 'Yearly'], ['*/30 * * * * *', 'Every 30 s (6-field)'], ['0 */6 * * *', 'Every 6 hours'], ['15 2 * * SAT,SUN', 'Weekends 02:15'],
 ]
-const COLORS = ['#f472b6', '#8b6cff', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444']
+const COLORS = ['#84cc16', '#f5a524', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444']
 
 function describeField(f: Field) {
   if (f.any) return 'every ' + f.name
@@ -69,7 +69,7 @@ export default function CronParser() {
             {res && 'err' in res ? (
               <motion.div key="e" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-sm text-danger"><AlertTriangle className="size-4" />{res.err}</motion.div>
             ) : res && 'c' in res ? (
-              <motion.p key={res.desc} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="font-display text-xl font-semibold leading-snug sm:text-2xl">“{res.desc || (cronstrue ? 'Custom schedule — see the breakdown below' : '…')}”</motion.p>
+              <motion.p key={res.desc} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="font-display text-xl font-semibold leading-snug sm:text-2xl">“{res.desc || (cronstrue ? 'Custom schedule, see the breakdown below' : '…')}”</motion.p>
             ) : null}
           </AnimatePresence>
         </Card>
@@ -85,7 +85,7 @@ export default function CronParser() {
                   </div>
                 ))}
               </div>
-              {!res.c!.dom.any && !res.c!.dow.any && <div className="border-t border-border px-4 py-2 text-xs text-warn">Both day-of-month and day-of-week are set — standard cron runs when <b>either</b> matches.</div>}
+              {!res.c!.dom.any && !res.c!.dow.any && <div className="border-t border-border px-4 py-2 text-xs text-warn">Both day-of-month and day-of-week are set, standard cron runs when <b>either</b> matches.</div>}
             </Card>
 
             <Card className="p-0">

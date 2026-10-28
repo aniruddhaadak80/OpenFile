@@ -40,7 +40,7 @@ export default function PdfToImage() {
   const applyRange = () => { const idx = parsePageRanges(range, numPages); if (!idx.length) return toast('No valid pages in that range', 'error'); setSelected(new Set(idx)) }
 
   const order = useMemo(() => [...selected].sort((a, b) => a - b), [selected])
-  const px = pageSize ? `${Math.round((pageSize.w * dpi) / 72)} × ${Math.round((pageSize.h * dpi) / 72)} px` : '—'
+  const px = pageSize ? `${Math.round((pageSize.w * dpi) / 72)} × ${Math.round((pageSize.h * dpi) / 72)} px` : '-'
 
   const convert = () => run(async (setP) => {
     if (!file || !order.length) throw new Error('Select at least one page.')
@@ -129,7 +129,7 @@ export default function PdfToImage() {
           <Button size="lg" className="w-full" loading={busy} disabled={!order.length || !!thumbErr} icon={<Images className="size-5" />} onClick={convert}>
             Convert {order.length || ''} page{order.length === 1 ? '' : 's'}
           </Button>
-          <p className="text-xs text-muted">Pages render at true resolution in your browser — vector text stays sharp at 300 DPI.</p>
+          <p className="text-xs text-muted">Pages render at true resolution in your browser, vector text stays sharp at 300 DPI.</p>
         </>}
       />
       <Lightbox items={outs.map((o) => ({ src: o.url, caption: `Page ${o.page} · ${o.w}×${o.h}` }))} index={view} onClose={() => setView(null)} onIndex={setView}

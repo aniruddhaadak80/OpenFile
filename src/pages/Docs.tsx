@@ -69,7 +69,7 @@ export default function Docs() {
             <div className="py-24 text-center">
               <div className="font-display text-6xl font-bold text-gradient">404</div>
               <p className="mt-3 text-muted">This docs page does not exist. Try searching, or start from the beginning.</p>
-              <Link to="/docs" className="mt-6 inline-flex rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-medium text-white">Getting started</Link>
+              <Link to="/docs" className="mt-6 inline-flex rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-medium text-on-accent">Getting started</Link>
             </div>
           ) : (
             <AnimatePresence mode="wait">
@@ -284,7 +284,7 @@ function DocsCards() {
       {cards.map(([to, t, d, I], k) => (
         <motion.div key={to} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 * k }}>
           <Link to={to} className="group flex h-full items-start gap-3 rounded-2xl border border-border bg-surface p-4 transition hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-xl">
-            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand text-white shadow-lg shadow-accent/20 transition group-hover:scale-110"><I className="size-5" /></div>
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand text-on-accent shadow-lg shadow-accent/20 transition group-hover:scale-110"><I className="size-5" /></div>
             <div><div className="font-semibold group-hover:text-accent">{t}</div><div className="text-sm text-muted">{d}</div></div>
           </Link>
         </motion.div>

@@ -102,10 +102,10 @@ export default function ImageSplitter() {
           <div>
             <Label>Tile shape</Label>
             <Segmented value={crop} onChange={(v) => { setCrop(v); setTiles(null) }} options={[{ value: 'none', label: 'Keep image' }, { value: '1:1', label: 'Square 1:1' }, { value: '4:5', label: 'Portrait 4:5' }]} />
-            <p className="mt-1.5 text-[11px] text-muted">Instagram carousels need every slide the same shape — 1:1 or 4:5 crops the center.</p>
+            <p className="mt-1.5 text-[11px] text-muted">Instagram carousels need every slide the same shape: 1:1 or 4:5 crops the center.</p>
           </div>
           <Switch checked={igOrder} onChange={(v) => { setIgOrder(v); setTiles(null) }} label="Number in Instagram posting order" />
-          {igOrder && <p className="-mt-3 text-[11px] text-muted">Post tile 1 first — the grid assembles correctly on your profile.</p>}
+          {igOrder && <p className="-mt-3 text-[11px] text-muted">Post tile 1 first, the grid assembles correctly on your profile.</p>}
           <div><Label>Format</Label><Segmented value={fmt} onChange={(v) => { setFmt(v); setTiles(null) }} options={[{ value: 'jpg', label: 'JPG' }, { value: 'png', label: 'PNG' }, { value: 'webp', label: 'WEBP' }]} /></div>
           {busy && <Progress value={progress} label="Slicing" />}
           <ErrorNote error={error} />

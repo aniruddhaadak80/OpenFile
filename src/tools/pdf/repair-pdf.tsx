@@ -33,12 +33,12 @@ export default function RepairPdf() {
     const bytes = await readBytes(file)
     const head = new TextDecoder('latin1').decode(bytes.slice(0, 1024))
     const hdr = head.indexOf('%PDF-')
-    if (hdr < 0) push('warn', 'No %PDF- header found in the first 1 KB — the file may not be a PDF')
+    if (hdr < 0) push('warn', 'No %PDF- header found in the first 1 KB, the file may not be a PDF')
     else if (hdr > 0) push('info', `Header found at byte ${hdr} (junk before it will be discarded)`)
     else push('ok', `Valid header (PDF ${head.slice(5, 8)})`)
     const tail = new TextDecoder('latin1').decode(bytes.slice(-2048))
-    if (!tail.includes('%%EOF')) push('warn', 'Missing %%EOF marker — file looks truncated')
-    if (!/startxref/.test(tail)) push('warn', 'No startxref pointer — cross-reference table must be rebuilt')
+    if (!tail.includes('%%EOF')) push('warn', 'Missing %%EOF marker, file looks truncated')
+    if (!/startxref/.test(tail)) push('warn', 'No startxref pointer, the cross-reference table must be rebuilt')
     setP(0.1)
 
     // pdf.js is very tolerant: it reconstructs the xref when needed. Use it as a rendering fallback.
@@ -59,7 +59,7 @@ export default function RepairPdf() {
         const imgs = new Map<number, { jpg: Uint8Array; w: number; h: number }>()
         for (let k = 0; k < r.failed.length; k++) {
           const i = r.failed[k]
-          if (i < pj.numPages) { try { imgs.set(i, await renderJpg(pj, i + 1, dpi)) } catch { push('err', `Page ${i + 1} could not be rendered either — left blank`) } }
+          if (i < pj.numPages) { try { imgs.set(i, await renderJpg(pj, i + 1, dpi)) } catch { push('err', `Page ${i + 1} could not be rendered either, left blank`) } }
           setP(0.5 + (k + 1) / r.failed.length * 0.4)
         }
         out = await o.replaceWithImages(r.bytes, imgs)
@@ -67,20 +67,20 @@ export default function RepairPdf() {
       } else out = r.bytes
       pages = r.recovered + (r.failed.length ? r.failed.length : 0)
       // pdf-lib sees fewer pages than the renderer? prefer the renderer's view
-      if (out && pj && pj.numPages > pages) { push('warn', `Structure lists ${pages} pages but ${pj.numPages} are renderable — rebuilding from rendered pages instead`); out = null }
+      if (out && pj && pj.numPages > pages) { push('warn', `Structure lists ${pages} pages but ${pj.numPages} are renderable, rebuilding from rendered pages instead`); out = null }
     }
     if (!out) {
       if (!pj) throw new Error('This file is too damaged to recover: neither the structure nor the page content could be read.')
       push('info', `${force ? 'Rebuilding' : 'Falling back to rebuilding'} every page from rendered images at ${dpi} DPI…`)
       const imgs = []
       for (let i = 1; i <= pj.numPages; i++) {
-        try { imgs.push(await renderJpg(pj, i, dpi)) } catch { push('err', `Page ${i} failed to render — skipped`) }
+        try { imgs.push(await renderJpg(pj, i, dpi)) } catch { push('err', `Page ${i} failed to render, skipped`) }
         setP(0.5 + (i / pj.numPages) * 0.45)
       }
       if (!imgs.length) throw new Error('No pages could be recovered from this file.')
       out = await o.imagesToPdf(imgs)
       pages = imgs.length
-      push('ok', `Rebuilt ${imgs.length} page${imgs.length > 1 ? 's' : ''} (text in these pages is now an image — run OCR PDF to make it searchable)`)
+      push('ok', `Rebuilt ${imgs.length} page${imgs.length > 1 ? 's' : ''} (text in these pages is now an image, run OCR PDF to make it searchable)`)
     }
     closeDoc(pj)
     // verify
@@ -90,7 +90,7 @@ export default function RepairPdf() {
     setResult({ blob: pdfBlob(out), pages }); setP(1); toast('Repair finished', 'success')
   })
 
-  if (!file) return <Dropzone accept="application/pdf,.pdf,application/octet-stream" onFiles={(f) => setFile(f[0])} label="Drop a broken or corrupted PDF" sub="We rebuild its structure locally — nothing is uploaded." />
+  if (!file) return <Dropzone accept="application/pdf,.pdf,application/octet-stream" onFiles={(f) => setFile(f[0])} label="Drop a broken or corrupted PDF" sub="We rebuild its structure locally, nothing is uploaded." />
 
   const icon = { ok: <CheckCircle2 className="size-4 text-success" />, warn: <AlertTriangle className="size-4 text-warn" />, err: <XCircle className="size-4 text-danger" />, info: <Info className="size-4 text-accent" /> }
   return (

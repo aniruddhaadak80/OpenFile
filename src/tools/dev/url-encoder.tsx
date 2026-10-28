@@ -26,7 +26,7 @@ function Codec() {
       return scope === 'form' ? decodeURIComponent(s.replace(/\+/g, ' ')) : scope === 'component' ? decodeURIComponent(s) : decodeURI(s)
     }
     try { return { out: perLine ? input.split('\n').map(one).join('\n') : one(input), err: null } }
-    catch { return { out: '', err: 'Malformed percent-encoding — a % must be followed by two hex digits forming valid UTF-8 (e.g. %20, %E2%9C%93).' } }
+    catch { return { out: '', err: 'Malformed percent-encoding, a % must be followed by two hex digits forming valid UTF-8 (e.g. %20, %E2%9C%93).' } }
   }, [input, dir, scope, perLine])
 
   return (
@@ -37,9 +37,9 @@ function Codec() {
         <Switch checked={perLine} onChange={setPerLine} label="Each line separately" />
       </div>
       <p className="text-xs text-muted">
-        {scope === 'component' ? 'encodeURIComponent — escapes everything except A–Z a–z 0–9 - _ . ! ~ * \' ( ). Use for query values and path segments.'
-          : scope === 'uri' ? 'encodeURI — keeps URL structure characters (: / ? # & = @ +) intact. Use for whole URLs.'
-          : 'application/x-www-form-urlencoded — like component, but spaces become +. Used by HTML forms.'}
+        {scope === 'component' ? 'encodeURIComponent, escapes everything except A–Z a–z 0–9 - _ . ! ~ * \' ( ). Use for query values and path segments.'
+          : scope === 'uri' ? 'encodeURI, keeps URL structure characters (: / ? # & = @ +) intact. Use for whole URLs.'
+          : 'application/x-www-form-urlencoded, like component, but spaces become +. Used by HTML forms.'}
       </p>
       <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
         <Pane title="Input" className="h-[320px]" actions={<Button size="sm" variant="ghost" onClick={() => setInput('')}>Clear</Button>}><CodeArea value={input} onChange={setInput} lineNumbers={false} /></Pane>
@@ -69,7 +69,7 @@ function Parser() {
       setParts({ protocol: u.protocol.replace(/:$/, ''), username: decodeURIComponent(u.username), password: decodeURIComponent(u.password), hostname: u.hostname, port: u.port, pathname: decodeURIComponent(u.pathname), hash: decodeURIComponent(u.hash.replace(/^#/, '')) })
       setRows([...u.searchParams].map(([k, v]) => ({ id: ++rid, k, v, on: true })))
       setErr(null)
-    } catch { setErr(raw.trim() ? 'Not a valid absolute URL — include the scheme, e.g. https://' : null) }
+    } catch { setErr(raw.trim() ? 'Not a valid absolute URL, include the scheme, e.g. https://' : null) }
   }, [raw, editingRaw])
 
   const built = useMemo(() => {
@@ -103,7 +103,7 @@ function Parser() {
         {err && <div className="text-xs text-danger">{err}</div>}
         {!err && raw && (
           <div className="break-all rounded-lg bg-surface-2/60 px-3 py-2 font-mono text-xs leading-relaxed">
-            <span className="text-[#f472b6]">{parts.protocol}://</span>
+            <span className="text-[#fdba74]">{parts.protocol}://</span>
             {parts.username && <span className="text-warn">{parts.username}{parts.password && ':' + '•'.repeat(parts.password.length)}@</span>}
             <span className="text-accent">{parts.hostname}</span>{parts.port && <span className="text-[#f59e0b]">:{parts.port}</span>}
             <span className="text-[#22d3ee]">{parts.pathname}</span>

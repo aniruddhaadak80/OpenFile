@@ -154,7 +154,7 @@ export default function ImageToPdf() {
 
   const fileName = /\.pdf$/i.test(name) ? name : name + '.pdf'
 
-  if (!imgs.length) return <Dropzone multiple accept={ACCEPT} onFiles={add} label="Drop images to combine into a PDF" sub="JPG, PNG, WEBP, GIF, BMP, HEIC — processed 100% in your browser." />
+  if (!imgs.length) return <Dropzone multiple accept={ACCEPT} onFiles={add} label="Drop images to combine into a PDF" sub="JPG, PNG, WEBP, GIF, BMP, HEIC, processed 100% in your browser." />
 
   return (
     <div className="space-y-5">
@@ -181,7 +181,7 @@ export default function ImageToPdf() {
               </motion.div>
             </SortableContext>
           </DndContext>
-          <Dropzone compact multiple accept={ACCEPT} onFiles={add} label="Add more images" sub="Drop here or click — they are appended at the end." />
+          <Dropzone compact multiple accept={ACCEPT} onFiles={add} label="Add more images" sub="Drop here or click, they are appended at the end." />
           {result && (
             <Reveal k="res" className="space-y-3">
               <ResultCard blob={result} filename={fileName} title={`PDF with ${ready.length} page${ready.length > 1 ? 's' : ''} ready`} onReset={reset} />
@@ -199,7 +199,7 @@ export default function ImageToPdf() {
           {size !== 'fit' && <div><Label>Image fit</Label><Segmented value={fit} onChange={(v) => { setFit(v); setResult(null) }} options={[{ value: 'contain', label: 'Contain (whole image)' }, { value: 'cover', label: 'Cover (fill page)' }]} /></div>}
           <div>
             <Slider label="Image quality" value={quality} onChange={(v) => { setQuality(v); setResult(null) }} min={40} max={100} suffix="%" />
-            <p className="mt-1 text-[11px] text-muted">{quality >= 100 ? 'Lossless: PNG/WEBP sources stay pixel-perfect.' : 'JPEG compression — lower is smaller.'}</p>
+            <p className="mt-1 text-[11px] text-muted">{quality >= 100 ? 'Lossless: PNG/WEBP sources stay pixel-perfect.' : 'JPEG compression, lower is smaller.'}</p>
           </div>
           <div><Label>File name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
           {busy && <Progress value={progress} label="Building PDF" />}

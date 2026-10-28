@@ -41,19 +41,19 @@ export default function CssStudio() {
   const [nu, setNu] = useState({ shape: 'flat' as 'flat' | 'concave' | 'convex' | 'pressed', distance: 18, intensity: 0.15, blur: 36, radius: 40, size: 220, color: '#e0e5ec' })
   // ---------- Border radius ----------
   const [br, setBr] = useState([30, 70, 70, 30, 30, 30, 70, 70])
-  const [brColor, setBrColor] = useState('#6d4aff')
+  const [brColor, setBrColor] = useState('#f5a524')
   // ---------- Text shadow ----------
   const [txt, setTxt] = useState({ text: 'OpenFile', size: 72, color: '#ffffff', weight: 800 })
-  const [ts, setTs] = useState([{ id: 1, x: 0, y: 0, blur: 8, color: '#a78bfa' }, { id: 2, x: 0, y: 0, blur: 24, color: '#7c3aed' }, { id: 3, x: 0, y: 0, blur: 48, color: '#6d28d9' }])
+  const [ts, setTs] = useState([{ id: 1, x: 0, y: 0, blur: 8, color: '#5eead4' }, { id: 2, x: 0, y: 0, blur: 24, color: '#f5a524' }, { id: 3, x: 0, y: 0, blur: 48, color: '#14b8a6' }])
 
   const result: Out = useMemo(() => {
     if (tab === 'shadow') return { css: { 'box-shadow': shadowValue, 'border-radius': '16px' }, tw: `shadow-[${twv(shadowValue)}] rounded-2xl` }
     if (tab === 'glass') {
       const css: Record<string, string> = {
         background: rgba(gl.color, gl.transparency), 'backdrop-filter': `blur(${gl.blur}px) saturate(${gl.saturation}%)`, '-webkit-backdrop-filter': `blur(${gl.blur}px) saturate(${gl.saturation}%)`,
-        'border-radius': `${gl.radius}px`, ...(gl.outline ? { border: `1px solid ${rgba(gl.color, gl.border)}` } : {}), 'box-shadow': `0 8px 32px ${rgba('#1f2687', 0.18)}`,
+        'border-radius': `${gl.radius}px`, ...(gl.outline ? { border: `1px solid ${rgba(gl.color, gl.border)}` } : {}), 'box-shadow': `0 8px 32px ${rgba('#0f766e', 0.18)}`,
       }
-      return { css, tw: `bg-[${twv(rgba(gl.color, gl.transparency))}] backdrop-blur-[${gl.blur}px] backdrop-saturate-[${gl.saturation}%] rounded-[${gl.radius}px]${gl.outline ? ` border border-[${twv(rgba(gl.color, gl.border))}]` : ''} shadow-[0_8px_32px_${twv(rgba('#1f2687', 0.18))}]` }
+      return { css, tw: `bg-[${twv(rgba(gl.color, gl.transparency))}] backdrop-blur-[${gl.blur}px] backdrop-saturate-[${gl.saturation}%] rounded-[${gl.radius}px]${gl.outline ? ` border border-[${twv(rgba(gl.color, gl.border))}]` : ''} shadow-[0_8px_32px_${twv(rgba('#0f766e', 0.18))}]` }
     }
     if (tab === 'neu') {
       const dark = shade(nu.color, -nu.intensity * 100), light = shade(nu.color, nu.intensity * 100)
@@ -80,8 +80,8 @@ export default function CssStudio() {
 
   const bgStyle: React.CSSProperties = bgKind === 'solid' ? { background: bgColor }
     : bgKind === 'gradient' ? { background: `linear-gradient(135deg, ${bgColor}, ${shade(bgColor, -18)})` }
-      : bgKind === 'mesh' ? { background: 'radial-gradient(at 20% 20%, #ff6ec4 0, transparent 50%), radial-gradient(at 80% 30%, #7873f5 0, transparent 50%), radial-gradient(at 50% 90%, #4ade80 0, transparent 50%), #1e1b4b' }
-        : { background: 'repeating-linear-gradient(45deg, #f97316 0 24px, #facc15 24px 48px, #22c55e 48px 72px, #3b82f6 72px 96px, #a855f7 96px 120px)' }
+      : bgKind === 'mesh' ? { background: 'radial-gradient(at 20% 20%, #fdba74 0, transparent 50%), radial-gradient(at 80% 30%, #5eead4 0, transparent 50%), radial-gradient(at 50% 90%, #4ade80 0, transparent 50%), #134e4a' }
+        : { background: 'repeating-linear-gradient(45deg, #f97316 0 24px, #facc15 24px 48px, #22c55e 48px 72px, #3b82f6 72px 96px, #14b8a6 96px 120px)' }
   // neumorphism needs the bg to equal the element colour
   const previewBg = tab === 'neu' ? { background: nu.color } : bgStyle
   const styleObj = (css: Record<string, string>): React.CSSProperties => Object.fromEntries(Object.entries(css).map(([k, v]) => [k.replace(/^-webkit-/, 'Webkit-').replace(/-([a-z])/g, (_, c) => c.toUpperCase()), v.replace(/\n\s*/g, ' ')])) as React.CSSProperties
@@ -93,8 +93,8 @@ export default function CssStudio() {
         <div className="min-w-0 space-y-4">
           <motion.div layout className="relative grid min-h-[380px] place-items-center overflow-hidden rounded-2xl border border-border p-10 transition-colors" style={previewBg}>
             {tab === 'glass' && <>
-              <div className="absolute left-[18%] top-[16%] size-40 rounded-full bg-gradient-to-br from-pink-500 to-orange-400" />
-              <div className="absolute bottom-[12%] right-[16%] size-52 rounded-full bg-gradient-to-br from-cyan-400 to-violet-600" />
+              <div className="absolute left-[18%] top-[16%] size-40 rounded-full bg-gradient-to-br from-orange-500 to-orange-400" />
+              <div className="absolute bottom-[12%] right-[16%] size-52 rounded-full bg-gradient-to-br from-cyan-400 to-teal-600" />
             </>}
             <motion.div key={tab} initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
               {tab === 'shadow' && <div className="grid h-44 w-64 place-items-center bg-white text-sm font-medium text-slate-500" style={styleObj(result.css)}>Smooth shadow</div>}
@@ -193,8 +193,8 @@ export default function CssStudio() {
 }
 
 const TEXT_PRESETS: Record<string, { color: string; bg?: string; layers: { x: number; y: number; blur: number; color: string }[] }> = {
-  Neon: { color: '#ffffff', bg: '#0b0b1a', layers: [{ x: 0, y: 0, blur: 6, color: '#fff' }, { x: 0, y: 0, blur: 16, color: '#ff2fd6' }, { x: 0, y: 0, blur: 40, color: '#ff2fd6' }, { x: 0, y: 0, blur: 80, color: '#b100ff' }] },
-  Retro: { color: '#ffd23f', bg: '#2b1055', layers: [{ x: 3, y: 3, blur: 0, color: '#ee4266' }, { x: 6, y: 6, blur: 0, color: '#540d6e' }, { x: 9, y: 9, blur: 0, color: '#3bceac' }] },
+  Neon: { color: '#ffffff', bg: '#134e4a', layers: [{ x: 0, y: 0, blur: 6, color: '#fff' }, { x: 0, y: 0, blur: 16, color: '#f97316' }, { x: 0, y: 0, blur: 40, color: '#f97316' }, { x: 0, y: 0, blur: 80, color: '#14b8a6' }] },
+  Retro: { color: '#ffd23f', bg: '#134e4a', layers: [{ x: 3, y: 3, blur: 0, color: '#ef4444' }, { x: 6, y: 6, blur: 0, color: '#134e4a' }, { x: 9, y: 9, blur: 0, color: '#3bceac' }] },
   '3D': { color: '#ffffff', bg: '#5b8def', layers: Array.from({ length: 6 }, (_, i) => ({ x: 0, y: i + 1, blur: 0, color: `hsl(220 40% ${70 - i * 6}%)` })).concat([{ x: 0, y: 8, blur: 12, color: 'rgba(0,0,0,.35)' }]) },
   Outline: { color: '#f8fafc', bg: '#f8fafc', layers: [{ x: -2, y: -2, blur: 0, color: '#0f172a' }, { x: 2, y: -2, blur: 0, color: '#0f172a' }, { x: -2, y: 2, blur: 0, color: '#0f172a' }, { x: 2, y: 2, blur: 0, color: '#0f172a' }] },
   Emboss: { color: '#d1d5db', bg: '#d1d5db', layers: [{ x: -1, y: -1, blur: 1, color: 'rgba(255,255,255,.9)' }, { x: 2, y: 2, blur: 3, color: 'rgba(0,0,0,.35)' }] },

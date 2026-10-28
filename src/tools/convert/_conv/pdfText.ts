@@ -1,5 +1,5 @@
 /* Layout analysis on pdf.js text items: lines, paragraphs, headings (for PDF → Word) and
- * row/column clustering (for PDF → Excel). Pure functions — no DOM — so they are unit-testable. */
+ * row/column clustering (for PDF → Excel). Pure functions, no DOM, so they are unit-testable. */
 
 export interface TItem { str: string; x: number; y: number; w: number; size: number; font: string; bold: boolean; italic: boolean; eol?: boolean }
 export interface Run { text: string; bold: boolean; italic: boolean }

@@ -128,7 +128,7 @@ export function audioCodecArgs(fmt: string, bitrate: number): string[] {
 }
 
 /** Resolve a CSS variable to a color string usable in canvas. */
-export function cssVar(name: string, fallback = '#8b5cf6') {
+export function cssVar(name: string, fallback = '#14b8a6') {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
   return v || fallback
 }

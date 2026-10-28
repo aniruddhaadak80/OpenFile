@@ -69,7 +69,7 @@ export default function GifMaker() {
 
   if (!items.length) return (
     <div className="space-y-4">
-      <ImageDrop onFiles={onFiles} label="Drop images to animate (in order)" sub="Frames are sorted by file name — drag to reorder afterwards." />
+      <ImageDrop onFiles={onFiles} label="Drop images to animate (in order)" sub="Frames are sorted by file name, drag to reorder afterwards." />
       <p className="text-center text-sm text-muted">Have a video clip instead? <Link to="/video-to-gif" className="text-accent hover:underline">Use Video to GIF →</Link></p>
     </div>
   )
@@ -90,7 +90,7 @@ export default function GifMaker() {
             </div>
             {!gif && <div className="mt-2 text-center font-mono text-xs text-muted">Frame {(frame % Math.max(1, seq.length)) + 1}/{seq.length} · {width}×{height} · {(seq.length * delay / 1000).toFixed(1)}s</div>}
           </div>
-          {gif && <ResultCard blob={gif} filename="animation.gif" title={`GIF ready — ${seq.length} frames, ${width}×${height}`} onReset={reset}><Button size="sm" variant="ghost" onClick={() => setGif(null)}>Edit frames</Button></ResultCard>}
+          {gif && <ResultCard blob={gif} filename="animation.gif" title={`GIF ready, ${seq.length} frames, ${width}×${height}`} onReset={reset}><Button size="sm" variant="ghost" onClick={() => setGif(null)}>Edit frames</Button></ResultCard>}
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 xl:grid-cols-6">

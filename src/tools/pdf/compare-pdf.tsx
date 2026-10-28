@@ -85,7 +85,7 @@ export default function ComparePdf() {
       <ErrorNote error={job.error} />
 
       {!a || !b ? (
-        <Empty><GitCompare className="mx-auto mb-2 size-6 text-accent" />Add two versions of a document to see exactly what changed — word by word and pixel by pixel.</Empty>
+        <Empty><GitCompare className="mx-auto mb-2 size-6 text-accent" />Add two versions of a document to see exactly what changed, word by word and pixel by pixel.</Empty>
       ) : stats && docs && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -113,7 +113,7 @@ export default function ComparePdf() {
             <motion.div key={mode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
               {mode === 'visual' ? <VisualDiff a={docs.a} b={docs.b} diffs={diffs!} /> : (
                 <div className="space-y-4">
-                  {shownDiffs.length === 0 && <Empty>{stats.changedPages === 0 ? 'No text differences — the two documents read identically.' : 'Nothing to show.'}</Empty>}
+                  {shownDiffs.length === 0 && <Empty>{stats.changedPages === 0 ? 'No text differences, the two documents read identically.' : 'Nothing to show.'}</Empty>}
                   {shownDiffs.map((d) => (
                     <div key={d.index} className="overflow-hidden rounded-2xl border border-border bg-surface">
                       <div className="flex items-center justify-between border-b border-border bg-surface-2/50 px-4 py-2 text-xs">

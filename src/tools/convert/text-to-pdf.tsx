@@ -125,14 +125,14 @@ export default function TextToPdf() {
             onDragOver={(e) => e.preventDefault()} onDrop={(e) => { const f = e.dataTransfer.files[0]; if (f) { e.preventDefault(); onFile(f) } }}
             className={cn('h-72 w-full resize-y bg-transparent p-4 text-[13px] leading-relaxed text-fg outline-none scrollbar-thin', font === 'courier' ? 'font-mono' : font === 'times' ? 'font-serif' : 'font-sans')} />
         </div>
-        {unicode && <div className="flex items-start gap-2 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-sm"><Languages className="mt-0.5 size-4 shrink-0 text-accent" /><div>Non-Latin characters detected — this text will be rendered with your system fonts for full Unicode support (pages are images, not selectable text).</div></div>}
+        {unicode && <div className="flex items-start gap-2 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-sm"><Languages className="mt-0.5 size-4 shrink-0 text-accent" /><div>Non-Latin characters detected, this text will be rendered with your system fonts for full Unicode support (pages are images, not selectable text).</div></div>}
         {result ? <>
           <ResultCard blob={result.blob} filename={outName} title={`${result.pages} page${result.pages > 1 ? 's' : ''}`} />
           <PdfPreview blob={result.blob} height={620} />
         </> : text.trim() && !unicode ? <div className="grid h-40 place-items-center text-sm text-muted"><span className="inline-flex items-center gap-2"><Loader2 className="size-4 animate-spin" />Rendering preview…</span></div> : null}
       </>}
       side={<>
-        <div className="grid grid-cols-3 gap-2"><Stat label="Lines" value={text ? text.split('\n').length.toLocaleString() : 0} /><Stat label="Words" value={words.toLocaleString()} /><Stat label="Pages" value={result?.pages ?? '—'} /></div>
+        <div className="grid grid-cols-3 gap-2"><Stat label="Lines" value={text ? text.split('\n').length.toLocaleString() : 0} /><Stat label="Words" value={words.toLocaleString()} /><Stat label="Pages" value={result?.pages ?? '-'} /></div>
         <div><Label>Font</Label><Segmented value={font} onChange={setFont} options={[{ value: 'helvetica', label: 'Helvetica' }, { value: 'times', label: 'Times' }, { value: 'courier', label: 'Courier' }]} /></div>
         <div className="grid grid-cols-2 gap-3">
           <Slider label="Size" value={size} onChange={setSize} min={7} max={24} step={0.5} suffix="pt" />
@@ -154,7 +154,7 @@ export default function TextToPdf() {
           {busy && <Progress value={progress} label="Rendering" />}
           <ErrorNote error={error} />
           <Button size="lg" className="w-full" loading={busy} icon={<FileDown className="size-5" />} onClick={exportUnicode}>Create PDF</Button>
-        </> : <p className="text-[11px] text-muted">{previewing ? 'Updating preview…' : 'Live preview — download from the result card.'} <Badge>Vector text</Badge></p>}
+        </> : <p className="text-[11px] text-muted">{previewing ? 'Updating preview…' : 'Live preview, download from the result card.'} <Badge>Vector text</Badge></p>}
         {!text.trim() && <p className="text-xs text-muted">Start typing or open a file to see the PDF.</p>}
       </>}
     />

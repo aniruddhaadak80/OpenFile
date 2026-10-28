@@ -85,7 +85,7 @@ export async function merge(inputs: MergeInput[], opts: { bookmarks?: boolean; o
     marks.push({ title: inp.name.replace(/\.pdf$/i, ''), page: pages[0] })
     opts.onProgress?.((k + 1) / inputs.length)
   }
-  if (!out.getPageCount()) throw new PdfError('Nothing to merge — every page range was empty.')
+  if (!out.getPageCount()) throw new PdfError('Nothing to merge, every page range was empty.')
   if (opts.bookmarks) addOutline(out, marks)
   return save(out)
 }
@@ -124,7 +124,7 @@ export function groupsEvery(total: number, n: number) {
   return g
 }
 
-/** "1-3, 4-8, 9-" → [[0,1,2],[3..7],[8..]] — each comma-separated part becomes its own group */
+/** "1-3, 4-8, 9-" → [[0,1,2],[3..7],[8..]], each comma-separated part becomes its own group */
 export function groupsFromRanges(input: string, total: number) {
   const g: number[][] = []
   for (const part of input.split(/[,;\n]+/).map((s) => s.trim()).filter(Boolean)) {
@@ -755,7 +755,7 @@ export async function repairStructure(bytes: Bytes): Promise<RepairResult> {
     log.push(`pdf-lib could not parse the file: ${e?.message ?? e}`)
     return { bytes: null, log, recovered: 0, failed: [] }
   }
-  if (src.isEncrypted) log.push('Warning: document is encrypted — content streams may be unreadable')
+  if (src.isEncrypted) log.push('Warning: document is encrypted, content streams may be unreadable')
   let n = 0
   try { n = src.getPageCount() } catch (e: any) { log.push(`Page tree is broken: ${e?.message ?? e}`); return { bytes: null, log, recovered: 0, failed: [] } }
   if (!n) { log.push('No pages found in the page tree'); return { bytes: null, log, recovered: 0, failed: [] } }

@@ -95,9 +95,9 @@ export default function HashGenerator() {
       <div className="min-w-0 space-y-4">
         <Segmented value={mode} onChange={setMode} options={[{ value: 'text', label: <span className="flex items-center gap-1.5"><Type className="size-3.5" />Text</span> }, { value: 'file', label: <span className="flex items-center gap-1.5"><FileDigit className="size-3.5" />File</span> }]} />
         {mode === 'text' ? (
-          <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Type or paste text — hashes update as you type (UTF-8)" className="min-h-40" />
+          <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Type or paste text, hashes update as you type (UTF-8)" className="min-h-40" />
         ) : !file ? (
-          <Dropzone onFiles={(f) => runFile(f[0])} label="Drop any file to hash" sub="Any size — large files are streamed in chunks. Nothing is uploaded." />
+          <Dropzone onFiles={(f) => runFile(f[0])} label="Drop any file to hash" sub="Any size, large files are streamed in chunks. Nothing is uploaded." />
         ) : (
           <div className="space-y-3">
             <FileChip file={file} onRemove={() => { setFile(null); setRes({}) }} extra={took != null && <span className="text-xs text-muted">{(took / 1000).toFixed(2)}s · {formatBytes(file.size / (took / 1000))}/s</span>} />
@@ -117,12 +117,12 @@ export default function HashGenerator() {
                   {ok && <span className="flex items-center gap-1 text-xs text-success"><CheckCircle2 className="size-3.5" />matches expected</span>}
                   <div className="ml-auto">{h && <CopyButton text={fmt(h)} variant="ghost" />}</div>
                 </div>
-                <div className="break-all font-mono text-[13px] text-fg/90">{h ? fmt(h) : <span className="text-muted">{job.busy ? 'computing…' : mode === 'file' ? '—' : ''}</span>}</div>
+                <div className="break-all font-mono text-[13px] text-fg/90">{h ? fmt(h) : <span className="text-muted">{job.busy ? 'computing…' : mode === 'file' ? '-' : ''}</span>}</div>
               </motion.div>
             )
           })}
         </div>
-        {mode === 'text' && !text && <p className="text-xs text-muted">Empty input still has a hash — e.g. SHA-256 of "" is e3b0c442…b855.</p>}
+        {mode === 'text' && !text && <p className="text-xs text-muted">Empty input still has a hash, e.g. SHA-256 of "" is e3b0c442…b855.</p>}
       </div>
 
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -146,7 +146,7 @@ export default function HashGenerator() {
             {match !== null && (
               <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                 className={cn('flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium', match ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger')}>
-                {match ? <><CheckCircle2 className="size-4" />Match — {match}</> : <><XCircle className="size-4" />No match with any selected hash</>}
+                {match ? <><CheckCircle2 className="size-4" />Match, {match}</> : <><XCircle className="size-4" />No match with any selected hash</>}
               </motion.div>
             )}
           </AnimatePresence>

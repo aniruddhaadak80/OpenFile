@@ -35,7 +35,7 @@ const SAMPLE = `<?xml version="1.0" encoding="UTF-8"?>
 <metadata>Created with love</metadata>
 <g>
 \t<g>
-\t\t<rect x="16.000" y="16.000" fill="#6D4AFF" width="96.000" height="96.000" rx="24.0000" ry="24.0000"/>
+\t\t<rect x="16.000" y="16.000" fill="#F5A524" width="96.000" height="96.000" rx="24.0000" ry="24.0000"/>
 \t\t<circle fill="#FFFFFF" fill-opacity="1.0" cx="64.00000" cy="64.00000" r="22.00000"/>
 \t\t<path fill="none" stroke="#22D3EE" stroke-width="6.0000" stroke-linecap="round" d="M 40.000 92.000 L 88.000 92.000"/>
 \t</g>
@@ -131,7 +131,7 @@ export default function SvgOptimizer() {
             <div className={cn('relative h-[380px] select-none overflow-hidden rounded-xl', previewBg)}>
               <img src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(input)} alt="Original" className="absolute inset-0 m-auto max-h-[90%] max-w-[90%] object-contain p-4" style={{ clipPath: `inset(0 ${100 - compare}% 0 0)` }} />
               {output && <img src={'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(output.includes('xmlns=') ? output : output.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"'))} alt="Optimised" className="absolute inset-0 m-auto max-h-[90%] max-w-[90%] object-contain p-4" style={{ clipPath: `inset(0 0 0 ${compare}%)` }} />}
-              <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-accent" style={{ left: `${compare}%` }}><div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-white">⇆</div></div>
+              <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-accent" style={{ left: `${compare}%` }}><div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-on-accent">⇆</div></div>
               <Badge className="absolute left-3 top-3">ORIGINAL {formatBytes(inSize)}</Badge><Badge className="absolute right-3 top-3" color="#22c55e">OPTIMISED {formatBytes(outSize)}</Badge>
               <input type="range" min={0} max={100} value={compare} onChange={(e) => setCompare(+e.target.value)} className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0" aria-label="Compare" />
             </div>
@@ -163,7 +163,7 @@ export default function SvgOptimizer() {
           </div>}
           {out === 'png' && <div className="space-y-3">
             <Slider label="Width" value={pngW} onChange={setPngW} min={16} max={4096} step={16} suffix={`px → ${pngW}×${Math.round((pngW * dims.h) / dims.w)}`} />
-            <div className="flex flex-wrap gap-1.5">{[64, 128, 256, 512, 1024, 2048].map((s) => <button key={s} onClick={() => setPngW(s)} className={cn('rounded-lg px-2 py-1 font-mono text-xs cursor-pointer', pngW === s ? 'bg-accent text-white' : 'bg-surface-2 text-muted hover:text-fg')}>{s}</button>)}</div>
+            <div className="flex flex-wrap gap-1.5">{[64, 128, 256, 512, 1024, 2048].map((s) => <button key={s} onClick={() => setPngW(s)} className={cn('rounded-lg px-2 py-1 font-mono text-xs cursor-pointer', pngW === s ? 'bg-accent text-on-accent' : 'bg-surface-2 text-muted hover:text-fg')}>{s}</button>)}</div>
             <Button icon={<ImageIcon className="size-4" />} onClick={() => exportPng().catch((e) => toast(e.message, 'error'))} disabled={!output}>Download PNG</Button>
           </div>}
         </Card>
@@ -194,7 +194,7 @@ export default function SvgOptimizer() {
 function Toggle({ on, label, onChange }: { on: boolean; label: string; onChange: (v: boolean) => void }) {
   return (
     <button type="button" onClick={() => onChange(!on)} className="flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left text-xs hover:bg-surface-2 cursor-pointer">
-      <span className={cn('grid size-4 shrink-0 place-items-center rounded border transition', on ? 'border-accent bg-accent text-white' : 'border-border')}>{on && <svg viewBox="0 0 12 12" className="size-3"><path d="M2.5 6.5l2.5 2.5 4.5-6" fill="none" stroke="currentColor" strokeWidth="2" /></svg>}</span>
+      <span className={cn('grid size-4 shrink-0 place-items-center rounded border transition', on ? 'border-accent bg-accent text-on-accent' : 'border-border')}>{on && <svg viewBox="0 0 12 12" className="size-3"><path d="M2.5 6.5l2.5 2.5 4.5-6" fill="none" stroke="currentColor" strokeWidth="2" /></svg>}</span>
       <span className={on ? 'text-fg' : 'text-muted'}>{label}</span>
     </button>
   )

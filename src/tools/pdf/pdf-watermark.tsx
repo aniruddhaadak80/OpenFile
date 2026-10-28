@@ -29,7 +29,7 @@ export default function PdfWatermark() {
   const [text, setText] = useState('CONFIDENTIAL')
   const [font, setFont] = useState<FontName>('Helvetica-Bold')
   const [size, setSize] = useState(64)
-  const [color, setColor] = useState('#e11d48')
+  const [color, setColor] = useState('#ef4444')
   const [image, setImage] = useState<{ bytes: Uint8Array; type: 'png' | 'jpg'; url: string } | null>(null)
   const [imageScale, setImageScale] = useState(40)
   const [opacity, setOpacity] = useState(25)

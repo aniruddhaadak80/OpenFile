@@ -90,7 +90,7 @@ export function PageEditor(p: EditorProps) {
       return
     }
     if (tool === 'pen') {
-      const it: Item = { id: uid(), type: 'pen', x: pt.x, y: pt.y, w: 0, h: 0, points: [[pt.x, pt.y]], color: '#e11d48', strokeWidth: 3, opacity: 1, ...st }
+      const it: Item = { id: uid(), type: 'pen', x: pt.x, y: pt.y, w: 0, h: 0, points: [[pt.x, pt.y]], color: '#ef4444', strokeWidth: 3, opacity: 1, ...st }
       p.update((l) => [...l, it]); p.onSelect(null)
       let pts: [number, number][] = [[pt.x, pt.y]]
       startDrag(e, (q) => {
@@ -108,8 +108,8 @@ export function PageEditor(p: EditorProps) {
     // box / line creation
     const type = tool as ItemType
     const base: Item = type === 'line' || type === 'arrow'
-      ? { id: uid(), type, x: pt.x, y: pt.y, x2: pt.x, y2: pt.y, w: 0, h: 0, color: '#e11d48', strokeWidth: 3, opacity: 1, ...st }
-      : { id: uid(), type, x: pt.x, y: pt.y, w: 0, h: 0, color: type === 'highlight' ? '#facc15' : '#e11d48', fill: null, strokeWidth: 2, opacity: type === 'highlight' ? 0.4 : 1, ...st }
+      ? { id: uid(), type, x: pt.x, y: pt.y, x2: pt.x, y2: pt.y, w: 0, h: 0, color: '#ef4444', strokeWidth: 3, opacity: 1, ...st }
+      : { id: uid(), type, x: pt.x, y: pt.y, w: 0, h: 0, color: type === 'highlight' ? '#facc15' : '#ef4444', fill: null, strokeWidth: 2, opacity: type === 'highlight' ? 0.4 : 1, ...st }
     p.update((l) => [...l, base]); p.onSelect(base.id)
     let cur = base
     startDrag(e, (q, ev) => {

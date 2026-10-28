@@ -121,7 +121,7 @@ export function ThumbGrid({ thumbs, numPages, selected, onToggle, label }: { thu
               {src ? <img src={src} alt={`Page ${i + 1}`} className="max-h-full max-w-full shadow" /> : <div className="shimmer size-full rounded-md bg-surface" />}
             </div>
             <div className="mt-1.5 text-center text-xs font-medium text-muted">{label ? label(i) : `Page ${i + 1}`}</div>
-            {sel && <div className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-white shadow"><svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7" /></svg></div>}
+            {sel && <div className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-on-accent shadow"><svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7" /></svg></div>}
           </motion.button>
         )
       })}

@@ -1,6 +1,11 @@
 // Central catalog of every OpenFile tool.
 // Each tool's UI lives at src/tools/<category>/<slug>.tsx (default export) and is lazy-loaded.
-export type Category = 'pdf' | 'convert' | 'image' | 'video' | 'audio' | 'dev' | 'text' | 'design'
+export type Category = 'pdf' | 'convert' | 'image' | 'video' | 'audio' | 'dev' | 'text' | 'design' | 'data' | 'ai' | '3d' | 'archive' | 'ebook' | 'font' | 'cad' | 'subtitle'
+import { BATCH_1 } from './batches/b1'
+import { BATCH_2 } from './batches/b2'
+import { BATCH_3 } from './batches/b3'
+import { BATCH_4 } from './batches/b4'
+import { BATCH_5 } from './batches/b5'
 
 export interface ToolMeta {
   slug: string
@@ -32,17 +37,25 @@ export interface ToolMeta {
 }
 
 export const CATEGORIES: { id: Category; name: string; blurb: string; color: string }[] = [
-  { id: 'pdf', name: 'PDF Tools', blurb: 'Merge, split, sign, protect and edit PDFs', color: '#ef4444' },
-  { id: 'convert', name: 'Convert', blurb: 'Move between PDF, Office, Markdown, HTML and images', color: '#f97316' },
-  { id: 'image', name: 'Image', blurb: 'Compress, resize, crop, remove backgrounds, upscale', color: '#22c55e' },
-  { id: 'video', name: 'Video', blurb: 'Trim, compress, convert, GIF and record', color: '#8b5cf6' },
-  { id: 'audio', name: 'Audio', blurb: 'Edit, convert, record and transcribe', color: '#ec4899' },
-  { id: 'dev', name: 'Developer', blurb: 'JSON, JWT, regex, hashes, cURL and more', color: '#06b6d4' },
-  { id: 'text', name: 'Text & Data', blurb: 'Diff, count, convert tables, format text', color: '#eab308' },
-  { id: 'design', name: 'Design', blurb: 'Colors, CSS, favicons, SVG, whiteboards', color: '#3b82f6' },
+  { id: 'pdf', name: 'PDF Tools', blurb: 'Merge, split, sign, protect and edit PDFs', color: '#F5A524' },
+  { id: 'convert', name: 'Convert', blurb: 'Move between PDF, Office, Markdown, HTML and images', color: '#F97316' },
+  { id: 'image', name: 'Image', blurb: 'Compress, resize, crop, remove backgrounds, upscale', color: '#10B981' },
+  { id: 'video', name: 'Video', blurb: 'Trim, compress, convert, GIF and record', color: '#38BDF8' },
+  { id: 'audio', name: 'Audio', blurb: 'Edit, convert, record and transcribe', color: '#14B8A6' },
+  { id: 'dev', name: 'Developer', blurb: 'JSON, JWT, regex, hashes, cURL and more', color: '#22D3EE' },
+  { id: 'text', name: 'Text & Data', blurb: 'Diff, count, convert tables, format text', color: '#84CC16' },
+  { id: 'design', name: 'Design', blurb: 'Colors, CSS, favicons, SVG, whiteboards', color: '#60A5FA' },
+  { id: 'data', name: 'Data', blurb: 'CSV, Excel, JSON, SQLite, Parquet, maps and GPS', color: '#0EA5E9' },
+  { id: 'ai', name: 'AI', blurb: 'On-device AI for images, text and documents', color: '#FBBF24' },
+  { id: '3d', name: '3D', blurb: 'View and convert GLB, GLTF, OBJ, STL, PLY and more', color: '#2DD4BF' },
+  { id: 'archive', name: 'Archives', blurb: 'Open and create ZIP, 7Z, TAR, GZ and RAR', color: '#A3A3A3' },
+  { id: 'ebook', name: 'eBooks', blurb: 'Read and convert EPUB, MOBI, FB2 and comics', color: '#FB923C' },
+  { id: 'font', name: 'Fonts', blurb: 'Convert, inspect and subset TTF, OTF, WOFF', color: '#FACC15' },
+  { id: 'cad', name: 'CAD', blurb: 'View and convert DXF and other drawings', color: '#4ADE80' },
+  { id: 'subtitle', name: 'Subtitles', blurb: 'Convert, sync and edit SRT, VTT, ASS', color: '#67E8F9' },
 ]
 
-export const TOOLS: ToolMeta[] = [
+const CORE_TOOLS: ToolMeta[] = [
   // ---------- PDF ----------
   { slug: 'merge-pdf', name: 'Merge PDF', desc: 'Combine multiple PDFs into one ordered document with drag-and-drop sorting.', category: 'pdf', icon: 'Combine', popular: true, tags: ['join', 'combine'] },
   { slug: 'split-pdf', name: 'Split PDF', desc: 'Split by ranges, every N pages, or extract each page into a ZIP.', category: 'pdf', icon: 'Scissors', popular: true },
@@ -176,6 +189,8 @@ export const TOOLS: ToolMeta[] = [
   { slug: 'sketch-board', name: 'Sketch Whiteboard', desc: 'Infinite whiteboard with shapes, arrows, text and sticky notes.', category: 'design', icon: 'PencilRuler', badge: 'HOT' },
   { slug: 'placeholder-image', name: 'Placeholder Image', desc: 'Generate placeholder images in any size, color and text.', category: 'design', icon: 'ImageIcon' },
 ]
+
+export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5]
 
 export const toolBySlug = (slug: string) => TOOLS.find((t) => t.slug === slug)
 

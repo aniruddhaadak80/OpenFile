@@ -141,10 +141,10 @@ export default function JsonFormatter() {
 }
 
 function Prim({ v }: { v: any }) {
-  if (v === null) return <span className="text-[#f472b6]">null</span>
+  if (v === null) return <span className="text-[#fdba74]">null</span>
   if (typeof v === 'string') return <span className="break-all text-success">"{v}"</span>
   if (typeof v === 'number') return <span className="text-warn">{String(v)}</span>
-  return <span className="text-[#f472b6]">{String(v)}</span>
+  return <span className="text-[#fdba74]">{String(v)}</span>
 }
 
 function TreeNode({ k, value, path, depth, onPick, picked, expandAll }: { k: string | number | null; value: any; path: string; depth: number; onPick: (p: string) => void; picked: string; expandAll: boolean | null }) {

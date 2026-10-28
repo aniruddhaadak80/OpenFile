@@ -1,11 +1,16 @@
 export function Logo({ size = 32 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-label="OpenFile">
-      <defs><linearGradient id="ofg" x1="0" y1="0" x2="64" y2="64"><stop stopColor="#8b6cff" /><stop offset="1" stopColor="#22d3ee" /></linearGradient></defs>
-      <rect width="64" height="64" rx="16" fill="url(#ofg)" />
-      <path d="M22 14h14l10 10v24a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V18a4 4 0 0 1 4-4Z" fill="#fff" fillOpacity=".95" />
-      <path d="M36 14v8a2 2 0 0 0 2 2h8" fill="#fff" fillOpacity=".6" />
-      <circle cx="32" cy="38" r="7" stroke="url(#ofg)" strokeWidth="3.5" />
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-label="OpenFile" role="img">
+      <defs>
+        <linearGradient id="ofg" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse"><stop stopColor="#FFD27A" /><stop offset=".45" stopColor="#FFB224" /><stop offset="1" stopColor="#E08A00" /></linearGradient>
+        <radialGradient id="ofr" cx="32" cy="38" r="14" gradientUnits="userSpaceOnUse"><stop offset=".55" stopColor="#FFB224" stopOpacity=".35" /><stop offset="1" stopColor="#FFB224" stopOpacity="0" /></radialGradient>
+      </defs>
+      <rect width="64" height="64" rx="16" fill="#000" />
+      <rect x=".75" y=".75" width="62.5" height="62.5" rx="15.25" stroke="url(#ofg)" strokeOpacity=".35" strokeWidth="1.5" />
+      <path d="M22 13h14l10 10v25a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" stroke="url(#ofg)" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d="M36 13v8a2 2 0 0 0 2 2h8" stroke="url(#ofg)" strokeWidth="2.5" strokeLinejoin="round" />
+      <circle cx="32" cy="38" r="12" fill="url(#ofr)" />
+      <circle cx="32" cy="38" r="6.5" stroke="url(#ofg)" strokeWidth="3" />
     </svg>
   )
 }

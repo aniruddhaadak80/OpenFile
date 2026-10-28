@@ -6,15 +6,15 @@ import { downloadBlob, baseName } from '@/lib/files'
 import { ColorInput, ImageDrop, canvas, decode, rrect, useDebounced, usePasteImages, type Drawable } from './_img/kit'
 
 const GRADIENTS: { name: string; a: number; s: string[] }[] = [
-  { name: 'Hyper', a: 135, s: ['#ec4899', '#ef4444', '#eab308'] }, { name: 'Ocean', a: 135, s: ['#06b6d4', '#3b82f6', '#6366f1'] },
-  { name: 'Aurora', a: 120, s: ['#22d3ee', '#a855f7', '#ec4899'] }, { name: 'Sunset', a: 160, s: ['#f97316', '#db2777', '#7c3aed'] },
+  { name: 'Hyper', a: 135, s: ['#f97316', '#ef4444', '#eab308'] }, { name: 'Ocean', a: 135, s: ['#06b6d4', '#3b82f6', '#14b8a6'] },
+  { name: 'Aurora', a: 120, s: ['#22d3ee', '#14b8a6', '#f97316'] }, { name: 'Sunset', a: 160, s: ['#fde047', '#f97316', '#c2410c'] },
   { name: 'Mint', a: 135, s: ['#a7f3d0', '#34d399', '#059669'] }, { name: 'Peach', a: 135, s: ['#fecaca', '#fdba74', '#fde68a'] },
-  { name: 'Midnight', a: 135, s: ['#0f172a', '#312e81', '#1e1b4b'] }, { name: 'Candy', a: 45, s: ['#f9a8d4', '#c4b5fd', '#93c5fd'] },
-  { name: 'Lime', a: 135, s: ['#d9f99d', '#4ade80', '#14b8a6'] }, { name: 'Royal', a: 135, s: ['#4f46e5', '#7c3aed', '#c026d3'] },
+  { name: 'Midnight', a: 135, s: ['#0f172a', '#0f766e', '#134e4a'] }, { name: 'Candy', a: 45, s: ['#fdba74', '#ccfbf1', '#93c5fd'] },
+  { name: 'Lime', a: 135, s: ['#d9f99d', '#4ade80', '#14b8a6'] }, { name: 'Gold', a: 135, s: ['#000000', '#78350f', '#f5a524'] },
   { name: 'Fire', a: 180, s: ['#fde047', '#f97316', '#dc2626'] }, { name: 'Steel', a: 135, s: ['#e2e8f0', '#94a3b8', '#475569'] },
-  { name: 'Lagoon', a: 200, s: ['#2dd4bf', '#0ea5e9', '#1e3a8a'] }, { name: 'Berry', a: 135, s: ['#be185d', '#7e22ce', '#312e81'] },
-  { name: 'Cotton', a: 90, s: ['#fbcfe8', '#e9d5ff', '#bfdbfe'] }, { name: 'Forest', a: 150, s: ['#14532d', '#166534', '#4d7c0f'] },
-  { name: 'Gold', a: 135, s: ['#fef3c7', '#fbbf24', '#b45309'] }, { name: 'Neon', a: 120, s: ['#00f5a0', '#00d9f5', '#7f5af0'] },
+  { name: 'Lagoon', a: 200, s: ['#2dd4bf', '#0ea5e9', '#1e3a8a'] }, { name: 'Deep Sea', a: 135, s: ['#134e4a', '#0f766e', '#22d3ee'] },
+  { name: 'Cotton', a: 90, s: ['#fed7aa', '#ccfbf1', '#bfdbfe'] }, { name: 'Forest', a: 150, s: ['#14532d', '#166534', '#4d7c0f'] },
+  { name: 'Gold', a: 135, s: ['#fef3c7', '#fbbf24', '#b45309'] }, { name: 'Neon', a: 120, s: ['#00f5a0', '#00d9f5', '#14b8a6'] },
 ]
 const ASPECTS: { id: string; label: string; r: number | null }[] = [
   { id: 'auto', label: 'Auto', r: null }, { id: '16:9', label: '16:9', r: 16 / 9 }, { id: '4:3', label: '4:3', r: 4 / 3 }, { id: '1:1', label: '1:1', r: 1 },
@@ -145,7 +145,7 @@ export default function ScreenshotStudio() {
       const items = await navigator.clipboard.read()
       for (const it of items) { const t = it.types.find((x) => x.startsWith('image/')); if (t) { const b = await it.getType(t); return onFiles([new File([b], 'screenshot.png', { type: t })]) } }
       toast('No image on the clipboard', 'info')
-    } catch { toast('Clipboard access was blocked — press Ctrl/⌘ V instead', 'info') }
+    } catch { toast('Clipboard access was blocked, press Ctrl/⌘ V instead', 'info') }
   }
 
   const dO = useDebounced(o, 30)
@@ -157,10 +157,10 @@ export default function ScreenshotStudio() {
   }, [shot, dO, bgImg])
 
   const full = () => render(shot!, shot!.naturalWidth, shot!.naturalHeight, o, bgImg, Number(scale))
-  const toBlob = (c: HTMLCanvasElement) => new Promise<Blob>((r, j) => c.toBlob((b) => (b ? r(b) : j(new Error('Image too large to export — try 1×'))), 'image/png'))
+  const toBlob = (c: HTMLCanvasElement) => new Promise<Blob>((r, j) => c.toBlob((b) => (b ? r(b) : j(new Error('Image too large to export, try 1×'))), 'image/png'))
   const download = () => run(async () => { downloadBlob(await toBlob(full()), `${baseName(file!.name)}-studio@${scale}x.png`) })
   const copy = () => run(async () => {
-    if (!('ClipboardItem' in window)) throw new Error('Copying images is not supported in this browser — use Download.')
+    if (!('ClipboardItem' in window)) throw new Error('Copying images is not supported in this browser, use Download.')
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': toBlob(full()) })])
     toast('Copied image to clipboard')
   })
@@ -207,8 +207,8 @@ export default function ScreenshotStudio() {
         </>)}
         {tab === 'effects' && (<>
           <Slider label="Rotate" value={o.rotate} onChange={(rotate) => set({ rotate })} min={-30} max={30} suffix="°" />
-          <Slider label="3D tilt — vertical" value={o.tiltX} onChange={(tiltX) => set({ tiltX })} min={-40} max={40} suffix="°" />
-          <Slider label="3D tilt — horizontal" value={o.tiltY} onChange={(tiltY) => set({ tiltY })} min={-40} max={40} suffix="°" />
+          <Slider label="3D tilt, vertical" value={o.tiltX} onChange={(tiltX) => set({ tiltX })} min={-40} max={40} suffix="°" />
+          <Slider label="3D tilt, horizontal" value={o.tiltY} onChange={(tiltY) => set({ tiltY })} min={-40} max={40} suffix="°" />
           <div className="flex flex-wrap gap-1.5">
             {[['Flat', 0, 0], ['Left', 0, 25], ['Right', 0, -25], ['Top', 25, 0], ['Iso', 20, -20]].map(([n, x, y]) => <Button key={n as string} size="sm" variant="secondary" onClick={() => set({ tiltX: x as number, tiltY: y as number })}>{n}</Button>)}
           </div>

@@ -16,7 +16,7 @@ function rangesGroups(input: string, total: number): { groups: number[][]; error
     const m = part.match(/^(\d*)\s*-\s*(\d*)$/)
     let a: number, b: number
     if (m) { a = m[1] ? +m[1] : 1; b = m[2] ? +m[2] : total } else if (/^\d+$/.test(part)) a = b = +part
-    else return { groups: g, error: `"${part}" isn't a range — use 1-3, 5, 8-` }
+    else return { groups: g, error: `"${part}" isn't a range, use 1-3, 5, 8-` }
     const lo = Math.max(1, Math.min(a, b)), hi = Math.min(total, Math.max(a, b))
     if (lo > total) return { groups: g, error: `Page ${lo} is beyond the end of the document (${total} pages)` }
     const arr: number[] = []
@@ -126,7 +126,7 @@ export default function SplitPdf() {
             <Field label="Maximum size per file" hint={`${formatBytes(sizeMb * 1048576)}`}>
               <Input type="number" min={0.1} step={0.5} value={sizeMb} onChange={(e) => setSizeMb(Math.max(0.1, +e.target.value || 0.1))} />
             </Field>
-            <div className="text-xs text-muted">Pages are grouped so each part stays under the limit (approximate — shared fonts are counted once per part). Original file: {formatBytes(file.size)}.</div>
+            <div className="text-xs text-muted">Pages are grouped so each part stays under the limit (approximate, shared fonts are counted once per part). Original file: {formatBytes(file.size)}.</div>
           </>}
           {plan.error && <div className="text-xs text-danger">{plan.error}</div>}
           {job.busy && <Progress value={job.progress} label="Splitting…" />}

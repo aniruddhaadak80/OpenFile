@@ -71,7 +71,7 @@ export default function AudioConverter() {
   const zip = async () => downloadBlob(await zipFiles(done.map((x) => ({ name: outName(x.file), data: x.out! }))), `converted-${fmt}.zip`)
   const reset = () => { if (job.busy) job.cancel(); setItems([]); job.reset() }
 
-  if (!items.length) return <Dropzone multiple accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.wma,.aiff,.webm" onFiles={add} label="Drop audio files to convert" sub="Batch-convert MP3, WAV, OGG, AAC, FLAC, M4A — or pull audio out of videos. Offline." />
+  if (!items.length) return <Dropzone multiple accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.wma,.aiff,.webm" onFiles={add} label="Drop audio files to convert" sub="Batch-convert MP3, WAV, OGG, AAC, FLAC, M4A, or pull audio out of videos. Offline." />
 
   return (
     <ToolGrid
@@ -115,7 +115,7 @@ export default function AudioConverter() {
           <div><Label>Sample rate</Label><Select value={sr} onChange={setSr} options={[{ value: 'original', label: 'Original' }, { value: '48000', label: '48 kHz' }, { value: '44100', label: '44.1 kHz' }, { value: '32000', label: '32 kHz' }, { value: '22050', label: '22 kHz' }, { value: '16000', label: '16 kHz' }]} /></div>
           <div><Label>Channels</Label><Select value={ch} onChange={setCh} options={[{ value: 'original', label: 'Original' }, { value: '2', label: 'Stereo' }, { value: '1', label: 'Mono' }]} /></div>
         </div>
-        {FORMATS[fmt].lossless && <Note>Lossless output can't restore quality already lost in an MP3 — it just stops further loss.</Note>}
+        {FORMATS[fmt].lossless && <Note>Lossless output can't restore quality already lost in an MP3, it just stops further loss.</Note>}
         <Button size="lg" className="w-full" icon={<RefreshCw className="size-5" />} onClick={convert} loading={job.busy}>Convert {items.length > 1 ? `${items.length} files` : ''} to {FORMATS[fmt].label}</Button>
         <JobPanel job={job} onRetry={convert} />
         {done.length > 1 && !job.busy && <Button variant="outline" className="w-full" icon={<Archive className="size-4" />} onClick={zip}>Download all ({done.length}) as ZIP</Button>}

@@ -54,7 +54,7 @@ export default function CropPdf() {
   const auto = async () => {
     if (!doc) return
     setDetecting(true)
-    try { const d = await detect(doc, page + 1); if (d) setMargins(d); else toast('This page looks blank — nothing to trim', 'info') } finally { setDetecting(false) }
+    try { const d = await detect(doc, page + 1); if (d) setMargins(d); else toast('This page looks blank, nothing to trim', 'info') } finally { setDetecting(false) }
   }
 
   const run = () => job.run(async (setP) => {
@@ -74,7 +74,7 @@ export default function CropPdf() {
       per.push(fr.l || fr.r || fr.t || fr.b ? fr : null)
       setP((i + 1) / numPages * 0.8)
     }
-    if (!per.some(Boolean)) throw new Error('Nothing to crop — drag the edges of the crop box or use Auto-detect.')
+    if (!per.some(Boolean)) throw new Error('Nothing to crop, drag the edges of the crop box or use Auto-detect.')
     const o = await ops()
     setResult(pdfBlob(await o.crop(await readBytes(file), (i) => per[i], hard))); setP(1); toast('Pages cropped', 'success')
   })
@@ -125,7 +125,7 @@ export default function CropPdf() {
             <Switch checked={autoEach} onChange={(v) => { setAutoEach(v); setResult(null) }} label="Auto-trim whitespace on each page" />
             <Switch checked={hard} onChange={(v) => { setHard(v); setResult(null) }} label="Hard crop (also set MediaBox)" />
           </div>
-          <div className="text-xs text-muted">{hard ? 'The page itself is resized — content outside the box is gone in every app.' : 'Sets the CropBox: hidden areas can be restored later by editing tools.'}</div>
+          <div className="text-xs text-muted">{hard ? 'The page itself is resized, content outside the box is gone in every app.' : 'Sets the CropBox: hidden areas can be restored later by editing tools.'}</div>
           {job.busy && <Progress value={job.progress} label="Cropping…" />}
           <ErrorNote error={job.error} />
           <Button className="w-full" size="lg" icon={<Crop className="size-5" />} loading={job.busy} disabled={!numPages} onClick={run}>Crop PDF</Button>

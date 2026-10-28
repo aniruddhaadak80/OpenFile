@@ -21,12 +21,12 @@ const bumpSeq = () => localStorage.setItem(SEQ_KEY, String((+(localStorage.getIt
 
 function blank(prev?: Invoice): Invoice {
   return {
-    template: prev?.template ?? 'modern', accent: prev?.accent ?? '#6d4aff', currency: prev?.currency ?? 'INR', title: prev?.title ?? 'Tax Invoice',
+    template: prev?.template ?? 'modern', accent: prev?.accent ?? '#f5a524', currency: prev?.currency ?? 'INR', title: prev?.title ?? 'Tax Invoice',
     number: nextNumber(), date: iso(new Date()), due: addDays(15), placeOfSupply: '', poNumber: '',
     business: prev?.business ?? emptyParty(), client: emptyParty(), shipTo: '', showShipTo: false, logo: prev?.logo ?? null,
     items: [{ id: uid(), desc: '', hsn: '', qty: 1, rate: 0, tax: prev?.taxMode === 'none' ? 0 : 18 }],
     taxMode: prev?.taxMode ?? 'cgst', discountType: 'percent', discount: 0, shipping: 0, roundOff: prev?.roundOff ?? true,
-    notes: prev?.notes ?? 'Thank you for your business!', terms: prev?.terms ?? 'Payment is due within 15 days of the invoice date.', payment: prev?.payment ?? '', signatory: prev?.signatory ?? 'Authorised Signatory',
+    notes: prev?.notes ?? 'Thank you for your business.', terms: prev?.terms ?? 'Payment is due within 15 days of the invoice date.', payment: prev?.payment ?? '', signatory: prev?.signatory ?? 'Authorised Signatory',
   }
 }
 function sample(): Invoice {
@@ -35,7 +35,7 @@ function sample(): Invoice {
     business: { name: 'Pixel & Pine Studio', address: '4th Floor, 12 Park Street\nKolkata, West Bengal 700016', taxId: '19ABCDE1234F1Z5', email: 'billing@pixelpine.in', phone: '+91 98300 12345' },
     client: { name: 'Acme Retail Pvt Ltd', address: '221 MG Road\nBengaluru, Karnataka 560001', taxId: '29AAACA1234B1Z2', email: 'accounts@acme.in', phone: '' },
     items: [
-      { id: uid(), desc: 'Brand identity design — logo, colour system and guidelines', hsn: '998391', qty: 1, rate: 45000, tax: 18 },
+      { id: uid(), desc: 'Brand identity design, logo, colour system and guidelines', hsn: '998391', qty: 1, rate: 45000, tax: 18 },
       { id: uid(), desc: 'E-commerce website (8 templates, CMS setup)', hsn: '998314', qty: 1, rate: 120000, tax: 18 },
       { id: uid(), desc: 'Product photography (per image)', hsn: '998383', qty: 40, rate: 650, tax: 18 },
     ],
@@ -47,7 +47,7 @@ function load(): Invoice { try { const s = localStorage.getItem(CUR_KEY); if (s)
 const TAX_MODES: { value: TaxMode; label: string }[] = [
   { value: 'cgst', label: 'GST · CGST + SGST (intra-state)' }, { value: 'igst', label: 'GST · IGST (inter-state)' }, { value: 'vat', label: 'VAT' }, { value: 'none', label: 'No tax' },
 ]
-const ACCENTS = ['#6d4aff', '#0ea5e9', '#059669', '#e11d48', '#f59e0b', '#111827']
+const ACCENTS = ['#f5a524', '#0ea5e9', '#059669', '#ef4444', '#14b8a6', '#111827']
 
 export default function InvoiceGenerator() {
   const [inv, setInv] = useState<Invoice>(load)
@@ -82,10 +82,10 @@ export default function InvoiceGenerator() {
     const existing = drafts.find((d) => d.data.number === inv.number)
     const d: Draft = { id: existing?.id ?? uid(), name, updated: Date.now(), data: inv }
     const next = [d, ...drafts.filter((x) => x.id !== d.id)].slice(0, 30)
-    try { localStorage.setItem(DRAFTS_KEY, JSON.stringify(next)); setDrafts(next); toast(existing ? 'Draft updated' : 'Draft saved') } catch { toast('Storage is full — delete some drafts or remove the logo', 'error') }
+    try { localStorage.setItem(DRAFTS_KEY, JSON.stringify(next)); setDrafts(next); toast(existing ? 'Draft updated' : 'Draft saved') } catch { toast('Storage is full, delete some drafts or remove the logo', 'error') }
   }
   function delDraft(id: string) { const next = drafts.filter((d) => d.id !== id); setDrafts(next); localStorage.setItem(DRAFTS_KEY, JSON.stringify(next)) }
-  function newInvoice() { bumpSeq(); setInv(blank(inv)); toast('New invoice — your business details were kept', 'info') }
+  function newInvoice() { bumpSeq(); setInv(blank(inv)); toast('New invoice, your business details were kept', 'info') }
   async function onLogo(f: File) {
     try {
       const img = await loadImage(f)

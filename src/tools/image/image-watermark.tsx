@@ -132,7 +132,7 @@ export default function ImageWatermark() {
             <Label>Position</Label>
             <div className="flex items-start gap-3">
               <div className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-surface-2/60 p-1">
-                {GRID.map((p) => <button key={p} onClick={() => set({ pos: p })} className={cn('grid size-8 place-items-center rounded-lg cursor-pointer', o.pos === p ? 'bg-accent text-white' : 'hover:bg-surface')} aria-label={`Position ${p}`}><span className={cn('size-2 rounded-full', o.pos === p ? 'bg-white' : 'bg-muted/50')} /></button>)}
+                {GRID.map((p) => <button key={p} onClick={() => set({ pos: p })} className={cn('grid size-8 place-items-center rounded-lg cursor-pointer', o.pos === p ? 'bg-accent text-on-accent' : 'hover:bg-surface')} aria-label={`Position ${p}`}><span className={cn('size-2 rounded-full', o.pos === p ? 'bg-white' : 'bg-muted/50')} /></button>)}
               </div>
               <button onClick={() => set({ pos: 'tile' })} className={cn('flex h-[106px] flex-1 flex-col items-center justify-center gap-1 rounded-xl border text-xs cursor-pointer', o.pos === 'tile' ? 'border-accent bg-accent/10 text-accent' : 'border-border text-muted hover:text-fg')}><Grid3x3 className="size-5" />Tiled</button>
             </div>

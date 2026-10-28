@@ -37,7 +37,7 @@ function buildSvg(o: { w: number; h: number; bg: string; bg2: string; fg: string
 
 export default function PlaceholderImage() {
   const [w, setW] = useState(1200), [h, setH] = useState(630)
-  const [bg, setBg] = useState('#6d4aff'), [bg2, setBg2] = useState('#22d3ee'), [fg, setFg] = useState('#ffffff')
+  const [bg, setBg] = useState('#f5a524'), [bg2, setBg2] = useState('#22d3ee'), [fg, setFg] = useState('#ffffff')
   const [text, setText] = useState(''), [autoSize, setAutoSize] = useState(true), [size, setSize] = useState(64)
   const [font, setFont] = useState(FONTS[0].value), [weight, setWeight] = useState(700)
   const [pattern, setPattern] = useState<Pattern>('solid'), [fmt, setFmt] = useState<Fmt>('png'), [quality, setQuality] = useState(0.9)
@@ -98,7 +98,7 @@ export default function PlaceholderImage() {
             <button onClick={() => { setW(h); setH(w) }} className="mb-2.5 rounded-lg p-1.5 text-muted hover:text-accent cursor-pointer" title="Swap"><ArrowLeftRight className="size-4" /></button>
             <div><Label>Height</Label><Input type="number" min={1} max={8000} value={h} onChange={(e) => setH(+e.target.value)} /></div>
           </div>
-          <Select value="" onChange={(v) => { const p = PRESETS.find((x) => x[0] === v); if (p) { setW(p[1]); setH(p[2]) } }} options={[{ value: '', label: 'Size presets…' }, ...PRESETS.map(([n, a, b]) => ({ value: n, label: `${n} — ${a}×${b}` }))]} />
+          <Select value="" onChange={(v) => { const p = PRESETS.find((x) => x[0] === v); if (p) { setW(p[1]); setH(p[2]) } }} options={[{ value: '', label: 'Size presets…' }, ...PRESETS.map(([n, a, b]) => ({ value: n, label: `${n}, ${a}×${b}` }))]} />
           <div><Label>Pattern</Label><Segmented value={pattern} onChange={setPattern} options={['solid', 'gradient', 'stripes', 'grid', 'dots', 'cross']} /></div>
           <div className="grid grid-cols-2 gap-3">
             <ColorField label={pattern === 'gradient' ? 'From' : 'Background'} value={bg} onChange={setBg} alpha={fmt !== 'jpg'} />

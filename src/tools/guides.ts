@@ -54,7 +54,7 @@ export const HEAVY_ENGINES = ['ffmpeg.wasm', 'Tesseract.js', 'IMG.LY background 
 
 type Override = Pick<ToolMeta, 'how' | 'steps' | 'tips' | 'faq' | 'related' | 'inputs' | 'outputs'>
 
-const CAT_DEFAULTS: Record<Category, { steps: (t: ToolMeta) => string[]; tips: string[]; inputs?: string[] }> = {
+const CAT_DEFAULTS: Partial<Record<Category, { steps: (t: ToolMeta) => string[]; tips: string[]; inputs?: string[] }>> = {
   pdf: {
     steps: (t) => [`Drop your PDF onto the ${t.name} area, or click to choose it.`, 'Wait a moment while page thumbnails render locally.', 'Choose the pages and options you need. Previews update as you go.', 'Press the main action button and download the finished PDF.'],
     tips: ['Encrypted PDFs must be unlocked first with Unlock PDF.', 'Large scanned PDFs are mostly images. Compress PDF shrinks them the most.', 'Your original file is never modified; you always download a new copy.'],
@@ -196,7 +196,7 @@ const list = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1
 
 export function toolGuide(tool: ToolMeta): ToolGuide {
   const o = O[tool.slug] ?? {}
-  const cat = CAT_DEFAULTS[tool.category]
+  const cat = CAT_DEFAULTS[tool.category] ?? { steps: (t: ToolMeta) => [`Open ${t.name} and add your file or input.`, 'Pick the options you need. Everything runs on your device.', 'Press the main button and download the result.'], tips: ['Nothing is uploaded. Your files stay in this browser tab.'] }
   const engineKeys = ENGINES[tool.slug] ?? ['Plain TypeScript']
   const engines = engineKeys.map((k) => ENGINE_INFO[k] ?? { name: k, what: k })
   const heavy = engineKeys.filter((k) => HEAVY_ENGINES.includes(k))

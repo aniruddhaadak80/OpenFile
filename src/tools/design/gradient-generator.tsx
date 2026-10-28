@@ -14,17 +14,17 @@ const mk = (colors: string[], kind: Kind = 'linear', angle = 135): State => ({ k
 
 const PRESETS: { name: string; s: State }[] = [
   { name: 'Aurora', s: mk(['#00c6ff', '#0072ff']) }, { name: 'Sunset', s: mk(['#ff512f', '#f09819'], 'linear', 90) },
-  { name: 'Purple Haze', s: mk(['#6d4aff', '#c471ed', '#f64f59']) }, { name: 'Mint', s: mk(['#11998e', '#38ef7d']) },
-  { name: 'Peach', s: mk(['#ffecd2', '#fcb69f'], 'linear', 180) }, { name: 'Ocean', s: mk(['#2e3192', '#1bffff']) },
-  { name: 'Flamingo', s: mk(['#ff0080', '#7928ca']) }, { name: 'Lush', s: mk(['#56ab2f', '#a8e063'], 'linear', 45) },
-  { name: 'Midnight', s: mk(['#0f2027', '#203a43', '#2c5364'], 'linear', 160) }, { name: 'Candy', s: mk(['#fbc2eb', '#a6c1ee'], 'linear', 120) },
+  { name: 'Golden Hour', s: mk(['#f5a524', '#ffb224', '#f97316']) }, { name: 'Mint', s: mk(['#11998e', '#38ef7d']) },
+  { name: 'Peach', s: mk(['#ffecd2', '#fcb69f'], 'linear', 180) }, { name: 'Ocean', s: mk(['#0f766e', '#1bffff']) },
+  { name: 'Ember', s: mk(['#f97316', '#7c2d12']) }, { name: 'Lush', s: mk(['#56ab2f', '#a8e063'], 'linear', 45) },
+  { name: 'Midnight', s: mk(['#0f2027', '#203a43', '#2c5364'], 'linear', 160) }, { name: 'Candy', s: mk(['#fed7aa', '#a6c1ee'], 'linear', 120) },
   { name: 'Fire', s: mk(['#f12711', '#f5af19'], 'radial') }, { name: 'Royal', s: mk(['#141e30', '#243b55'], 'linear', 200) },
   { name: 'Citrus', s: mk(['#fdc830', '#f37335']) }, { name: 'Lagoon', s: mk(['#43cea2', '#185a9d']) },
-  { name: 'Cotton', s: mk(['#fad0c4', '#ffd1ff']) }, { name: 'Neon', s: mk(['#00f260', '#0575e6'], 'linear', 270) },
+  { name: 'Cotton', s: mk(['#fad0c4', '#fed7aa']) }, { name: 'Neon', s: mk(['#00f260', '#0575e6'], 'linear', 270) },
   { name: 'Spectrum', s: mk(['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ff0000'], 'conic', 0) },
-  { name: 'Dusk', s: mk(['#2c3e50', '#fd746c'], 'linear', 30) }, { name: 'Glow', s: mk(['#fffbd5', '#b20a2c'], 'radial') },
-  { name: 'Berry', s: mk(['#8e2de2', '#4a00e0']) }, { name: 'Sky', s: mk(['#e0eafc', '#cfdef3'], 'linear', 180) },
-  { name: 'Mango', s: mk(['#ffe259', '#ffa751'], 'linear', 60) }, { name: 'Pastel Wheel', s: mk(['#fbcfe8', '#c7d2fe', '#a7f3d0', '#fde68a', '#fbcfe8'], 'conic', 45) },
+  { name: 'Dusk', s: mk(['#2c3e50', '#fd746c'], 'linear', 30) }, { name: 'Glow', s: mk(['#fffbd5', '#ef4444'], 'radial') },
+  { name: 'Deep Teal', s: mk(['#14b8a6', '#134e4a']) }, { name: 'Sky', s: mk(['#e0eafc', '#cfdef3'], 'linear', 180) },
+  { name: 'Mango', s: mk(['#ffe259', '#ffa751'], 'linear', 60) }, { name: 'Pastel Wheel', s: mk(['#fed7aa', '#c7d2fe', '#a7f3d0', '#fde68a', '#fed7aa'], 'conic', 45) },
   { name: 'Emerald Night', s: mk(['#000000', '#0f9b0f'], 'radial') },
 ]
 
@@ -198,7 +198,7 @@ export default function GradientGenerator() {
                 <AngleDial value={st.angle} onChange={(angle) => upd({ angle })} />
                 <div className="flex-1 space-y-2">
                   <Slider label={st.kind === 'conic' ? 'Start angle' : 'Angle'} value={st.angle} onChange={(angle) => upd({ angle })} min={0} max={359} suffix="°" />
-                  <div className="flex flex-wrap gap-1">{[0, 45, 90, 135, 180, 225, 270, 315].map((a) => <button key={a} onClick={() => upd({ angle: a })} className={cn('rounded-md px-1.5 py-0.5 text-[10px] font-mono cursor-pointer', st.angle === a ? 'bg-accent text-white' : 'bg-surface-2 text-muted hover:text-fg')}>{a}°</button>)}</div>
+                  <div className="flex flex-wrap gap-1">{[0, 45, 90, 135, 180, 225, 270, 315].map((a) => <button key={a} onClick={() => upd({ angle: a })} className={cn('rounded-md px-1.5 py-0.5 text-[10px] font-mono cursor-pointer', st.angle === a ? 'bg-accent text-on-accent' : 'bg-surface-2 text-muted hover:text-fg')}>{a}°</button>)}</div>
                 </div>
               </div>
             )}

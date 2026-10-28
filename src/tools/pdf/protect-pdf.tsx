@@ -83,7 +83,7 @@ export default function ProtectPdf() {
             <div className="flex items-center justify-between gap-2"><code className="truncate font-mono text-xs">{result.owner}</code><CopyButton text={result.owner} label="Copy" /></div>
           </div>
         </div>
-        <p className="mt-3 text-xs text-muted">Store the passwords somewhere safe — there is no way to recover a forgotten PDF password. {result.generated && 'The owner password unlocks full editing rights; keep it if you may need to change permissions later.'}</p>
+        <p className="mt-3 text-xs text-muted">Store the passwords somewhere safe, there is no way to recover a forgotten PDF password. {result.generated && 'The owner password unlocks full editing rights; keep it if you may need to change permissions later.'}</p>
       </ResultCard>
     </motion.div>
   )
@@ -102,7 +102,7 @@ export default function ProtectPdf() {
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-surface-2/40 p-6 sm:flex-row sm:items-start">
           <div className="relative w-40 shrink-0">
             {preview.src ? <img src={preview.src} alt="First page" className="w-full rounded-lg shadow-xl ring-1 ring-black/10" /> : <div className="aspect-[3/4] w-full animate-pulse rounded-lg bg-surface-2" />}
-            <motion.div initial={{ scale: 0 }} animate={{ scale: ready ? 1 : 0.85, opacity: ready ? 1 : 0.5 }} className="absolute -bottom-3 -right-3 grid size-12 place-items-center rounded-2xl bg-gradient-brand text-white shadow-xl shadow-accent/30"><Lock className="size-5" /></motion.div>
+            <motion.div initial={{ scale: 0 }} animate={{ scale: ready ? 1 : 0.85, opacity: ready ? 1 : 0.5 }} className="absolute -bottom-3 -right-3 grid size-12 place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-xl shadow-accent/30"><Lock className="size-5" /></motion.div>
           </div>
           <div className="min-w-0 flex-1 space-y-3">
             <FileChip file={file} onRemove={reset} extra={preview.pages ? <span className="text-xs text-muted">{preview.pages} pages</span> : undefined} />
@@ -137,7 +137,7 @@ export default function ProtectPdf() {
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
           <div>
-            <Label hint={<button type="button" className="inline-flex items-center gap-1 text-accent hover:underline cursor-pointer" onClick={() => { const g = generatePassword(16); setPw(g); setPw2(g); toast('Strong password generated — copy it before downloading', 'info') }}><Wand2 className="size-3" />Generate</button>}>Open password</Label>
+            <Label hint={<button type="button" className="inline-flex items-center gap-1 text-accent hover:underline cursor-pointer" onClick={() => { const g = generatePassword(16); setPw(g); setPw2(g); toast('Strong password generated, copy it before downloading', 'info') }}><Wand2 className="size-3" />Generate</button>}>Open password</Label>
             <PasswordInput value={pw} onChange={setPw} placeholder="Enter a password" autoFocus />
             <div className="mt-2"><StrengthMeter pw={pw} /></div>
           </div>
@@ -161,7 +161,7 @@ export default function ProtectPdf() {
           {job.busy && <Progress value={job.progress} label="Encrypting…" />}
           <ErrorNote error={job.error} />
           <Button size="lg" className="w-full" icon={<FileLock2 className="size-4" />} disabled={!ready || preview.locked} loading={job.busy} onClick={protect}>Protect PDF</Button>
-          {pw && strength(pw).score < 2 && <p className="text-center text-xs text-warn">Weak passwords can be cracked quickly — consider a longer one.</p>}
+          {pw && strength(pw).score < 2 && <p className="text-center text-xs text-warn">Weak passwords can be cracked quickly, consider a longer one.</p>}
         </div>
       </aside>
     </div>

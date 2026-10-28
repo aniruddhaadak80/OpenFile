@@ -185,7 +185,7 @@ export default function ImageCropper() {
             </div>
           </div>
           <Field label="Social preset">
-            <Select value={social} onChange={(v) => { setSocial(v); setCircle(false); setResult(null) }} options={[{ value: '', label: '— None —' }, ...SOCIAL_SIZES.map((s) => ({ value: s.id, label: s.label }))]} />
+            <Select value={social} onChange={(v) => { setSocial(v); setCircle(false); setResult(null) }} options={[{ value: '', label: '(none)' }, ...SOCIAL_SIZES.map((s) => ({ value: s.id, label: s.label }))]} />
           </Field>
           {socialPreset && <Switch checked={exportAtPreset} onChange={setExportAtPreset} label={`Export at ${socialPreset.w}×${socialPreset.h}`} />}
           <Switch checked={circle} onChange={(v) => { setCircle(v); if (v) setSocial(''); setResult(null) }} label={<span className="flex items-center gap-1.5"><Circle className="size-4" /> Circle avatar (transparent)</span>} />

@@ -12,7 +12,7 @@ export function useLib<T>(key: string, loader: () => Promise<T>): T | null {
   useEffect(() => {
     let alive = true
     if (!modCache.has(key)) modCache.set(key, loader())
-    modCache.get(key)!.then((m) => alive && setMod(() => m)).catch((e) => { console.error(e); toast('Failed to load a library — check your connection', 'error') })
+    modCache.get(key)!.then((m) => alive && setMod(() => m)).catch((e) => { console.error(e); toast('Failed to load a library, check your connection', 'error') })
     return () => { alive = false }
   }, [key])
   return mod
@@ -147,7 +147,7 @@ export function highlightCode(code: string, lang: HlLang = 'generic'): string {
     else if (m[3]) out += `<span class="text-warn">${t}</span>`
     else if (m[4]) {
       if (lang === 'sql') out += SQL_KW.has(m[4].toLowerCase()) ? `<span class="text-accent font-semibold">${t}</span>` : t
-      else if (lang === 'json') out += /^(true|false|null)$/.test(m[4]) ? `<span class="text-[#f472b6]">${t}</span>` : t
+      else if (lang === 'json') out += /^(true|false|null)$/.test(m[4]) ? `<span class="text-[#fdba74]">${t}</span>` : t
       else { KW.lastIndex = 0; out += KW.test(m[4]) ? `<span class="text-accent font-medium">${t}</span>` : /^[A-Z]/.test(m[4]) ? `<span class="text-[#22d3ee]">${t}</span>` : t }
     }
     else out += t

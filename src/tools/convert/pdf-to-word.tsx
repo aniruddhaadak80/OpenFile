@@ -113,7 +113,7 @@ export default function PdfToWord() {
                     <div className="mb-3 text-right font-mono text-[10px] text-neutral-400">Page {i + 1}</div>
                     {nodes.length === 0 && <div className="py-8 text-center text-neutral-400">Empty page</div>}
                     {nodes.map((n, k) => {
-                      if (n.type === 'scan') return <div key={k} className="space-y-2 text-center">{pages[i].thumb ? <img src={pages[i].thumb} alt="" className="mx-auto max-h-80 rounded shadow" /> : null}<div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] text-amber-800"><ScanLine className="size-3" />Scanned page — inserted as an image</div></div>
+                      if (n.type === 'scan') return <div key={k} className="space-y-2 text-center">{pages[i].thumb ? <img src={pages[i].thumb} alt="" className="mx-auto max-h-80 rounded shadow" /> : null}<div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] text-amber-800"><ScanLine className="size-3" />Scanned page, inserted as an image</div></div>
                       if (n.type === 'table') return (
                         <div key={k} className="my-3 overflow-x-auto"><table className="w-full border-collapse text-[12px]"><tbody>{n.rows.map((r, ri) => <tr key={ri} className={ri === 0 ? 'bg-neutral-100 font-semibold' : ''}>{r.map((c, ci) => <td key={ci} className="border border-neutral-300 px-2 py-1">{c}</td>)}</tr>)}</tbody></table></div>
                       )

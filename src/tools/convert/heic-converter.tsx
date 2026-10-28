@@ -74,7 +74,7 @@ export default function HeicConverter() {
   const pending = items.filter((i) => i.status !== 'done').length
   const zip = async () => downloadBlob(await zipFiles(outs.map((o) => ({ name: o.name, data: o.blob }))), `heic-converted-${fmt}.zip`)
 
-  if (!items.length) return <Dropzone multiple accept=".heic,.heif,image/heic,image/heif" onFiles={add} label="Drop HEIC / HEIF photos from your iPhone" sub="Batch convert to JPG, PNG or WEBP — photos never leave your device." />
+  if (!items.length) return <Dropzone multiple accept=".heic,.heif,image/heic,image/heif" onFiles={add} label="Drop HEIC / HEIF photos from your iPhone" sub="Batch convert to JPG, PNG or WEBP, photos never leave your device." />
 
   return (
     <div className="space-y-5">
