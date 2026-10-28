@@ -2,6 +2,16 @@
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).
 
+## v2.1.0 (2026-10-28)
+
+The catalog grows to **349 tools**. Twenty new text, developer and data tools, all running in your browser tab.
+
+### Added
+
+- **Text**: a [readability checker](https://openfile-studio.vercel.app/readability-score) with grade levels and a bionic reading view, a [keyword and phrase extractor](https://openfile-studio.vercel.app/keyword-extractor), [text similarity and fuzzy list matching](https://openfile-studio.vercel.app/text-similarity), a [statistics calculator](https://openfile-studio.vercel.app/statistics-calculator) with histogram, box plot and regression, an [ASCII and box table generator](https://openfile-studio.vercel.app/ascii-table-generator), [number to words](https://openfile-studio.vercel.app/numbers-to-words) with lakh, crore and cheque wording, a [Unicode inspector](https://openfile-studio.vercel.app/unicode-inspector) that finds invisible and look-alike characters, and a [text encoding detector and converter](https://openfile-studio.vercel.app/text-encoding-converter) that also repairs garbled text.
+- **Developer**: a [hash and ID analyzer](https://openfile-studio.vercel.app/hash-identifier), a [dummy file generator](https://openfile-studio.vercel.app/dummy-file-generator), a [secret scanner](https://openfile-studio.vercel.app/secret-scanner) for files, folders and ZIPs, an [embedded file extractor](https://openfile-studio.vercel.app/file-carver), [Shamir secret sharing](https://openfile-studio.vercel.app/shamir-secret), a [DNS lookup](https://openfile-studio.vercel.app/dns-lookup) over HTTPS, [JSON repair and JSON5](https://openfile-studio.vercel.app/json-repair), a [password strength checker](https://openfile-studio.vercel.app/password-strength), a [.gitignore and LICENSE generator](https://openfile-studio.vercel.app/gitignore-license-generator), a [HAR file viewer](https://openfile-studio.vercel.app/har-viewer) with a redacted export, and a [keyboard, mouse, gamepad and touch test](https://openfile-studio.vercel.app/input-device-test).
+- **Data**: a [SQL table generator](https://openfile-studio.vercel.app/sql-ddl-generator) that writes CREATE TABLE and INSERT statements from CSV or JSON for four databases.
+
 ## v2.0.0 (2026-10-28)
 
 The catalog grows to **329 tools in 16 studios**, up from 117 tools in 8. Every tool still runs in your browser tab with zero uploads.
