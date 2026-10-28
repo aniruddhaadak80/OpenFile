@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Download, Globe, Monitor, Apple, Smartphone, Laptop, Terminal, AppWindow, ShieldCheck, WifiOff, Zap, ChevronDown, ExternalLink, Sparkles, Check, Package, Play, RefreshCw } from 'lucide-react'
 import { Aurora, Reveal, Stagger, StaggerItem, spotlightMove } from '@/components/motion'
-import { Logo, Github as GhIcon } from '@/components/Logo'
+import { Github as GhIcon } from '@/components/Logo'
 import { CopyButton, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { setPageMeta, setJsonLd } from '@/lib/seo'
@@ -15,6 +15,11 @@ import { ASSETS, BROWSER_LABEL, PLATFORM_LABEL, RELEASES, REPO, detect, dl, manu
 import { TOOLS } from '@/tools/registry'
 import { FAQ, type GuideId } from './install/data'
 import { InstallGuide } from './install/Guide'
+import { DeviceShowcase } from '@/components/devices/DeviceShowcase'
+import { DevicePreview } from '@/components/devices/DevicePreview'
+import type { DeviceId } from '@/components/devices/devices'
+
+const PREVIEW: Record<CardDef['id'], { device: DeviceId; demo: number }> = { web: { device: 'browser', demo: 0 }, windows: { device: 'win', demo: 2 }, macos: { device: 'mac', demo: 1 }, linux: { device: 'linux', demo: 4 }, android: { device: 'aphone', demo: 3 }, ios: { device: 'iphone', demo: 1 }, chromeos: { device: 'chromeos', demo: 5 }, browser: { device: 'browser', demo: 6 } }
 
 const BASE = import.meta.env.BASE_URL
 
@@ -109,7 +114,7 @@ export default function Install() {
               {rel && <a href={RELEASES} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 hover:text-fg"><Package className="size-4 text-sky" /> Latest {rel.tag}</a>}
             </div>
           </div>
-          <DeviceStage />
+          <DeviceShowcase />
         </div>
       </section>
 
@@ -133,6 +138,7 @@ export default function Install() {
                 <motion.div whileHover={{ y: -6 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} onPointerMove={spotlightMove}
                   className={cn('spotlight relative flex h-full flex-col rounded-2xl border bg-surface p-5', c === bestCard ? 'border-accent shadow-glow' : 'border-border')}>
                   {c === bestCard && <span className="absolute -top-3 left-5 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-bold text-on-accent">Best for this device</span>}
+                  <DevicePreview device={PREVIEW[c.id].device} demo={PREVIEW[c.id].demo} className="-mx-1 mb-4 h-28 rounded-xl bg-surface-2/70" />
                   <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl" style={{ background: `color-mix(in oklab, ${c.color} 16%, transparent)` }}><c.icon className="size-5" style={{ color: c.color }} /></span><div className="font-display text-lg font-bold">{c.title}</div></div>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{c.tagline}</p>
                   <div className="mt-3 text-xs text-muted/90">{c.formats}{c.opts[0]?.asset && rel?.assets[c.opts[0].asset] ? <> · {mb(rel.assets[c.opts[0].asset].size)}</> : null}</div>
@@ -236,32 +242,5 @@ function Faq({ q, a, i }: { q: string; a: string; i: number }) {
       <button onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-12 w-full items-center gap-3 px-5 py-3 text-left font-semibold cursor-pointer">{q}<ChevronDown className={cn('ml-auto size-4 shrink-0 text-muted transition-transform', open && 'rotate-180')} /></button>
       <motion.div initial={false} animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }} transition={{ duration: 0.25 }} className="overflow-hidden"><p className="px-5 pb-4 text-sm leading-relaxed text-muted">{a}</p></motion.div>
     </motion.div>
-  )
-}
-
-/** Laptop and phone mockups that float gently, each showing OpenFile. */
-function DeviceStage() {
-  const screen = (compact?: boolean) => (
-    <div className="h-full w-full bg-black p-3">
-      <div className="flex items-center gap-1.5"><Logo size={compact ? 12 : 16} /><span className={cn('font-bold text-white', compact ? 'text-[8px]' : 'text-[10px]')}>OpenFile</span></div>
-      <div className={cn('mt-2 font-bold leading-tight text-white', compact ? 'text-[9px]' : 'text-sm')}>Every file tool.<br /><span className="text-gradient">On this device.</span></div>
-      <div className={cn('mt-2 grid gap-1.5', compact ? 'grid-cols-2' : 'grid-cols-4')}>{['#F5A524', '#14B8A6', '#22D3EE', '#10B981', '#38BDF8', '#F97316', '#84CC16', '#FFD27A'].slice(0, compact ? 6 : 8).map((c, i) => (
-        <motion.div key={c} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.07 }} className={cn('rounded-md border border-white/10 bg-white/[.04]', compact ? 'h-6' : 'h-9')}><span className="m-1 block size-2 rounded-sm" style={{ background: c }} /></motion.div>
-      ))}</div>
-    </div>
-  )
-  return (
-    <div className="relative mx-auto h-[300px] w-full max-w-[540px] sm:h-[380px]" aria-hidden="true">
-      <div className="absolute inset-0 rounded-full" style={{ background: 'radial-gradient(closest-side, color-mix(in oklab, var(--accent-glow) 28%, transparent), transparent)' }} />
-      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: [0, -10, 0] }} transition={{ opacity: { duration: 0.6 }, y: { duration: 6, repeat: Infinity, ease: 'easeInOut' } }} className="absolute left-0 top-6 w-[82%]">
-        <div className="rounded-t-xl border border-white/15 bg-[#111] p-2 shadow-2xl"><div className="aspect-[16/10] overflow-hidden rounded-md">{screen()}</div></div>
-        <div className="mx-auto h-3 w-[108%] -translate-x-[3.7%] rounded-b-xl bg-gradient-to-b from-[#2a2d33] to-[#16181c]" />
-      </motion.div>
-      <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: [0, -14, 0] }} transition={{ opacity: { duration: 0.6, delay: 0.2 }, y: { duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 } }} className="absolute bottom-0 right-2 w-[28%] min-w-[110px]">
-        <div className="rounded-[1.4rem] border-[5px] border-[#1f2329] bg-black p-1 shadow-2xl"><div className="aspect-[9/19] overflow-hidden rounded-[1rem]">{screen(true)}</div></div>
-      </motion.div>
-      <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1, y: [0, -6, 0] }} transition={{ delay: 0.6, y: { duration: 4, repeat: Infinity, ease: 'easeInOut' } }} className="absolute right-[30%] top-0 flex items-center gap-1.5 rounded-full border border-success/40 bg-black/80 px-3 py-1.5 text-xs text-success backdrop-blur"><WifiOff className="size-3.5" /> Works offline</motion.div>
-      <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1, y: [0, 6, 0] }} transition={{ delay: 0.8, y: { duration: 4.5, repeat: Infinity, ease: 'easeInOut' } }} className="absolute bottom-10 left-4 flex items-center gap-1.5 rounded-full border border-accent/40 bg-black/80 px-3 py-1.5 text-xs text-accent backdrop-blur"><ShieldCheck className="size-3.5" /> Files stay on device</motion.div>
-    </div>
   )
 }
