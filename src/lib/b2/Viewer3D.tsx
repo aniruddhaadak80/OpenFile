@@ -69,7 +69,7 @@ export const Viewer3D = forwardRef<Viewer3DHandle, Props>(function Viewer3D({ ob
       {!!clips?.length && (
         <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-xl bg-black/60 p-1 text-xs text-white backdrop-blur">
           <Tb label={clip === null ? 'Play animation' : 'Stop animation'} onClick={() => { const n = clip === null ? 0 : null; setClip(n); viewer?.playClip(n) }}>{clip === null ? <Play className="size-4" /> : <Pause className="size-4" />}</Tb>
-          {clips.length > 1 && <select aria-label="Animation" value={clip ?? 0} onChange={(e) => { const n = Number(e.target.value); setClip(n); viewer?.playClip(n) }} className="max-w-40 rounded-md bg-transparent px-1 py-1 outline-none">{clips.map((c: any, i: number) => <option key={i} value={i} className="text-black">{c.name || `Clip ${i + 1}`}</option>)}</select>}
+          {clips.length > 1 && <select aria-label="Animation" value={clip ?? 0} onChange={(e) => { const n = Number(e.target.value); setClip(n); viewer?.playClip(n) }} className="max-w-40 rounded-md bg-transparent px-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-accent/70">{clips.map((c: any, i: number) => <option key={i} value={i} className="text-black">{c.name || `Clip ${i + 1}`}</option>)}</select>}
         </div>
       )}
       <div className="pointer-events-none absolute right-3 top-3 hidden text-[10px] text-white/60 sm:block">Drag to orbit · right-drag to pan · scroll to zoom</div>

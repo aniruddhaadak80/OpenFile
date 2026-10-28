@@ -103,7 +103,7 @@ export default function Workspace() {
                             <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted">{p.label}</div>
                             {p.type === 'select' ? <Select value={String(s.params[p.key])} onChange={(v) => setParam(s.uid, p.key, v)} options={p.options!} />
                               : p.type === 'bool' ? <Switch checked={!!s.params[p.key]} onChange={(v) => setParam(s.uid, p.key, v)} />
-                              : p.type === 'color' ? <input type="color" value={s.params[p.key]} onChange={(e) => setParam(s.uid, p.key, e.target.value)} className="h-10 w-full cursor-pointer rounded-xl border border-border bg-transparent" />
+                              : p.type === 'color' ? <input type="color" value={s.params[p.key]} onChange={(e) => setParam(s.uid, p.key, e.target.value)} className="of-field h-10 w-full cursor-pointer rounded-xl border border-border bg-transparent p-1" />
                               : <Input type={p.type} min={p.min} max={p.max} value={s.params[p.key]} onChange={(e) => setParam(s.uid, p.key, p.type === 'number' ? Number(e.target.value) : e.target.value)} />}
                           </div>
                         ))}

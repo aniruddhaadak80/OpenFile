@@ -35,9 +35,9 @@ export default function NotFound() {
         actions={<Link to="/tools" className="flex min-h-11 items-center gap-1.5 rounded-xl bg-gradient-brand px-5 text-sm font-medium">Browse all {TOOLS.length} tools <ArrowRight className="size-4" /></Link>}>
         The link may be old or mistyped. Search below, press Ctrl K, or pick a category.
       </EmptyState>
-      <form onSubmit={(e) => { e.preventDefault(); nav(`/tools?q=${encodeURIComponent(q.trim())}`) }} className="mx-auto mt-6 flex max-w-xl items-center gap-2 rounded-2xl border border-border bg-surface px-4 focus-within:border-accent" role="search">
-        <Search className="size-5 text-muted" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tools" aria-label="Search tools" className="h-12 flex-1 bg-transparent outline-none" />
+      <form onSubmit={(e) => { e.preventDefault(); nav(`/tools?q=${encodeURIComponent(q.trim())}`) }} className="mx-auto mt-6 flex max-w-xl items-center gap-2 of-field-wrap rounded-2xl border border-border bg-surface px-4" role="search">
+        <Search className="size-5 shrink-0 text-muted" />
+        <input data-bare-input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search tools" aria-label="Search tools" className="h-12 min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted" />
         <button className="min-h-10 rounded-xl px-3 text-sm text-accent cursor-pointer">Search</button>
       </form>
       <div className="mt-6 flex flex-wrap justify-center gap-2">{CATEGORIES.map((c) => <Link key={c.id} to={`/category/${c.id}`} className="flex min-h-10 items-center gap-2 rounded-full border border-border px-3 text-sm text-muted hover:border-accent hover:text-fg"><span className="size-2 rounded-full" style={{ background: c.color }} />{c.name}</Link>)}</div>

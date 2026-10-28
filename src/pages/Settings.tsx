@@ -105,8 +105,8 @@ export default function Settings() {
                   <div className="max-w-md"><div className="font-medium">Default image quality</div><p className="text-sm text-muted">Used when a tool exports JPG, WebP or AVIF without choosing its own quality, and as the starting quality for new image steps in the Workspace.</p></div>
                   <div className="font-display text-3xl font-bold tabular-nums">{prefs.imageQuality}<span className="text-base text-muted">%</span></div>
                 </div>
-                <Slider className="mt-3" value={prefs.imageQuality} min={10} max={100} onChange={(v) => void update({ imageQuality: v })} />
-                <div className="mt-2 flex justify-between text-[11px] text-muted"><span>Smaller files</span><span>{prefs.imageQuality >= 90 ? 'Near-lossless' : prefs.imageQuality >= 75 ? 'Visually lossless for most photos' : prefs.imageQuality >= 50 ? 'Good for web' : 'Very compressed'}</span><span>Best quality</span></div>
+                <Slider className="mt-3" ariaLabel="Default image quality" value={prefs.imageQuality} min={10} max={100} onChange={(v) => void update({ imageQuality: v })} />
+                <div className="mt-2 flex justify-between gap-3 text-[11px] text-muted"><span className="shrink-0">Smaller files</span><span className="min-w-0 text-center">{prefs.imageQuality >= 90 ? 'Near-lossless' : prefs.imageQuality >= 75 ? 'Visually lossless for most photos' : prefs.imageQuality >= 50 ? 'Good for web' : 'Very compressed'}</span><span>Best quality</span></div>
               </div>
               <div className="border-t border-border py-4">
                 <div className="flex items-center gap-2 font-medium"><FileSignature className="size-4 text-accent" /> Download file names</div>

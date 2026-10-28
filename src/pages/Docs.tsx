@@ -82,7 +82,7 @@ export default function Docs() {
                   <Link to="/changelog" className="hover:text-fg">What’s new →</Link>
                 </div>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  {prev ? <PagerLink item={prev} dir="prev" /> : <span />}
+                  {prev ? <PagerLink item={prev} dir="prev" /> : <span className="hidden sm:block" />}
                   {next && <PagerLink item={next} dir="next" />}
                 </div>
               </motion.article>
@@ -166,7 +166,7 @@ function DocsSearch({ compact }: { compact?: boolean }) {
   const go = (h: SearchHit) => { nav(h.path + (h.anchor ? `#${h.anchor}` : '')); setOpen(false); setQ(''); ref.current?.blur() }
   return (
     <div className="relative">
-      <div className="flex h-10 items-center gap-2 rounded-xl border border-border bg-surface px-3 transition focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/15">
+      <div className="flex h-10 items-center gap-2 of-field-wrap rounded-xl border border-border bg-surface px-3">
         <Search className="size-4 shrink-0 text-muted" />
         <input ref={ref} value={q} onChange={(e) => { setQ(e.target.value); setOpen(true) }} onFocus={() => setOpen(true)} onBlur={() => setTimeout(() => setOpen(false), 150)}
           onKeyDown={(e) => {
@@ -175,7 +175,7 @@ function DocsSearch({ compact }: { compact?: boolean }) {
             if (e.key === 'Enter' && hits[i]) go(hits[i])
             if (e.key === 'Escape') { setQ(''); (e.target as HTMLInputElement).blur() }
           }}
-          placeholder="Search docs…" aria-label="Search docs" className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted" />
+          placeholder="Search docs" aria-label="Search docs" data-bare-input className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted" />
         {!compact && !q && <kbd className="rounded border border-border px-1.5 font-mono text-[10px] text-muted">/</kbd>}
         {q && <button onMouseDown={(e) => e.preventDefault()} onClick={() => setQ('')} className="text-muted hover:text-fg cursor-pointer" aria-label="Clear"><X className="size-3.5" /></button>}
       </div>

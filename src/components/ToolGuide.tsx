@@ -57,12 +57,12 @@ export function ToolGuideSection({ tool, guide }: { tool: ToolMeta; guide: Guide
 
       <section>
         <motion.h2 {...fade} className="mb-5 flex items-center gap-2 font-display text-xl font-semibold"><ListOrdered className="size-5 text-accent" /> How to use {tool.name}</motion.h2>
-        <ol className={cn('grid gap-4', guide.steps.length >= 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3')}>
+        <ol className={cn('grid gap-4', ({ 1: '', 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-3', 4: 'sm:grid-cols-2 lg:grid-cols-4', 6: 'sm:grid-cols-2 lg:grid-cols-3' } as Record<number, string>)[guide.steps.length] ?? 'sm:grid-cols-2 lg:grid-cols-3')}>
           {guide.steps.map((s, i) => (
             <motion.li key={i} {...fade} transition={{ duration: 0.35, delay: i * 0.06 }} className="group relative rounded-2xl border border-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-accent/40">
               <div className="grid size-9 place-items-center rounded-xl bg-gradient-brand font-display text-sm font-bold text-on-accent shadow-lg shadow-accent/25 transition group-hover:scale-110">{i + 1}</div>
               <p className="mt-3 text-sm leading-relaxed">{s}</p>
-              {i < guide.steps.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 hidden size-4 -translate-y-1/2 text-border lg:block" />}
+              {i < guide.steps.length - 1 && guide.steps.length === 4 && <ArrowRight className="absolute -right-3 top-1/2 hidden size-4 -translate-y-1/2 text-border lg:block" />}
             </motion.li>
           ))}
         </ol>

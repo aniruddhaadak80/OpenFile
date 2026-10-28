@@ -47,7 +47,7 @@ export function Field({ label, hint, children, className }: { label: React.React
   return <label className={cn('block', className)}><Label hint={hint}>{label}</Label>{children}</label>
 }
 
-const inputCls = 'w-full rounded-xl border border-border bg-surface-2/60 px-3 py-2 text-sm text-fg outline-none transition placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/20'
+const inputCls = 'of-field w-full min-w-0 rounded-xl border border-border bg-surface-2/60 px-3 py-2 text-sm text-fg outline-none placeholder:text-muted/80'
 export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, ...p }, ref) => <input ref={ref} {...p} className={cn(inputCls, 'h-10', className)} />)
 export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(({ className, ...p }, ref) => <textarea ref={ref} {...p} className={cn(inputCls, 'min-h-32 font-mono text-[13px] leading-relaxed scrollbar-thin', className)} />)
 
@@ -59,11 +59,12 @@ export function Select<T extends string>({ value, onChange, options, className }
   )
 }
 
-export function Slider({ label, value, onChange, min = 0, max = 100, step = 1, suffix = '', className }: { label?: React.ReactNode; value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number; suffix?: string; className?: string }) {
+export function Slider({ label, ariaLabel, value, onChange, min = 0, max = 100, step = 1, suffix = '', className }: { label?: React.ReactNode; ariaLabel?: string; value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number; suffix?: string; className?: string }) {
   return (
     <div className={className}>
       {label && <Label hint={`${value}${suffix}`}>{label}</Label>}
-      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full cursor-pointer accent-[var(--accent)]" />
+      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={ariaLabel ?? (typeof label === 'string' ? label : undefined)}
+        style={{ ['--pct' as string]: `${max > min ? ((value - min) / (max - min)) * 100 : 0}%` }} className="w-full cursor-pointer" />
     </div>
   )
 }
@@ -71,7 +72,7 @@ export function Slider({ label, value, onChange, min = 0, max = 100, step = 1, s
 export function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label?: React.ReactNode }) {
   return (
     <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm select-none">
-      <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className={cn('relative h-6 w-11 rounded-full transition', checked ? 'bg-accent' : 'bg-border')}>
+      <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className={cn('relative h-6 w-11 shrink-0 rounded-full transition focus-visible:outline-offset-2', checked ? 'bg-accent' : 'bg-border')}>
         <span className={cn('absolute top-0.5 size-5 rounded-full bg-white shadow transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
       </button>
       {label}
@@ -136,13 +137,13 @@ export function Dropzone({ onFiles, accept, multiple = false, label, sub, compac
   useEffect(() => { const h = takeHandoff(accept); if (h) onFiles(multiple ? h : h.slice(0, 1)) }, [])
   return (
     <div
-      role="button" tabIndex={0} aria-label={typeof label === 'string' ? label : multiple ? 'Choose files' : 'Choose a file'}
+      role="button" tabIndex={0} data-own-focus aria-label={typeof label === 'string' ? label : multiple ? 'Choose files' : 'Choose a file'}
       onClick={() => ref.current?.click()}
       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) { e.preventDefault(); ref.current?.click() } }}
       onDragOver={(e) => { e.preventDefault(); setOver(true) }}
       onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOver(false) }}
       onDrop={(e) => { e.preventDefault(); setOver(false); handle(e.dataTransfer.files) }}
-      className={cn('group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center transition-all outline-none focus-visible:ring-4 focus-visible:ring-accent/25',
+      className={cn('group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center transition-all outline-none focus-visible:border-accent focus-visible:border-solid focus-visible:ring-2 focus-visible:ring-accent/55 focus-visible:ring-inset',
         over ? 'dz-active border-accent bg-accent/10 scale-[1.01]' : 'border-border bg-surface hover:border-accent/60 hover:bg-accent/5', compact ? 'gap-2 p-5' : 'gap-4 p-10 sm:p-14', className)}
     >
       <span className="dz-glow" aria-hidden="true" />

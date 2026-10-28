@@ -37,7 +37,7 @@ export default function Blog() {
           <a href={`${base}blog/rss.xml`} className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm text-muted hover:border-accent hover:text-fg"><Rss className="size-4 text-accent" /> RSS feed</a>
         </div>
         <div className="mt-8 flex flex-col gap-3 md:flex-row md:items-center">
-          <div className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-border bg-surface px-3 focus-within:border-accent"><Search className="size-4 text-muted" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search posts" aria-label="Search posts" className="flex-1 bg-transparent text-sm outline-none" /></div>
+          <div className="flex h-11 flex-1 items-center gap-2 md:min-w-64 of-field-wrap rounded-xl border border-border bg-surface px-3"><Search className="size-4 shrink-0 text-muted" /><input data-bare-input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search posts" aria-label="Search posts" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div>
           <div className="flex flex-wrap gap-1.5">
             <button onClick={() => setTag('')} className={cn('min-h-9 rounded-full px-3 py-1.5 text-xs transition cursor-pointer', !tag ? 'bg-fg text-bg' : 'border border-border text-muted hover:text-fg')}>All</button>
             {ALL_TAGS.map((t) => <button key={t} onClick={() => setTag(t)} className={cn('min-h-9 rounded-full px-3 py-1.5 text-xs transition cursor-pointer', tag === t ? 'bg-accent text-on-accent' : 'border border-border text-muted hover:text-fg')}>#{t}</button>)}

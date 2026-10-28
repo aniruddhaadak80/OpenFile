@@ -83,7 +83,7 @@ export function PageRangeDemo() {
     <DemoFrame title="Page range picker" note="This is the same syntax Split, Extract, Merge and Delete pages accept.">
       <div className="grid gap-4 sm:grid-cols-[1fr_200px]">
         <label className="block"><span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-muted">Range</span>
-          <input value={q} onChange={(e) => setQ(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-surface-2/60 px-3 font-mono text-sm outline-none focus:border-accent" /></label>
+          <input value={q} onChange={(e) => setQ(e.target.value)} className="of-field h-10 w-full rounded-xl border border-border bg-surface-2/60 px-3 font-mono text-sm outline-none" /></label>
         <Slider label="Pages in the PDF" value={total} min={1} max={30} onChange={setTotal} />
       </div>
       <div className="mt-4 grid grid-cols-6 gap-2 sm:grid-cols-10">
@@ -274,7 +274,7 @@ export function ShortcutTrainer() {
   }
   return (
     <DemoFrame title="Shortcut trainer" note="Click the box, then press the keys. On a Mac, Cmd works where it says Ctrl.">
-      <div ref={ref} tabIndex={0} onKeyDown={onKey} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
+      <div ref={ref} tabIndex={0} data-own-focus onKeyDown={onKey} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
         className={cn('grid min-h-40 place-items-center rounded-xl border-2 border-dashed p-6 text-center outline-none transition', focus ? 'border-accent bg-accent/5' : 'border-border', flash === 'ok' && 'border-success bg-success/10', flash === 'no' && 'border-danger bg-danger/10')}>
         {focus ? (
           <AnimatePresence mode="wait">
@@ -371,7 +371,7 @@ export function JsonDemo() {
   return (
     <DemoFrame title="JSON formatter" note="Type broken JSON to see the error message. The full tool adds a tree view, search and JSON Schema checks.">
       <div className="grid gap-3 md:grid-cols-2">
-        <textarea value={txt} onChange={(e) => setTxt(e.target.value)} spellCheck={false} className="min-h-44 w-full rounded-xl border border-border bg-surface-2/60 p-3 font-mono text-xs outline-none focus:border-accent" aria-label="JSON input" />
+        <textarea value={txt} onChange={(e) => setTxt(e.target.value)} spellCheck={false} className="of-field min-h-44 w-full rounded-xl border border-border bg-surface-2/60 p-3 font-mono text-xs outline-none" aria-label="JSON input" />
         <pre className={cn('min-h-44 overflow-auto rounded-xl border p-3 font-mono text-xs', out.ok ? 'border-border bg-bg' : 'border-danger/40 bg-danger/5 text-danger')}>{out.text}</pre>
       </div>
       <div className="mt-3"><Segmented value={indent} onChange={setIndent} options={[{ value: '2', label: '2 spaces' }, { value: '4', label: '4 spaces' }, { value: 'min', label: 'Minify' }]} /></div>
@@ -398,7 +398,7 @@ export function VoiceCheckDemo() {
         {has && <span className="text-xs text-muted">for example {voices!.slice(0, 3).map((v) => v.name).join(', ')}</span>}
       </div>
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-        <input value={text} onChange={(e) => setText(e.target.value)} className="h-10 flex-1 rounded-xl border border-border bg-surface-2/60 px-3 text-sm outline-none focus:border-accent" aria-label="Text to speak" />
+        <input value={text} onChange={(e) => setText(e.target.value)} className="of-field h-10 min-w-0 flex-1 rounded-xl border border-border bg-surface-2/60 px-3 text-sm outline-none" aria-label="Text to speak" />
         {has ? <Button icon={<Volume2 className="size-4" />} onClick={() => { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(text)) }}>Speak</Button>
           : <Link to="/text-to-speech"><Button icon={<Volume2 className="size-4" />}>Try the neural voice</Button></Link>}
       </div>

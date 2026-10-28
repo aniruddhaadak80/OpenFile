@@ -40,16 +40,19 @@ export function SocialLinks({ className, size = 'md' }: { className?: string; si
   )
 }
 
-/** Compact "Made by" card used in the footer of every page. */
+/** Compact "Made by" card used in the footer of every page. The name never wraps; the socials get their own full-width row. */
 export function MadeByCard({ className }: { className?: string }) {
   return (
-    <div className={cn('flex items-center gap-4 rounded-2xl border border-border bg-surface p-4', className)}>
-      <AuthorAvatar size={52} />
-      <div className="min-w-0 flex-1">
-        <div className="text-[11px] font-medium uppercase tracking-wider text-muted">Made by</div>
-        <Link to="/about#author" className="group inline-flex items-center gap-1 font-display font-semibold hover:text-accent">{AUTHOR.name}<ArrowUpRight className="size-3.5 opacity-60 transition group-hover:opacity-100" /></Link>
-        <SocialLinks size="sm" className="mt-2" />
+    <div className={cn('rounded-2xl border border-border bg-surface p-4', className)}>
+      <div className="flex items-center gap-3.5">
+        <AuthorAvatar size={48} />
+        <div className="min-w-0">
+          <div className="text-[11px] font-medium uppercase tracking-wider text-muted">Made by</div>
+          <Link to="/about#author" className="group inline-flex items-center gap-1 whitespace-nowrap font-display text-base font-semibold hover:text-accent">{AUTHOR.name}<ArrowUpRight className="size-3.5 shrink-0 opacity-60 transition group-hover:opacity-100" /></Link>
+          <div className="truncate text-xs text-muted">{AUTHOR.tagline}</div>
+        </div>
       </div>
+      <SocialLinks size="sm" className="mt-3.5" />
     </div>
   )
 }

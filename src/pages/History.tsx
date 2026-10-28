@@ -105,7 +105,7 @@ export default function History() {
               <h2 className="flex items-center gap-2 font-semibold"><Clock className="size-4 text-accent" /> Activity</h2>
               <div className="flex flex-1 flex-wrap items-center gap-2 sm:justify-end">
                 <Segmented value={filter} onChange={(v) => { setFilter(v); setLimit(PAGE) }} options={[{ value: 'all', label: 'All' }, { value: 'open', label: 'Opened' }, { value: 'download', label: 'Downloaded' }]} />
-                <div className="flex h-9 w-full items-center gap-2 rounded-xl border border-border bg-surface px-3 focus-within:border-accent sm:w-56"><Search className="size-4 text-muted" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter activity…" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div>
+                <div className="flex h-9 w-full items-center gap-2 of-field-wrap rounded-xl border border-border bg-surface px-3 sm:w-56"><Search className="size-4 shrink-0 text-muted" /><input data-bare-input aria-label="Filter activity" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter activity" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></div>
               </div>
             </div>
             {!filtered.length ? (

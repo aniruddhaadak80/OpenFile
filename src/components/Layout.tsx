@@ -1,16 +1,15 @@
 import { Suspense, useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Search, Menu, X, ChevronDown, Heart, ShieldCheck, Settings as SettingsIcon, History as HistoryIcon, Rss, Keyboard, Download } from 'lucide-react'
+import { Search, Menu, X, ChevronDown, Settings as SettingsIcon, History as HistoryIcon } from 'lucide-react'
 import { MotionConfig, AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import { ThemeSwitcher } from './ThemeSwitcher'
-import { MadeByCard } from './Author'
+import { Footer } from './Footer'
 import { PageTransition, RouteWipe } from './motion'
 import { Logo, Github } from './Logo'
 import { CommandPalette } from './CommandPalette'
 import { Toaster } from './toast'
 import { GlobalDrop } from './DropFlow'
-import { ShortcutsOverlay, OnboardingTour, OfflineIndicator, InstallPrompt, OnlineDot, useGlobalShortcuts } from './Overlays'
-import { overlayBus, useInstall } from '@/lib/ux'
+import { ShortcutsOverlay, OnboardingTour, OfflineIndicator, InstallPrompt, useGlobalShortcuts } from './Overlays'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
 import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
@@ -107,51 +106,6 @@ export function Layout() {
       <Toaster />
     </div>
     </MotionConfig>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="mt-24 border-t border-border bg-surface/50">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3 lg:grid-cols-[1.4fr_repeat(5,1fr)]">
-        <div>
-          <Link to="/" className="flex items-center gap-2.5 font-display text-lg font-bold"><Logo size={28} /> OpenFile</Link>
-          <p className="mt-3 max-w-xs text-sm text-muted">{TOOLS.length}+ free, open-source file tools that run entirely in your browser. No uploads, no sign-up, no watermarks.</p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs text-success"><ShieldCheck className="size-3.5" /> Zero-upload client sandbox</div>
-          <MadeByCard className="mt-6 max-w-xs" />
-          <FooterApp />
-        </div>
-        {CATEGORIES.slice(0, 4).map((c) => (
-          <div key={c.id}>
-            <div className="mb-3 text-sm font-semibold">{c.name}</div>
-            <ul className="space-y-2 text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).slice(0, 5).map((t) => <li key={t.slug}><Link to={`/${t.slug}`} className="link-underline hover:text-fg">{t.name}</Link></li>)}</ul>
-          </div>
-        ))}
-        <div>
-          <div className="mb-3 text-sm font-semibold">Resources</div>
-          <ul className="space-y-2 text-sm text-muted">
-            {[['/docs', 'Documentation'], ['/blog', 'Blog'], ['/docs/self-hosting', 'Self-hosting'], ['/docs/api', 'API reference'], ['/changelog', 'Changelog'], ['/history', 'History'], ['/settings', 'Settings']].map(([to, l]) => <li key={to}><Link to={to} className="link-underline hover:text-fg">{l}</Link></li>)}
-          </ul>
-        </div>
-      </div>
-      <div className="border-t border-border">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-5 text-xs text-muted sm:px-6">
-          <span>© {new Date().getFullYear()} OpenFile | MIT licensed | Built by <a className="hover:text-fg" href="https://github.com/aniruddhaadak80" target="_blank" rel="noreferrer">Aniruddha Adak</a></span>
-          <span className="flex flex-wrap items-center gap-4"><Link to="/docs" className="hover:text-fg">Docs</Link><Link to="/changelog" className="hover:text-fg">Changelog</Link><Link to="/about" className="hover:text-fg">About</Link><Link to="/privacy" className="hover:text-fg">Privacy</Link><Link to="/status" className="hover:text-fg">Status</Link><a href={`${import.meta.env.BASE_URL}blog/rss.xml`} className="flex items-center gap-1 hover:text-fg"><Rss className="size-3" /> RSS</a><a href={REPO_URL} className="flex items-center gap-1 hover:text-fg"><Heart className="size-3" /> Star on GitHub</a></span>
-        </div>
-      </div>
-    </footer>
-  )
-}
-
-function FooterApp() {
-  const { canPrompt, installed, prompt } = useInstall()
-  return (
-    <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-muted">
-      <button onClick={() => overlayBus.emit('shortcuts')} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Keyboard className="size-3.5" /> Shortcuts <kbd className="rounded border border-border px-1 text-[10px]">?</kbd></button>
-      {canPrompt && !installed && <button onClick={() => void prompt()} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Download className="size-3.5" /> Install app</button>}
-      <span className="px-1"><OnlineDot /></span>
-    </div>
   )
 }
 

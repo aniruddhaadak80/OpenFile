@@ -87,11 +87,11 @@ function Hero({ onFilm }: { onFilm: () => void }) {
             Merge, sign and compress PDFs. Remove backgrounds, trim videos, transcribe audio and format code. It all runs on your device, free, with nothing uploaded.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18, duration: 0.6 }} className="relative mx-auto mt-8 max-w-xl lg:mx-0">
-            <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface/90 px-4 shadow-2xl shadow-accent/10 backdrop-blur transition focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/15">
-              <Search className="size-5 text-muted" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search tools" role="combobox" aria-expanded={results.length > 0} aria-controls="hero-results"
+            <div className="flex items-center gap-3 of-field-wrap rounded-2xl border border-border bg-surface/90 px-4 shadow-2xl shadow-accent/10 backdrop-blur">
+              <Search className="size-5 shrink-0 text-muted" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search tools" role="combobox" aria-expanded={results.length > 0} aria-controls="hero-results" data-bare-input
                 onKeyDown={(e) => { if (e.key === 'ArrowDown') { e.preventDefault(); setSel((s) => Math.min(results.length - 1, s + 1)) } else if (e.key === 'ArrowUp') { e.preventDefault(); setSel((s) => Math.max(0, s - 1)) } else if (e.key === 'Enter' && results[sel]) nav('/' + results[sel].slug); else if (e.key === 'Escape') setQ('') }}
-                placeholder="What do you need to do? Try compress, sign, gif" className="h-14 flex-1 bg-transparent outline-none placeholder:text-muted" />
+                placeholder="What do you need to do? Try compress, sign, gif" className="h-14 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted sm:text-base" />
               <kbd className="hidden rounded-md border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted sm:block">Enter</kbd>
             </div>
             <AnimatePresence>
@@ -212,7 +212,7 @@ function CategoryExplorer() {
                   </Link>
                 </motion.div>) })}
               {list.length > top.length && (
-                <Link to={`/category/${c.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm text-muted transition hover:border-accent hover:text-fg">+{list.length - top.length} more {c.name.toLowerCase()} tools <ArrowRight className="size-3.5" /></Link>
+                <Link to={`/category/${c.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm @lg:col-span-2 @4xl:col-span-3 text-muted transition hover:border-accent hover:text-fg">+{list.length - top.length} more {c.name.toLowerCase()} tools <ArrowRight className="size-3.5" /></Link>
               )}
             </div>
             {pipe && (
@@ -319,8 +319,8 @@ function Stats() {
       <Stagger className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {items.map((x) => (
           <StaggerItem key={x.l}>
-            <div onPointerMove={spotlightMove} className="spotlight h-full rounded-2xl border border-border bg-surface p-6">
-              <div className="font-display text-4xl font-bold sm:text-5xl"><Counter value={x.v} suffix={x.s} className="text-gradient" /></div>
+            <div onPointerMove={spotlightMove} className="spotlight h-full rounded-2xl border border-border bg-surface p-4 sm:p-6">
+              <div className="font-display text-3xl font-bold min-[400px]:text-4xl sm:text-5xl"><Counter value={x.v} suffix={x.s} className="text-gradient" /></div>
               <div className="mt-2 font-medium">{x.l}</div>
               <div className="text-sm text-muted">{x.d}</div>
             </div>
@@ -524,8 +524,8 @@ function Personal() {
   if (!f.length && !r.length) return null
   return (
     <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
-      {f.length > 0 && <><h3 className="mb-3 flex items-center gap-2 font-semibold"><Star className="size-4 text-warn" /> Your favorites</h3><div className="mb-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{f.map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
-      {r.length > 0 && <><h3 className="mb-3 flex items-center justify-between font-semibold text-muted"><span>Recently used</span><Link to="/history" className="text-sm font-normal text-accent hover:underline">View history</Link></h3><div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{r.slice(0, 6).map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
+      {f.length > 0 && <><h3 className="mb-3 flex items-center gap-2 font-semibold"><Star className="size-4 text-warn" /> Your favorites</h3><div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{f.map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
+      {r.length > 0 && <><h3 className="mb-3 flex items-center justify-between font-semibold text-muted"><span>Recently used</span><Link to="/history" className="text-sm font-normal text-accent hover:underline">View history</Link></h3><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{r.slice(0, 6).map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
     </section>
   )
 }

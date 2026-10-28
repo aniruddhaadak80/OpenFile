@@ -377,3 +377,60 @@ svg .hr-spin { transform-box: view-box; transform-origin: 100px 100px; }
 @keyframes of-ring-spin { to { transform: rotate(360deg) } }
 .of-delay { animation: of-delay-in .3s ease .15s both; }
 .of-ring { width: 28px; height: 28px; border-radius: 9999px; border: 2px solid color-mix(in oklab, var(--accent) 22%, transparent); border-top-color: var(--accent); animation: of-ring-spin .9s linear infinite; box-shadow: 0 0 18px color-mix(in oklab, var(--accent) 25%, transparent); }
+
+/* =====================================================================
+   Form fields: one clean focus ring, never two, never clipped.
+   - Text-like fields drop the global outline (it drew a square box inside
+     rounded pills) and show focus with their own rounded ring instead.
+   - Wrappers that style focus themselves use .of-field-wrap (focus-within)
+     and mark the inner field with data-bare-input so it adds nothing.
+   - Buttons, links and other controls keep the outline above.
+   ===================================================================== */
+:root { accent-color: var(--accent); }
+input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="button"], [type="submit"], [type="reset"], [type="image"]):focus-visible,
+textarea:focus-visible, select:focus-visible, [contenteditable]:not([contenteditable="false"]):focus-visible { outline: none; }
+@layer base {
+  /* default for any field without its own focus styling (bare fields inside wrappers are transparent and skipped) */
+  :where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="button"], [type="submit"], [type="reset"], [type="image"]), textarea, select):not(.bg-transparent, [data-bare-input]):focus {
+    border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 55%, transparent); }
+  ::placeholder { color: color-mix(in oklab, var(--muted) 85%, transparent); opacity: 1; text-overflow: ellipsis; }
+}
+@layer components {
+  .of-field { transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease; }
+  .of-field:hover:not(:focus):not(:disabled) { border-color: color-mix(in oklab, var(--accent) 35%, var(--border)); }
+  /* the ring rides on --tw-ring-shadow, so a shadow-* utility on the same element keeps its shadow and still shows the ring */
+  .of-field:focus, .of-field-wrap:focus-within { border-color: var(--accent); --tw-ring-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 55%, transparent); box-shadow: var(--tw-ring-shadow); }
+  .of-field-wrap { transition: border-color .15s ease, box-shadow .15s ease; }
+  .of-field-wrap:hover:not(:focus-within) { border-color: color-mix(in oklab, var(--accent) 35%, var(--border)); }
+  .of-field:disabled { opacity: .55; cursor: not-allowed; }
+  /* selects: on-brand chevron instead of the platform arrow */
+  select.of-field { appearance: none; -webkit-appearance: none; padding-right: 2.25rem; text-overflow: ellipsis;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238B929C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right .7rem center; background-size: 1rem; }
+  select.of-field option, select.of-field optgroup { background: var(--surface); color: var(--fg); }
+  input[type="color"].of-field { padding: .25rem; }
+}
+[data-bare-input]:focus, [data-bare-input]:focus-visible { outline: none; box-shadow: none; }
+/* elements that draw their own focus ring (drop zones, key trainers) skip the outline */
+[data-own-focus]:focus-visible { outline: none; }
+
+/* range sliders: thin track with an accent fill (--pct from the Slider) and a round thumb that carries the focus ring */
+@layer base {
+  input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; height: 1.25rem; cursor: pointer; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 9999px; border: 1px solid var(--border);
+    background: linear-gradient(90deg, var(--accent) 0 var(--pct, 0%), var(--surface-2) var(--pct, 0%) 100%); }
+  input[type="range"]::-moz-range-track { height: 6px; border-radius: 9999px; border: 1px solid var(--border); background: var(--surface-2); }
+  input[type="range"]::-moz-range-progress { height: 6px; border-radius: 9999px; background: var(--accent); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 9999px;
+    background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--accent), 0 2px 6px rgba(0,0,0,.35); transition: transform .15s ease, box-shadow .15s ease; }
+  input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 9999px; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--accent), 0 2px 6px rgba(0,0,0,.35); }
+  input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.12); }
+  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 1px var(--accent), 0 0 0 5px color-mix(in oklab, var(--accent) 35%, transparent); }
+  input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 1px var(--accent), 0 0 0 5px color-mix(in oklab, var(--accent) 35%, transparent); }
+  input[type="range"]:disabled { opacity: .5; cursor: not-allowed; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); cursor: pointer; }
+}
+input[type="range"]:focus-visible { outline: none; }
+
+/* a focus outline on a direct child of a scrolling or clipping box draws inside it, so it is never cut off */
+:where(.overflow-x-auto, .overflow-y-auto, .overflow-auto, .overflow-hidden, .overflow-x-hidden) > :focus-visible { outline-offset: -2px; }

@@ -32,7 +32,7 @@ export default function About() {
       <section className="relative overflow-hidden">
         <Aurora density={30} />
         <div className="dot-bg pointer-events-none absolute inset-0" />
-        <div className="relative mx-auto max-w-5xl px-4 pb-10 pt-16 sm:px-6">
+        <div className="relative mx-auto max-w-5xl px-4 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-20">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-xs font-bold uppercase tracking-widest text-accent">About OpenFile</motion.div>
           <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-4 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">Files are personal.<br /><span className="text-gradient">Your tools should be too.</span></motion.h1>
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-6 max-w-3xl text-lg leading-relaxed text-muted">OpenFile is an open-source workbench of {TOOLS.length}+ tools for PDFs, images, video, audio, data and code. Instead of uploading documents to someone else's server, every tool runs inside your browser using WebAssembly, Canvas, Web Workers and on-device AI models.</motion.p>
@@ -40,30 +40,30 @@ export default function About() {
       </section>
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <Stagger className="grid gap-4 sm:grid-cols-3">
+        <Stagger className="relative mt-8 grid gap-4 sm:mt-10 sm:grid-cols-3">
           {[[ShieldCheck, 'Zero uploads', 'Your files never touch a server.'], [Cpu, 'Local compute', 'WebAssembly and WebGPU on your hardware.'], [Code2, 'Open source', 'MIT licensed on GitHub.']].map(([I, t, d]: any) => (
-            <StaggerItem key={t}><div onPointerMove={spotlightMove} className="spotlight h-full rounded-2xl border border-border bg-surface p-5"><I className="size-6 text-accent" /><div className="mt-3 font-semibold">{t}</div><div className="text-sm text-muted">{d}</div></div></StaggerItem>
+            <StaggerItem key={t}><div onPointerMove={spotlightMove} className="spotlight flex h-full flex-col rounded-2xl border border-border bg-surface p-6"><span className="grid size-11 place-items-center rounded-xl bg-accent/10"><I className="size-5 text-accent" /></span><div className="mt-4 font-semibold">{t}</div><div className="mt-1 text-sm leading-relaxed text-muted">{d}</div></div></StaggerItem>
           ))}
         </Stagger>
 
         {/* -------- author -------- */}
-        <section id="author" className="scroll-mt-24 pt-24">
+        <section id="author" className="scroll-mt-24 pt-20 sm:pt-24">
           <Reveal>
             <div className="on-dark relative overflow-hidden rounded-[2rem] border border-border bg-black text-white">
               <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(520px 320px at 22% 40%, color-mix(in oklab, var(--accent-glow) 22%, transparent), transparent 70%)' }} />
-              <div className="relative grid items-center gap-10 p-8 sm:p-12 md:grid-cols-[auto_1fr]">
-                <div className="mx-auto">
+              <div className="relative grid items-center gap-8 p-6 sm:p-10 md:grid-cols-[auto_1fr] md:gap-10 lg:p-12">
+                <div className="mx-auto max-w-full">
                   <GoldRing size={300}>
                     <motion.img src={AUTHOR.photo} alt={`Portrait of ${AUTHOR.name}`} width={196} height={196} loading="lazy" decoding="async"
                       initial={{ scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                       className="size-[196px] rounded-full object-cover" style={{ boxShadow: '0 0 0 3px var(--accent), 0 0 60px 8px color-mix(in oklab, var(--accent-glow) 50%, transparent)' }} />
                   </GoldRing>
                 </div>
-                <div>
+                <div className="min-w-0 text-center md:text-left">
                   <div className="text-xs font-bold uppercase tracking-widest text-accent">The author</div>
                   <h2 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">{AUTHOR.name}</h2>
-                  <p className="mt-3 max-w-xl text-lg text-white/75">Open-source developer from West Bengal, India. I build agentic harnesses and production-grade agent skills, contribute to open source, and write daily AI news on DEV.</p>
-                  <div className="mt-6 flex flex-wrap gap-2">
+                  <p className="mx-auto mt-3 max-w-xl text-lg text-white/75 md:mx-0">Open-source developer from West Bengal, India. I build agentic harnesses and production-grade agent skills, contribute to open source, and write daily AI news on DEV.</p>
+                  <div className="mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
                     {AUTHOR.links.map((l, i) => (
                       <motion.a key={l.id} href={l.url} target="_blank" rel="noreferrer me" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.05 }}
                         className="group flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm transition hover:-translate-y-0.5 hover:border-accent hover:text-accent">
@@ -75,7 +75,7 @@ export default function About() {
               </div>
               <div className="relative grid gap-px border-t border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-5">
                 {facts.map(({ i: I, t, d }, k) => (
-                  <motion.div key={t} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: k * 0.06 }} className="bg-black p-5">
+                  <motion.div key={t} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: k * 0.06 }} className={`bg-black p-5 ${k === facts.length - 1 ? 'sm:col-span-2 lg:col-span-1' : ''}`}>
                     <I className="size-5 text-accent" />
                     <div className="mt-3 text-sm font-semibold">{t}</div>
                     <div className="mt-1 text-xs leading-relaxed text-white/60">{d}</div>
@@ -87,27 +87,27 @@ export default function About() {
         </section>
 
         {/* -------- inside -------- */}
-        <section className="pt-24">
-          <Reveal><h2 className="font-display text-2xl font-bold">What is inside</h2></Reveal>
-          <Stagger className="mt-4 grid gap-3 sm:grid-cols-2">
+        <section className="pt-20 sm:pt-24">
+          <Reveal><h2 className="font-display text-2xl font-bold sm:text-3xl">What is inside</h2><p className="mt-2 text-muted">{TOOLS.length} tools in {CATEGORIES.length} categories. Pick one to see them all.</p></Reveal>
+          <Stagger className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {CATEGORIES.map((c) => (
-              <StaggerItem key={c.id}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: c.color }} />{c.name}</span><span className="text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</span></Link></StaggerItem>
+              <StaggerItem key={c.id}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex h-full min-h-12 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex min-w-0 items-center gap-2"><span className="size-2.5 shrink-0 rounded-full" style={{ background: c.color }} /><span className="truncate">{c.name}</span></span><span className="shrink-0 text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</span></Link></StaggerItem>
             ))}
           </Stagger>
         </section>
 
-        <section className="pt-20">
-          <Reveal><h2 className="font-display text-2xl font-bold">Built with</h2></Reveal>
-          <Stagger className="mt-4 flex flex-wrap gap-2">{stack.map((s) => <StaggerItem key={s}><span className="block rounded-lg border border-border bg-surface px-3 py-1.5 text-sm transition hover:border-accent">{s}</span></StaggerItem>)}</Stagger>
+        <section className="pt-20 sm:pt-24">
+          <Reveal><h2 className="font-display text-2xl font-bold sm:text-3xl">Built with</h2><p className="mt-2 text-muted">Open web standards and open-source libraries, all running on your device.</p></Reveal>
+          <Stagger className="mt-6 flex flex-wrap gap-2">{stack.map((s) => <StaggerItem key={s}><span className="block rounded-lg border border-border bg-surface px-3 py-1.5 text-sm transition hover:border-accent">{s}</span></StaggerItem>)}</Stagger>
         </section>
 
-        <Reveal className="mt-20">
-          <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-border bg-surface p-6">
+        <Reveal className="mt-20 sm:mt-24">
+          <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-6 sm:flex-row sm:items-center sm:p-8">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 font-semibold"><Heart className="size-4 text-accent" /> Contributions welcome</div>
               <p className="mt-2 text-sm text-muted">Found a bug or want a new tool? Open an issue or a pull request. Every tool is one file, so it is a friendly codebase to start with.</p>
             </div>
-            <Magnetic><a href={REPO_URL} target="_blank" rel="noreferrer"><Button icon={<Github className="size-4" />}>aniruddhaadak80/OpenFile</Button></a></Magnetic>
+            <Magnetic><a href={REPO_URL} target="_blank" rel="noreferrer" className="inline-block max-w-full"><Button icon={<Github className="size-4" />} className="max-w-full">Star on GitHub</Button></a></Magnetic>
           </div>
         </Reveal>
       </div>

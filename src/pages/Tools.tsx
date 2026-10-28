@@ -68,9 +68,9 @@ export default function Tools() {
 
         {c && <CategoryStrip cat={c.id} />}
         <div className="mt-8 flex flex-col gap-3 md:flex-row md:items-center">
-          <div className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-border bg-surface px-3 transition focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/10"><Search className="size-4 text-muted" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter tools" aria-label="Filter tools" className="flex-1 bg-transparent text-sm outline-none" />{q && <button onClick={() => setQ('')} aria-label="Clear search" className="text-muted hover:text-fg cursor-pointer"><X className="size-4" /></button>}</div>
-          <div className="flex items-center gap-2">
-            <select value={sort} onChange={(e) => setParam('sort', e.target.value === 'relevance' ? '' : e.target.value)} aria-label="Sort tools" className="h-11 rounded-xl border border-border bg-surface px-3 text-sm outline-none focus:border-accent cursor-pointer">
+          <div className="flex h-11 flex-1 items-center gap-2 of-field-wrap rounded-xl border border-border bg-surface px-3"><Search className="size-4 shrink-0 text-muted" /><input data-bare-input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter tools" aria-label="Filter tools" className="min-w-0 flex-1 bg-transparent text-sm outline-none" />{q && <button onClick={() => setQ('')} aria-label="Clear search" className="text-muted hover:text-fg cursor-pointer"><X className="size-4" /></button>}</div>
+          <div className="flex flex-wrap items-center gap-2">
+            <select value={sort} onChange={(e) => setParam('sort', e.target.value === 'relevance' ? '' : e.target.value)} aria-label="Sort tools" className="of-field h-11 min-w-36 flex-1 rounded-xl md:flex-none border border-border bg-surface px-3 text-sm outline-none cursor-pointer">
               {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
             </select>
             <button onClick={() => setShowFilters((v) => !v)} className={cn('flex h-11 items-center gap-2 rounded-xl border px-3 text-sm transition cursor-pointer', showFilters || activeFilters.length ? 'border-accent text-fg' : 'border-border text-muted hover:text-fg')} aria-expanded={showFilters}><SlidersHorizontal className="size-4" /> Filters{activeFilters.length ? <span className="grid size-5 place-items-center rounded-full bg-accent text-[10px] font-bold text-on-accent">{activeFilters.length}</span> : null}</button>
