@@ -3,6 +3,19 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { LocalHashDemo, PageRangeDemo, BeforeAfterDemo, CapabilityDemo, PipelineDemo, ShortcutTrainer, FormatExplorer, JsonDemo, VoiceCheckDemo } from './demos'
+// Newer posts live in their own files under ./posts/
+import InstallAnywhere from './posts/install-openfile-on-any-device'
+import AiInBrowser from './posts/ai-models-in-your-browser'
+import ShrinkPdfForEmail from './posts/shrink-a-pdf-for-email'
+import PhotoFormats from './posts/heic-jpg-avif-jpeg-xl'
+import GifFromVideo from './posts/make-a-gif-from-a-video'
+import SignAndFill from './posts/sign-and-fill-pdfs-privately'
+import Ebooks from './posts/ebook-formats-and-conversion'
+import CadInBrowser from './posts/open-dxf-cad-files-in-a-browser'
+import Dicom from './posts/view-dicom-images-privately'
+import Midi from './posts/midi-files-explained'
+import DataFormats from './posts/csv-json-parquet-excel'
+import Subtitles from './posts/subtitles-srt-vtt-ass-guide'
 
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 const H2 = ({ children }: { children: string }) => <h2 id={slugify(children)}>{children}</h2>
@@ -228,4 +241,16 @@ export const POST_BODIES: Record<string, () => ReactNode> = {
   'file-formats-guide': Formats,
   'developer-tools-roundup': DevTools,
   'private-text-to-speech': Voice,
+  'install-openfile-on-any-device': InstallAnywhere,
+  'ai-models-in-your-browser': AiInBrowser,
+  'shrink-a-pdf-for-email': ShrinkPdfForEmail,
+  'heic-jpg-avif-jpeg-xl': PhotoFormats,
+  'make-a-gif-from-a-video': GifFromVideo,
+  'sign-and-fill-pdfs-privately': SignAndFill,
+  'ebook-formats-and-conversion': Ebooks,
+  'open-dxf-cad-files-in-a-browser': CadInBrowser,
+  'view-dicom-images-privately': Dicom,
+  'midi-files-explained': Midi,
+  'csv-json-parquet-excel': DataFormats,
+  'subtitles-srt-vtt-ass-guide': Subtitles,
 }
