@@ -1,24 +1,37 @@
-// The Home hero centrepiece: the gold ring, filled with motion.
-// Layers (back to front): a tiny WebGL light shader, the GoldRing, dashed and gradient arcs spinning at
-// different speeds, light particles streaming into the core, a pulsing core glow with the logo, file-type
-// chips drifting on two orbits and morphing into their converted format, one chip flying into the core and
-// coming out converted, and the category icons with tooltips. The whole thing tilts with the cursor.
-// Everything animates transform and opacity only, pauses off screen and freezes for reduced motion.
-import { useEffect, useMemo, useRef, useState } from 'react'
+// The Home hero centrepiece: the gold ring, filled with motion, where every element is a real link.
+// Layers (back to front): a tiny WebGL light shader, the gold rings, dashed and gradient arcs spinning at
+// different speeds, an occasional comet along the ring, light particles streaming into the core, format chips
+// drifting on two orbits (each one links to the best tool for its format and briefly "converts", PDF to DOCX,
+// linking to the converter while it does), one chip flying into the core and coming out converted, the core
+// itself (a live showcase of real tool previews; click it to choose a file), and the category icons.
+// Every visit is seeded differently: which chips, their colours, drift paths, orbit speeds and the showcase.
+// Hovering or focusing anything freezes all motion in place and opens a card with a preview of that tool.
+// Everything animates transform and opacity only, pauses off screen and stays static for reduced motion.
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion'
-import { CATEGORIES, TOOLS } from '@/tools/registry'
+import { motion, type MotionValue } from 'framer-motion'
+import { CATEGORIES, TOOLS, toolBySlug } from '@/tools/registry'
 import { useReducedMotion } from '@/lib/store'
 import { resolvedReduceMotion } from '@/lib/prefs'
-import { GoldRing } from './motion'
+import { openDropSheet } from '@/lib/ux'
 import { Logo } from './Logo'
 import { getIcon } from './icons'
 import { cn } from './ui'
+import { HoverCard } from './hero/HoverCard'
+import { Showcase } from './hero/Showcase'
+import { categoryInfo, chipInfo, makeSeed, planVisit, type HeroChip, type HoverInfo } from './hero/pool'
 
-const PAIRS: [string, string, string][] = [
-  ['PDF', 'DOCX', '#F5A524'], ['JPG', 'WEBP', '#10B981'], ['MP4', 'GIF', '#38BDF8'], ['MP3', 'WAV', '#14B8A6'],
-  ['ZIP', '7Z', '#A3A3A3'], ['GLB', 'STL', '#2DD4BF'], ['SVG', 'PNG', '#22D3EE'], ['EPUB', 'PDF', '#FB923C'],
-]
+type InfoGetter = () => Omit<HoverInfo, 'x' | 'y' | 'key'>
+type ItemProps = (key: string, get: InfoGetter) => {
+  'data-active'?: true
+  'aria-describedby'?: string
+  onPointerEnter: (e: React.PointerEvent<HTMLElement>) => void
+  onPointerLeave: (e: React.PointerEvent<HTMLElement>) => void
+  onPointerDown: (e: React.PointerEvent<HTMLElement>) => void
+  onFocus: (e: React.FocusEvent<HTMLElement>) => void
+  onBlur: () => void
+  onClick: (e: React.MouseEvent<HTMLElement>) => void
+}
 
 /* ---------------- WebGL light (gold and teal), low resolution, ~30 fps ---------------- */
 const FRAG = `precision mediump float;
@@ -38,8 +51,10 @@ void main(){
 const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'
 const hex3 = (h: string): [number, number, number] => { const m = /^#?([0-9a-f]{6})$/i.exec(h.trim()); const n = m ? parseInt(m[1], 16) : 0xf5a524; return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255] }
 
-function LightShader({ className }: { className?: string }) {
+function LightShader({ className, frozen = false }: { className?: string; frozen?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null)
+  const frozenRef = useRef(frozen)
+  frozenRef.current = frozen
   useEffect(() => {
     const canvas = ref.current
     if (!canvas) return
@@ -56,12 +71,13 @@ function LightShader({ className }: { className?: string }) {
     const uT = gl.getUniformLocation(prog, 't'), uR = gl.getUniformLocation(prog, 'r'), u1 = gl.getUniformLocation(prog, 'c1'), u2 = gl.getUniformLocation(prog, 'c2')
     const colors = () => { const cs = getComputedStyle(document.documentElement); gl.uniform3fv(u1, hex3(cs.getPropertyValue('--accent') || '#F5A524')); gl.uniform3fv(u2, hex3(cs.getPropertyValue('--accent-2') || '#14B8A6')) }
     const resize = () => { const b = canvas.getBoundingClientRect(); const s = 0.5 * Math.min(window.devicePixelRatio || 1, 2); canvas.width = Math.max(2, Math.round(b.width * s)); canvas.height = Math.max(2, Math.round(b.height * s)); gl.viewport(0, 0, canvas.width, canvas.height); gl.uniform2f(uR, canvas.width, canvas.height) }
-    let raf = 0, last = 0, on = true, vis = !document.hidden
+    let raf = 0, last = 0, on = true, vis = !document.hidden, clock = 0, prev = 0
     const frame = (now: number) => { gl.uniform1f(uT, now / 1000); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4) }
-    const loop = (now: number) => { if (now - last > 33) { last = now; frame(now) } if (on && vis && !resolvedReduceMotion()) raf = requestAnimationFrame(loop) }
-    const start = () => { cancelAnimationFrame(raf); if (resolvedReduceMotion()) { frame(4000); return } raf = requestAnimationFrame(loop) }
+    // the shader keeps its own clock, which stops while the ring is hovered, so it freezes and resumes without a jump
+    const loop = (now: number) => { const dt = prev ? Math.min(now - prev, 100) : 0; prev = now; if (!frozenRef.current) { clock += dt; if (now - last > 33) { last = now; frame(clock + 4000) } } if (on && vis && !resolvedReduceMotion()) raf = requestAnimationFrame(loop) }
+    const start = () => { cancelAnimationFrame(raf); prev = 0; if (resolvedReduceMotion()) { frame(4000); return } raf = requestAnimationFrame(loop) }
     colors(); resize(); start()
-    const ro = new ResizeObserver(() => { resize(); frame(performance.now()) }); ro.observe(canvas)
+    const ro = new ResizeObserver(() => { resize(); frame(clock + 4000) }); ro.observe(canvas)
     const io = new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) start(); else cancelAnimationFrame(raf) }); io.observe(canvas)
     const onVis = () => { vis = !document.hidden; if (vis) start(); else cancelAnimationFrame(raf) }
     document.addEventListener('visibilitychange', onVis)
@@ -89,9 +105,30 @@ function Arcs() {
   )
 }
 
+/* ---------------- gold rings (CSS, so hover can freeze them) ---------------- */
+function Rings() {
+  return (
+    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div className="gold-halo animate-ring-pulse absolute inset-[9%]" />
+      <div className="gold-ring hr-spin absolute inset-[6%]" style={{ ['--ring-w' as string]: '3px', ['--dur' as string]: '14s' }} />
+      <div className="gold-ring hr-spin hr-rev absolute inset-0 opacity-50" style={{ ['--ring-w' as string]: '1.5px', ['--dur' as string]: '26s' }} />
+      <div className="gold-ring hr-spin absolute inset-[16%] opacity-70" style={{ ['--ring-w' as string]: '1px', ['--dur' as string]: '9s' }} />
+      <div className="absolute inset-[22%] rounded-full" style={{ background: 'radial-gradient(circle, color-mix(in oklab, var(--accent-glow) 14%, transparent), transparent 70%)' }} />
+    </div>
+  )
+}
+
+/** A bright head with a fading tail that sweeps part of the ring now and then. */
+function Comet({ dur, delay, start }: { dur: number; delay: number; start: number }) {
+  return (
+    <div className="hr-comet pointer-events-none absolute inset-[6%]" aria-hidden="true" style={{ ['--s' as string]: `${start}deg`, animationDuration: `${dur}s`, animationDelay: `${delay}s` }}>
+      <div className="hr-comet-tail absolute inset-0 rounded-full" />
+    </div>
+  )
+}
+
 /* ---------------- light streaming into the core (pure CSS keyframes) ---------------- */
-function Stream({ n = 22 }: { n?: number }) {
-  const dots = useMemo(() => Array.from({ length: n }, (_, i) => ({ a: (i / n) * 360 + Math.random() * 12, r: 36 + Math.random() * 12, d: 2.6 + Math.random() * 2.2, delay: -Math.random() * 4, s: 2 + Math.random() * 2.5, teal: i % 3 === 0 })), [n])
+function Stream({ dots }: { dots: { a: number; r: number; d: number; delay: number; s: number; teal: boolean }[] }) {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
       {dots.map((p, i) => (
@@ -101,26 +138,32 @@ function Stream({ n = 22 }: { n?: number }) {
   )
 }
 
-/* ---------------- orbiting file chips that morph ---------------- */
-function Chip({ label, color, className }: { label: string; color: string; className?: string }) {
+/* ---------------- format chips ---------------- */
+function ChipFace({ label, color, className }: { label: string; color: string; className?: string }) {
   return (
-    <span className={cn('relative inline-grid h-6 min-w-11 place-items-center overflow-hidden rounded-md border bg-surface/90 px-1.5 font-mono text-[10px] font-bold tracking-wide shadow-lg backdrop-blur sm:h-7 sm:text-[11px]', className)} style={{ borderColor: color + '66', color, boxShadow: `0 6px 20px -8px ${color}` }}>
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span key={label} initial={{ y: 10, opacity: 0, filter: 'blur(2px)' }} animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.35 }}>{label}</motion.span>
-      </AnimatePresence>
+    <span className={cn('hr-face relative inline-grid h-6 min-w-11 place-items-center overflow-hidden rounded-md border bg-surface/90 px-1.5 font-mono text-[10px] font-bold tracking-wide shadow-lg backdrop-blur sm:h-7 sm:text-[11px]', className)} style={{ borderColor: color + '66', color, boxShadow: `0 6px 20px -8px ${color}`, ['--c' as string]: color }}>
+      <span key={label} className="hr-flipin">{label}</span>
     </span>
   )
 }
 
-function Orbit({ items, radius, dur, reverse, flipped, phase = 0 }: { items: number[]; radius: number; dur: number; reverse?: boolean; flipped: Set<number>; phase?: number }) {
+function Orbit({ chips, radius, dur, reverse, flipped, phase = 0, item }: { chips: HeroChip[]; radius: number; dur: number; reverse?: boolean; flipped: Set<string>; phase?: number; item: ItemProps }) {
   return (
-    <div className={cn('hr-spin pointer-events-none absolute inset-0', reverse && 'hr-rev')} style={{ ['--dur' as string]: `${dur}s` }} aria-hidden="true">
-      {items.map((idx, k) => {
-        const a = (k / items.length) * Math.PI * 2 + phase
-        const [from, to, color] = PAIRS[idx]
+    <div className={cn('hr-spin pointer-events-none absolute inset-0', reverse && 'hr-rev')} style={{ ['--dur' as string]: `${dur}s` }}>
+      {chips.map((c, k) => {
+        const a = (k / chips.length) * Math.PI * 2 + phase
+        const on = flipped.has(c.f) && !!c.to
+        const label = on ? c.to! : c.f
+        const info = chipInfo(c, on)
         return (
-          <div key={idx} className="absolute" style={{ left: `${50 + Math.cos(a) * radius}%`, top: `${50 + Math.sin(a) * radius}%`, transform: 'translate(-50%,-50%)' }}>
-            <div className={cn('hr-spin', !reverse && 'hr-rev')} style={{ ['--dur' as string]: `${dur}s` }}><Chip label={flipped.has(idx) ? to : from} color={color} /></div>
+          <div key={c.f} className="absolute" style={{ left: `${50 + Math.cos(a) * radius}%`, top: `${50 + Math.sin(a) * radius}%`, transform: 'translate(-50%,-50%)' }}>
+            <div className={cn('hr-spin', !reverse && 'hr-rev')} style={{ ['--dur' as string]: `${dur}s` }}>
+              <div className={`hr-drift hr-drift-${c.drift}`} style={{ animationDuration: `${c.driftDur}s`, animationDelay: `${c.driftDelay}s` }}>
+                <Link to={info.href} aria-label={`${label}: ${info.title}`} className="hr-item pointer-events-auto block rounded-lg p-1 outline-none" {...item('chip-' + c.f, () => chipInfo(c, on))}>
+                  <ChipFace label={label} color={c.color} />
+                </Link>
+              </div>
+            </div>
           </div>
         )
       })}
@@ -128,96 +171,182 @@ function Orbit({ items, radius, dur, reverse, flipped, phase = 0 }: { items: num
   )
 }
 
-/** One chip at a time flies into the core and comes out the other side converted. */
-function Flyer({ reduce }: { reduce: boolean }) {
-  const [i, setI] = useState(0)
+/** One chip at a time flies into the core and comes out the other side converted. CSS keyframes drive it
+ *  and animationend advances it, so it freezes with everything else on hover. */
+function Flyer({ chips, item }: { chips: HeroChip[]; item: ItemProps }) {
+  const [n, setN] = useState(0)
   const [phase, setPhase] = useState<'in' | 'out'>('in')
-  useEffect(() => {
-    if (reduce) return
-    const t = setTimeout(() => { if (phase === 'in') setPhase('out'); else { setPhase('in'); setI((x) => (x + 1) % PAIRS.length) } }, phase === 'in' ? 1500 : 1700)
-    return () => clearTimeout(t)
-  }, [phase, reduce])
-  if (reduce) return null
-  const [from, to, color] = PAIRS[i]
-  const a = (i / PAIRS.length) * Math.PI * 2 - Math.PI / 3
-  const dx = Math.cos(a) * 30, dy = Math.sin(a) * 30
+  const geo = useMemo(() => {
+    const a = Math.random() * Math.PI * 2, d = 27 + Math.random() * 9
+    return { dx: Math.cos(a) * d, dy: Math.sin(a) * d, din: 1.15 + Math.random() * 0.6, dout: 1.35 + Math.random() * 0.7, rest: 0.4 + Math.random() * 2.2 }
+  }, [n])
+  if (!chips.length) return null
+  const c = chips[n % chips.length]
+  const out = phase === 'out' && !!c.to
+  const info = chipInfo(c, out)
+  const end = (e: React.AnimationEvent) => { if (e.target !== e.currentTarget) return; if (phase === 'in') setPhase('out'); else { setPhase('in'); setN((x) => x + 1) } }
   return (
-    <div className="pointer-events-none absolute inset-0 grid place-items-center" aria-hidden="true">
-      <AnimatePresence mode="wait">
-        {phase === 'in' ? (
-          <motion.div key={'in' + i} className="absolute left-1/2 top-1/2"
-            initial={{ x: `${dx}cqw`, y: `${dy}cqw`, scale: 1, opacity: 0 }} animate={{ x: ['' + dx + 'cqw', '0cqw'], y: ['' + dy + 'cqw', '0cqw'], scale: [1, 0.35], opacity: [0, 1, 1, 0] }} transition={{ duration: 1.4, ease: [0.6, 0, 0.8, 0.4] }}>
-            <div className="-translate-x-1/2 -translate-y-1/2"><Chip label={from} color={color} /></div>
-          </motion.div>
-        ) : (
-          <motion.div key={'out' + i} className="absolute left-1/2 top-1/2"
-            initial={{ x: '0cqw', y: '0cqw', scale: 0.35, opacity: 0 }} animate={{ x: ['0cqw', '' + -dx + 'cqw'], y: ['0cqw', '' + -dy + 'cqw'], scale: [0.35, 1.08, 1], opacity: [0, 1, 1, 0] }} transition={{ duration: 1.6, ease: [0.2, 0.6, 0.3, 1] }}>
-            <div className="-translate-x-1/2 -translate-y-1/2"><Chip label={to} color={color} className="ring-1 ring-success/50" /></div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <AnimatePresence>{phase === 'out' && <motion.span key={'flash' + i} className="absolute size-24 rounded-full" style={{ background: `radial-gradient(circle, ${color}66, transparent 70%)` }} initial={{ scale: 0.4, opacity: 0.9 }} animate={{ scale: 1.6, opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.7 }} />}</AnimatePresence>
+    <div className="pointer-events-none absolute inset-0">
+      <div className="absolute left-1/2 top-1/2">
+        <Link key={n + phase} to={info.href} aria-label={`${out ? c.to : c.f}: ${info.title}`} tabIndex={-1} onAnimationEnd={end}
+          className={cn('hr-item hr-fly pointer-events-auto absolute block outline-none', phase === 'in' ? 'hr-fly-in' : 'hr-fly-out')}
+          style={{ ['--dx' as string]: geo.dx, ['--dy' as string]: geo.dy, animationDuration: `${phase === 'in' ? geo.din : geo.dout}s`, animationDelay: phase === 'in' ? `${geo.rest}s` : '0s' }}
+          {...item('fly-' + c.f + phase, () => chipInfo(c, out))}>
+          <span className="block -translate-x-1/2 -translate-y-1/2 p-1"><ChipFace label={out ? c.to! : c.f} color={c.color} className={out ? 'ring-1 ring-success/50' : undefined} /></span>
+        </Link>
+        {phase === 'out' && <span key={'flash' + n} className="hr-flash pointer-events-none absolute -ml-12 -mt-12 size-24 rounded-full" style={{ background: `radial-gradient(circle, ${c.color}66, transparent 70%)` }} />}
+      </div>
     </div>
   )
 }
 
-/* ---------------- category icons with tooltips ---------------- */
-function CategoryIcon({ c, i, n }: { c: (typeof CATEGORIES)[number]; i: number; n: number }) {
-  const a = (i / n) * Math.PI * 2 - Math.PI / 2
-  const I = getIcon(TOOLS.find((t) => t.category === c.id)?.icon ?? 'FileText')
+/* ---------------- category icons ---------------- */
+function CategoryIcon({ c, i, n, offset, item }: { c: (typeof CATEGORIES)[number]; i: number; n: number; offset: number; item: ItemProps }) {
+  const a = (((i + offset) % n) / n) * Math.PI * 2 - Math.PI / 2
+  const I = getIcon(TOOLS.find((t) => t.category === c.id && t.popular)?.icon ?? TOOLS.find((t) => t.category === c.id)?.icon ?? 'FileText')
   const count = TOOLS.filter((t) => t.category === c.id).length
-  const below = Math.sin(a) < -0.3
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.07 }} className="group absolute z-20" style={{ left: `${50 + Math.cos(a) * 47}%`, top: `${50 + Math.sin(a) * 47}%`, x: '-50%', y: '-50%' }}>
-      <Link to={`/category/${c.id}`} aria-label={`${c.name}: ${count} ${count === 1 ? 'tool' : 'tools'}`} className="animate-float grid size-10 place-items-center rounded-2xl border border-border bg-surface/90 shadow-xl backdrop-blur transition hover:scale-110 focus-visible:scale-110 sm:size-11" style={{ color: c.color, animationDelay: `${i * 0.6}s`, boxShadow: `0 10px 30px -12px ${c.color}` }}><I className="size-[18px] sm:size-5" /></Link>
-      <span role="tooltip" className={cn('pointer-events-none absolute left-1/2 z-30 w-max max-w-44 -translate-x-1/2 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-center text-xs opacity-0 shadow-xl transition duration-200 group-hover:opacity-100 group-focus-within:opacity-100', below ? 'top-full mt-2 -translate-y-1 group-hover:translate-y-0' : 'bottom-full mb-2 translate-y-1 group-hover:translate-y-0')}>
-        <span className="block font-semibold" style={{ color: c.color }}>{c.name}</span><span className="text-muted">{count} {count === 1 ? 'tool' : 'tools'}, open category</span>
-      </span>
+    <motion.div initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.45 + i * 0.05 }} className="absolute z-20" style={{ left: `${50 + Math.cos(a) * 47}%`, top: `${50 + Math.sin(a) * 47}%`, x: '-50%', y: '-50%' }}>
+      <div className="animate-float" style={{ animationDelay: `${-((i * 1.7) % 6)}s`, animationDuration: `${5 + ((i * 7) % 5) * 0.6}s` }}>
+        <Link to={`/category/${c.id}`} aria-label={`${c.name}: ${count} ${count === 1 ? 'tool' : 'tools'}`} {...item('cat-' + c.id, () => categoryInfo(c.id))}
+          className="hr-item hr-cat grid size-8 place-items-center rounded-xl border border-border bg-surface/90 shadow-xl outline-none backdrop-blur sm:size-10 sm:rounded-2xl" style={{ color: c.color, boxShadow: `0 10px 30px -12px ${c.color}`, ['--c' as string]: c.color }}>
+          <I className="size-4 sm:size-[18px]" />
+        </Link>
+      </div>
     </motion.div>
+  )
+}
+
+/* ---------------- the core: live showcase, click to choose a file ---------------- */
+function Core({ visit, frozen, inView, reduce, item, onShown }: { visit: ReturnType<typeof planVisit>; frozen: boolean; inView: boolean; reduce: boolean; item: ItemProps; onShown: (slug: string) => void }) {
+  const input = useRef<HTMLInputElement>(null)
+  const [drag, setDrag] = useState(false)
+  const props = item('core', () => ({ title: 'Drop or choose a file', desc: 'OpenFile looks at the file and suggests the right tools. Nothing is uploaded.', ins: ['Any file'], outs: ['Right tool'], href: '/tools', color: '#F5A524' }))
+  return (
+    <>
+      <button type="button" aria-label="Choose a file and get tool suggestions" {...props}
+        onClick={(e) => { props.onClick(e); if (!e.defaultPrevented) input.current?.click() }}
+        onDragOver={(e) => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)}
+        onDrop={(e) => { e.preventDefault(); setDrag(false); openDropSheet([...e.dataTransfer.files]) }}
+        className={cn('hr-item hr-coreb absolute inset-[35%] z-10 cursor-pointer rounded-full outline-none', drag && 'hr-drag')}>
+        <Showcase slugs={visit.showcase} paused={frozen} active={inView} reduce={reduce} onChange={onShown} />
+        <span className="absolute -bottom-[14%] left-1/2 -translate-x-1/2 drop-shadow-[0_0_18px_color-mix(in_oklab,var(--accent-glow)_60%,transparent)]"><Logo size={30} /></span>
+      </button>
+      <input ref={input} type="file" multiple hidden tabIndex={-1} aria-hidden="true" onChange={(e) => { const f = [...(e.target.files ?? [])]; e.target.value = ''; openDropSheet(f) }} />
+    </>
   )
 }
 
 /* ---------------- the ring ---------------- */
 export function HeroRing({ className, style }: { className?: string; style?: Record<string, MotionValue<number> | number> }) {
   const reduce = useReducedMotion()
-  const mx = useMotionValue(0), my = useMotionValue(0)
-  const sx = useSpring(mx, { stiffness: 120, damping: 18 }), sy = useSpring(my, { stiffness: 120, damping: 18 })
-  const rotX = useTransform(sy, (v) => v * -10), rotY = useTransform(sx, (v) => v * 12)
-  const near = { x: useTransform(sx, (v) => v * 14), y: useTransform(sy, (v) => v * 14) }
-  const far = { x: useTransform(sx, (v) => v * -10), y: useTransform(sy, (v) => v * -10) }
-  const [flipped, setFlipped] = useState<Set<number>>(new Set())
+  const [seed] = useState(makeSeed)
+  const visit = useMemo(() => planVisit(seed), [seed])
+  const root = useRef<HTMLDivElement>(null)
+  const [w, setW] = useState(0)
+  const [inView, setInView] = useState(true)
+  const [ringHover, setRingHover] = useState(false)
+  const [hover, setHover] = useState<HoverInfo | null>(null)
+  const [touch, setTouch] = useState(false)
+  const lastPointer = useRef('mouse')
+  const [flipped, setFlipped] = useState<Set<string>>(new Set())
+  const [shown, setShown] = useState(visit.showcase[0])
+  const paused = ringHover || !!hover
+  const frozen = paused || !inView
+
   useEffect(() => {
-    if (reduce) return
-    let k = 0
-    const t = setInterval(() => { k = (k + 3) % PAIRS.length; setFlipped((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n }) }, 1400)
-    return () => clearInterval(t)
-  }, [reduce])
-  const orbit = CATEGORIES.slice(0, 10)
-  const move = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (reduce || e.pointerType !== 'mouse') return
-    const r = e.currentTarget.getBoundingClientRect()
-    mx.set((e.clientX - r.left) / r.width - 0.5); my.set((e.clientY - r.top) / r.height - 0.5)
-  }
+    const el = root.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setW(el.offsetWidth)); ro.observe(el)
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { rootMargin: '40px' }); io.observe(el)
+    return () => { ro.disconnect(); io.disconnect() }
+  }, [])
+
+  // keyboard users get the card on focus even when their last pointer was a touch
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => { if (e.key === 'Tab') lastPointer.current = 'keyboard' }
+    document.addEventListener('keydown', k)
+    return () => document.removeEventListener('keydown', k)
+  }, [])
+
+  // tapping anywhere outside the ring closes a card opened by touch
+  useEffect(() => {
+    if (!hover) return
+    const off = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) { setHover(null); setTouch(false) } }
+    document.addEventListener('pointerdown', off)
+    return () => document.removeEventListener('pointerdown', off)
+  }, [hover])
+
+  // chips briefly convert (PDF to DOCX) and convert back, at uneven intervals, at most two at a time, and only
+  // while nothing is hovered and the ring is on screen
+  const flipQueue = useRef<string[]>([])
+  useEffect(() => {
+    if (frozen || reduce) return
+    const all = [...visit.outer, ...visit.inner].filter((c) => c.to).map((c) => c.f)
+    if (!all.length) return
+    let t = 0
+    const tick = () => {
+      t = window.setTimeout(() => {
+        const q = flipQueue.current
+        let f: string | undefined
+        if (q.length >= 2 || (q.length && Math.random() < 0.55)) f = q.shift()
+        else { const free = all.filter((x) => !q.includes(x)); f = free[Math.floor(Math.random() * free.length)]; if (f) q.push(f) }
+        if (f) { const k = f; setFlipped((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n }) }
+        tick()
+      }, 1200 + Math.random() * 1600)
+    }
+    tick()
+    return () => clearTimeout(t)
+  }, [frozen, reduce, visit])
+
+  const show = useCallback((key: string, get: InfoGetter, el: HTMLElement) => {
+    const r = root.current?.getBoundingClientRect()
+    if (!r || !r.width) return
+    const target = (el.querySelector('.hr-face, svg, .hr-sc') as HTMLElement | null) ?? el
+    const b = target.getBoundingClientRect()
+    setHover({ key, ...get(), h: b.height / 2, x: ((b.left + b.width / 2 - r.left) / r.width) * 100, y: ((b.top + b.height / 2 - r.top) / r.height) * 100 })
+  }, [])
+
+  const item: ItemProps = (key, get) => ({
+    'data-active': hover?.key === key ? true : undefined,
+    'aria-describedby': hover?.key === key ? 'hr-card' : undefined,
+    onPointerEnter: (e) => { lastPointer.current = e.pointerType; if (e.pointerType === 'mouse') { setTouch(false); show(key, get, e.currentTarget) } },
+    onPointerLeave: (e) => { if (e.pointerType === 'mouse') setHover((h) => (h?.key === key ? null : h)) },
+    onPointerDown: (e) => { lastPointer.current = e.pointerType },
+    onFocus: (e) => { if (lastPointer.current === 'mouse' || lastPointer.current === 'keyboard') show(key, get, e.currentTarget) },
+    onBlur: () => { if (lastPointer.current !== 'touch' && lastPointer.current !== 'pen') setHover((h) => (h?.key === key ? null : h)) },
+    // touch: the first tap opens the card, the second tap on the same item follows the link
+    onClick: (e) => { if ((lastPointer.current === 'touch' || lastPointer.current === 'pen') && hover?.key !== key) { e.preventDefault(); setTouch(true); show(key, get, e.currentTarget) } },
+  })
+
+  const shownTool = toolBySlug(shown)
   return (
     <motion.div style={style} className={cn('relative mx-auto w-full max-w-[460px]', className)}>
-      <div onPointerMove={move} onPointerLeave={() => { mx.set(0); my.set(0) }} style={{ perspective: 1000 }}>
-        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d' }} className="hr-root relative aspect-square w-full [container-type:inline-size]">
-          <motion.div style={far} className="absolute inset-[-8%]"><LightShader /></motion.div>
-          <div className="absolute inset-0 grid place-items-center"><GoldRing size={460} /></div>
-          <motion.div style={far} className="absolute inset-0"><Arcs /></motion.div>
-          <Stream n={reduce ? 0 : 22} />
-          <div className="pointer-events-none absolute inset-[36%] rounded-full hr-core" aria-hidden="true" />
-          <motion.div style={near} className="absolute inset-0">
-            <Orbit items={[0, 2, 4, 6]} radius={33} dur={46} flipped={flipped} />
-            <Orbit items={[1, 3, 5, 7]} radius={22} dur={34} reverse flipped={flipped} phase={Math.PI / 4} />
-          </motion.div>
-          <Flyer reduce={reduce} />
-          <div className="absolute inset-0 grid place-items-center">
-            <motion.div initial={{ rotate: -10, scale: 0.7 }} animate={{ rotate: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 120, damping: 14, delay: 0.3 }} className="relative z-10 drop-shadow-[0_0_24px_color-mix(in_oklab,var(--accent-glow)_55%,transparent)]"><Logo size={88} /></motion.div>
-          </div>
-          {orbit.map((c, i) => <CategoryIcon key={c.id} c={c} i={i} n={orbit.length} />)}
+      <div ref={root}
+        onPointerEnter={(e) => { if (e.pointerType === 'mouse') setRingHover(true) }}
+        onPointerLeave={(e) => { if (e.pointerType === 'mouse') { setRingHover(false); setHover(null) } }}
+        onKeyDown={(e) => { if (e.key === 'Escape') { setHover(null); setTouch(false) } }}
+        className="hr-root relative aspect-square w-full [container-type:inline-size]">
+        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }} className={cn('hr-scene absolute inset-0', frozen && 'hr-paused', hover && 'hr-has-active')}>
+          <div className="absolute inset-[-8%]"><LightShader frozen={frozen} /></div>
+          <Rings />
+          <Arcs />
+          {!reduce && <Comet {...visit.comet} />}
+          <Stream dots={reduce ? [] : visit.stream} />
+          <div className="pointer-events-none absolute inset-[33%] rounded-full hr-core" aria-hidden="true" />
+          <Orbit chips={visit.outer} radius={35} dur={visit.orbitOuter} flipped={flipped} phase={visit.phase} item={item} />
+          <Orbit chips={visit.inner} radius={24.5} dur={visit.orbitInner} reverse flipped={flipped} phase={visit.phase + Math.PI / 4} item={item} />
+          {!reduce && <Flyer chips={visit.flyers} item={item} />}
+          <Core visit={visit} frozen={frozen} inView={inView} reduce={reduce} item={item} onShown={setShown} />
+          {CATEGORIES.map((c, i) => <CategoryIcon key={c.id} c={c} i={i} n={CATEGORIES.length} offset={visit.catOffset} item={item} />)}
         </motion.div>
+        <HoverCard info={hover} ringW={w} reduce={reduce} touch={touch} />
       </div>
+      <p className="mt-3 flex h-5 items-center justify-center gap-1.5 text-xs text-muted">
+        {shownTool && <><span className="relative flex size-1.5"><span className="hr-live absolute inline-flex size-full rounded-full bg-accent" /><span className="relative inline-flex size-1.5 rounded-full bg-accent" /></span>
+          <span>Now showing</span>
+          <Link key={shownTool.slug} to={'/' + shownTool.slug} className="hr-caption font-medium text-fg underline decoration-accent/40 underline-offset-4 transition hover:text-accent hover:decoration-accent focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">{shownTool.name}</Link></>}
+      </p>
     </motion.div>
   )
 }
