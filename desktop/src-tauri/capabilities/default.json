@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "OpenFile needs no native commands: the web build does all the work inside the window.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

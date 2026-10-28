@@ -1,0 +1,19 @@
+{
+  "appId": "com.aniruddhaadak.openfile",
+  "appName": "OpenFile",
+  "webDir": "../dist",
+  "backgroundColor": "#000000",
+  "loggingBehavior": "debug",
+  "android": {
+    "backgroundColor": "#000000",
+    "allowMixedContent": false
+  },
+  "ios": {
+    "backgroundColor": "#000000",
+    "contentInset": "always",
+    "scheme": "OpenFile"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

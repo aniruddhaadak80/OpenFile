@@ -34,6 +34,10 @@ let installed = typeof matchMedia === 'function' && (matchMedia('(display-mode: 
 const installSubs = new Set<() => void>()
 const emitInstall = () => installSubs.forEach((f) => f())
 if (typeof window !== 'undefined') {
+  // index.html captures the event before this bundle loads (it can fire early on repeat visits), pick it up here
+  const early = (window as any).__ofBIP as BIPEvent | undefined
+  if (early) deferred = early
+  window.addEventListener('of:bip', () => { deferred = (window as any).__ofBIP ?? deferred; emitInstall() })
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferred = e as BIPEvent; emitInstall() })
   window.addEventListener('appinstalled', () => { installed = true; deferred = null; emitInstall() })
 }
@@ -44,10 +48,17 @@ export function useInstall() {
   const s = useSyncExternalStore((f) => { installSubs.add(f); return () => { installSubs.delete(f) } }, getInstall, getInstall)
   const prompt = async () => {
     if (!deferred) return 'unavailable' as const
-    await deferred.prompt()
-    const r = await deferred.userChoice
-    deferred = null; emitInstall()
-    return r.outcome
+    const ev = deferred
+    try {
+      await ev.prompt()
+      const r = await ev.userChoice
+      deferred = null; (window as any).__ofBIP = undefined; emitInstall()
+      return r.outcome
+    } catch {
+      // prompt() works once per event; a stale event throws. Drop it so the UI falls back to manual steps.
+      deferred = null; (window as any).__ofBIP = undefined; emitInstall()
+      return 'unavailable' as const
+    }
   }
   return { ...s, prompt, iosHint: !s.installed && !s.canPrompt && isIOS() }
 }

@@ -8,7 +8,7 @@ import { X, FileSearch, AlertTriangle, ArrowRight, Upload, ShieldCheck, Sparkles
 import { CATEGORIES, toolBySlug, type ToolMeta } from '@/tools/registry'
 import { detectFile, toolsForFormat, type Detected } from '@/lib/detect'
 import { setHandoff } from '@/lib/handoff'
-import { dropBus, openDropSheet, remountBus } from '@/lib/ux'
+import { dropBus, openDropSheet, remountBus, flag } from '@/lib/ux'
 import { formatBytes } from '@/lib/files'
 import { currentToolSlug } from '@/lib/prefs'
 import { getIcon } from './icons'
@@ -79,10 +79,14 @@ async function consumeShared() {
     lq.setConsumer(async (params: { files?: { getFile: () => Promise<File> }[] }) => {
       if (!params.files?.length) return
       const files = await Promise.all(params.files.map((h) => h.getFile()))
-      openDropSheet(files)
+      // "Open straight in the best tool" (set on the /open page) skips the sheet for files opened from the system
+      if (flag('open-auto')) launchBus.emit(files); else openDropSheet(files)
     })
   }
 }
+
+/** Files opened from the system with auto-open on: DropSheet routes them to the top tool directly. */
+const launchBus = (() => { const subs = new Set<(f: File[]) => void>(); return { emit: (f: File[]) => subs.forEach((s) => s(f)), on: (s: (f: File[]) => void) => { subs.add(s); return () => { subs.delete(s) } } } })()
 
 interface Analysis { files: File[]; detected: Detected[]; main: Detected; tools: ToolMeta[] }
 
@@ -101,6 +105,13 @@ export function DropSheet() {
     const main = detected.find((d) => d.format === top) ?? detected[0]
     setA({ files, detected, main, tools: toolsForFormat(main.format, files[detected.indexOf(main)]).slice(0, 12) })
     setBusy(false)
+  }), [])
+  useEffect(() => launchBus.on(async (files) => {
+    const d = await detectFile(files[0])
+    const best = toolsForFormat(d.format, files[0])[0]
+    if (!best) { openDropSheet(files); return }
+    setHandoff(files)
+    nav('/' + best.slug)
   }), [])
   useEffect(() => { setA(null) }, [loc.pathname])
   useEffect(() => {

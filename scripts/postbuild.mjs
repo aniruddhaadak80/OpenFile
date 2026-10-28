@@ -15,6 +15,8 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
+const require_ = createRequire(import.meta.url)
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = process.argv[2] || 'dist'
@@ -74,6 +76,9 @@ const routes = [
   { kind: 'page', path: 'workspace', title: 'Workspace | OpenFile', h1: 'Workspace', desc: 'Chain steps into a recipe and batch-process hundreds of images or PDFs locally, in your browser.', priority: '0.8', freq: 'monthly' },
   { kind: 'about', path: 'about', title: 'About | OpenFile', h1: 'About OpenFile', desc: `OpenFile is an open-source workbench of ${N}+ utilities that run entirely in your browser.`, priority: '0.5', freq: 'monthly' },
   { kind: 'page', path: 'privacy', title: 'Privacy | OpenFile', h1: 'Privacy Policy', desc: 'Short version: we never see your files. Everything is processed locally in your browser.', priority: '0.4', freq: 'yearly' },
+  { kind: 'page', path: 'install', title: 'Install OpenFile | Web, Windows, macOS, Linux, Android and iPhone', h1: 'Install OpenFile', desc: 'Install OpenFile as an app on any device: a web app that works offline, desktop apps for Windows, macOS and Linux, an Android APK and iPhone home screen. Free, private, open source.', priority: '0.8', freq: 'monthly' },
+  { kind: 'page', path: 'download', title: 'Download OpenFile | Desktop and mobile apps', h1: 'Download OpenFile', desc: 'Download OpenFile for Windows, macOS, Linux and Android, or install the web app.', priority: '0.4', freq: 'monthly', canonical: 'install', nositemap: true },
+  { kind: 'page', path: 'open', title: 'Open a file | OpenFile', h1: 'Open a file', desc: 'Open any file and OpenFile finds the right tool for it, on your device.', priority: '0.4', freq: 'monthly' },
   { kind: 'page', path: 'status', title: 'Status | OpenFile', h1: 'System status', desc: 'Server API status and the browser capabilities OpenFile can use on your device.', priority: '0.3', freq: 'monthly' },
   { kind: 'page', path: 'history', title: 'History | OpenFile', h1: 'History', desc: 'Your recent tools, favorites and activity, stored only in this browser.', priority: '0.3', freq: 'monthly', noindex: true },
   { kind: 'page', path: 'settings', title: 'Settings | OpenFile', h1: 'Settings', desc: 'Theme, motion, default image quality, download names and backup of your OpenFile settings.', priority: '0.3', freq: 'monthly', noindex: true },
@@ -143,7 +148,7 @@ function jsonLd(r) {
 const link = (path, text) => `<a href="${esc(base + path)}">${esc(text)}</a>`
 const toolLi = (t) => `<li>${link(t.slug, t.name)}: ${esc(t.desc)}</li>`
 function body(r) {
-  const nav = `<nav aria-label="Site">${link('', 'OpenFile')} | ${link('tools', 'All tools')} | ${link('workspace', 'Workspace')} | ${link('docs', 'Docs')} | ${link('blog', 'Blog')} | ${link('about', 'About')}</nav>`
+  const nav = `<nav aria-label="Site">${link('', 'OpenFile')} | ${link('tools', 'All tools')} | ${link('workspace', 'Workspace')} | ${link('docs', 'Docs')} | ${link('blog', 'Blog')} | ${link('install', 'Install')} | ${link('about', 'About')}</nav>`
   let main = ''
   if (r.kind === 'home') {
     main = `<h1>Every file tool. One private tab.</h1><p>${esc(r.desc)}</p><h2>Categories</h2><ul>${categories.map((c) => `<li>${link('category/' + c.id, c.name)}: ${esc(c.blurb)} (${tools.filter((t) => t.category === c.id).length} tools)</li>`).join('')}</ul><h2>Popular tools</h2><ul>${tools.filter((t) => t.popular).slice(0, 16).map(toolLi).join('')}</ul>`
@@ -170,6 +175,9 @@ function body(r) {
   } else if (r.kind === 'doc') {
     main = `<p>${link('docs', 'Docs')}</p><h1>${esc(r.h1)}</h1><p>${esc(r.desc)}</p><h2>All guides</h2><ul>${liveDocs.map((d) => `<li>${link(d.path.replace(/^\//, ''), d.title)}: ${esc(d.description)}</li>`).join('')}</ul>`
     if (r.doc?.id?.startsWith('tools-')) main += `<h2>Tools</h2><ul>${tools.filter((t) => `tools-${t.category}` === r.doc.id).map(toolLi).join('')}</ul>`
+  } else if (r.path === 'install') {
+    const rel = 'https://github.com/aniruddhaadak80/OpenFile/releases/latest'
+    main = `<h1>${esc(r.h1)}</h1><p>${esc(r.desc)}</p><h2>Platforms</h2><ul><li>Web app: install from Chrome, Edge, Safari or Samsung Internet. Works offline.</li><li>Windows 10 and 11: <a href="${rel}">.exe and .msi installers</a>.</li><li>macOS: <a href="${rel}">universal .dmg</a> for Apple silicon and Intel.</li><li>Linux: <a href="${rel}">AppImage, .deb and .rpm</a>.</li><li>Android: install the web app from Chrome or the <a href="${rel}">APK</a>.</li><li>iPhone and iPad: Safari, Share, Add to Home Screen.</li><li>ChromeOS: install the web app from Chrome.</li></ul><p>Your files never leave your device.</p>`
   } else {
     main = `<h1>${esc(r.h1 ?? r.title)}</h1><p>${esc(r.desc)}</p>`
   }
@@ -352,4 +360,32 @@ ${p.tags.map((t) => `      <category>${esc(t)}</category>`).join('\n')}
   writeFileSync(join(outDir, 'blog', 'rss.xml'), rss)
 }
 
-console.log(`postbuild: base=${base} site=${site} | ${tools.length} tools in ${categories.length} categories | ${written} route pages with JSON-LD and prerendered HTML | ${routes.filter((r) => !r.noindex && !r.nositemap).length} sitemap URLs | ${ogCount} category OG images | ${posts.length} blog posts + rss.xml | humans.txt, security.txt, llms.txt | 404.html | robots.txt | .nojekyll`)
+// ---- installable web app: base-absolute manifest URLs and the service worker precache list ----
+// The manifest in public/ uses relative URLs (they resolve against the manifest itself, so they work at any base).
+// Here they become explicit absolute paths for this base ("/" on Vercel, "/OpenFile/" on GitHub Pages).
+let swInfo = ''
+try {
+  const mPath = join(outDir, 'manifest.webmanifest')
+  const m = JSON.parse(readFileSync(mPath, 'utf8'))
+  const fix = (u) => (typeof u === 'string' && !/^[a-z]+:/i.test(u) ? base + u.replace(/^\.\//, '').replace(/^\.$/, '') : u)
+  m.id = base; m.start_url = fix(m.start_url); m.scope = base
+  for (const k of ['icons', 'screenshots']) for (const i of m[k] || []) i.src = fix(i.src)
+  for (const sc of m.shortcuts || []) { sc.url = fix(sc.url); for (const i of sc.icons || []) i.src = fix(i.src) }
+  for (const fh of m.file_handlers || []) { fh.action = fix(fh.action); for (const i of fh.icons || []) i.src = fix(i.src) }
+  if (m.share_target) m.share_target.action = fix(m.share_target.action)
+  writeFileSync(mPath, JSON.stringify(m, null, 2))
+  // shell = everything index.html loads up front (entry JS, CSS, preloaded chunks and fonts) plus the install assets
+  const html = readFileSync(indexPath, 'utf8')
+  const shellFiles = [...new Set([...html.matchAll(/(?:src|href)="([^"]+)"/g)].map((x) => x[1]).filter((u) => u.startsWith(base) && !u.endsWith('.xml') && !u.endsWith('humans.txt')).map((u) => u.slice(base.length)))]
+  const extra = ['offline.html', 'manifest.webmanifest', 'apple-touch-icon.png', 'icon-maskable-192.png', 'icon-maskable-512.png', 'install/index.html', 'tools/index.html', 'open/index.html'].filter((f) => existsSync(join(outDir, f)))
+  const pre = [...new Set([...shellFiles, ...extra])].filter((f) => existsSync(join(outDir, f.split('?')[0])))
+  const build = (() => { try { return execSyncGit('git rev-parse --short HEAD') } catch { return '' } })() || Date.now().toString(36)
+  const swPath = join(outDir, 'sw.js')
+  let sw = readFileSync(swPath, 'utf8')
+  sw = sw.replace("'__OF_BUILD__'", `'${build}-${Date.now().toString(36)}'`).replace(/\/\*__OF_PRECACHE__\*\/\[[^\]]*\]/, `/*__OF_PRECACHE__*/${JSON.stringify(pre)}`)
+  writeFileSync(swPath, sw)
+  swInfo = ` | manifest for ${base} | sw precache ${pre.length} files`
+} catch (e) { console.warn('postbuild: manifest or sw step skipped:', e?.message || e) }
+function execSyncGit(cmd) { return String(require_('node:child_process').execSync(cmd, { cwd: root, stdio: ['ignore', 'pipe', 'ignore'] })).trim() }
+
+console.log(`postbuild: base=${base} site=${site}${swInfo} | ${tools.length} tools in ${categories.length} categories | ${written} route pages with JSON-LD and prerendered HTML | ${routes.filter((r) => !r.noindex && !r.nositemap).length} sitemap URLs | ${ogCount} category OG images | ${posts.length} blog posts + rss.xml | humans.txt, security.txt, llms.txt | 404.html | robots.txt | .nojekyll`)

@@ -8,6 +8,7 @@
 <p align="center">
   <a href="https://openfile-studio.vercel.app"><img src="https://img.shields.io/badge/▶_Live_App-openfile--studio.vercel.app-F5A524?style=for-the-badge&logo=vercel&logoColor=F5A524&labelColor=0B0D10" alt="Live app on Vercel"/></a>
   <a href="https://aniruddhaadak80.github.io/OpenFile/"><img src="https://img.shields.io/badge/Mirror-GitHub_Pages-14B8A6?style=for-the-badge&logo=github&logoColor=14B8A6&labelColor=0B0D10" alt="GitHub Pages mirror"/></a>
+  <a href="https://aniruddhaadak80.github.io/OpenFile/install"><img src="https://img.shields.io/badge/Install-Web_·_Windows_·_macOS_·_Linux_·_Android_·_iOS-22D3EE?style=for-the-badge&logo=pwa&logoColor=22D3EE&labelColor=0B0D10" alt="Install OpenFile on any device"/></a>
   <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Faniruddhaadak80%2FOpenFile"><img src="https://img.shields.io/badge/Deploy_your_own-0B0D10?style=for-the-badge&logo=vercel&logoColor=FFB224" alt="Deploy with Vercel"/></a>
 </p>
 
@@ -39,6 +40,7 @@
 <p align="center">
   <a href="#-whats-new">What's new</a> ·
   <a href="#-launch-film">Launch film</a> ·
+  <a href="#-install">Install</a> ·
   <a href="#-why-openfile">Why</a> ·
   <a href="#-the-toolbox">Toolbox</a> ·
   <a href="#-workspace--batch-pipelines">Workspace</a> ·
@@ -87,6 +89,76 @@ Full list of changes: **[CHANGELOG.md](CHANGELOG.md)**
   <br/>
   <sub>▶ <a href="public/media/launch.mp4"><b>Play the launch film</b></a> (<code>public/media/launch.mp4</code>) · or watch it on the <a href="https://openfile-studio.vercel.app">homepage</a></sub>
 </p>
+
+<p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
+
+<!-- install:start -->
+## 📲 Install
+
+OpenFile is a website and an app. Install it on any device: it works offline, opens files from your system, and your files still never leave your device. **[Open the interactive install guide](https://aniruddhaadak80.github.io/OpenFile/install)** (it detects your device) or read **[docs/INSTALL.md](docs/INSTALL.md)**.
+
+<p align="center">
+  <a href="https://aniruddhaadak80.github.io/OpenFile/install"><img src="https://img.shields.io/badge/Web_app-Install_from_your_browser-F5A524?style=for-the-badge&logo=pwa&logoColor=F5A524&labelColor=0B0D10" alt="Install the web app"/></a>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest"><img src="https://img.shields.io/github/v/release/aniruddhaadak80/OpenFile?style=for-the-badge&label=latest%20release&color=14B8A6&labelColor=0B0D10&logo=github" alt="Latest release"/></a>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/actions/workflows/release-apps.yml"><img src="https://img.shields.io/github/actions/workflow/status/aniruddhaadak80/OpenFile/release-apps.yml?style=for-the-badge&label=app%20builds&logo=githubactions&logoColor=22D3EE&labelColor=0B0D10&color=22D3EE" alt="App builds"/></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-windows-x64-setup.exe"><img src="https://img.shields.io/badge/Windows-.exe_·_.msi-38BDF8?style=flat-square&labelColor=0B0D10" alt="Download for Windows"/></a>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-macos-universal.dmg"><img src="https://img.shields.io/badge/macOS-universal_.dmg-E5E7EB?style=flat-square&logo=apple&logoColor=E5E7EB&labelColor=0B0D10" alt="Download for macOS"/></a>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-linux-x86_64.AppImage"><img src="https://img.shields.io/badge/Linux-AppImage_·_.deb_·_.rpm-F97316?style=flat-square&logo=linux&logoColor=F97316&labelColor=0B0D10" alt="Download for Linux"/></a>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-android.apk"><img src="https://img.shields.io/badge/Android-.apk-10B981?style=flat-square&logo=android&logoColor=10B981&labelColor=0B0D10" alt="Download for Android"/></a>
+  <a href="https://aniruddhaadak80.github.io/OpenFile/install#guide-ios"><img src="https://img.shields.io/badge/iPhone_and_iPad-Add_to_Home_Screen-22D3EE?style=flat-square&logo=safari&logoColor=22D3EE&labelColor=0B0D10" alt="Install on iPhone"/></a>
+  <a href="https://aniruddhaadak80.github.io/OpenFile/install#guide-chromeos"><img src="https://img.shields.io/badge/ChromeOS-web_app-84CC16?style=flat-square&logo=googlechrome&logoColor=84CC16&labelColor=0B0D10" alt="Install on ChromeOS"/></a>
+</p>
+
+<p align="center">
+  <a href="public/media/apps.mp4" title="Play: OpenFile on every device">
+    <img src="docs/assets/apps-poster.jpg" width="88%" alt="OpenFile on every device, 44 second video, click to play"/>
+  </a>
+  <br/>
+  <sub>▶ <a href="public/media/apps.mp4"><b>Watch: OpenFile on every device</b></a> (44 s, 1920x1080) · <a href="public/media/apps-vertical.mp4">vertical cut for phones</a></sub>
+</p>
+
+| Platform | Get it | First run |
+| --- | --- | --- |
+| 🌐 **Web app** (Chrome, Edge, Brave, Opera, Safari on macOS) | Click **Install** in the OpenFile header or the install icon in the address bar | Opens in its own window, offline ready |
+| 🪟 **Windows 10 and 11** | [OpenFile-windows-x64-setup.exe](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-windows-x64-setup.exe) · [.msi](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-windows-x64.msi) | SmartScreen: **More info**, **Run anyway** |
+| 🍎 **macOS 11+** (Apple silicon and Intel) | [OpenFile-macos-universal.dmg](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-macos-universal.dmg) | Right-click OpenFile in Applications, **Open**, **Open** |
+| 🐧 **Linux x86_64** | [AppImage](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-linux-x86_64.AppImage) · [.deb](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-linux-amd64.deb) · [.rpm](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-linux-x86_64.rpm) | `chmod +x OpenFile-linux-x86_64.AppImage` |
+| 🤖 **Android 7+** | Chrome menu, **Install app**, or [OpenFile-android.apk](https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/OpenFile-android.apk) | Allow installs from this source once |
+| 📱 **iPhone and iPad** | Safari, **Share**, **Add to Home Screen** | Full screen and offline |
+| 💻 **ChromeOS** | Install icon in Chrome's address bar | Pin it to the shelf |
+
+<details>
+<summary><b>Web app steps per browser and phone</b></summary>
+
+- **Chrome** (Windows, macOS, Linux, ChromeOS): install icon at the right of the address bar, or menu, *Cast, save and share*, *Install page as app*.
+- **Edge**: menu, *Apps*, *Install OpenFile*.
+- **Safari on macOS Sonoma+**: *File*, *Add to Dock*.
+- **Firefox desktop**: does not install web apps. Use the desktop app, or Chrome or Edge.
+- **Android Chrome**: menu (three dots), *Install app*. **Samsung Internet**: menu, *Add page to*, *Home screen*. **Firefox Android**: menu, *Install*.
+- **iPhone and iPad** (Safari, or Chrome and Edge on iOS 16.4+): *Share*, *Add to Home Screen*, *Add*.
+- **Updates**: a bar says *New version ready, reload*. Click *Reload*.
+- **Open with OpenFile**: once installed in Chrome or Edge on desktop, right-click a PDF, image, video, audio, ZIP, CSV or JSON file, *Open with*, *OpenFile*. Turn on *Open straight in the best tool* on [/open](https://aniruddhaadak80.github.io/OpenFile/open) to skip the picker.
+</details>
+
+<details>
+<summary><b>Build the apps yourself (contributors)</b></summary>
+
+The desktop app is [Tauri v2](https://tauri.app) in [`desktop/`](desktop), the mobile apps are [Capacitor 8](https://capacitorjs.com) in [`mobile/`](mobile). Both wrap the same `dist/` web build.
+
+```bash
+npm run app:desktop       # Windows, macOS or Linux installer for your OS (needs Rust)
+npm run app:desktop:dev   # desktop dev window
+npm run app:android       # debug APK (needs JDK 21 and the Android SDK)
+npm run app:ios           # syncs and opens the Xcode project (macOS)
+npm run app:assets        # regenerate icons, maskable icons, screenshots and splash screens
+```
+
+Push a tag like `v1.2.0` and [`.github/workflows/release-apps.yml`](.github/workflows/release-apps.yml) builds Windows, macOS (universal), Linux, Android and the iOS Simulator app, then attaches them to the GitHub Release. Code signing for Windows, macOS, Google Play and the App Store needs the owner's certificates; see [docs/INSTALL.md](docs/INSTALL.md#signing-owner).
+</details>
+<!-- install:end -->
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 

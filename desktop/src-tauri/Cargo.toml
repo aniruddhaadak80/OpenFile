@@ -1,0 +1,24 @@
+[package]
+name = "openfile"
+version = "1.1.0"
+description = "OpenFile: private file tools for PDF, images, video, audio and developers"
+authors = ["Aniruddha Adak"]
+license = "MIT"
+repository = "https://github.com/aniruddhaadak80/OpenFile"
+edition = "2021"
+rust-version = "1.77.2"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# "compression" is left out on purpose: the web build is large (wasm engines), brotli-compressing it at compile
+# time is slow, and every installer format compresses the binary anyway.
+tauri = { version = "2", default-features = false, features = ["wry", "common-controls-v6", "dynamic-acl"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

@@ -11,10 +11,10 @@ import { Button, cn } from './ui'
 /* ---------------- shortcuts ---------------- */
 export const SHORTCUTS: { group: string; items: [string[], string][] }[] = [
   { group: 'Anywhere', items: [[['Ctrl', 'K'], 'Search tools, pages and docs'], [['/'], 'Search'], [['?'], 'Show this list'], [['Esc'], 'Close a dialog']] },
-  { group: 'Go to', items: [[['G', 'H'], 'Home'], [['G', 'T'], 'All tools'], [['G', 'W'], 'Workspace'], [['G', 'D'], 'Docs'], [['G', 'B'], 'Blog'], [['G', 'Y'], 'History'], [['G', 'S'], 'Settings']] },
+  { group: 'Go to', items: [[['G', 'H'], 'Home'], [['G', 'T'], 'All tools'], [['G', 'W'], 'Workspace'], [['G', 'D'], 'Docs'], [['G', 'B'], 'Blog'], [['G', 'Y'], 'History'], [['G', 'S'], 'Settings'], [['G', 'I'], 'Install the app']] },
   { group: 'Tools', items: [[['Alt', '1 to 9'], 'Open a recently used tool'], [['F'], 'Save or unsave the open tool'], [['Drop'], 'Drop a file on any page to find a tool']] },
 ]
-const GO: Record<string, string> = { h: '/', t: '/tools', w: '/workspace', d: '/docs', b: '/blog', y: '/history', s: '/settings' }
+const GO: Record<string, string> = { h: '/', t: '/tools', w: '/workspace', d: '/docs', b: '/blog', y: '/history', s: '/settings', i: '/install' }
 
 /** Global single-key shortcuts. Ignored while typing. */
 export function useGlobalShortcuts(openPalette: () => void) {
@@ -169,7 +169,7 @@ export function InstallPrompt() {
   const { canPrompt, installed, prompt, iosHint } = useInstall()
   const { recent } = useRecent()
   const [hidden, setHidden] = useState(() => { try { const t = Number(localStorage.getItem(DISMISS_KEY) || 0); return Date.now() - t < 30 * 864e5 } catch { return false } })
-  const eligible = !installed && !hidden && (canPrompt || iosHint) && recent.length >= 2 && flag('tour-done')
+  const eligible = !installed && !hidden && (canPrompt || iosHint) && (recent.length >= 1 || flag('tour-done'))
   const dismiss = () => { try { localStorage.setItem(DISMISS_KEY, String(Date.now())) } catch { /* ignore */ } setHidden(true) }
   return (
     <AnimatePresence>

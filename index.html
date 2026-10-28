@@ -7,7 +7,12 @@
     <meta name="description" content="OpenFile: 115+ free, open-source tools to merge, split, compress, sign and convert PDFs, edit images, trim video, transcribe audio and format code. 100% in your browser, zero uploads." />
     <meta name="theme-color" content="#000000" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="OpenFile" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="application-name" content="OpenFile" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title="OpenFile Blog" href="/blog/rss.xml" />
     <meta property="og:title" content="OpenFile | Every file tool, private, in your browser" />
@@ -73,6 +78,9 @@
         var fail = function () { if (!r.classList.contains('of-boot')) return; r.classList.remove('of-boot'); r.classList.add('of-fail') };
         addEventListener('error', function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && /\/assets\//.test(t.src || '')) fail() }, true);
         setTimeout(fail, 30000);
+        // keep the install prompt event even if it fires before the app bundle is ready (src/lib/ux.ts reads it)
+        addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__ofBIP = e; dispatchEvent(new Event('of:bip')) });
+        addEventListener('appinstalled', function () { window.__ofBIP = undefined });
       })();
     </script>
     <style>.of-fail #prerender{position:static!important;width:auto;height:auto;margin:0 auto;overflow:visible;clip:auto;clip-path:none;white-space:normal;opacity:1;pointer-events:auto}</style>

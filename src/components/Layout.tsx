@@ -15,6 +15,7 @@ import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
 import { cn } from './ui'
 import { bootDone } from '@/lib/boot'
+import { UpdateBar, HeaderInstall } from './app/AppStatus'
 
 export const REPO_URL = 'https://github.com/aniruddhaadak80/OpenFile'
 
@@ -69,7 +70,7 @@ export function Layout() {
               )}
               </AnimatePresence>
             </div>
-            {[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/about', 'About']].map(([to, l]) => (
+            {[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/install', 'Install'], ['/about', 'About']].map(([to, l]) => (
               <NavLink key={to} to={to} className={({ isActive }) => cn('nav-pill relative rounded-lg px-3 py-2 transition-colors hover:text-fg', isActive ? 'text-fg' : 'text-muted')}>
                 {({ isActive }) => <>{l}{isActive && <motion.span layoutId="nav-underline" className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-accent" />}</>}
               </NavLink>
@@ -80,6 +81,7 @@ export function Layout() {
               <Search className="size-4" /> Search tools <kbd className="ml-4 rounded border border-border px-1.5 font-mono text-[10px]">Ctrl K</kbd>
             </button>
             <button onClick={() => setPalette(true)} className="grid size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 sm:hidden" aria-label="Search"><Search className="size-4" /></button>
+            <HeaderInstall />
             <Link to="/history" className="hidden size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg md:grid" aria-label="History" title="History"><HistoryIcon className="size-4" /></Link>
             <Link to="/settings" className="hidden size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg md:grid" aria-label="Settings" title="Settings"><SettingsIcon className="size-4" /></Link>
             <span data-tour="theme" className="inline-flex rounded-xl"><ThemeSwitcher /></span>
@@ -89,7 +91,7 @@ export function Layout() {
         </div>
         {mobile && (
           <motion.div id="mobile-menu" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-surface px-4 py-3 md:hidden">
-            <div className="grid grid-cols-2 gap-1">{[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/history', 'History'], ['/settings', 'Settings'], ['/changelog', 'Changelog'], ['/about', 'About'], ['/privacy', 'Privacy']].map(([to, l]) => <Link key={to} to={to} className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-surface-2">{l}</Link>)}</div>
+            <div className="grid grid-cols-2 gap-1">{[['/tools', 'All Tools'], ['/install', 'Install app'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/history', 'History'], ['/settings', 'Settings'], ['/changelog', 'Changelog'], ['/about', 'About'], ['/privacy', 'Privacy']].map(([to, l]) => <Link key={to} to={to} className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-surface-2">{l}</Link>)}</div>
             <div className="mt-2 grid grid-cols-2 gap-1">{CATEGORIES.map((c) => <Link key={c.id} to={`/category/${c.id}`} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-muted hover:bg-surface-2"><span className="size-2 rounded-full" style={{ background: c.color }} />{c.name}</Link>)}</div>
           </motion.div>
         )}
@@ -103,6 +105,7 @@ export function Layout() {
       <OnboardingTour />
       <OfflineIndicator />
       <InstallPrompt />
+      <UpdateBar />
       <Toaster />
     </div>
     </MotionConfig>

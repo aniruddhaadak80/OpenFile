@@ -107,6 +107,7 @@ function Hero({ onFilm }: { onFilm: () => void }) {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <Magnetic><Link to="/tools"><Button size="lg" icon={<Layers className="size-4" />}>Explore tools</Button></Link></Magnetic>
             <Magnetic><Button size="lg" variant="outline" onClick={onFilm} icon={<Play className="size-4 fill-current" />}>Watch the film</Button></Magnetic>
+            <Link to="/install" className="inline-flex h-12 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-accent transition hover:-translate-y-0.5 hover:underline"><Download className="size-4" /> Get the app</Link>
           </motion.div>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs lg:justify-start">
             {['merge-pdf', 'compress-pdf', 'background-remover', 'video-to-gif', 'sign-pdf', 'qr-generator'].map((s) => { const t = toolBySlug(s); return t ? <Link key={s} to={'/' + s} className="rounded-full border border-border bg-surface/70 px-3 py-1.5 text-muted backdrop-blur transition hover:border-accent hover:text-fg">{t.name}</Link> : null })}
@@ -439,6 +440,7 @@ function Cta() {
             <p className="mx-auto mt-3 max-w-xl text-white/75">Bookmark OpenFile, install it as an app, or star the repo to follow new tools.</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Magnetic><Link to="/tools"><Button size="lg" icon={<Layers className="size-4" />}>Explore all tools</Button></Link></Magnetic>
+              <Magnetic><Link to="/install" className="flex h-12 items-center gap-2 rounded-xl border border-accent/60 bg-accent/10 px-6 font-semibold text-accent transition hover:bg-accent/20"><Download className="size-4" /> Install the app</Link></Magnetic>
               <Magnetic><a href={REPO_URL} target="_blank" rel="noreferrer" className="flex h-12 items-center gap-2 rounded-xl border border-white/25 px-6 font-semibold transition hover:border-accent hover:text-accent"><Github className="size-4" /> Star on GitHub</a></Magnetic>
             </div>
             <div className="mt-6 flex justify-center gap-4 text-xs text-white/60"><span className="flex items-center gap-1"><Lock className="size-3" /> No uploads</span><span>|</span><span>MIT licensed</span><span>|</span><span className="flex items-center gap-1"><Command className="size-3" /> Ctrl K to search</span></div>

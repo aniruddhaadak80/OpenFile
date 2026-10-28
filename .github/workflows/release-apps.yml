@@ -1,0 +1,207 @@
+name: Release apps
+
+# Builds OpenFile as installable apps and attaches them to a GitHub Release:
+#   Windows (.exe NSIS setup, .msi), macOS (universal .dmg, unsigned), Linux (.AppImage, .deb, .rpm)
+#   Android (debug-signed .apk you can sideload, unsigned release .aab), iOS (simulator .app, no signing)
+# Asset names carry no version, so https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/<name>
+# always points at the newest build (the Install page links there).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to create or update (for example v1.1.0)'
+        required: true
+        default: 'v1.1.0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  web:
+    name: Web build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/prepare-app-dist.mjs dist
+      - name: Pack dist
+        run: tar -czf web-dist.tgz dist && ls -lh web-dist.tgz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: web-dist.tgz
+          retention-days: 7
+      - name: Create the release if it does not exist
+        run: |
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            PRE=""
+            case "$TAG" in *-*) PRE="--prerelease" ;; esac
+            # on a tag push the tag already exists; passing --target there is refused for commits that touch workflows
+            TARGET=""
+            if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then TARGET="--target $GITHUB_SHA"; fi
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" $TARGET --title "OpenFile $TAG" $PRE --notes-file - <<'NOTES'
+          OpenFile as an app on every device. Same tools, same privacy: everything runs on your device and nothing is uploaded.
+
+          | Platform | File |
+          | --- | --- |
+          | Windows 10 and 11 | `OpenFile-windows-x64-setup.exe` (recommended) or `OpenFile-windows-x64.msi` |
+          | macOS 11+ (Apple silicon and Intel) | `OpenFile-macos-universal.dmg` |
+          | Linux x86_64 | `OpenFile-linux-x86_64.AppImage`, `OpenFile-linux-amd64.deb`, `OpenFile-linux-x86_64.rpm` |
+          | Android 7+ | `OpenFile-android.apk` |
+          | iPhone and iPad | Install the web app: Safari, Share, Add to Home Screen |
+
+          The apps are not code signed yet. Windows: SmartScreen, More info, Run anyway. macOS: right-click OpenFile in Applications, Open, then Open. Android: allow installs from your browser once.
+
+          Full guide: https://aniruddhaadak80.github.io/OpenFile/install
+          NOTES
+          fi
+
+  desktop:
+    name: Desktop (${{ matrix.name }})
+    needs: web
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            args: ''
+            out: desktop/src-tauri/target/release/bundle
+          - name: macOS universal
+            os: macos-latest
+            args: '--target universal-apple-darwin'
+            out: desktop/src-tauri/target/universal-apple-darwin/release/bundle
+          - name: Linux
+            os: ubuntu-22.04
+            args: ''
+            out: desktop/src-tauri/target/release/bundle
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+      - run: tar -xzf web-dist.tgz && rm web-dist.tgz && du -sh dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ runner.os == 'macOS' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri -> target
+      - name: Install Tauri CLI
+        working-directory: desktop
+        run: npm install
+      - name: Build
+        working-directory: desktop
+        run: npx tauri build ${{ matrix.args }}
+      - name: Rename and upload
+        run: |
+          set -e
+          mkdir -p out
+          B="${{ matrix.out }}"
+          find "$B" -maxdepth 2 -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.dmg" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) || true
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            cp "$(ls $B/nsis/*.exe | head -1)" out/OpenFile-windows-x64-setup.exe
+            cp "$(ls $B/msi/*.msi | head -1)" out/OpenFile-windows-x64.msi
+          elif [ "$RUNNER_OS" = "macOS" ]; then
+            cp "$(ls $B/dmg/*.dmg | head -1)" out/OpenFile-macos-universal.dmg
+          else
+            cp "$(ls $B/appimage/*.AppImage | head -1)" out/OpenFile-linux-x86_64.AppImage
+            cp "$(ls $B/deb/*.deb | head -1)" out/OpenFile-linux-amd64.deb
+            cp "$(ls $B/rpm/*.rpm | head -1)" out/OpenFile-linux-x86_64.rpm
+          fi
+          ls -lh out
+          gh release upload "$TAG" out/* --clobber --repo "$GITHUB_REPOSITORY"
+
+  android:
+    name: Android
+    needs: web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+      - run: tar -xzf web-dist.tgz && rm web-dist.tgz
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Capacitor sync
+        working-directory: mobile
+        run: npm install && npx cap sync android
+      - name: Build APK and AAB
+        working-directory: mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug bundleRelease
+      - name: Upload
+        run: |
+          set -e
+          mkdir -p out
+          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk out/OpenFile-android.apk
+          cp mobile/android/app/build/outputs/bundle/release/app-release.aab out/OpenFile-android.aab
+          ls -lh out
+          gh release upload "$TAG" out/* --clobber --repo "$GITHUB_REPOSITORY"
+
+  ios:
+    name: iOS simulator
+    needs: web
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+      - run: tar -xzf web-dist.tgz && rm web-dist.tgz
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Capacitor sync
+        working-directory: mobile
+        run: npm install && npx cap sync ios
+      - name: Build for the simulator (no signing)
+        working-directory: mobile/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build | tail -40
+      - name: Upload
+        run: |
+          set -e
+          APP=$(find mobile/ios/App/build/Build/Products -name "*.app" -maxdepth 2 | head -1)
+          echo "$APP"
+          mkdir -p out
+          (cd "$(dirname "$APP")" && zip -qry "$GITHUB_WORKSPACE/out/OpenFile-ios-simulator.zip" "$(basename "$APP")")
+          ls -lh out
+          gh release upload "$TAG" out/* --clobber --repo "$GITHUB_REPOSITORY"

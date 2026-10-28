@@ -12,7 +12,13 @@
     "postbuild:only": "node scripts/postbuild.mjs",
     "prebuild": "node scripts/gen-icons.mjs",
     "prebuild:pages": "node scripts/gen-icons.mjs",
-    "docs:catalog": "node scripts/gen-readme-catalog.mjs"
+    "docs:catalog": "node scripts/gen-readme-catalog.mjs",
+    "app:assets": "node scripts/gen-pwa-assets.mjs",
+    "app:prepare": "npm run build && node scripts/prepare-app-dist.mjs dist",
+    "app:desktop": "npm run app:prepare && cd desktop && npm install && npx tauri build",
+    "app:desktop:dev": "cd desktop && npm install && npx tauri dev",
+    "app:android": "npm run app:prepare && cd mobile && npm install && npx cap sync android && cd android && ./gradlew assembleDebug",
+    "app:ios": "npm run app:prepare && cd mobile && npm install && npx cap sync ios && npx cap open ios"
   },
   "dependencies": {
     "@bokuweb/zstd-wasm": "^0.0.27",

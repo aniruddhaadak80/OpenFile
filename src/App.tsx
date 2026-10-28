@@ -15,6 +15,8 @@ const History = lazy(() => import('@/pages/History'))
 const Settings = lazy(() => import('@/pages/Settings'))
 const Blog = lazy(() => import('@/pages/Blog'))
 const BlogPost = lazy(() => import('@/pages/BlogPost'))
+const Install = lazy(() => import('@/pages/Install'))
+const Open = lazy(() => import('@/pages/Open'))
 
 export default function App() {
   return (
@@ -36,6 +38,9 @@ export default function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogPost />} />
+            <Route path="install" element={<Install />} />
+            <Route path="download" element={<Install />} />
+            <Route path="open" element={<Open />} />
             <Route path=":slug" element={<ToolPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>

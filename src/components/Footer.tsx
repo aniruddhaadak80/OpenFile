@@ -5,6 +5,7 @@ import { overlayBus, useInstall } from '@/lib/ux'
 import { MadeByCard } from './Author'
 import { OnlineDot } from './Overlays'
 import { Logo, Github } from './Logo'
+import { OfflineReadyBadge } from './app/AppStatus'
 
 const REPO = 'https://github.com/aniruddhaadak80/OpenFile'
 const BASE = import.meta.env.BASE_URL
@@ -45,6 +46,8 @@ export function Footer() {
   const popular: FLink[] = TOOLS.filter((t) => t.popular).slice(0, 8).map((t) => ({ to: `/${t.slug}`, label: t.name }))
   const videoAudio = [...pick(['video'], 3), ...pick(['audio'], 3)]
   const resources: FLink[] = [
+    { to: '/install', label: 'Install the app' },
+    { to: '/open', label: 'Open a file' },
     { to: '/docs', label: 'Docs' },
     { to: '/blog', label: 'Blog' },
     { to: '/changelog', label: 'Changelog' },
@@ -139,7 +142,9 @@ function FooterApp() {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <button onClick={() => overlayBus.emit('shortcuts')} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Keyboard className="size-3.5" /> Shortcuts <kbd className="rounded border border-border px-1 text-[10px]">?</kbd></button>
-      {canPrompt && !installed && <button onClick={() => void prompt()} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Download className="size-3.5" /> Install app</button>}
+      {canPrompt && !installed && <button onClick={async () => { const r = await prompt(); if (r === 'unavailable') location.assign(`${BASE}install`) }} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Download className="size-3.5" /> Install app</button>}
+      {!canPrompt && !installed && <Link to="/install" className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg"><Download className="size-3.5" /> Get the app</Link>}
+      <OfflineReadyBadge />
       <span className="flex min-h-9 items-center rounded-lg border border-border px-2.5"><OnlineDot /></span>
       <span className="hidden min-h-9 items-center px-1 lg:flex">Theme: Black, Dark, Sun or System, set from the header</span>
       <a href={`${BASE}blog/rss.xml`} className="flex min-h-9 items-center gap-1 px-1 hover:text-fg"><Rss className="size-3" /> RSS</a>
