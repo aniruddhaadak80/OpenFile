@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="334" viewBox="0 0 900 334" role="img" aria-label="Quick start: git clone, npm install, npm run dev">
+  <title>OpenFile quick start</title>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace">
+  <rect width="900" height="334" rx="18" fill="#050505" stroke="#262A31"/>
+  <rect width="900" height="46" rx="18" fill="#111418"/><rect y="28" width="900" height="18" fill="#111418"/>
+  <circle cx="26" cy="23" r="7" fill="#F5A524"/><circle cx="48" cy="23" r="7" fill="#14B8A6"/><circle cx="70" cy="23" r="7" fill="#10B981"/>
+  <text x="450.0" y="28" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="600" fill="#A8A29E">~/OpenFile — zsh</text>
+  
+  <clipPath id="c0"><rect x="40" y="69" width="702" height="34">
+    <animate attributeName="width" values="0;0;702;702" keyTimes="0;0.025;0.191;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
+  <text clip-path="url(#c0)" x="44" y="90" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700">$ </tspan><tspan fill="#F5F3EE">git clone https://github.com/aniruddhaadak80/OpenFile.git</tspan></text>
+  <clipPath id="c1"><rect x="40" y="103" width="375" height="34">
+    <animate attributeName="width" values="0;0;375;375" keyTimes="0;0.233;0.309;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
+  <text clip-path="url(#c1)" x="44" y="124" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700">$ </tspan><tspan fill="#F5F3EE">cd OpenFile &amp;&amp; npm install</tspan></text>
+  <clipPath id="c2"><rect x="40" y="137" width="354" height="34">
+    <animate attributeName="width" values="0;0;354;354" keyTimes="0;0.350;0.363;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
+  <text clip-path="url(#c2)" x="44" y="158" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700"></tspan><tspan fill="#10B981">  ✔ dependencies installed</tspan></text>
+  <clipPath id="c3"><rect x="40" y="171" width="217" height="34">
+    <animate attributeName="width" values="0;0;217;217" keyTimes="0;0.392;0.424;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
+  <text clip-path="url(#c3)" x="44" y="192" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700">$ </tspan><tspan fill="#F5F3EE">npm run dev</tspan></text>
+  <clipPath id="c4"><rect x="40" y="205" width="575" height="34">
+    <animate attributeName="width" values="0;0;575;575" keyTimes="0;0.466;0.478;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
+  <text clip-path="url(#c4)" x="44" y="226" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700"></tspan><tspan fill="#22D3EE">  VITE ready  ➜  Local:  http://localhost:5173/</tspan></text>
+  <clipPath id="c5"><rect x="40" y="239" width="491" height="34">
+    <animate attributeName="width" values="0;0;491;491" keyTimes="0;0.507;0.520;1" dur="12.0s" repeatCount="indefinite"/></rect></clipPath>
+  <text clip-path="url(#c5)" x="44" y="260" font-size="17" xml:space="preserve"><tspan fill="#F5A524" font-weight="700"></tspan><tspan fill="#F5A524">  ➜  Drop a file — 117 tools, 0 uploads</tspan></text>
+  <rect x="44" y="279" width="10" height="19" fill="#FFB224"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.5;.5;1" dur="1s" repeatCount="indefinite"/></rect>
+  </g>
+</svg>

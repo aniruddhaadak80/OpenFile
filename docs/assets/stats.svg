@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="170" viewBox="0 0 1200 170" role="img" aria-label="117 tools, 8 categories, 0 uploads, 100% open source">
+  <title>OpenFile in numbers</title>
+  <g font-family="system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect width="1200" height="170" rx="26" fill="#050505"/>
+  <g transform="translate(20.0 20)">
+    <rect width="275.0" height="130" rx="20" fill="#111418" stroke="#F5A524" stroke-opacity=".45"/>
+    <rect x="1" y="1" width="273.0" height="128" rx="19" fill="#F5A524" opacity=".06"><animate attributeName="opacity" values=".04;.14;.04" dur="3s" begin="0.0s" repeatCount="indefinite"/></rect>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 14;0 0;0 0" keyTimes="0;.12;1" dur="8s" begin="0.0s" repeatCount="indefinite"/>
+      <text x="137.5" y="72" text-anchor="middle" font-size="54" font-weight="800" fill="#F5A524">117<animate attributeName="opacity" values="0;1;1" keyTimes="0;.12;1" dur="8s" begin="0.0s" repeatCount="indefinite"/></text>
+    </g>
+    <text x="137.5" y="102" text-anchor="middle" font-size="16" font-weight="600" letter-spacing="2" fill="#A8A29E">TOOLS</text>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#262A31"/>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#F5A524"><animate attributeName="width" values="0;215.0;215.0" keyTimes="0;.3;1" dur="8s" begin="0.0s" repeatCount="indefinite"/></rect>
+  </g>
+  <g transform="translate(315.0 20)">
+    <rect width="275.0" height="130" rx="20" fill="#111418" stroke="#14B8A6" stroke-opacity=".45"/>
+    <rect x="1" y="1" width="273.0" height="128" rx="19" fill="#14B8A6" opacity=".06"><animate attributeName="opacity" values=".04;.14;.04" dur="3s" begin="0.25s" repeatCount="indefinite"/></rect>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 14;0 0;0 0" keyTimes="0;.12;1" dur="8s" begin="0.25s" repeatCount="indefinite"/>
+      <text x="137.5" y="72" text-anchor="middle" font-size="54" font-weight="800" fill="#14B8A6">8<animate attributeName="opacity" values="0;1;1" keyTimes="0;.12;1" dur="8s" begin="0.25s" repeatCount="indefinite"/></text>
+    </g>
+    <text x="137.5" y="102" text-anchor="middle" font-size="16" font-weight="600" letter-spacing="2" fill="#A8A29E">CATEGORIES</text>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#262A31"/>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#14B8A6"><animate attributeName="width" values="0;215.0;215.0" keyTimes="0;.3;1" dur="8s" begin="0.25s" repeatCount="indefinite"/></rect>
+  </g>
+  <g transform="translate(610.0 20)">
+    <rect width="275.0" height="130" rx="20" fill="#111418" stroke="#10B981" stroke-opacity=".45"/>
+    <rect x="1" y="1" width="273.0" height="128" rx="19" fill="#10B981" opacity=".06"><animate attributeName="opacity" values=".04;.14;.04" dur="3s" begin="0.5s" repeatCount="indefinite"/></rect>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 14;0 0;0 0" keyTimes="0;.12;1" dur="8s" begin="0.5s" repeatCount="indefinite"/>
+      <text x="137.5" y="72" text-anchor="middle" font-size="54" font-weight="800" fill="#10B981">0<animate attributeName="opacity" values="0;1;1" keyTimes="0;.12;1" dur="8s" begin="0.5s" repeatCount="indefinite"/></text>
+    </g>
+    <text x="137.5" y="102" text-anchor="middle" font-size="16" font-weight="600" letter-spacing="2" fill="#A8A29E">UPLOADS</text>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#262A31"/>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#10B981"><animate attributeName="width" values="0;215.0;215.0" keyTimes="0;.3;1" dur="8s" begin="0.5s" repeatCount="indefinite"/></rect>
+  </g>
+  <g transform="translate(905.0 20)">
+    <rect width="275.0" height="130" rx="20" fill="#111418" stroke="#22D3EE" stroke-opacity=".45"/>
+    <rect x="1" y="1" width="273.0" height="128" rx="19" fill="#22D3EE" opacity=".06"><animate attributeName="opacity" values=".04;.14;.04" dur="3s" begin="0.75s" repeatCount="indefinite"/></rect>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 14;0 0;0 0" keyTimes="0;.12;1" dur="8s" begin="0.75s" repeatCount="indefinite"/>
+      <text x="137.5" y="72" text-anchor="middle" font-size="54" font-weight="800" fill="#22D3EE">100%<animate attributeName="opacity" values="0;1;1" keyTimes="0;.12;1" dur="8s" begin="0.75s" repeatCount="indefinite"/></text>
+    </g>
+    <text x="137.5" y="102" text-anchor="middle" font-size="16" font-weight="600" letter-spacing="2" fill="#A8A29E">OPEN SOURCE</text>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#262A31"/>
+    <rect x="30" y="114" width="215.0" height="4" rx="2" fill="#22D3EE"><animate attributeName="width" values="0;215.0;215.0" keyTimes="0;.3;1" dur="8s" begin="0.75s" repeatCount="indefinite"/></rect>
+  </g>
+  </g>
+</svg>

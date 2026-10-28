@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="36" viewBox="0 0 1200 36" role="img" aria-label="divider">
+  <defs>
+    <linearGradient id="t" x1="0" x2="1"><stop offset="0" stop-color="#F5A524" stop-opacity="0"/><stop offset="1" stop-color="#FFB224"/></linearGradient>
+    <clipPath id="c"><rect width="1200" height="36" rx="18"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+  <rect width="1200" height="36" fill="#050505"/>
+  <line x1="24" y1="18" x2="1176" y2="18" stroke="#262A31" stroke-width="2" stroke-dasharray="6 8">
+    <animate attributeName="stroke-dashoffset" from="0" to="-28" dur="1s" repeatCount="indefinite"/></line>
+  <g><animateTransform attributeName="transform" type="translate" from="-200 0" to="1240 0" dur="5s" repeatCount="indefinite"/>
+    <rect x="0" y="16" width="160" height="4" rx="2" fill="url(#t)"/>
+    <circle cx="160" cy="18" r="5" fill="#FFE3A3"/>
+  </g>
+  <g><animateTransform attributeName="transform" type="translate" from="1240 0" to="-200 0" dur="7s" repeatCount="indefinite"/>
+    <circle cx="0" cy="18" r="3.5" fill="#14B8A6"/>
+  </g>
+  <circle cx="600.0" cy="18" r="4" fill="#F5A524"><animate attributeName="r" values="3;7;3" dur="2s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

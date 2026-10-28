@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Play the OpenFile launch film">
+  <title>OpenFile launch film</title>
+  <defs>
+    <radialGradient id="g"><stop offset="0" stop-color="#FFB224" stop-opacity=".45"/><stop offset=".5" stop-color="#F5A524" stop-opacity=".12"/><stop offset="1" stop-color="#F5A524" stop-opacity="0"/></radialGradient>
+    <radialGradient id="t"><stop offset="0" stop-color="#14B8A6" stop-opacity=".25"/><stop offset="1" stop-color="#14B8A6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="txt" x1="0" x2="1"><stop offset="0" stop-color="#F5A524"/><stop offset=".5" stop-color="#FFE3A3"/><stop offset="1" stop-color="#FFB224"/></linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#F5A524" stroke-opacity=".05"/></pattern>
+    <clipPath id="c"><rect width="1200" height="520" rx="28"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)" font-family="system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+  <rect width="1200" height="520" fill="#050505"/><rect width="1200" height="520" fill="url(#grid)"/>
+  <circle cx="1080" cy="60" r="300" fill="url(#t)"/>
+  <circle cx="600" cy="210" r="230" fill="url(#g)"><animate attributeName="r" values="210;260;210" dur="4s" repeatCount="indefinite"/></circle>
+  <circle cx="600" cy="210" r="78" fill="#0B0D10" stroke="#FFB224" stroke-width="4"/>
+  <circle cx="600" cy="210" r="96" fill="none" stroke="#F5A524" stroke-opacity=".4" stroke-width="2"><animate attributeName="r" values="86;112;86" dur="2.4s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".6;0;.6" dur="2.4s" repeatCount="indefinite"/></circle>
+  <path d="M582 176L636 210L582 244Z" fill="#F5A524" stroke="#FFE3A3" stroke-width="3" stroke-linejoin="round"/>
+  <text x="600" y="370" text-anchor="middle" font-size="44" font-weight="800" fill="#F5F3EE">Every file tool.</text>
+  <text x="600" y="424" text-anchor="middle" font-size="44" font-weight="800" fill="url(#txt)">One private browser tab.</text>
+  <text x="600" y="470" text-anchor="middle" font-size="18" fill="#A8A29E">▶ Watch the launch film · 117 tools · zero uploads · free &amp; open source</text>
+  </g>
+</svg>
