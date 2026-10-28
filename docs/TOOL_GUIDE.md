@@ -27,7 +27,7 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 | `subtitle` | 💬 Subtitles | 5 | Convert, sync and edit SRT, VTT, ASS |
 <!-- categories:end -->
 
-New entries can go in `src/tools/registry.ts` or in one of the batch files (`src/tools/batches/b1.ts` to `b5.ts`), which the registry spreads into `TOOLS`. After adding or renaming a tool, run `node scripts/gen-readme-catalog.mjs` to refresh the README catalog, the stats artwork and this list.
+New entries can go in `src/tools/registry.ts` or in one of the batch files (`src/tools/batches/bN.ts`, each exporting `BATCH_N`), which the registry spreads into `TOOLS`. Shared logic for a batch goes in `src/lib/bN/` and its tests in `scripts/tests/bN/`. After adding or renaming a tool, run `node scripts/gen-readme-catalog.mjs` to refresh the README catalog, the stats artwork and this list.
 
 ## Rules
 - 100% client-side. No uploads. Use Web APIs, Canvas, WASM and the installed libraries.
@@ -52,4 +52,10 @@ Lucide note: brand icons (Github etc.) are not in lucide; use `Github` from `@/c
 
 ## Guide content (optional)
 Every tool page shows "How it works", steps, tips, FAQ and related tools, and the docs at `/docs/tools/<category>` list every tool. Content is generated from the category and the engines in `src/tools/engines.ts`, with hand-written overrides in `src/tools/guides.ts`. You can also set these optional registry fields: `how`, `steps`, `tips`, `faq`, `related`, `inputs`, `outputs`. New engines also need an entry in `ENGINE_INFO` (guides.ts).
-Docs pages are Markdown files in `src/docs/pages/`, listed in `src/docs/nav.ts` (one entry per line; `scripts/postbuild.mjs` reads it to pre-render routes and the sitemap).
+Docs pages are Markdown files in `src/pages/docs/content/` (the original pages stay in `src/docs/pages/` and are reused), listed in `src/pages/docs/nav.ts`, one entry per line. `scripts/postbuild.mjs` reads both nav files to pre-render routes and the sitemap.
+
+## Docs that keep themselves current
+- The [tools reference](https://openfile-studio.vercel.app/docs/tools), the [format matrix](https://openfile-studio.vercel.app/docs/formats) and the per-category guides are generated from the registry, so a new tool shows up on its own. Set `inputs` and `outputs` to place it in the format matrix.
+- Shortcuts, AI models, manifest file types, test counts, the changelog and the roadmap come from `src/pages/docs/generated.json`, written by `scripts/gen-docs.mjs` before every build. Run `node scripts/gen-docs.mjs` after adding tools, then read the docs for anything new that deserves a sentence.
+- In docs Markdown, write `{{TOOL_COUNT}}`-style placeholders and `::` directives instead of typing numbers or lists. Escape a placeholder you want to show literally as `{{=NAME}}`.
+- Full keyboard reference: [SHORTCUTS.md](SHORTCUTS.md). AI models: [AI.md](AI.md). Privacy details: [PRIVACY.md](PRIVACY.md). Problems: [TROUBLESHOOTING.md](TROUBLESHOOTING.md).

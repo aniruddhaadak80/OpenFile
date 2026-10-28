@@ -1,0 +1,17 @@
+/* Docs site extras. The base prose styles (.docs-prose, callouts, code blocks) live in src/index.css. */
+.docs-tab-body > :first-child { margin-top: .75rem; }
+.docs-tab-body > :last-child { margin-bottom: .75rem; }
+.docs-tab-body .code-block { margin: .75rem 0; }
+.docs-prose .heading-anchor { cursor: copy; }
+.docs-prose input[type="checkbox"] { accent-color: var(--accent); margin-right: .45rem; transform: translateY(1px); }
+.docs-prose li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.2rem; }
+.docs-cv { content-visibility: auto; contain-intrinsic-size: auto 92px; }
+.docs-progress { transition: transform .08s linear; will-change: transform; }
+.reduce-motion .docs-progress { transition: none; }
+#docs-main .mermaid-svg svg { max-width: 100%; height: auto; }
+@media (max-width: 640px) {
+  .docs-prose { font-size: 15px; }
+  .docs-prose h2 { font-size: 1.35rem; }
+  .docs-prose .heading-anchor { position: static; opacity: .5; margin-right: .3em; }
+}
+@media (prefers-reduced-motion: reduce) { .docs-progress { transition: none; } }

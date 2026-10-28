@@ -1083,6 +1083,21 @@ sequenceDiagram
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
+## 📚 Docs
+
+Full documentation lives inside the app at **[/docs](https://openfile-studio.vercel.app/docs)** (also on [GitHub Pages](https://aniruddhaadak80.github.io/OpenFile/docs)), with search, a live device check, an interactive Workspace demo and references generated from the code on every build.
+
+| Start here | Reference | Repo docs |
+| --- | --- | --- |
+| [Getting started](https://openfile-studio.vercel.app/docs) | [Full tools reference](https://openfile-studio.vercel.app/docs/tools) | [Architecture](docs/ARCHITECTURE.md) |
+| [Install on every device](https://openfile-studio.vercel.app/docs/install) | [Formats supported](https://openfile-studio.vercel.app/docs/formats) | [Writing a tool](docs/TOOL_GUIDE.md) |
+| [Using tools](https://openfile-studio.vercel.app/docs/using-tools) | [Command palette and shortcuts](https://openfile-studio.vercel.app/docs/keyboard-shortcuts) | [Keyboard shortcuts](docs/SHORTCUTS.md) |
+| [Workspace pipelines](https://openfile-studio.vercel.app/docs/workspace) | [Local AI](https://openfile-studio.vercel.app/docs/local-ai) | [On-device AI](docs/AI.md) |
+| [Offline and PWA](https://openfile-studio.vercel.app/docs/offline) | [Privacy and security](https://openfile-studio.vercel.app/docs/privacy-security) | [Privacy](docs/PRIVACY.md) |
+| [Troubleshooting](https://openfile-studio.vercel.app/docs/troubleshooting) | [Developer guide](https://openfile-studio.vercel.app/docs/developer) | [Troubleshooting](docs/TROUBLESHOOTING.md) · [Install](docs/INSTALL.md) |
+
+<p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
+
 ## 🚀 Quick start
 
 <p align="center"><img src="docs/assets/quickstart-terminal.svg" width="80%" alt="git clone, npm install, npm run dev"/></p>

@@ -62,6 +62,13 @@ try {
 categories = categories.filter((c) => tools.some((t) => t.category === c.id)) // never publish an empty category
 const nav = readFileSync(join(root, 'src/docs/nav.ts'), 'utf8')
 const docs = [...nav.matchAll(/\{\s*id:\s*'([^']+)',\s*path:\s*'([^']+)',\s*title:\s*'((?:[^'\\]|\\.)+)',\s*description:\s*'((?:[^'\\]|\\.)+)'/g)].map((m) => ({ id: m[1], path: m[2], title: unq(m[3]), description: unq(m[4]) }))
+// docs site routes (src/pages/docs/nav.ts) plus one tool guide per category; first definition of a path wins
+{
+  const siteNav = existsSync(join(root, 'src/pages/docs/nav.ts')) ? readFileSync(join(root, 'src/pages/docs/nav.ts'), 'utf8') : ''
+  const extra = [...siteNav.matchAll(/\{\s*id:\s*'([^']+)',\s*path:\s*'([^']+)',\s*title:\s*'((?:[^'\\]|\\.)+)',\s*description:\s*'((?:[^'\\]|\\.)+)'/g)].map((m) => ({ id: m[1], path: m[2], title: unq(m[3]), description: unq(m[4]) }))
+  for (const c of categories) extra.push({ id: `tools-${c.id}`, path: `/docs/tools/${c.id}`, title: c.name, description: `Guide to every ${c.name} tool: ${c.blurb.toLowerCase()}.` })
+  for (const d of extra) if (!docs.some((x) => x.path === d.path)) docs.push(d)
+}
 const blogSrc = existsSync(join(root, 'src/blog/meta.ts')) ? readFileSync(join(root, 'src/blog/meta.ts'), 'utf8') : ''
 const posts = [...blogSrc.matchAll(/\{\s*slug:\s*'([^']+)',\s*title:\s*'((?:[^'\\]|\\.)+)',\s*description:\s*'((?:[^'\\]|\\.)+)',\s*date:\s*'([\d-]+)',\s*tags:\s*\[([^\]]*)\]/g)].map((m) => ({ slug: m[1], title: unq(m[2]), description: unq(m[3]), date: m[4], tags: [...m[5].matchAll(/'([^']+)'/g)].map((t) => t[1]) }))
 if (!tools.length || !categories.length || !docs.length) { console.error(`postbuild: could not parse routes (tools=${tools.length}, categories=${categories.length}, docs=${docs.length})`); process.exit(1) }
