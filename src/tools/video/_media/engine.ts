@@ -4,8 +4,8 @@
  * `time=` log lines, readable errors, multi-file outputs and a stream probe. */
 import type { FFmpeg } from '@ffmpeg/ffmpeg'
 
-const CORE = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm'
-const WASM_EST = 32 * 1024 * 1024
+import { coreURLs } from '@/lib/ffmpeg-core'
+const WASM_EST = 32_232_419
 
 export type EngineStatus = 'idle' | 'loading' | 'ready' | 'error'
 export interface EngineState { status: EngineStatus; loaded: number; total: number; error?: string }
@@ -31,10 +31,9 @@ export function loadEngine(): Promise<FFmpeg> {
     const my = ++gen
     loading = (async () => {
       set({ status: 'loading', loaded: 0, total: WASM_EST, error: undefined })
-      const [{ FFmpeg }, { toBlobURL }] = await Promise.all([import('@ffmpeg/ffmpeg'), import('@ffmpeg/util')])
-      const coreURL = await toBlobURL(`${CORE}/ffmpeg-core.js`, 'text/javascript')
-      const wasmURL = await toBlobURL(`${CORE}/ffmpeg-core.wasm`, 'application/wasm', true, (e) => {
-        if (my === gen) set({ loaded: e.received, total: e.total > 0 ? e.total : Math.max(WASM_EST, e.received * 1.02) })
+      const { FFmpeg } = await import('@ffmpeg/ffmpeg')
+      const { coreURL, wasmURL } = await coreURLs((received) => {
+        if (my === gen) set({ loaded: received, total: Math.max(WASM_EST, received * 1.02) })
       })
       const ff = new FFmpeg()
       await ff.load({ coreURL, wasmURL })
@@ -44,6 +43,7 @@ export function loadEngine(): Promise<FFmpeg> {
       return ff
     })().catch((e) => {
       if (isCancel(e) || my !== gen) throw new CancelledError()
+      console.error('[ffmpeg] load failed', e)
       loading = null
       set({ status: 'error', error: 'Could not download the video engine. Check your connection and try again.' })
       throw new Error('Could not download the video engine (ffmpeg.wasm). Check your connection and try again.')

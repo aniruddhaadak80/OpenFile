@@ -1,9 +1,9 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg'
-import { fetchFile, toBlobURL } from '@ffmpeg/util'
+import { fetchFile } from '@ffmpeg/util'
+import { coreURLs } from './ffmpeg-core'
 
 let instance: FFmpeg | null = null
 let loading: Promise<FFmpeg> | null = null
-const CORE = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm'
 
 /** Lazily load the single-threaded ffmpeg.wasm core (~30MB, cached by the browser after first use). */
 export function getFFmpeg(): Promise<FFmpeg> {
@@ -11,10 +11,7 @@ export function getFFmpeg(): Promise<FFmpeg> {
   if (!loading) {
     loading = (async () => {
       const ff = new FFmpeg()
-      await ff.load({
-        coreURL: await toBlobURL(`${CORE}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${CORE}/ffmpeg-core.wasm`, 'application/wasm'),
-      })
+      await ff.load(await coreURLs())
       instance = ff
       return ff
     })().catch((e) => { loading = null; throw e })
