@@ -27,7 +27,7 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return
   const url = new URL(req.url)
   if (url.pathname.includes('/api/')) return
-  const isAsset = url.pathname.includes('/assets/') || /cdn\.jsdelivr\.net|unpkg\.com|fonts\.(googleapis|gstatic)\.com/.test(url.host)
+  const isAsset = url.pathname.includes('/assets/') || url.pathname.includes('/fonts/') || /cdn\.jsdelivr\.net|unpkg\.com|fonts\.(googleapis|gstatic)\.com/.test(url.host)
   if (isAsset) {
     e.respondWith(caches.open(CACHE).then(async (c) => { const hit = await c.match(req); if (hit) return hit; const res = await fetch(req); if (res.ok && res.type !== 'opaque') c.put(req, res.clone()); return res }))
   } else if (req.mode === 'navigate') {

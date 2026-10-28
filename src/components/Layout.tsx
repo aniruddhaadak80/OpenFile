@@ -15,6 +15,7 @@ import { CATEGORIES, TOOLS } from '@/tools/registry'
 import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
 import { cn } from './ui'
+import { bootDone } from '@/lib/boot'
 
 export const REPO_URL = 'https://github.com/aniruddhaadak80/OpenFile'
 
@@ -95,7 +96,7 @@ export function Layout() {
         )}
       </header>
       <RouteWipe k={loc.pathname} />
-      <main id="main" tabIndex={-1} className="flex-1 outline-none"><AnimatePresence mode="wait" initial={false}><PageTransition key={loc.pathname} k={loc.pathname}><Suspense fallback={<RouteSkeleton />}><Outlet /></Suspense></PageTransition></AnimatePresence></main>
+      <main id="main" tabIndex={-1} className="flex-1 outline-none"><AnimatePresence mode="wait" initial={false}><PageTransition key={loc.pathname} k={loc.pathname}><Suspense fallback={<RouteSkeleton />}><Outlet /><BootDone /></Suspense></PageTransition></AnimatePresence></main>
       <Footer />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
       <ShortcutsOverlay open={help} onClose={() => setHelp(false)} />
@@ -154,9 +155,15 @@ function FooterApp() {
   )
 }
 
+/** Commits only once the route's lazy chunk has resolved (it sits inside the Suspense boundary), then ends the boot splash. */
+function BootDone() {
+  useEffect(() => { bootDone() }, [])
+  return null
+}
+
 function RouteSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-12 sm:px-6" aria-busy="true" aria-label="Loading">
+    <div className="of-delay mx-auto max-w-7xl px-4 pt-12 sm:px-6" aria-busy="true" aria-label="Loading">
       <div className="skeleton h-10 w-64" /><div className="skeleton mt-3 h-4 w-96 max-w-full" />
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <div key={i} className="skeleton h-40 rounded-2xl" />)}</div>
     </div>

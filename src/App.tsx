@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from '@/components/Layout'
-import { Spinner } from '@/components/ui'
 import Home from '@/pages/Home'
 
 const ToolPage = lazy(() => import('@/pages/ToolPage'))
@@ -20,7 +19,7 @@ const BlogPost = lazy(() => import('@/pages/BlogPost'))
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-      <Suspense fallback={<div className="grid h-[60vh] place-items-center"><Spinner label="Loading" /></div>}>
+      <Suspense fallback={<div className="of-delay grid h-[60vh] place-items-center" aria-busy="true" aria-label="Loading"><span className="of-ring" /></div>}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />

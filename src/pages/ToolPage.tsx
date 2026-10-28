@@ -98,7 +98,7 @@ export default function ToolPage() {
 
 function ToolSkeleton() {
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_340px]" aria-busy="true" aria-label="Loading tool">
+    <div className="of-delay grid gap-6 lg:grid-cols-[1fr_340px]" aria-busy="true" aria-label="Loading tool">
       <div className="space-y-4"><div className="skeleton h-56 rounded-2xl" /><div className="skeleton h-10 w-2/3" /><div className="skeleton h-10 w-1/2" /></div>
       <div className="space-y-3 rounded-2xl border border-border bg-surface p-5"><div className="skeleton h-4 w-1/3" /><div className="skeleton h-10" /><div className="skeleton h-4 w-1/4" /><div className="skeleton h-10" /><div className="skeleton h-10" /></div>
     </div>

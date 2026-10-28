@@ -54,9 +54,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   return (
     <div className="fixed inset-0 z-[90] flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-3 border-b border-border px-4">
-          <Search className="size-5 text-muted" />
-          <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${TOOLS.length} tools, pages and docs…`} className="h-14 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
+        <div className="group relative flex items-center gap-3 border-b border-border px-4 transition-colors focus-within:border-accent/60 focus-within:bg-accent/[0.04] after:pointer-events-none after:absolute after:inset-x-6 after:-bottom-px after:h-px after:bg-gradient-to-r after:from-transparent after:via-accent after:to-transparent after:opacity-0 after:transition-opacity focus-within:after:opacity-100">
+          <Search className="size-5 text-muted transition-colors group-focus-within:text-accent" />
+          <input ref={inputRef} data-palette-input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${TOOLS.length} tools, pages and docs`} className="h-14 flex-1 bg-transparent text-base outline-none placeholder:text-muted focus:outline-none focus-visible:outline-none"
             onKeyDown={(e) => {
               if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(results.length - 1, i + 1)) }
               if (e.key === 'ArrowUp') { e.preventDefault(); setIdx((i) => Math.max(0, i - 1)) }
