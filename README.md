@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tools-349-F5A524?style=flat-square&labelColor=0B0D10" alt="349 tools"/>
+  <img src="https://img.shields.io/badge/tools-355-F5A524?style=flat-square&labelColor=0B0D10" alt="355 tools"/>
   <img src="https://img.shields.io/badge/uploads-0_bytes-10B981?style=flat-square&labelColor=0B0D10" alt="0 uploads"/>
   <img src="https://img.shields.io/badge/runs-in_your_browser-14B8A6?style=flat-square&logo=googlechrome&logoColor=14B8A6&labelColor=0B0D10" alt="runs in your browser"/>
   <img src="https://img.shields.io/badge/React-19-22D3EE?style=flat-square&logo=react&logoColor=22D3EE&labelColor=0B0D10" alt="React 19"/>
@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <b>349 free, open-source tools</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data and code, <br/>
+  <b>355 free, open-source tools</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data and code, <br/>
   processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
 </p>
 
@@ -50,14 +50,14 @@
   <a href="#-built-by">Author</a>
 </p>
 
-<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="349 tools · 16 categories · 0 uploads · 100% open source"/></p>
+<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="355 tools · 16 categories · 0 uploads · 100% open source"/></p>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
 ## 🆕 What's new
 
 <!-- whatsnew:start -->
-OpenFile now has **349 tools in 16 studios**. This release adds whole new studios, more on-device AI and a smoother way to get files in.
+OpenFile now has **355 tools in 16 studios**. This release adds whole new studios, more on-device AI and a smoother way to get files in.
 
 - 🧊 **3D viewer and converter**: [3D Model Viewer](https://openfile-studio.vercel.app/3d-viewer) opens GLB, glTF, OBJ, STL, PLY, FBX and more with orbit controls. [3D Model Converter](https://openfile-studio.vercel.app/3d-converter) moves models between formats and [GLB / glTF Optimizer](https://openfile-studio.vercel.app/gltf-optimizer) shrinks them.
 - 🔤 **Fonts**: [Font Converter](https://openfile-studio.vercel.app/font-converter) (TTF, OTF, WOFF, WOFF2), [Font Viewer & Inspector](https://openfile-studio.vercel.app/font-viewer) and [Font Subsetter](https://openfile-studio.vercel.app/font-subsetter) for tiny web fonts.
@@ -219,14 +219,14 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </td>
 <td width="25%" valign="top" align="center">
 <h3>📝<br/>Text &amp; Data</h3>
-<img src="https://img.shields.io/badge/32-tools-84CC16?style=flat-square&labelColor=0B0D10" alt="32 tools"/><br/>
+<img src="https://img.shields.io/badge/37-tools-84CC16?style=flat-square&labelColor=0B0D10" alt="37 tools"/><br/>
 <sub>Diff, count, convert tables, format text</sub><br/><br/>
 <a href="https://openfile-studio.vercel.app/diff-checker">Diff Checker</a><br/><a href="https://openfile-studio.vercel.app/time-zone-converter">Time Zone Converter</a><br/><a href="https://openfile-studio.vercel.app/word-counter">Word Counter</a><br/>
 <a href="https://openfile-studio.vercel.app/category/text"><b>Browse all →</b></a>
 </td>
 <td width="25%" valign="top" align="center">
 <h3>🖌️<br/>Design</h3>
-<img src="https://img.shields.io/badge/15-tools-60A5FA?style=flat-square&labelColor=0B0D10" alt="15 tools"/><br/>
+<img src="https://img.shields.io/badge/16-tools-60A5FA?style=flat-square&labelColor=0B0D10" alt="16 tools"/><br/>
 <sub>Colors, CSS, favicons, SVG, whiteboards</sub><br/><br/>
 <a href="https://openfile-studio.vercel.app/color-palette">Color Palette Extractor</a><br/><a href="https://openfile-studio.vercel.app/color-converter">Color Converter &amp; Contrast</a><br/><a href="https://openfile-studio.vercel.app/gradient-generator">Gradient Generator</a><br/>
 <a href="https://openfile-studio.vercel.app/category/design"><b>Browse all →</b></a>
@@ -298,7 +298,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ### 📚 Every tool, one click away
 
 <!-- catalog:start -->
-> **349 tools across 16 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
+> **355 tools across 16 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
 > Legend: 🔥 Hot · ✨ New · 🤖 AI · ⭐ Popular · 🔁 Usable as a Workspace pipeline step
 
 <details open>
@@ -617,7 +617,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>📝 Text &amp; Data</b>, 32 tools · <i>Diff, count, convert tables, format text</i></summary>
+<summary><b>📝 Text &amp; Data</b>, 37 tools · <i>Diff, count, convert tables, format text</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -653,12 +653,17 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 <tr><td><a href="https://openfile-studio.vercel.app/numbers-to-words"><b>Number to Words</b></a></td><td>Write numbers in words, with lakh and crore, ordinals, years, currency and cheque wording, and turn words back into numbers.</td><td><sub>✨ New</sub></td></tr>
 <tr><td><a href="https://openfile-studio.vercel.app/unicode-inspector"><b>Unicode Inspector &amp; Invisible Character Finder</b></a></td><td>See every code point, find zero-width and look-alike characters, and normalize to NFC, NFD, NFKC or NFKD.</td><td><sub>✨ New</sub></td></tr>
 <tr><td><a href="https://openfile-studio.vercel.app/text-encoding-converter"><b>Text Encoding Detector &amp; Converter</b></a></td><td>Detect the encoding of old text and subtitle files (Windows-1252, Shift_JIS, GBK and more) and convert them to UTF-8.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/roman-numerals"><b>Roman Numeral Converter</b></a></td><td>Turn numbers into Roman numerals and back, many lines at once.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/morse-code"><b>Morse Code Translator</b></a></td><td>Translate text to Morse code and decode dots and dashes back to text.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/duplicate-line-remover"><b>Duplicate Line Remover</b></a></td><td>Remove repeated lines, keep only repeats, ignore case and spaces.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/line-sorter"><b>Line Sorter</b></a></td><td>Sort lines A to Z, naturally, by length or number, reverse or shuffle them.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/text-wrapper"><b>Text Wrapper</b></a></td><td>Break long text into lines of a set width without splitting words.</td><td><sub>✨ New</sub></td></tr>
 </table>
 <p align="right"><a href="https://openfile-studio.vercel.app/category/text">Open the Text &amp; Data studio ↗</a></p>
 </details>
 
 <details>
-<summary><b>🖌️ Design</b>, 15 tools · <i>Colors, CSS, favicons, SVG, whiteboards</i></summary>
+<summary><b>🖌️ Design</b>, 16 tools · <i>Colors, CSS, favicons, SVG, whiteboards</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -677,6 +682,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 <tr><td><a href="https://openfile-studio.vercel.app/card-maker"><b>Card Maker</b></a></td><td>Design business cards, invitations, greeting cards and postcards from templates and download print-ready PDFs.</td><td><sub>✨ New</sub></td></tr>
 <tr><td><a href="https://openfile-studio.vercel.app/mockup-generator"><b>Device Mockup Generator</b></a></td><td>Place screenshots into phone, tablet, laptop, browser and monitor frames, flat or in 3D perspective, on a custom background.</td><td><sub>✨ New</sub></td></tr>
 <tr><td><a href="https://openfile-studio.vercel.app/social-image-maker"><b>Social Banner &amp; Thumbnail Maker</b></a></td><td>Make YouTube thumbnails, link preview images, banners and posts for X, LinkedIn, Instagram and more from templates.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/contrast-checker"><b>Colour Contrast Checker</b></a></td><td>Check the WCAG contrast ratio of two colours for AA and AAA text.</td><td><sub>✨ New</sub></td></tr>
 </table>
 <p align="right"><a href="https://openfile-studio.vercel.app/category/design">Open the Design studio ↗</a></p>
 </details>
@@ -801,15 +807,15 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'pie1':'#F5A524','pie2':'#F97316','pie3':'#10B981','pie4':'#38BDF8','pie5':'#14B8A6','pie6':'#22D3EE','pie7':'#84CC16','pie8':'#60A5FA','pie9':'#0EA5E9','pie10':'#FBBF24','pie11':'#2DD4BF','pie12':'#A3A3A3','pieTitleTextSize':'20px','pieTitleTextColor':'#F5A524','pieSectionTextColor':'#050505','pieLegendTextColor':'#A8A29E','pieStrokeColor':'#050505','pieStrokeWidth':'2px','pieOuterStrokeColor':'#F5A524','pieOuterStrokeWidth':'2px','pieOpacity':'1'}}}%%
 pie showData
-    title 349 tools across 16 studios
+    title 355 tools across 16 studios
     "PDF Tools" : 58
     "Convert" : 31
     "Image" : 55
     "Video" : 36
     "Audio" : 21
     "Developer" : 60
-    "Text and Data" : 32
-    "Design" : 15
+    "Text and Data" : 37
+    "Design" : 16
     "Data" : 11
     "AI" : 7
     "3D" : 5
@@ -825,7 +831,7 @@ pie showData
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#F5A524','primaryTextColor':'#050505','primaryBorderColor':'#FFB224','lineColor':'#F5A524','fontFamily':'system-ui, sans-serif','cScale0':'#F5A524','cScaleLabel0':'#050505','cScaleInv0':'#050505','cScale1':'#F97316','cScaleLabel1':'#050505','cScaleInv1':'#050505','cScale2':'#10B981','cScaleLabel2':'#050505','cScaleInv2':'#050505','cScale3':'#38BDF8','cScaleLabel3':'#050505','cScaleInv3':'#050505','cScale4':'#14B8A6','cScaleLabel4':'#050505','cScaleInv4':'#050505','cScale5':'#22D3EE','cScaleLabel5':'#050505','cScaleInv5':'#050505','cScale6':'#84CC16','cScaleLabel6':'#050505','cScaleInv6':'#050505','cScale7':'#60A5FA','cScaleLabel7':'#050505','cScaleInv7':'#050505','cScale8':'#0EA5E9','cScaleLabel8':'#050505','cScaleInv8':'#050505','cScale9':'#FBBF24','cScaleLabel9':'#050505','cScaleInv9':'#050505','cScale10':'#2DD4BF','cScaleLabel10':'#050505','cScaleInv10':'#050505','cScale11':'#A3A3A3','cScaleLabel11':'#050505','cScaleInv11':'#050505'}}}%%
 mindmap
-  root(("OpenFile · 349 tools"))
+  root(("OpenFile · 355 tools"))
     PDF
       Merge PDF · Split PDF · Compress PDF
       Sign PDF · Invoice Generator · Create Fillable PDF Form
@@ -930,7 +936,7 @@ flowchart LR
     U["👤 You<br/>drop or pick files"]:::user --> BR
     subgraph BR["🌐 Your browser tab, nothing leaves it"]
         direction LR
-        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>349 tools · import.meta.glob"]:::ui
+        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>355 tools · import.meta.glob"]:::ui
         REG --> E1["📄 pdf-lib · PDF.js<br/>@cantoo/pdf-lib"]:::pdf
         REG --> E2["🎬 ffmpeg.wasm<br/>MediaRecorder · Web Audio"]:::media
         REG --> E3["🔤 Tesseract.js OCR"]:::ai
@@ -981,7 +987,7 @@ sequenceDiagram
     Note over U,B: The file never crosses the network. Closing the tab frees all memory.
 ```
 
-- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 349 tools.
+- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 355 tools.
 - **Heavy engines load on demand** (ffmpeg core, OCR language data, AI weights) and are cached by the browser and the service worker.
 - **Zero-upload guarantee:** the optional Vercel functions (`/api/health`, `/api/fetch-page`, `/api/meta`) only ever receive a **URL you type**, never a file.
 
@@ -1154,8 +1160,8 @@ OpenFile/
 │  ├─ pages/                 # Home, Tools, ToolPage, Workspace, Docs, Blog, History, Settings
 │  │  └─ workspace/steps.ts  # pipeline steps + presets
 │  └─ tools/
-│     ├─ registry.ts         # the catalog, 349 tools, 16 categories
-│     ├─ batches/            # more catalog entries: b1, b10, b2, b3, b4, b5
+│     ├─ registry.ts         # the catalog, 355 tools, 16 categories
+│     ├─ batches/            # more catalog entries: b1, b10, b11, b2, b3, b4, b5
 │     ├─ engines.ts · guides.ts  # "How it works" content for every tool page
 │     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/
 │        data/ ai/ 3d/ archive/ ebook/ font/ cad/ subtitle/
@@ -1202,7 +1208,7 @@ timeline
         v1.0 core : First in-browser studios : Command palette and smart drop
         Power features : Batch Workspace : Presets and saved recipes : On-device AI
         Everywhere : Installable PWA : Offline mode : Vercel and GitHub Pages
-        v2.0 catalog : 349 in-browser tools : 16 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
+        v2.0 catalog : 355 in-browser tools : 16 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
         v2.0 polish : Per-tool preview videos : Drop anything and share target : Compare tools and new hero
     section Next
         Desktop : Tauri app : Native file system access
@@ -1210,7 +1216,7 @@ timeline
         Global : UI translations i18n
 ```
 
-- [x] 349 in-browser tools across 16 studios
+- [x] 355 in-browser tools across 16 studios
 - [x] Batch Workspace with presets and saved recipes
 - [x] On-device AI, background removal, OCR, upscaling, transcription
 - [x] Installable PWA + offline mode

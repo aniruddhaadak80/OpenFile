@@ -1,3 +1,7 @@
+## 0.11
+
+- Six new tools: Roman numerals, Morse code, duplicate line remover, line sorter, text wrapper, colour contrast checker.
+
 # Changelog
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).

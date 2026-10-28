@@ -5,7 +5,7 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 
 ## Categories
 <!-- categories:start -->
-16 categories, 349 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
+16 categories, 355 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
 
 | Id | Studio | Tools | What it covers |
 |---|---|--:|---|
@@ -15,8 +15,8 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 | `video` | 🎬 Video | 36 | Trim, compress, convert, GIF and record |
 | `audio` | 🎧 Audio | 21 | Edit, convert, record and transcribe |
 | `dev` | 🧑‍💻 Developer | 60 | JSON, JWT, regex, hashes, cURL and more |
-| `text` | 📝 Text & Data | 32 | Diff, count, convert tables, format text |
-| `design` | 🖌️ Design | 15 | Colors, CSS, favicons, SVG, whiteboards |
+| `text` | 📝 Text & Data | 37 | Diff, count, convert tables, format text |
+| `design` | 🖌️ Design | 16 | Colors, CSS, favicons, SVG, whiteboards |
 | `data` | 📊 Data | 11 | CSV, Excel, JSON, SQLite, Parquet, maps and GPS |
 | `ai` | 🤖 AI | 7 | On-device AI for images, text and documents |
 | `3d` | 🧊 3D | 5 | View and convert GLB, GLTF, OBJ, STL, PLY and more |

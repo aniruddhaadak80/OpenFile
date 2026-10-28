@@ -60,14 +60,14 @@
       <circle r="48" fill="#84CC16" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-1.8s" repeatCount="indefinite"/></circle>
       <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#84CC16" stroke-width="2"/>
       <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Text</text>
-      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#84CC16">32 tools</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#84CC16">37 tools</text>
     </g></g>
     <g transform="translate(126.3 304.9)"><g>
       <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
       <circle r="48" fill="#60A5FA" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-2.1s" repeatCount="indefinite"/></circle>
       <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#60A5FA" stroke-width="2"/>
       <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Design</text>
-      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#60A5FA">15 tools</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#60A5FA">16 tools</text>
     </g></g>
     <g transform="translate(0 235)"><g>
       <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
@@ -129,7 +129,7 @@
   <circle cx="500" cy="390" r="120" fill="url(#halo)"><animate attributeName="r" values="100;135;100" dur="4s" repeatCount="indefinite"/></circle>
   <circle cx="500" cy="390" r="74" fill="#0B0D10" stroke="url(#core)" stroke-width="6"/>
   <circle cx="500" cy="390" r="82" fill="none" stroke="#FFB224" stroke-opacity=".35" stroke-width="2"><animate attributeName="stroke-opacity" values=".15;.6;.15" dur="3s" repeatCount="indefinite"/></circle>
-  <text x="500" y="394" text-anchor="middle" font-size="40" font-weight="800" fill="#F5A524">349</text>
+  <text x="500" y="394" text-anchor="middle" font-size="40" font-weight="800" fill="#F5A524">355</text>
   <text x="500" y="420" text-anchor="middle" font-size="14" font-weight="600" letter-spacing="2" fill="#F5F3EE">TOOLS</text>
   </g>
 </svg>

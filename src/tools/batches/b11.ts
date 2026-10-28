@@ -1,0 +1,28 @@
+import type { ToolMeta } from '../registry'
+
+export const BATCH_11: ToolMeta[] = [
+  { slug: 'roman-numerals', name: 'Roman Numeral Converter', desc: 'Turn numbers into Roman numerals and back, many lines at once.', category: 'text', icon: 'Landmark', badge: 'NEW', tags: ['roman numerals','number','convert'], inputs: ['Text'], outputs: ['Text'],
+    how: 'Numbers from 1 to 3999 are written with the standard subtractive rules. Numerals are checked so that only the correct form is accepted.',
+    steps: ['Paste or open your text.', 'Adjust the options.', 'Copy or download the result.'],
+    related: ['numbers-to-words','number-base'] },
+  { slug: 'morse-code', name: 'Morse Code Translator', desc: 'Translate text to Morse code and decode dots and dashes back to text.', category: 'text', icon: 'Radio', badge: 'NEW', tags: ['morse','code','dots dashes'], inputs: ['Text'], outputs: ['Text'],
+    how: 'Each letter, digit and common sign maps to its Morse pattern. Letters are separated by spaces and words by a slash. Input made only of dots and dashes is decoded.',
+    steps: ['Paste or open your text.', 'Adjust the options.', 'Copy or download the result.'],
+    related: ['text-encoding-converter','case-converter'] },
+  { slug: 'duplicate-line-remover', name: 'Duplicate Line Remover', desc: 'Remove repeated lines, keep only repeats, ignore case and spaces.', category: 'text', icon: 'ListX', badge: 'NEW', tags: ['duplicate','unique lines','dedupe'], inputs: ['Text'], outputs: ['Text'],
+    how: 'Lines are compared after the options you pick are applied. The first copy of each line is kept in its original order.',
+    steps: ['Paste or open your text.', 'Adjust the options.', 'Copy or download the result.'],
+    related: ['line-sorter','text-cleaner'] },
+  { slug: 'line-sorter', name: 'Line Sorter', desc: 'Sort lines A to Z, naturally, by length or number, reverse or shuffle them.', category: 'text', icon: 'ArrowDownAZ', badge: 'NEW', tags: ['sort lines','alphabetical','natural sort','shuffle'], inputs: ['Text'], outputs: ['Text'],
+    how: 'Natural sort puts item 2 before item 10. Number sort uses the leading number of each line. Shuffle is random each time.',
+    steps: ['Paste or open your text.', 'Adjust the options.', 'Copy or download the result.'],
+    related: ['duplicate-line-remover','text-similarity'] },
+  { slug: 'text-wrapper', name: 'Text Wrapper', desc: 'Break long text into lines of a set width without splitting words.', category: 'text', icon: 'WrapText', badge: 'NEW', tags: ['wrap','line width','hard wrap'], inputs: ['Text'], outputs: ['Text'],
+    how: 'Words are packed into each line up to the width you choose. Blank lines between paragraphs are kept.',
+    steps: ['Paste or open your text.', 'Adjust the options.', 'Copy or download the result.'],
+    related: ['line-sorter','text-cleaner'] },
+  { slug: 'contrast-checker', name: 'Colour Contrast Checker', desc: 'Check the WCAG contrast ratio of two colours for AA and AAA text.', category: 'design', icon: 'Contrast', badge: 'NEW', tags: ['contrast','wcag','accessibility','aa','aaa'], inputs: ['Text'], outputs: ['Text'],
+    how: 'Relative luminance is computed for both colours and the ratio is compared with the WCAG limits: 4.5 for normal text and 3 for large text at level AA, 7 and 4.5 at AAA.',
+    steps: ['Paste or open your text.', 'Adjust the options.', 'Copy or download the result.'],
+    related: ['color-picker-image'] },
+]
