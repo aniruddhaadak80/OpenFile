@@ -5,7 +5,7 @@ import { Bar, Pane, CodeArea, Status, Stat, DataTable, DownloadButton } from './
 import { scanSecrets, maskSecret, type SecretHit } from '@/lib/b10/dev'
 import { formatBytes } from '@/lib/files'
 
-const TEXT_EXT = /\.(js|mjs|cjs|ts|tsx|jsx|json|env|yml|yaml|toml|ini|cfg|conf|config|properties|xml|html?|php|py|rb|go|rs|java|kt|cs|c|cc|cpp|h|hpp|swift|sh|bash|zsh|ps1|bat|sql|tf|tfvars|md|txt|log|csv|pem|key|crt|npmrc|pypirc|netrc|gradle|dockerfile|vue|svelte|ipynb|lock)$/i
+const BINARY_EXT = /\.(png|jpe?g|gif|webp|avif|bmp|ico|tiff?|psd|pdf|zip|gz|tgz|7z|rar|xz|bz2|zst|jar|war|apk|ipa|exe|dll|so|dylib|o|a|class|pyc|wasm|woff2?|ttf|otf|eot|mp[34]|m4a|wav|flac|ogg|webm|mov|avi|mkv|sqlite|db|bin|dat|iso|dmg|heic)$/i
 const SKIP_DIR = /(^|\/)(node_modules|\.git|dist|build|\.next|vendor|__pycache__)\//
 
 interface Scanned { name: string; size: number }
@@ -28,10 +28,10 @@ export default function SecretScanner() {
       if (/\.zip$/i.test(f.name)) {
         const { unzipSync } = await import('fflate')
         const z = unzipSync(new Uint8Array(await f.arrayBuffer()))
-        for (const [p, data] of Object.entries(z)) if (!p.endsWith('/') && !SKIP_DIR.test(p) && (TEXT_EXT.test(p) || /(^|\/)\.env/.test(p) || /(^|\/)(Dockerfile|Makefile)$/.test(p)) && data.length < 20e6) queue.push({ name: `${f.name}/${p}`, size: data.length, text: async () => new TextDecoder().decode(data) })
+        for (const [p, data] of Object.entries(z)) if (!p.endsWith('/') && !SKIP_DIR.test(p) && !BINARY_EXT.test(p) && data.length < 20e6) queue.push({ name: `${f.name}/${p}`, size: data.length, text: async () => new TextDecoder().decode(data) })
       } else {
         const path = (f as File & { webkitRelativePath?: string }).webkitRelativePath || f.name
-        if (SKIP_DIR.test(path) || f.size > 20e6) continue
+        if (SKIP_DIR.test(path) || BINARY_EXT.test(path) || f.size > 20e6) continue
         queue.push({ name: path, size: f.size, text: () => f.text() })
       }
     }
