@@ -100,7 +100,7 @@ sudo apt install ./OpenFile-linux-amd64.deb
 sudo dnf install ./OpenFile-linux-x86_64.rpm
 ```
 
-Update: install the new package the same way. Uninstall: `sudo apt remove openfile` or `sudo dnf remove openfile` (check the exact name with `apt list --installed | grep -i openfile`), or delete the AppImage.
+Update: install the new package the same way. Uninstall: `sudo apt remove open-file` or `sudo dnf remove open-file` (the package is named `open-file`), or delete the AppImage.
 
 ## Android app (APK)
 
@@ -120,7 +120,7 @@ iPhone and iPad users can install the web app today (Share, Add to Home Screen).
 
 - **Do my files get uploaded?** No. Every tool runs on your device in all versions.
 - **Does it work offline?** Yes. The desktop and mobile apps include the whole app. The web app saves itself and each engine the first time you use it.
-- **How big is it?** The web app takes a few MB up front and grows with the engines you use. Desktop installers bundle every engine: about 55 MB (.exe) and 75 MB (.msi) on Windows, about 150 MB for the universal macOS .dmg. The Android APK is about 90 MB.
+- **How big is it?** The web app takes a few MB up front and grows with the engines you use. Desktop installers bundle every engine: about 67 MB (.exe) and 88 MB (.msi) on Windows, about 90 MB for the Linux .deb and .rpm, about 157 MB for the AppImage and about 179 MB for the universal macOS .dmg. The Android APK is about 100 MB.
 - **Why the security warnings?** The installers are not code signed with a paid certificate yet. They are built in public by GitHub Actions from this repository (`.github/workflows/release-apps.yml`).
 
 ## For contributors: build the apps

@@ -82,7 +82,7 @@ export const GUIDES: Guide[] = [
       { title: 'Install the new package over the old one', body: 'Download the latest file and repeat the same command. For AppImage, replace the old file.', mock: 'linux-terminal', cmd: ['sudo apt install ./OpenFile-linux-amd64.deb'], link: { label: 'Latest release', href: RELEASES } },
     ],
     uninstall: [
-      { title: 'Remove the package', body: 'Use the command for how you installed it. For AppImage, just delete the file.', mock: 'linux-terminal', cmd: ['sudo apt remove openfile', 'sudo dnf remove openfile'] },
+      { title: 'Remove the package', body: 'Use the command for how you installed it. For AppImage, just delete the file.', mock: 'linux-terminal', cmd: ['sudo apt remove open-file', 'sudo dnf remove open-file'] },
     ],
   },
   {
@@ -137,7 +137,7 @@ export const GUIDES: Guide[] = [
 export const FAQ: { q: string; a: string }[] = [
   { q: 'Do my files get uploaded anywhere?', a: 'No. Every tool runs on your device, in the web app and in the desktop and mobile apps alike. There is no account and no server that sees your files.' },
   { q: 'Does it work offline?', a: 'Yes. The installed web app saves itself on your device, and each engine (PDF, image, video, AI models) is saved the first time you use it. The desktop and mobile apps ship the whole app inside, so they work offline from the first launch, except for the large AI models which download once on first use.' },
-  { q: 'How big is it?', a: 'The web app takes a few megabytes up front and grows only with the engines you use. The desktop installers are about 55 to 75 MB on Windows, and about 150 MB on macOS because one file holds both the Apple silicon and Intel builds. The Android APK is about 90 MB. They bundle every engine, so they work offline from the first launch.' },
+  { q: 'How big is it?', a: 'The web app takes a few megabytes up front and grows only with the engines you use. The Windows installers are about 70 to 90 MB, the Linux .deb and .rpm about 90 MB, and the AppImage and the macOS app about 160 to 180 MB (the macOS file holds both the Apple silicon and Intel builds). The Android APK is about 100 MB. They bundle every engine, so they work offline from the first launch.' },
   { q: 'Windows says it protected my PC. Is it safe?', a: 'SmartScreen warns about any new app that is not code signed with a paid certificate. Click More info, then Run anyway. The installer is built in public on GitHub Actions from the open source code, so you can check exactly what went into it.' },
   { q: 'macOS says the app cannot be opened.', a: 'Gatekeeper blocks apps that are not notarised by Apple. Right-click OpenFile in Applications, choose Open, then Open again. Or use System Settings, Privacy and Security, Open Anyway. You only need to do it once.' },
   { q: 'Android warns about an unknown app.', a: 'The APK is not on Google Play yet, so Android asks you to allow installs from your browser once. The web app install from Chrome needs no permission at all.' },
