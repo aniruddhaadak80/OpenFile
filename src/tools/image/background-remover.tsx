@@ -4,7 +4,7 @@ import { Eraser, Download, Package, ImagePlus, Wand2 } from 'lucide-react'
 import { Button, ErrorNote, Label, Progress, Segmented, Slider, Switch, ToolGrid, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { downloadBlob, zipFiles, formatBytes } from '@/lib/files'
-import { BeforeAfter, ColorInput, ImageDrop, StatusPill, ThumbGrid, blurCanvas, canvas, decode, toCanvas, useDebounced, useImageList, useObjectUrl, outName, type Item } from './_img/kit'
+import { BeforeAfter, ColorInput, ImageDrop, StatusPill, ThumbGrid, blurCanvas, canvas, decode, toCanvas, useDebounced, useImageList, outName, type Item } from './_img/kit'
 
 type BgMode = 'transparent' | 'color' | 'blur' | 'image'
 type Cut = { state: 'run' | 'done' | 'err'; blob?: Blob; err?: string }
@@ -13,43 +13,50 @@ const SWATCHES = ['#ffffff', '#000000', '#ef4444', '#f59e0b', '#22c55e', '#3b82f
 type Extra = { feather: number; shadow: number; fitBg: boolean; scale: number }
 const NO_EXTRA: Extra = { feather: 0, shadow: 0, fitBg: false, scale: 100 }
 
-/** Soften the cut-out edge by blurring its alpha mask (Batch 2 extension). */
-function featherCut(c: HTMLImageElement, px: number) {
-  const { canvas: out, ctx } = canvas(c.naturalWidth, c.naturalHeight)
-  ctx.drawImage(c, 0, 0)
+/** Draws the cut-out at the target size and softens its edge by blurring the alpha mask. Only one canvas at that size. */
+function featherCut(c: HTMLImageElement, px: number, w = c.naturalWidth, h = c.naturalHeight) {
+  const { canvas: out, ctx } = canvas(w, h)
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(c, 0, 0, w, h)
   if (px <= 0) return out
   const mask = blurCanvas(out, px)
   ctx.globalCompositeOperation = 'destination-in'; ctx.drawImage(mask, 0, 0); ctx.globalCompositeOperation = 'source-over'
+  mask.width = mask.height = 0
   return out
 }
 
 async function compose(orig: Blob, cut: Blob, mode: BgMode, color: string, blur: number, bgImg: HTMLImageElement | null, maxSide = 0, ex: Extra = NO_EXTRA) {
   if (mode === 'image' && bgImg && ex.fitBg) return composeOnBackground(cut, bgImg, maxSide, ex)
-  const [o, c0] = await Promise.all([decode(orig), decode(cut)])
-  const c = featherCut(c0, ex.feather * Math.max(c0.naturalWidth, c0.naturalHeight) / 1000)
-  let w = c.width, h = c.height
+  const c0 = await decode(cut)
+  let w = c0.naturalWidth, h = c0.naturalHeight
   const s = maxSide && Math.max(w, h) > maxSide ? maxSide / Math.max(w, h) : 1
   w = Math.round(w * s); h = Math.round(h * s)
+  // scale first, then feather, so a preview never allocates a full-size canvas
+  const c = featherCut(c0, ex.feather * Math.max(w, h) / 1000, w, h)
   const { canvas: out, ctx } = canvas(w, h)
   if (mode === 'color') { ctx.fillStyle = color; ctx.fillRect(0, 0, w, h) }
-  if (mode === 'blur') { const { canvas: oc, ctx: octx } = canvas(w, h); octx.drawImage(o, 0, 0, w, h); ctx.drawImage(blurCanvas(oc, Math.max(1, (blur * Math.max(w, h)) / 1200)), 0, 0) }
+  if (mode === 'blur') { const o = await decode(orig); const { canvas: oc, ctx: octx } = canvas(w, h); octx.drawImage(o, 0, 0, w, h); const b = blurCanvas(oc, Math.max(1, (blur * Math.max(w, h)) / 1200)); ctx.drawImage(b, 0, 0); oc.width = oc.height = 0; b.width = b.height = 0 }
   if (mode === 'image' && bgImg) { const k = Math.max(w / bgImg.naturalWidth, h / bgImg.naturalHeight); const bw = bgImg.naturalWidth * k, bh = bgImg.naturalHeight * k; ctx.drawImage(bgImg, (w - bw) / 2, (h - bh) / 2, bw, bh) }
-  if (ex.shadow > 0 && mode !== 'transparent') { ctx.save(); ctx.shadowColor = `rgba(0,0,0,${ex.shadow / 100})`; ctx.shadowBlur = Math.max(w, h) * 0.03; ctx.shadowOffsetY = Math.max(w, h) * 0.012; ctx.drawImage(c, 0, 0, w, h); ctx.restore() }
-  else ctx.drawImage(c, 0, 0, w, h)
+  if (ex.shadow > 0 && mode !== 'transparent') { ctx.save(); ctx.shadowColor = `rgba(0,0,0,${ex.shadow / 100})`; ctx.shadowBlur = Math.max(w, h) * 0.03; ctx.shadowOffsetY = Math.max(w, h) * 0.012; ctx.drawImage(c, 0, 0); ctx.restore() }
+  else ctx.drawImage(c, 0, 0)
+  c.width = c.height = 0
   return out
 }
 
 /** Place the subject on the background image at the background's own size (centred at the bottom). */
 async function composeOnBackground(cut: Blob, bgImg: HTMLImageElement, maxSide: number, ex: Extra) {
-  const c = featherCut(await decode(cut), ex.feather * 1.5)
+  const ci = await decode(cut)
   let W = bgImg.naturalWidth, H = bgImg.naturalHeight
   const s = maxSide && Math.max(W, H) > maxSide ? maxSide / Math.max(W, H) : 1
   W = Math.round(W * s); H = Math.round(H * s)
+  const k = Math.min(W / ci.naturalWidth, H / ci.naturalHeight) * (ex.scale / 100)
+  const cw = Math.max(1, Math.round(ci.naturalWidth * k)), ch = Math.max(1, Math.round(ci.naturalHeight * k))
+  const c = featherCut(ci, ex.feather * 1.5, cw, ch)
   const { canvas: out, ctx } = canvas(W, H)
   ctx.drawImage(bgImg, 0, 0, W, H)
-  const k = Math.min(W / c.width, H / c.height) * (ex.scale / 100), cw = c.width * k, ch = c.height * k
   if (ex.shadow > 0) { ctx.shadowColor = `rgba(0,0,0,${ex.shadow / 100})`; ctx.shadowBlur = Math.max(W, H) * 0.03; ctx.shadowOffsetY = Math.max(W, H) * 0.012 }
   ctx.drawImage(c, (W - cw) / 2, H - ch, cw, ch)
+  c.width = c.height = 0
   return out
 }
 const toPng = (c: HTMLCanvasElement, type = 'image/png', q?: number) => new Promise<Blob>((r, j) => c.toBlob((b) => (b ? r(b) : j(new Error('Export failed'))), type, q))
@@ -60,6 +67,43 @@ function gpuReady(): Promise<boolean> {
   if (!gpuCheck) gpuCheck = (async () => { try { const g = (navigator as any).gpu; return !!(g && (await g.requestAdapter())) } catch { return false } })()
   return gpuCheck
 }
+
+/** One module worker runs the model off the main thread; it is recreated if it ever crashes. */
+let worker: Worker | null = null
+function runInWorker(id: string, file: Blob, model: string, preferGpu: boolean, onProgress: (key: string, cur: number, total: number) => void) {
+  return new Promise<Blob>((resolve, reject) => {
+    if (!worker) worker = new Worker(new URL('./bg-remover.worker.ts', import.meta.url), { type: 'module' })
+    const w = worker
+    const done = () => { w.onmessage = null; w.onerror = null }
+    w.onmessage = (ev) => {
+      const m = ev.data
+      if (m.id !== id) return
+      if (m.type === 'progress') onProgress(m.key, m.cur, m.total)
+      else if (m.type === 'done') { done(); resolve(m.blob) }
+      else if (m.type === 'error') { done(); reject(new Error(m.message)) }
+    }
+    w.onerror = (e) => { e.preventDefault?.(); done(); w.terminate(); if (worker === w) worker = null; reject(new Error('worker failed')) }
+    w.postMessage({ id, file, model, preferGpu })
+  })
+}
+
+/** Object URL for a blob, created and revoked in the same effect so it is never revoked while still shown. */
+function useBlobUrl(blob: Blob | null | undefined) {
+  const [url, setUrl] = useState<string | null>(null)
+  useEffect(() => {
+    if (!blob) { setUrl(null); return }
+    const u = URL.createObjectURL(blob)
+    setUrl(u)
+    return () => URL.revokeObjectURL(u)
+  }, [blob])
+  return url
+}
+
+const friendly = (msg: string) => /memory|allocation|out of|worker failed/i.test(msg)
+  ? 'This image needs more memory than the browser allowed. Try the Faster model or a smaller photo.'
+  : /fetch|network|load/i.test(msg)
+    ? 'The AI model could not be downloaded. Check your connection (the model downloads once) and retry.'
+    : 'Background removal did not finish for this image. Retry, or try the Faster model.'
 
 export default function BackgroundRemover() {
   const { items, add, remove, clear } = useImageList()
@@ -78,60 +122,62 @@ export default function BackgroundRemover() {
   const queue = useRef(false)
   const [tick, setTick] = useState(0)
   const bgInput = useRef<HTMLInputElement>(null)
+  const stateRef = useRef(cuts); stateRef.current = cuts
 
   const onFiles = useCallback(async (f: File[]) => { const a = await add(f); if (a[0]) setSel((s) => s ?? a[0].id) }, [add])
 
-  // process queue sequentially
+  // Process the queue one image at a time, in a worker. Every state update is keyed by the item id.
   useEffect(() => {
     if (queue.current) return
     const next = items.find((i) => !cuts[i.id])
     if (!next) return
     queue.current = true
-    setCuts((s) => ({ ...s, [next.id]: { state: 'run' } }))
+    const id = next.id
+    setCuts((s) => ({ ...s, [id]: { state: 'run' } }))
     let creep = 0
     ;(async () => {
       try {
         setError(null)
-        setStage({ id: next.id, label: 'Loading AI engine', p: 0.02 })
-        const { removeBackground } = await import('@imgly/background-removal')
+        setStage({ id, label: 'Loading AI engine', p: 0.02 })
         // The library reports download progress per file and only a few compute steps, so keep the bar moving
         // slowly between reports while the model runs.
         let last = 0.05, computing = false
-        setStage({ id: next.id, label: 'Starting AI model', p: last })
         const files: Record<string, [number, number]> = {}
         creep = window.setInterval(() => {
           if (!computing) return
-          last = Math.min(0.97, last + (0.97 - last) * 0.04)
-          setStage({ id: next.id, label: 'Removing background', p: last })
+          last = Math.min(0.95, last + (0.95 - last) * 0.04)
+          setStage({ id, label: 'Removing background', p: last })
         }, 300)
-        const blob = await removeBackground(next.file, {
-          model: quality,
-          device: (await gpuReady()) ? 'gpu' : 'cpu',
-          output: { format: 'image/png' },
-          progress: (key: string, cur: number, total: number) => {
-            if (key.startsWith('fetch')) {
-              files[key] = [cur, total]
-              const c = Object.values(files).reduce((a, f) => a + f[0], 0), t = Object.values(files).reduce((a, f) => a + f[1], 0)
-              last = Math.max(last, 0.05 + (t ? c / t : 0) * 0.6)
-              if (t && c >= t) { computing = true; setStage({ id: next.id, label: 'Removing background', p: last }) }
-              else setStage({ id: next.id, label: `Downloading AI model (first run only) · ${formatBytes(c)} / ${formatBytes(t)}`, p: last })
-            } else {
-              computing = true
-              const p = total ? cur / total : 0
-              last = Math.max(last, 0.65 + p * 0.3)
-              setStage({ id: next.id, label: 'Removing background', p: last })
-            }
-          },
+        const blob = await runInWorker(id, next.file, quality, await gpuReady(), (key, c0, t0) => {
+          if (key.startsWith('fetch')) {
+            files[key] = [c0, t0]
+            const c = Object.values(files).reduce((a, f) => a + f[0], 0), t = Object.values(files).reduce((a, f) => a + f[1], 0)
+            last = Math.max(last, 0.05 + (t ? c / t : 0) * 0.6)
+            if (t && c >= t) { computing = true; setStage({ id, label: 'Removing background', p: last }) }
+            else setStage({ id, label: `Downloading AI model (first run only) · ${formatBytes(c)} / ${formatBytes(t)}`, p: last })
+          } else if (key === 'compose') {
+            last = Math.max(last, 0.96)
+            setStage({ id, label: 'Applying the mask', p: last })
+          } else {
+            computing = true
+            last = Math.max(last, 0.65 + (t0 ? c0 / t0 : 0) * 0.3)
+            setStage({ id, label: 'Removing background', p: last })
+          }
         })
-        setCuts((s) => ({ ...s, [next.id]: { state: 'done', blob } }))
+        setCuts((s) => (s[id] ? { ...s, [id]: { state: 'done', blob } } : s))
+        // If the selected image has nothing to show yet, show the one that just finished.
+        setSel((cur) => (cur && cur !== id && stateRef.current[cur] ? cur : id))
       } catch (e: any) {
-        console.error(e)
-        const msg = e?.message || String(e)
-        setError(`Background removal failed: ${msg}. Check your connection (the model downloads once) or try a smaller image.`)
-        setCuts((s) => ({ ...s, [next.id]: { state: 'err', err: msg } }))
+        console.warn('Background removal failed', e)
+        const msg = friendly(String(e?.message || e))
+        setError(msg)
+        setCuts((s) => (s[id] ? { ...s, [id]: { state: 'err', err: msg } } : s))
       } finally { clearInterval(creep); queue.current = false; setStage(null); setTick((t) => t + 1) }
     })()
   }, [items, cuts, quality, tick])
+
+  // keep the selection pointing at an item that exists
+  useEffect(() => { if (items.length && (!sel || !items.some((i) => i.id === sel))) setSel(items[0].id) }, [items, sel])
 
   const cur: Item | undefined = items.find((i) => i.id === sel) ?? items[0]
   const cutBlob = cur ? cuts[cur.id]?.blob : undefined
@@ -144,21 +190,32 @@ export default function BackgroundRemover() {
   useEffect(() => {
     if (!cur || !cutBlob) { setPreview(null); return }
     let off = false
-    compose(cur.file, cutBlob, settings.mode, settings.color, settings.blur, settings.bgImg, 1600, { feather: settings.feather, shadow: settings.shadow, fitBg: settings.fitBg, scale: settings.scale }).then((c) => toPng(c)).then((b) => { if (!off) setPreview(b) }).catch(() => {})
+    // Preview at a capped size. If composing fails, show the plain cut-out rather than a stuck placeholder.
+    compose(cur.file, cutBlob, settings.mode, settings.color, settings.blur, settings.bgImg, 1200, { feather: settings.feather, shadow: settings.shadow, fitBg: settings.fitBg, scale: settings.scale })
+      .then(async (c) => { const b = await toPng(c); c.width = c.height = 0; return b })
+      .then((b) => { if (!off) setPreview(b) })
+      .catch((e) => { console.warn('Preview failed', e); if (!off) setPreview(cutBlob) })
     return () => { off = true }
   }, [cur?.id, cutBlob, settings])
-  const previewUrl = useObjectUrl(preview)
+  const previewUrl = useBlobUrl(preview)
+  const cutUrl = useBlobUrl(cutBlob)
 
   const exportOne = async (it: Item) => {
     const c = await compose(it.file, cuts[it.id].blob!, mode, color, blur, bgImg, 0, ex)
     const opaque = mode !== 'transparent'
-    return { name: outName(it.file.name, opaque && mode !== 'color' ? 'jpg' : 'png', '-nobg'), blob: opaque && mode !== 'color' ? await toPng(c, 'image/jpeg', 0.93) : await toPng(c) }
+    const out = { name: outName(it.file.name, opaque && mode !== 'color' ? 'jpg' : 'png', '-nobg'), blob: opaque && mode !== 'color' ? await toPng(c, 'image/jpeg', 0.93) : await toPng(c) }
+    c.width = c.height = 0
+    return out
   }
-  const downloadCurrent = async () => { if (!cur) return; const r = await exportOne(cur); downloadBlob(r.blob, r.name) }
+  const downloadCurrent = async () => {
+    if (!cur || !cuts[cur.id]?.blob) return
+    try { const r = await exportOne(cur); downloadBlob(r.blob, r.name) }
+    catch (e) { console.warn(e); if (mode === 'transparent') downloadBlob(cuts[cur.id].blob!, outName(cur.file.name, 'png', '-nobg')); else toast('Export failed. Try a smaller photo.', 'error') }
+  }
   const downloadAll = async () => {
     setZipping(true)
     try { const done = items.filter((i) => cuts[i.id]?.state === 'done'); const files = []; for (const it of done) files.push(await exportOne(it)); downloadBlob(await zipFiles(files.map((f) => ({ name: f.name, data: f.blob }))), 'background-removed.zip') }
-    catch (e: any) { toast(e?.message || 'Export failed', 'error') } finally { setZipping(false) }
+    catch (e: any) { console.warn(e); toast('Export failed. Try fewer or smaller photos.', 'error') } finally { setZipping(false) }
   }
   const reset = () => { clear(); setCuts({}); setSel(null); setPreview(null); setError(null) }
   const retry = (id: string) => setCuts((s) => { const n = { ...s }; delete n[id]; return n })
@@ -173,10 +230,10 @@ export default function BackgroundRemover() {
     <ToolGrid
       main={<>
         <div className="rounded-2xl border border-border bg-surface p-4">
-          {curState === 'done' && previewUrl ? (
-            <motion.div key={cur!.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}><BeforeAfter before={cur!.url} after={previewUrl} labels={['Original', 'Result']} maxH="60vh" /></motion.div>
+          {curState === 'done' && (previewUrl || cutUrl) ? (
+            <motion.div key={cur!.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}><BeforeAfter before={cur!.url} after={(previewUrl || cutUrl)!} labels={['Original', 'Result']} maxH="60vh" /></motion.div>
           ) : curState === 'err' ? (
-            <div className="grid min-h-64 place-items-center text-center text-sm"><div><p className="text-danger">This image couldn't be processed.</p><Button className="mt-3" size="sm" variant="outline" onClick={() => retry(cur!.id)}>Retry</Button></div></div>
+            <div className="grid min-h-64 place-items-center text-center text-sm"><div><p className="text-danger">This image could not be processed.</p><Button className="mt-3" size="sm" variant="outline" onClick={() => retry(cur!.id)}>Retry</Button></div></div>
           ) : (
             <div className="relative mx-auto w-fit overflow-hidden rounded-xl">
               {cur && <img src={cur.url} alt="" className="max-h-[60vh] max-w-full opacity-60 blur-[1px]" />}
@@ -216,7 +273,7 @@ export default function BackgroundRemover() {
         </div>
         <ErrorNote error={error} />
         <div className="space-y-2">
-          <Button size="lg" className="w-full" disabled={curState !== 'done'} icon={<Download className="size-4" />} onClick={downloadCurrent}>Download {mode === 'transparent' || mode === 'color' ? 'PNG' : 'JPG'}</Button>
+          <Button size="lg" className="w-full" disabled={curState !== 'done' || !cutBlob} icon={<Download className="size-4" />} onClick={downloadCurrent}>Download {mode === 'transparent' || mode === 'color' ? 'PNG' : 'JPG'}</Button>
           {items.length > 1 && <Button variant="outline" className="w-full" disabled={!doneCount} loading={zipping} icon={<Package className="size-4" />} onClick={downloadAll}>Download all {doneCount} with these settings (ZIP)</Button>}
           <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted"><Wand2 className="size-3" /> {doneCount}/{items.length} processed · on-device AI</p>
         </div>
