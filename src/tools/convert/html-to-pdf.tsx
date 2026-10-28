@@ -4,6 +4,7 @@ import { Button, ToolGrid, Label, Select, Segmented, Slider, Switch, Input, Text
 import { toast } from '@/components/toast'
 import { FramePreview, PdfPreview, Reveal, pageDims, mm, useDebounced, type PageSizeKey } from './_conv/shared'
 import { renderHtmlToPdf, addPageNumbers, pdfToBlob } from './_conv/htmlPdf'
+import { readAtPage, applyPrintMedia, injectCss, NO_BACKGROUNDS, GRAYSCALE } from './_b1/printCss'
 
 const SAMPLE = `<!doctype html>
 <html>
@@ -52,7 +53,16 @@ export default function HtmlToPdf() {
   const [urlErr, setUrlErr] = useState<string | null>(null)
   const [fetching, setFetching] = useState(false)
   const [clean, setClean] = useState('')
-  const [size, setSize] = useState<PageSizeKey>('a4')
+  const [size, setSize] = useState<PageSizeKey | 'custom'>('a4')
+  const [customMm, setCustomMm] = useState({ w: 210, h: 297 })
+  const [printCss, setPrintCss] = useState(true)
+  const [backgrounds, setBackgrounds] = useState(true)
+  const [gray, setGray] = useState(false)
+  const [honorPage, setHonorPage] = useState(true)
+  const [zoom, setZoom] = useState(100)
+  const [quality, setQuality] = useState<'small' | 'high' | 'max'>('high')
+  const [header, setHeader] = useState('')
+  const [footer, setFooter] = useState('')
   const [orient, setOrient] = useState<'portrait' | 'landscape'>('portrait')
   const [marginMm, setMarginMm] = useState(10)
   const [vp, setVp] = useState<Vp>('page')
@@ -63,7 +73,10 @@ export default function HtmlToPdf() {
 
   const source = mode === 'paste' ? dHtml : fetched?.html ?? ''
   useEffect(() => { let off = false; if (!source.trim()) { setClean(''); return } sanitize(source, mode === 'url' ? fetched?.url : undefined).then((c) => { if (!off) setClean(c) }); return () => { off = true } }, [source, mode, fetched])
-  useEffect(() => setResult(null), [clean, size, orient, marginMm, vp, numbers])
+  useEffect(() => setResult(null), [clean, size, orient, marginMm, vp, numbers, customMm, printCss, backgrounds, gray, honorPage, zoom, quality, header, footer])
+  // print options are applied to the sanitized HTML
+  const prepared = useMemo(() => { if (!clean) return ''; let h = printCss ? applyPrintMedia(clean) : clean; if (!backgrounds) h = injectCss(h, NO_BACKGROUNDS); if (gray) h = injectCss(h, GRAYSCALE); return h }, [clean, printCss, backgrounds, gray])
+  const atPage = useMemo(() => (clean ? readAtPage(clean) : {}), [clean])
 
   const fetchUrl = async () => {
     let u = url.trim()
@@ -85,16 +98,31 @@ export default function HtmlToPdf() {
     } finally { setFetching(false) }
   }
 
-  const dims = pageDims(size, orient)
-  const marginPt = mm(marginMm)
-  const previewWidth = VIEWPORTS[vp].w || Math.round((dims.w - marginPt * 2) * 96 / 72)
+  const usePageRule = honorPage && !!atPage.size
+  const baseDims = size === 'custom' ? (orient === 'landscape' ? { w: mm(Math.max(customMm.w, customMm.h)), h: mm(Math.min(customMm.w, customMm.h)) } : { w: mm(customMm.w), h: mm(customMm.h) }) : pageDims(size, orient)
+  const dims = usePageRule ? atPage.size! : baseDims
+  const marginPt = honorPage && atPage.margin ? Math.max(atPage.margin.top, atPage.margin.left) : mm(marginMm)
+  const margins = honorPage && atPage.margin ? atPage.margin : { top: marginPt, right: marginPt, bottom: marginPt, left: marginPt }
+  const zoomWidth = vp === 'page' && zoom !== 100 ? Math.round((dims.w - margins.left - margins.right) * 96 / 72 * 100 / zoom) : 0
+  const previewWidth = VIEWPORTS[vp].w || zoomWidth || Math.round((dims.w - margins.left - margins.right) * 96 / 72)
 
   const exportPdf = () => run(async (setP) => {
-    if (!clean) throw new Error('Add some HTML first.')
-    const bottom = numbers ? Math.max(marginPt, 30) : marginPt
-    const { pdf, pages } = await renderHtmlToPdf(clean, { pageWidth: dims.w, pageHeight: dims.h, margin: { top: marginPt, right: marginPt, bottom, left: marginPt }, viewportWidth: VIEWPORTS[vp].w || undefined, settle: mode === 'url' ? 800 : 100, onProgress: (p) => setP(p) })
+    if (!prepared) throw new Error('Add some HTML first.')
+    const bottom = numbers || footer ? Math.max(margins.bottom, 30) : margins.bottom
+    const top = header ? Math.max(margins.top, 30) : margins.top
+    const { pdf, pages } = await renderHtmlToPdf(prepared, { pageWidth: dims.w, pageHeight: dims.h, margin: { top, right: margins.right, bottom, left: margins.left }, viewportWidth: VIEWPORTS[vp].w || zoomWidth || undefined, quality: quality === 'max' ? 1 : quality === 'small' ? 0.72 : 0.92, scale: quality === 'small' ? 1.4 : undefined, settle: mode === 'url' ? 800 : 100, onProgress: (p) => setP(p) })
     if (numbers) addPageNumbers(pdf, { bottom: Math.min(bottom / 2, 20) })
     const t = /<title>([^<]*)<\/title>/i.exec(clean)?.[1]?.trim()
+    if (header || footer) {
+      const total = pdf.getNumberOfPages()
+      const fill = (s: string, n: number) => s.replace(/\{page\}/g, String(n)).replace(/\{pages\}/g, String(total)).replace(/\{title\}/g, t || '').replace(/\{date\}/g, new Date().toLocaleDateString()).replace(/\{url\}/g, mode === 'url' && fetched ? fetched.url : '')
+      pdf.setFontSize(8); pdf.setTextColor(110, 110, 120)
+      for (let n = 1; n <= total; n++) {
+        pdf.setPage(n)
+        if (header) pdf.text(fill(header, n), dims.w / 2, Math.min(top / 2 + 3, 22), { align: 'center' })
+        if (footer) pdf.text(fill(footer, n), dims.w / 2, dims.h - Math.min(bottom / 2, 20) + (numbers ? -10 : 3), { align: 'center' })
+      }
+    }
     pdf.setProperties({ title: t || 'page', creator: 'OpenFile' })
     setResult({ blob: pdfToBlob(pdf), pages })
     toast('PDF ready', 'success')
@@ -137,7 +165,7 @@ export default function HtmlToPdf() {
             </div>
             <div className="max-h-[65vh] overflow-auto bg-surface-2 p-3 scrollbar-thin">
               <div className="mx-auto origin-top bg-white shadow" style={{ width: previewWidth }}>
-                <FramePreview srcDoc={clean} height="60vh" className="rounded-none border-0" />
+                <FramePreview srcDoc={prepared} height="60vh" className="rounded-none border-0" />
               </div>
             </div>
           </div>
@@ -145,10 +173,12 @@ export default function HtmlToPdf() {
         {result && <Reveal k="r" className="space-y-3"><ResultCard blob={result.blob} filename={fileName} title={`PDF ready · ${result.pages} page${result.pages > 1 ? 's' : ''}`} /><PdfPreview blob={result.blob} height={600} /></Reveal>}
       </>}
       side={<>
-        <div className="grid grid-cols-2 gap-3">
-          <div><Label>Page</Label><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a3', label: 'A3' }]} /></div>
+        {atPage.size && <Switch checked={honorPage} onChange={setHonorPage} label={`Use the page size from the HTML (${Math.round(atPage.size.w / 72 * 25.4)} × ${Math.round(atPage.size.h / 72 * 25.4)} mm)`} />}
+        {!usePageRule && <div className="grid grid-cols-2 gap-3">
+          <div><Label>Page</Label><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a3', label: 'A3' }, { value: 'a5', label: 'A5' }, { value: 'custom', label: 'Custom' }]} /></div>
           <div><Label>Orientation</Label><Segmented value={orient} onChange={setOrient} options={[{ value: 'portrait', label: 'Port.' }, { value: 'landscape', label: 'Land.' }]} /></div>
-        </div>
+        </div>}
+        {!usePageRule && size === 'custom' && <div className="grid grid-cols-2 gap-3"><div><Label>Width (mm)</Label><Input type="number" min={50} max={2000} value={customMm.w} onChange={(e) => setCustomMm({ ...customMm, w: Math.max(50, Number(e.target.value) || 50) })} /></div><div><Label>Height (mm)</Label><Input type="number" min={50} max={5000} value={customMm.h} onChange={(e) => setCustomMm({ ...customMm, h: Math.max(50, Number(e.target.value) || 50) })} /></div></div>}
         <div>
           <Label>Layout width</Label>
           <div className="grid gap-1.5">
@@ -161,11 +191,24 @@ export default function HtmlToPdf() {
             ))}
           </div>
         </div>
-        <Slider label="Margins" value={marginMm} onChange={setMarginMm} min={0} max={30} suffix=" mm" />
-        <Switch checked={numbers} onChange={setNumbers} label="Page numbers" />
+        {honorPage && atPage.margin ? <div className="text-xs text-muted">Margins come from the HTML's @page rule.</div> : <Slider label="Margins" value={marginMm} onChange={setMarginMm} min={0} max={30} suffix=" mm" />}
+        {vp === 'page' && <Slider label="Scale" value={zoom} onChange={setZoom} min={40} max={160} step={5} suffix="%" />}
+        <div className="space-y-2.5 rounded-xl border border-border p-3">
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted">Print options</div>
+          <Switch checked={printCss} onChange={setPrintCss} label="Use the page's print styles (@media print)" />
+          <Switch checked={backgrounds} onChange={setBackgrounds} label="Print background colors and images" />
+          <Switch checked={gray} onChange={setGray} label="Grayscale" />
+          <Switch checked={numbers} onChange={setNumbers} label="Page numbers" />
+        </div>
+        <div><Label>Image quality</Label><Segmented value={quality} onChange={setQuality} options={[{ value: 'small', label: 'Smaller file' }, { value: 'high', label: 'High' }, { value: 'max', label: 'Lossless' }]} /></div>
+        <div className="grid gap-2">
+          <div><Label hint="optional">Header text</Label><Input value={header} onChange={(e) => setHeader(e.target.value)} placeholder="{title}" /></div>
+          <div><Label hint="optional">Footer text</Label><Input value={footer} onChange={(e) => setFooter(e.target.value)} placeholder="{date} · page {page} of {pages}" /></div>
+          <p className="text-[11px] text-muted">Placeholders: {'{page}'}, {'{pages}'}, {'{title}'}, {'{date}'}, {'{url}'}</p>
+        </div>
         {busy && <Progress value={progress} label="Rendering pages" />}
         <ErrorNote error={error} />
-        <Button size="lg" className="w-full" loading={busy} disabled={!clean} icon={<FileDown className="size-5" />} onClick={exportPdf}>Convert to PDF</Button>
+        <Button size="lg" className="w-full" loading={busy} disabled={!prepared} icon={<FileDown className="size-5" />} onClick={exportPdf}>Convert to PDF</Button>
         <p className="text-[11px] text-muted">Smart page breaks keep lines, images and table rows intact. Scripts never run.</p>
       </>}
     />

@@ -1,4 +1,4 @@
-// GET /api/fetch-page?url=https://example.com — fetches a public web page's HTML so HTML-to-PDF can render it.
+// GET /api/fetch-page?url=https://example.com: fetches a public web page's HTML so HTML-to-PDF can render it.
 // Only the URL is received; user files never touch the server.
 export default async function handler(req: any, res: any) {
   const url = String(req.query?.url || '')

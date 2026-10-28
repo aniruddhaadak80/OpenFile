@@ -10,6 +10,17 @@ OpenFile is designed to be driven from the keyboard. On macOS, use <kbd>⌘</kbd
 | Close a dialog or the palette | <kbd>Esc</kbd> |
 | Move between buttons and fields | <kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd> |
 | Open a file picker on a focused drop area | <kbd>Enter</kbd> or <kbd>Space</kbd> |
+| Show all keyboard shortcuts | <kbd>?</kbd> |
+| Search (opens the command palette) | <kbd>/</kbd> |
+| Go to Home, Tools, Workspace, Docs, Blog, History or Settings | <kbd>G</kbd> then <kbd>H</kbd>, <kbd>T</kbd>, <kbd>W</kbd>, <kbd>D</kbd>, <kbd>B</kbd>, <kbd>Y</kbd> or <kbd>S</kbd> |
+| Open one of your recently used tools | <kbd>Alt</kbd> + <kbd>1</kbd> to <kbd>9</kbd> |
+| Save or unsave the open tool | <kbd>F</kbd> |
+
+Single-key shortcuts are ignored while you type in a field, and on the Sketch board, which has its own.
+
+## Drop anything
+
+Drag a file onto any page. OpenFile reads the first bytes of the file to work out its real type (so a wrong extension cannot fool it) and suggests the best tools. Pick one and the file opens in it. On an installed app you can also share a file to OpenFile from another app.
 
 ## Command palette
 

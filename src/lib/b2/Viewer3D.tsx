@@ -6,13 +6,13 @@ import { downloadBlob } from '@/lib/files'
 import type { Viewer } from './three-viewer'
 
 export type Viewer3DHandle = { viewer: Viewer | null }
-type Props = { object?: any; clips?: any[]; className?: string; screenshotName?: string; height?: string; onReady?: (v: Viewer) => void; showClay?: boolean }
+type Props = { object?: any; clips?: any[]; className?: string; screenshotName?: string; height?: string; onReady?: (v: Viewer) => void; showClay?: boolean; keepCamera?: boolean }
 
 function Tb({ on, label, onClick, children }: { on?: boolean; label: string; onClick: () => void; children: React.ReactNode }) {
   return <button type="button" title={label} aria-label={label} aria-pressed={on} onClick={onClick} className={cn('grid size-8 place-items-center rounded-lg transition cursor-pointer', on ? 'bg-accent/20 text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white')}>{children}</button>
 }
 
-export const Viewer3D = forwardRef<Viewer3DHandle, Props>(function Viewer3D({ object, clips, className, screenshotName = 'model', height = '62vh', onReady, showClay = true }, ref) {
+export const Viewer3D = forwardRef<Viewer3DHandle, Props>(function Viewer3D({ object, clips, className, screenshotName = 'model', height = '62vh', onReady, showClay = true, keepCamera = false }, ref) {
   const host = useRef<HTMLDivElement>(null)
   const wrap = useRef<HTMLDivElement>(null)
   const [viewer, setViewer] = useState<Viewer | null>(null)
@@ -35,7 +35,7 @@ export const Viewer3D = forwardRef<Viewer3DHandle, Props>(function Viewer3D({ ob
     })
     return () => { dead = true; v?.dispose() }
   }, [])
-  useEffect(() => { if (viewer && object) { viewer.setObject(object, clips ?? []); setClip(clips?.length ? 0 : null); if (clips?.length) viewer.playClip(0); if (clay) viewer.setClay(true) } }, [viewer, object, clips])
+  useEffect(() => { if (viewer && object) { viewer.setObject(object, clips ?? [], !keepCamera); setClip(clips?.length ? 0 : null); if (clips?.length) viewer.playClip(0); if (clay) viewer.setClay(true) } }, [viewer, object, clips])
   useEffect(() => { viewer?.setWireframe(wire) }, [viewer, wire])
   useEffect(() => { if (viewer) viewer.grid.visible = grid }, [viewer, grid])
   useEffect(() => { if (viewer) viewer.axes.visible = axes }, [viewer, axes])

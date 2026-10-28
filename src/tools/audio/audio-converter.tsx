@@ -8,16 +8,48 @@ import { audioCodecArgs } from '@/tools/video/_media/audio'
 import { useMediaJob } from '@/tools/video/_media/media'
 import { JobPanel, Note } from '@/tools/video/_media/ui'
 
-type Fmt = 'mp3' | 'wav' | 'ogg' | 'aac' | 'flac' | 'm4a'
+type Fmt = 'mp3' | 'wav' | 'ogg' | 'aac' | 'flac' | 'm4a' | 'opus' | 'aiff' | 'alac' | 'wma' | 'ac3' | 'caf' | 'au' | 'm4b' | 'm4r' | 'mp2' | 'weba' | 'voc'
 type Item = { id: string; file: File; status: 'queued' | 'working' | 'done' | 'error'; progress: number; out?: Blob; error?: string }
-const FORMATS: Record<Fmt, { label: string; sub: string; lossless: boolean }> = {
+const FORMATS: Record<Fmt, { label: string; sub: string; lossless: boolean; more?: boolean }> = {
   mp3: { label: 'MP3', sub: 'Universal', lossless: false },
   m4a: { label: 'M4A', sub: 'AAC in MP4 · Apple', lossless: false },
   aac: { label: 'AAC', sub: 'Raw ADTS stream', lossless: false },
   ogg: { label: 'OGG', sub: 'Vorbis · open', lossless: false },
   wav: { label: 'WAV', sub: 'Uncompressed', lossless: true },
   flac: { label: 'FLAC', sub: 'Lossless, smaller', lossless: true },
+  opus: { label: 'OPUS', sub: 'Best at low bitrates', lossless: false, more: true },
+  aiff: { label: 'AIFF', sub: 'Uncompressed · Mac', lossless: true, more: true },
+  alac: { label: 'ALAC', sub: 'Apple Lossless (.m4a)', lossless: true, more: true },
+  wma: { label: 'WMA', sub: 'Windows Media', lossless: false, more: true },
+  ac3: { label: 'AC3', sub: 'Dolby Digital', lossless: false, more: true },
+  caf: { label: 'CAF', sub: 'Core Audio · Apple', lossless: true, more: true },
+  au: { label: 'AU', sub: 'Sun / NeXT', lossless: true, more: true },
+  m4b: { label: 'M4B', sub: 'Audiobook', lossless: false, more: true },
+  m4r: { label: 'M4R', sub: 'iPhone ringtone', lossless: false, more: true },
+  mp2: { label: 'MP2', sub: 'MPEG Layer II', lossless: false, more: true },
+  weba: { label: 'WEBA', sub: 'WebM audio (Opus)', lossless: false, more: true },
+  voc: { label: 'VOC', sub: 'Creative Voice', lossless: true, more: true },
 }
+/** File extension and codec arguments for every output format. Pure, unit tested. */
+export function convertArgs(fmt: Fmt, bitrate: number): { ext: string; args: string[] } {
+  switch (fmt) {
+    case 'opus': return { ext: 'opus', args: ['-c:a', 'libopus', '-b:a', `${Math.min(bitrate, 256)}k`, '-vbr', 'on'] }
+    case 'aiff': return { ext: 'aiff', args: ['-c:a', 'pcm_s16be', '-f', 'aiff'] }
+    case 'alac': return { ext: 'm4a', args: ['-c:a', 'alac', '-f', 'ipod'] }
+    case 'wma': return { ext: 'wma', args: ['-c:a', 'wmav2', '-b:a', `${bitrate}k`, '-f', 'asf'] }
+    case 'ac3': return { ext: 'ac3', args: ['-c:a', 'ac3', '-b:a', `${Math.max(bitrate, 192)}k`] }
+    case 'caf': return { ext: 'caf', args: ['-c:a', 'pcm_s16le', '-f', 'caf'] }
+    case 'au': return { ext: 'au', args: ['-c:a', 'pcm_s16be', '-f', 'au'] }
+    case 'm4b': return { ext: 'm4b', args: ['-c:a', 'aac', '-b:a', `${bitrate}k`, '-f', 'ipod'] }
+    case 'm4r': return { ext: 'm4r', args: ['-c:a', 'aac', '-b:a', `${bitrate}k`, '-t', '40', '-f', 'ipod'] }
+    case 'mp2': return { ext: 'mp2', args: ['-c:a', 'mp2', '-b:a', `${Math.max(bitrate, 128)}k`] }
+    case 'weba': return { ext: 'weba', args: ['-c:a', 'libopus', '-b:a', `${Math.min(bitrate, 256)}k`, '-f', 'webm'] }
+    case 'voc': return { ext: 'voc', args: ['-c:a', 'pcm_u8', '-ar', '22050', '-ac', '1', '-f', 'voc'] }
+    default: return { ext: fmt, args: audioCodecArgs(fmt, bitrate) }
+  }
+}
+const ACCEPT = 'audio/*,video/*,.mp3,.wav,.ogg,.oga,.m4a,.m4b,.m4r,.flac,.aac,.opus,.wma,.aiff,.aif,.aifc,.caf,.au,.snd,.ac3,.eac3,.dts,.mp2,.mpa,.amr,.awb,.ape,.tta,.wv,.mka,.weba,.webm,.voc,.spx,.gsm,.ra,.mpc,.dsf,.dff,.3ga,.mkv,.mp4,.mov'
+const PRESETS = [{ label: 'Smallest (64k)', br: '64' }, { label: 'Voice (96k)', br: '96' }, { label: 'Good (128k)', br: '128' }, { label: 'Great (192k)', br: '192' }, { label: 'Best (320k)', br: '320' }]
 
 function Preview({ blob }: { blob: Blob }) {
   const a = useRef<HTMLAudioElement | null>(null)
@@ -39,7 +71,8 @@ export default function AudioConverter() {
 
   const add = (files: File[]) => setItems((l) => [...l, ...files.map((file) => ({ id: Math.random().toString(36).slice(2), file, status: 'queued' as const, progress: 0 }))])
   const patch = (id: string, p: Partial<Item>) => setItems((l) => l.map((x) => (x.id === id ? { ...x, ...p } : x)))
-  const outName = (f: File) => `${baseName(f.name)}.${fmt}`
+  const [more, setMore] = useState(false)
+  const outName = (f: File) => `${baseName(f.name)}.${convertArgs(fmt, +br).ext}`
 
   const convert = () => job.run(async ({ setProgress, setLabel, signal }) => {
     const todo = items.map((x) => ({ ...x, status: 'queued' as const, progress: 0, out: undefined, error: undefined }))
@@ -50,11 +83,12 @@ export default function AudioConverter() {
       const it = todo[i]
       setLabel(`Converting ${i + 1} of ${todo.length}: ${it.file.name}`)
       patch(it.id, { status: 'working' })
-      const input = 'in' + extFromBlob(it.file), out = `out.${fmt}`
+      const conv = convertArgs(fmt, +br)
+      const input = 'in' + extFromBlob(it.file), out = `out.${conv.ext}`
       try {
         const blob = await ffRun({
           inputs: [{ name: input, file: it.file }],
-          args: ['-i', input, '-vn', '-map', '0:a:0', ...(sr !== 'original' ? ['-ar', sr] : []), ...(ch !== 'original' ? ['-ac', ch] : []), ...audioCodecArgs(fmt, +br), out],
+          args: ['-i', input, '-vn', '-map', '0:a:0', ...(sr !== 'original' ? ['-ar', sr] : []), ...(ch !== 'original' && fmt !== 'voc' ? ['-ac', ch] : []), ...conv.args, out],
           output: out,
           onProgress: (p) => { patch(it.id, { progress: p }); setProgress((i + p) / todo.length) },
         })
@@ -71,7 +105,7 @@ export default function AudioConverter() {
   const zip = async () => downloadBlob(await zipFiles(done.map((x) => ({ name: outName(x.file), data: x.out! }))), `converted-${fmt}.zip`)
   const reset = () => { if (job.busy) job.cancel(); setItems([]); job.reset() }
 
-  if (!items.length) return <Dropzone multiple accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.wma,.aiff,.webm" onFiles={add} label="Drop audio files to convert" sub="Batch-convert MP3, WAV, OGG, AAC, FLAC, M4A, or pull audio out of videos. Offline." />
+  if (!items.length) return <Dropzone multiple accept={ACCEPT} onFiles={add} label="Drop audio files to convert" sub="Batch-convert MP3, WAV, OGG, AAC, FLAC, M4A, OPUS, AIFF, ALAC, WMA, AC3 and more. Also opens AMR, APE, TTA and WavPack, or pulls audio out of videos. Offline." />
 
   return (
     <ToolGrid
@@ -97,20 +131,21 @@ export default function AudioConverter() {
             ))}
           </AnimatePresence>
         </div>
-        {!job.busy && <Dropzone compact multiple accept="audio/*,video/*,.mp3,.wav,.ogg,.m4a,.flac,.aac,.opus,.wma,.aiff,.webm" onFiles={add} label={<span className="inline-flex items-center gap-1.5"><Plus className="size-4" />Add more files</span>} />}
+        {!job.busy && <Dropzone compact multiple accept={ACCEPT} onFiles={add} label={<span className="inline-flex items-center gap-1.5"><Plus className="size-4" />Add more files</span>} />}
       </>}
       side={<>
         <div>
           <Label>Output format</Label>
           <div className="grid grid-cols-3 gap-2">
-            {(Object.keys(FORMATS) as Fmt[]).map((f) => (
+            {(Object.keys(FORMATS) as Fmt[]).filter((f) => more || !FORMATS[f].more || f === fmt).map((f) => (
               <button key={f} onClick={() => setFmt(f)} className={cn('rounded-xl border px-2 py-2 text-center transition cursor-pointer', fmt === f ? 'border-accent bg-accent/10' : 'border-border hover:border-accent/50')}>
                 <div className="text-sm font-semibold">{FORMATS[f].label}</div><div className="text-[10px] leading-tight text-muted">{FORMATS[f].sub}</div>
               </button>
             ))}
           </div>
         </div>
-        {!FORMATS[fmt].lossless && <div><Label>Bitrate (kbps)</Label><Segmented value={br} onChange={setBr} options={['64', '128', '192', '256', '320'].map((v) => ({ value: v, label: v }))} /></div>}
+        <button className="-mt-3 cursor-pointer text-xs font-medium text-accent hover:underline" onClick={() => setMore(!more)}>{more ? 'Fewer formats' : 'More formats: OPUS, AIFF, ALAC, WMA, AC3, CAF, M4B, M4R and more'}</button>
+        {!FORMATS[fmt].lossless && <div><Label>Quality</Label><Select value={br} onChange={setBr} options={PRESETS.map((p) => ({ value: p.br, label: p.label }))} /><p className="mt-1 text-xs text-muted">Lower bitrates make smaller files. 96k is fine for speech, 192k for music.</p></div>}
         <div className="grid grid-cols-2 gap-3">
           <div><Label>Sample rate</Label><Select value={sr} onChange={setSr} options={[{ value: 'original', label: 'Original' }, { value: '48000', label: '48 kHz' }, { value: '44100', label: '44.1 kHz' }, { value: '32000', label: '32 kHz' }, { value: '22050', label: '22 kHz' }, { value: '16000', label: '16 kHz' }]} /></div>
           <div><Label>Channels</Label><Select value={ch} onChange={setCh} options={[{ value: 'original', label: 'Original' }, { value: '2', label: 'Stereo' }, { value: '1', label: 'Mono' }]} /></div>

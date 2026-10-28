@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShieldCheck, ShieldX, ShieldQuestion, Clock, KeyRound, PenLine, RefreshCw, FileCode2 } from 'lucide-react'
-import { Button, Card, Field, Input, Select, Tabs, Badge, CopyButton, Textarea, cn } from '@/components/ui'
+import { ShieldCheck, ShieldX, ShieldQuestion, ShieldAlert, Clock, KeyRound, PenLine, RefreshCw, FileCode2, Wand2 } from 'lucide-react'
+import { Button, Card, Field, Input, Select, Tabs, Badge, CopyButton, Textarea, Segmented, cn } from '@/components/ui'
 import { CodeView, Pane } from './_dev/kit'
+import { JWT_ALGS, isHmac, isSupported, detectKey, KEY_KIND_LABEL, importVerifyKey, importSignKey, verifyJwt, signJwt, generateKeys, type JwtAlg, type SecretFormat, type VerifyResult, type KeyPairOut } from '@/lib/b5/jwt'
 
-type Alg = 'HS256' | 'HS384' | 'HS512'
-const HASH: Record<Alg, string> = { HS256: 'SHA-256', HS384: 'SHA-384', HS512: 'SHA-512' }
 
 const b64urlToBytes = (s: string) => {
   const b = s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)
@@ -15,11 +14,9 @@ const bytesToB64url = (u: Uint8Array) => { let s = ''; for (let i = 0; i < u.len
 const decodeSeg = (s: string) => JSON.parse(new TextDecoder().decode(b64urlToBytes(s)))
 const encodeSeg = (o: unknown) => bytesToB64url(new TextEncoder().encode(JSON.stringify(o)))
 
-async function hmac(alg: Alg, secret: string, data: string, secretIsB64: boolean) {
-  const keyBytes = secretIsB64 ? b64urlToBytes(secret.trim()) : new TextEncoder().encode(secret)
-  const key = await crypto.subtle.importKey('raw', keyBytes as BufferSource, { name: 'HMAC', hash: HASH[alg] }, false, ['sign'])
-  return new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data)))
-}
+const SAMPLE_SECRET = 'your-256-bit-secret'
+const ALG_DESC: Record<string, string> = { HS: 'HMAC with a shared secret', RS: 'RSA PKCS#1 v1.5', PS: 'RSA PSS', ES: 'ECDSA', Ed: 'Ed25519' }
+const algDesc = (a: string) => ALG_DESC[a.slice(0, 2)] ?? ''
 
 const now = () => Math.floor(Date.now() / 1000)
 const SAMPLE_PAYLOAD = () => ({ sub: '1234567890', name: 'Ada Lovelace', role: 'admin', iat: now(), exp: now() + 3600 })
@@ -37,7 +34,7 @@ export default function JwtDecoder() {
   const [tab, setTab] = useState<'decode' | 'sign'>('decode')
   return (
     <div className="space-y-5">
-      <Tabs value={tab} onChange={setTab} tabs={[{ value: 'decode', label: <span className="flex items-center gap-2"><KeyRound className="size-4" />Decode & verify</span> }, { value: 'sign', label: <span className="flex items-center gap-2"><PenLine className="size-4" />Generate & sign</span> }]} />
+      <Tabs value={tab} onChange={setTab} tabs={[{ value: 'decode', label: <span className="flex items-center gap-2"><KeyRound className="size-4" />Decode and verify</span> }, { value: 'sign', label: <span className="flex items-center gap-2"><PenLine className="size-4" />Sign and make keys</span> }]} />
       {tab === 'decode' ? <Decode /> : <Sign />}
     </div>
   )
@@ -46,8 +43,11 @@ export default function JwtDecoder() {
 function Decode() {
   const [token, setToken] = useState('')
   const [secret, setSecret] = useState('')
-  const [b64Secret, setB64Secret] = useState(false)
-  const [verify, setVerify] = useState<'idle' | 'ok' | 'bad' | 'unsupported'>('idle')
+  const [secretFmt, setSecretFmt] = useState<SecretFormat>('utf8')
+  const [iss, setIss] = useState('')
+  const [aud, setAud] = useState('')
+  const [leeway, setLeeway] = useState('0')
+  const [verify, setVerify] = useState<{ state: 'idle' | 'busy' | 'done' | 'unsupported' | 'error'; res?: VerifyResult; error?: string }>({ state: 'idle' })
   const [, tick] = useState(0)
   const overlay = useRef<HTMLDivElement>(null)
   useEffect(() => { const t = setInterval(() => tick((x) => x + 1), 1000); return () => clearInterval(t) }, [])
@@ -65,16 +65,22 @@ function Decode() {
     } catch (e: any) { return { error: 'Could not decode: segments must be Base64URL-encoded JSON. ' + (e?.message ?? '') } }
   }, [token])
 
+  const alg: string = dec && !('error' in dec) ? String(dec.header?.alg ?? '') : ''
   useEffect(() => {
-    setVerify('idle')
-    if (!dec || 'error' in dec || !secret) return
-    const alg = dec.header?.alg as Alg
-    if (!HASH[alg]) { setVerify('unsupported'); return }
+    setVerify({ state: 'idle' })
+    if (!dec || 'error' in dec || !secret.trim()) return
+    if (!isSupported(alg)) { setVerify({ state: 'unsupported' }); return }
     let alive = true
-    const p = token.trim().split('.')
-    hmac(alg, secret, `${p[0]}.${p[1]}`, b64Secret).then((sig) => alive && setVerify(bytesToB64url(sig) === p[2] ? 'ok' : 'bad')).catch(() => alive && setVerify('bad'))
+    setVerify({ state: 'busy' })
+    ;(async () => {
+      try {
+        const key = await importVerifyKey(alg, secret, secretFmt, dec.header?.kid)
+        const res = await verifyJwt(token, key, { issuer: iss.trim(), audience: aud.trim(), clockTolerance: Math.max(0, Number(leeway) || 0) })
+        if (alive) setVerify({ state: 'done', res })
+      } catch (e) { if (alive) setVerify({ state: 'error', error: (e as Error).message }) }
+    })()
     return () => { alive = false }
-  }, [dec, secret, b64Secret, token])
+  }, [dec, secret, secretFmt, token, iss, aud, leeway, alg])
 
   const payload = dec && !('error' in dec) ? dec.payload : null
   const exp = typeof payload?.exp === 'number' ? payload.exp : null
@@ -85,11 +91,11 @@ function Decode() {
   return (
     <div className="space-y-4">
       <Pane title="Encoded token" actions={<>
-        <Button size="sm" variant="ghost" icon={<FileCode2 className="size-4" />} onClick={async () => { const h = encodeSeg({ alg: 'HS256', typ: 'JWT' }), pl = encodeSeg(SAMPLE_PAYLOAD()); const s = bytesToB64url(await hmac('HS256', 'your-256-bit-secret', `${h}.${pl}`, false)); setToken(`${h}.${pl}.${s}`); setSecret('your-256-bit-secret') }}>Sample</Button>
+        <Button size="sm" variant="ghost" icon={<FileCode2 className="size-4" />} onClick={async () => { const k = await importSignKey('HS256', SAMPLE_SECRET, 'utf8'); setToken(await signJwt({ typ: 'JWT' }, SAMPLE_PAYLOAD(), 'HS256', k)); setSecret(SAMPLE_SECRET); setSecretFmt('utf8') }}>Sample</Button>
         {token && <Button size="sm" variant="ghost" onClick={() => setToken('')}>Clear</Button>}
       </>}>
         <div className="relative">
-          <textarea value={token} onScroll={(e) => { if (overlay.current) overlay.current.scrollTop = e.currentTarget.scrollTop }} onChange={(e) => setToken(e.target.value.replace(/^Bearer\s+/i, ''))} spellCheck={false} placeholder="Paste a JWT (eyJhbGciOi…). A leading 'Bearer ' is stripped automatically"
+          <textarea value={token} onScroll={(e) => { if (overlay.current) overlay.current.scrollTop = e.currentTarget.scrollTop }} onChange={(e) => setToken(e.target.value.replace(/^Bearer\s+/i, ''))} spellCheck={false} placeholder="Paste a JWT (eyJhbGciOi...). A leading 'Bearer ' is removed for you"
             style={{ fieldSizing: 'content' } as React.CSSProperties} className="min-h-28 w-full resize-none bg-transparent p-4 font-mono text-sm text-transparent caret-fg outline-none placeholder:text-muted/60 break-all" />
           <div ref={overlay} aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-all p-4 font-mono text-sm">
             {parts.map((p, i) => <span key={i}><span className={['text-[#ef4444]', 'text-accent', 'text-[#06b6d4]'][i] ?? 'text-muted'}>{p}</span>{i < parts.length - 1 && <span className="text-muted">.</span>}</span>)}
@@ -139,18 +145,23 @@ function Decode() {
           )}
 
           <Card className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold"><span className="text-[#06b6d4]">Signature</span> verification</div>
-            <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-              <Input type="text" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Enter the HMAC secret to verify (HS256 / HS384 / HS512)" className="font-mono" />
-              <label className="flex items-center gap-2 text-sm text-muted"><input type="checkbox" checked={b64Secret} onChange={(e) => setB64Secret(e.target.checked)} className="accent-[var(--accent)]" />Secret is Base64URL</label>
+            <div className="flex flex-wrap items-center gap-2 text-sm font-semibold"><span className="text-[#06b6d4]">Signature</span> verification<span className="text-xs font-normal text-muted">{alg} {algDesc(alg) && `| ${algDesc(alg)}`}</span></div>
+            {isHmac(alg) ? (
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                <Input type="text" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder={`Shared secret for ${alg}`} className="font-mono" aria-label="Shared secret" />
+                <Segmented value={secretFmt} onChange={setSecretFmt} options={[{ value: 'utf8', label: 'Text' }, { value: 'base64url', label: 'Base64' }]} />
+              </div>
+            ) : (
+              <Field label="Public key" hint={secret.trim() ? KEY_KIND_LABEL[detectKey(secret)] : 'PEM public key, certificate, JWK or JWK Set (kid picks the key). A private key also works.'}>
+                <Textarea value={secret} onChange={(e) => setSecret(e.target.value)} placeholder={'-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----'} className="min-h-28 text-xs" />
+              </Field>
+            )}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Field label="Expected issuer"><Input value={iss} onChange={(e) => setIss(e.target.value)} placeholder="optional" /></Field>
+              <Field label="Expected audience"><Input value={aud} onChange={(e) => setAud(e.target.value)} placeholder="optional" /></Field>
+              <Field label="Clock leeway (s)"><Input value={leeway} onChange={(e) => setLeeway(e.target.value)} inputMode="numeric" /></Field>
             </div>
-            <div className={cn('flex items-center gap-2 rounded-xl px-3 py-2 text-sm',
-              verify === 'ok' ? 'bg-success/10 text-success' : verify === 'bad' ? 'bg-danger/10 text-danger' : 'bg-surface-2 text-muted')}>
-              {verify === 'ok' ? <><ShieldCheck className="size-4" />Signature verified, the token was signed with this secret.</>
-                : verify === 'bad' ? <><ShieldX className="size-4" />Invalid signature, wrong secret or the token was tampered with.</>
-                : verify === 'unsupported' ? <><ShieldQuestion className="size-4" />Algorithm “{dec.header.alg}” uses public keys; only HMAC (HS*) verification is supported here.</>
-                : <><ShieldQuestion className="size-4" />Enter a secret to verify the signature. Nothing leaves your browser.</>}
-            </div>
+            <VerifyStatus v={verify} alg={alg} />
           </Card>
         </motion.div>
       )}
@@ -160,47 +171,89 @@ function Decode() {
   )
 }
 
+function VerifyStatus({ v, alg }: { v: { state: string; res?: VerifyResult; error?: string }; alg: string }) {
+  const box = (cls: string, icon: React.ReactNode, text: React.ReactNode) => <div className={cn('flex items-start gap-2 rounded-xl px-3 py-2 text-sm', cls)}><span className="mt-0.5 shrink-0">{icon}</span><span>{text}</span></div>
+  if (v.state === 'unsupported') return box('bg-surface-2 text-muted', <ShieldQuestion className="size-4" />, alg === 'none' ? 'This token is unsigned (alg "none"), so there is nothing to verify. Never trust it.' : `The algorithm "${alg}" is not supported here. Supported: ${JWT_ALGS.join(', ')}.`)
+  if (v.state === 'error') return box('bg-danger/10 text-danger', <ShieldX className="size-4" />, v.error)
+  if (v.state === 'busy') return box('bg-surface-2 text-muted', <ShieldQuestion className="size-4" />, 'Checking')
+  if (v.state === 'done' && v.res) {
+    if (v.res.signature === 'bad') return box('bg-danger/10 text-danger', <ShieldX className="size-4" />, `Invalid signature. ${v.res.error ?? ''}. Wrong key, or the token was changed.`)
+    if (!v.res.claims.ok) return box('bg-warn/10 text-warn', <ShieldAlert className="size-4" />, <>Signature verified, but the claims did not pass: {v.res.claims.problems.join('; ')}.</>)
+    return box('bg-success/10 text-success', <ShieldCheck className="size-4" />, 'Signature verified and the claims are valid.')
+  }
+  return box('bg-surface-2 text-muted', <ShieldQuestion className="size-4" />, isHmac(alg) ? 'Enter the secret to verify the signature. Nothing leaves your browser.' : 'Paste the public key to verify the signature. Nothing leaves your browser.')
+}
+
 function Sign() {
-  const [alg, setAlg] = useState<Alg>('HS256')
+  const [alg, setAlg] = useState<JwtAlg>('HS256')
   const [header, setHeader] = useState('')
   const [payload, setPayload] = useState(() => JSON.stringify(SAMPLE_PAYLOAD(), null, 2))
   const [secret, setSecret] = useState('change-me-to-a-long-random-secret')
+  const [secretFmt, setSecretFmt] = useState<SecretFormat>('utf8')
+  const [privKey, setPrivKey] = useState('')
+  const [pair, setPair] = useState<KeyPairOut | null>(null)
+  const [genBusy, setGenBusy] = useState(false)
   const [out, setOut] = useState('')
   const [err, setErr] = useState<string | null>(null)
   const [expIn, setExpIn] = useState('3600')
+  const hs = isHmac(alg)
 
-  useEffect(() => { setHeader(JSON.stringify({ alg, typ: 'JWT' }, null, 2)) }, [alg])
+  useEffect(() => { setHeader((h) => { try { const o = JSON.parse(h || '{}'); return JSON.stringify({ ...o, alg, typ: o.typ ?? 'JWT' }, null, 2) } catch { return JSON.stringify({ alg, typ: 'JWT' }, null, 2) } }) }, [alg])
+  useEffect(() => { if (!hs && pair && !pair.privatePem) setPair(null) }, [alg])
   useEffect(() => {
     let alive = true
     ;(async () => {
       try {
-        const h = JSON.parse(header || '{}'); h.alg = alg
-        const p = JSON.parse(payload)
-        if (!secret) throw new Error('Secret is required to sign')
-        const hs = encodeSeg(h), ps = encodeSeg(p)
-        const sig = bytesToB64url(await hmac(alg, secret, `${hs}.${ps}`, false))
-        if (alive) { setOut(`${hs}.${ps}.${sig}`); setErr(null) }
+        let h: Record<string, unknown>, p: unknown
+        try { h = JSON.parse(header || '{}') } catch { throw new Error('Header must be valid JSON') }
+        try { p = JSON.parse(payload) } catch { throw new Error('Payload must be valid JSON') }
+        if (!hs && !privKey.trim()) throw new Error(`Paste a private key for ${alg}, or press Make a key pair`)
+        const key = await importSignKey(alg, hs ? secret : privKey, secretFmt)
+        const tok = await signJwt(h, p, alg, key)
+        if (alive) { setOut(tok); setErr(null) }
       } catch (e: any) { if (alive) { setErr(e.message); setOut('') } }
     })()
     return () => { alive = false }
-  }, [alg, header, payload, secret])
+  }, [alg, header, payload, secret, secretFmt, privKey, hs])
 
   const stamp = () => {
     try { const p = JSON.parse(payload); p.iat = now(); const n = Number(expIn); if (n > 0) p.exp = now() + n; else delete p.exp; setPayload(JSON.stringify(p, null, 2)) } catch { setErr('Payload must be valid JSON') }
   }
-  const randomSecret = () => { const u = new Uint8Array(alg === 'HS256' ? 32 : alg === 'HS384' ? 48 : 64); crypto.getRandomValues(u); setSecret(bytesToB64url(u)) }
+  const makeKeys = async () => {
+    setGenBusy(true)
+    try {
+      const k = await generateKeys(alg)
+      setPair(k)
+      if (hs) { setSecret(k.secret!); setSecretFmt('base64url') }
+      else {
+        setPrivKey(k.privatePem)
+        const kid = JSON.parse(k.publicJwk).kid
+        setHeader((h) => { try { return JSON.stringify({ ...JSON.parse(h || '{}'), kid }, null, 2) } catch { return h } })
+      }
+    } catch (e) { setErr((e as Error).message) } finally { setGenBusy(false) }
+  }
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
       <div className="space-y-4">
         <Card className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Algorithm"><Select value={alg} onChange={setAlg} options={['HS256', 'HS384', 'HS512']} /></Field>
-            <Field label="Expires in (seconds)"><div className="flex gap-2"><Input value={expIn} onChange={(e) => setExpIn(e.target.value)} inputMode="numeric" /><Button variant="secondary" onClick={stamp} title="Set iat=now and exp">Stamp</Button></div></Field>
+            <Field label="Algorithm" hint={algDesc(alg)}><Select value={alg} onChange={setAlg} options={[...JWT_ALGS]} /></Field>
+            <Field label="Expires in (seconds)"><div className="flex gap-2"><Input value={expIn} onChange={(e) => setExpIn(e.target.value)} inputMode="numeric" /><Button variant="secondary" onClick={stamp} title="Set iat to now and exp">Stamp</Button></div></Field>
           </div>
-          <Field label="Secret" hint={<button className="text-accent hover:underline inline-flex items-center gap-1" onClick={randomSecret}><RefreshCw className="size-3" />random</button>}>
-            <Input value={secret} onChange={(e) => setSecret(e.target.value)} className="font-mono" />
-          </Field>
+          {hs ? (
+            <Field label="Secret" hint={<button className="inline-flex items-center gap-1 text-accent hover:underline" onClick={makeKeys}><RefreshCw className="size-3" />random</button>}>
+              <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                <Input value={secret} onChange={(e) => setSecret(e.target.value)} className="font-mono" aria-label="Secret" />
+                <Segmented value={secretFmt} onChange={setSecretFmt} options={[{ value: 'utf8', label: 'Text' }, { value: 'base64url', label: 'Base64' }]} />
+              </div>
+            </Field>
+          ) : (
+            <Field label="Private key" hint={privKey.trim() ? KEY_KIND_LABEL[detectKey(privKey)] : 'PKCS#8 PEM or private JWK'}>
+              <Textarea value={privKey} onChange={(e) => setPrivKey(e.target.value)} placeholder={'-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----'} className="min-h-28 text-xs" />
+            </Field>
+          )}
+          {!hs && <Button variant="outline" icon={<Wand2 className="size-4" />} loading={genBusy} onClick={makeKeys}>Make a {alg} key pair</Button>}
           <Field label="Header"><Textarea value={header} onChange={(e) => setHeader(e.target.value)} className="min-h-20" /></Field>
           <Field label="Payload"><Textarea value={payload} onChange={(e) => setPayload(e.target.value)} className="min-h-56" /></Field>
         </Card>
@@ -213,7 +266,15 @@ function Sign() {
             </div>
           )}
         </Pane>
-        <p className="text-xs text-muted">Signed with HMAC-{HASH[alg]} via the Web Crypto API. Use the Decode tab to inspect the result. Keep production secrets out of shared machines.</p>
+        {pair && !hs && pair.publicPem && (
+          <>
+            <Pane title="Public key (PEM), give this to verifiers" actions={<CopyButton text={pair.publicPem} variant="ghost" />}><CodeView code={pair.publicPem} lang="generic" className="max-h-48" /></Pane>
+            <Pane title="Public JWK" actions={<CopyButton text={pair.publicJwk} variant="ghost" />}><CodeView code={pair.publicJwk} lang="json" className="max-h-48" /></Pane>
+            <Pane title="Private JWK, keep it secret" actions={<CopyButton text={pair.privateJwk} variant="ghost" />}><CodeView code={pair.privateJwk} lang="json" className="max-h-48" /></Pane>
+          </>
+        )}
+        {pair && hs && <Pane title="Secret as JWK" actions={<CopyButton text={pair.privateJwk} variant="ghost" />}><CodeView code={pair.privateJwk} lang="json" /></Pane>}
+        <p className="text-xs text-muted">Signed in your browser with jose and the Web Crypto API. Keys are made locally and never leave this page. Keep production keys off shared machines.</p>
       </div>
     </div>
   )

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Search, ArrowRight, ShieldCheck, Zap, Cpu, Workflow, Sparkles, GraduationCap, Users, Palette, Store, Check, X, Upload, Download, Lock, Infinity as Inf, Play, Star, ChevronDown, WifiOff, Code2, Layers, Command } from 'lucide-react'
-import { CATEGORIES, TOOLS, toolBySlug } from '@/tools/registry'
+import { CATEGORIES, TOOLS, toolBySlug, type ToolMeta } from '@/tools/registry'
 import { ToolCard } from '@/components/ToolCard'
 import { getIcon } from '@/components/icons'
 import { searchTools } from '@/components/CommandPalette'
@@ -10,18 +10,31 @@ import { Button, cn } from '@/components/ui'
 import { formatBytes, canvasToBlob, loadImage, downloadBlob, renameExt } from '@/lib/files'
 import { setHandoff, suggestFor } from '@/lib/handoff'
 import { useFavorites, useRecent } from '@/lib/store'
-import { allFormats, FORMAT_GROUPS } from '@/lib/formats'
+import { allFormats, toolFormats, FORMAT_GROUPS } from '@/lib/formats'
 import { POSTS } from '@/blog/meta'
 import { PostCard } from '@/blog/PostCard'
 import { REPO_URL } from '@/components/Layout'
-import { Github, Logo } from '@/components/Logo'
+import { Github } from '@/components/Logo'
 import { Aurora, Counter, GoldRing, Magnetic, Marquee, Reveal, Stagger, StaggerItem, spotlightMove } from '@/components/motion'
-import { setPageMeta } from '@/lib/seo'
+import { setJsonLd, setPageMeta } from '@/lib/seo'
+import { HeroRing } from '@/components/HeroRing'
+import { Parallax, RevealText } from '@/components/motion'
+import { detectFile, toolsForFormat } from '@/lib/detect'
+import { openDropSheet } from '@/lib/ux'
+import { DOC_NAV } from '@/docs/nav'
 
 const base = import.meta.env.BASE_URL
 
 export default function Home() {
-  useEffect(() => { setPageMeta(`OpenFile | Every file tool, private, in your browser`, `OpenFile: ${TOOLS.length}+ free, open-source tools for PDF, images, video, audio and code. Everything runs in your browser, nothing is uploaded.`) }, [])
+  useEffect(() => {
+    setPageMeta(`OpenFile | Every file tool, private, in your browser`, `OpenFile: ${TOOLS.length}+ free, open-source tools for PDF, images, video, audio and code. Everything runs in your browser, nothing is uploaded.`)
+    const home = location.origin + base
+    setJsonLd('home', { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'WebSite', '@id': home + '#website', name: 'OpenFile', url: home, description: `${TOOLS.length}+ free file tools that run in your browser.`, potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${home}tools?q={search_term_string}` }, 'query-input': 'required name=search_term_string' } },
+      { '@type': 'SoftwareApplication', name: 'OpenFile', applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any (web browser)', url: home, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } },
+    ] })
+    return () => setJsonLd('home', null)
+  }, [])
   const [film, setFilm] = useState(false)
   return (
     <div>
@@ -57,7 +70,6 @@ function Hero({ onFilm }: { onFilm: () => void }) {
   const ringY = useTransform(scrollYProgress, [0, 1], [0, 120])
   const ringScale = useTransform(scrollYProgress, [0, 1], [1, 0.85])
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-  const orbit = CATEGORIES.slice(0, 8)
   return (
     <section ref={ref} className="relative overflow-hidden">
       <Aurora />
@@ -100,23 +112,7 @@ function Hero({ onFilm }: { onFilm: () => void }) {
             {['merge-pdf', 'compress-pdf', 'background-remover', 'video-to-gif', 'sign-pdf', 'qr-generator'].map((s) => { const t = toolBySlug(s); return t ? <Link key={s} to={'/' + s} className="rounded-full border border-border bg-surface/70 px-3 py-1.5 text-muted backdrop-blur transition hover:border-accent hover:text-fg">{t.name}</Link> : null })}
           </div>
         </div>
-        <motion.div style={{ y: ringY, scale: ringScale, opacity: fade }} className="relative mx-auto hidden w-full max-w-[460px] sm:block">
-          <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
-            <GoldRing size={460} className="mx-auto">
-              <motion.div initial={{ rotate: -10, scale: 0.7 }} animate={{ rotate: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 120, damping: 14, delay: 0.3 }}><Logo size={104} /></motion.div>
-            </GoldRing>
-            {orbit.map((c, i) => {
-              const a = (i / orbit.length) * Math.PI * 2 - Math.PI / 2
-              const I = getIcon(TOOLS.find((t) => t.category === c.id)?.icon ?? 'FileText')
-              return (
-                <motion.div key={c.id} initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.07 }}
-                  className="absolute" style={{ left: `${50 + Math.cos(a) * 47}%`, top: `${50 + Math.sin(a) * 47}%`, x: '-50%', y: '-50%' }}>
-                  <Link to={`/category/${c.id}`} title={c.name} className="animate-float grid size-11 place-items-center rounded-2xl border border-border bg-surface/90 shadow-xl backdrop-blur transition hover:scale-110" style={{ color: c.color, animationDelay: `${i * 0.6}s` }}><I className="size-5" /></Link>
-                </motion.div>
-              )
-            })}
-          </motion.div>
-        </motion.div>
+        <HeroRing style={{ y: ringY, scale: ringScale, opacity: fade }} className="max-w-[300px] sm:max-w-[460px]" />
       </div>
     </section>
   )
@@ -136,54 +132,117 @@ function FormatMarquee() {
 function SectionHead({ kicker, title, sub }: { kicker: string; title: React.ReactNode; sub?: string }) {
   return (
     <Reveal className="mx-auto mb-10 max-w-2xl text-center">
-      <div className="text-xs font-bold uppercase tracking-widest text-accent">{kicker}</div>
-      <h2 className="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
+      <div className="text-xs font-bold uppercase tracking-widest text-accent"><span className="text-gradient text-gradient-anim">{kicker}</span></div>
+      <RevealText as="h2" className="mt-2 block font-display text-3xl font-bold tracking-tight sm:text-4xl">{title}</RevealText>
       {sub && <p className="mt-3 text-muted">{sub}</p>}
     </Reveal>
   )
+}
+
+/** Steps for the explorer's "try a pipeline" card: Workspace steps when the category has them, otherwise a
+ *  two-tool chain where the first tool's output is the second tool's input. */
+function pipelineFor(list: ToolMeta[]): { kind: 'workspace' | 'chain'; steps: ToolMeta[]; via?: string } | null {
+  const steps = list.filter((t) => t.pipeline)
+  if (steps.length >= 2) return { kind: 'workspace', steps: steps.slice(0, 4) }
+  for (const a of list) {
+    for (const out of toolFormats(a).outputs) {
+      const b = TOOLS.find((t) => t.slug !== a.slug && t.inputs?.map((x) => x.toUpperCase()).includes(out) && t.category !== a.category) ?? TOOLS.find((t) => t.slug !== a.slug && toolFormats(t).inputs.includes(out) && toolFormats(t).kind === 'file' && t.slug !== a.slug)
+      if (b) return { kind: 'chain', steps: [a, b], via: out }
+    }
+  }
+  return null
 }
 
 function CategoryExplorer() {
   const [cat, setCat] = useState(CATEGORIES[0].id)
   const c = CATEGORIES.find((x) => x.id === cat) ?? CATEGORIES[0]
   const list = TOOLS.filter((t) => t.category === c.id)
-  const top = [...list].sort((a, b) => Number(!!b.popular) - Number(!!a.popular)).slice(0, 6)
+  const top = [...list].sort((a, b) => Number(!!b.popular) - Number(!!a.popular) || Number(!!b.badge) - Number(!!a.badge)).slice(0, 15)
   const CatIcon = getIcon(list[0]?.icon ?? 'FileText')
+  const formats = useMemo(() => allFormats(list).slice(0, 12), [c.id])
+  const pipe = useMemo(() => pipelineFor(list), [c.id])
+  const ai = list.filter((t) => t.badge === 'AI').length
+  const fresh = list.filter((t) => t.badge === 'NEW').length
+  const doc = DOC_NAV.find((d) => d.id === `tools-${c.id}`)
   return (
     <section className="mx-auto mt-24 max-w-7xl px-4 sm:px-6">
       <SectionHead kicker="Category explorer" title="Find the right station" sub="Pick a category to see what it can do." />
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0 scrollbar-thin" role="tablist" aria-label="Categories">
-          {CATEGORIES.map((x) => {
-            const n = TOOLS.filter((t) => t.category === x.id).length
-            const on = x.id === cat
-            return (
-              <button key={x.id} role="tab" aria-selected={on} onClick={() => setCat(x.id)} onMouseEnter={() => setCat(x.id)} className={cn('relative flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-left text-sm transition cursor-pointer', on ? 'text-fg' : 'text-muted hover:text-fg')}>
-                {on && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-xl border border-border bg-surface shadow-lg" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
-                <span className="relative size-2.5 rounded-full" style={{ background: x.color, boxShadow: on ? `0 0 12px ${x.color}` : undefined }} />
-                <span className="relative flex-1 font-medium">{x.name}</span>
-                <span className="relative font-mono text-xs text-muted">{n}</span>
-              </button>
-            )
-          })}
+      <div className="grid gap-6 lg:grid-cols-[280px_1fr]" data-tour="explorer">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0 scrollbar-thin" role="tablist" aria-label="Categories">
+            {CATEGORIES.map((x) => {
+              const n = TOOLS.filter((t) => t.category === x.id).length
+              const on = x.id === cat
+              return (
+                <button key={x.id} role="tab" aria-selected={on} aria-controls="cat-panel" onClick={() => setCat(x.id)} onMouseEnter={() => setCat(x.id)} className={cn('relative flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-left text-sm transition cursor-pointer', on ? 'text-fg' : 'text-muted hover:text-fg')}>
+                  {on && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-xl border border-border bg-surface shadow-lg" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
+                  <span className="relative size-2.5 rounded-full" style={{ background: x.color, boxShadow: on ? `0 0 12px ${x.color}` : undefined }} />
+                  <span className="relative flex-1 font-medium">{x.name}</span>
+                  <span className="relative font-mono text-xs text-muted">{n}</span>
+                </button>
+              )
+            })}
+          </div>
+          <Link to="/tools" className="mt-3 hidden items-center gap-1.5 px-4 text-sm text-accent hover:underline lg:flex">Browse all {TOOLS.length} tools <ArrowRight className="size-3.5" /></Link>
         </div>
         <AnimatePresence mode="wait">
-          <motion.div key={c.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}
-            onPointerMove={spotlightMove} className="spotlight relative overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-8" style={{ ['--c' as string]: c.color }}>
+          <motion.div key={c.id} id="cat-panel" role="tabpanel" aria-label={c.name} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}
+            onPointerMove={spotlightMove} className="spotlight @container relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface p-5 sm:p-8" style={{ ['--c' as string]: c.color }}>
             <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full blur-3xl" style={{ background: c.color + '22' }} />
             <div className="relative flex flex-wrap items-center gap-4">
               <div className="grid size-14 place-items-center rounded-2xl" style={{ background: c.color + '1f', color: c.color }}><CatIcon className="size-7" /></div>
-              <div className="flex-1"><h3 className="font-display text-2xl font-bold">{c.name}</h3><p className="text-muted">{c.blurb}</p></div>
+              <div className="min-w-0 flex-1"><h3 className="font-display text-2xl font-bold">{c.name}</h3><p className="text-muted">{c.blurb}</p></div>
               <Link to={`/category/${c.id}`}><Button variant="outline" icon={<ArrowRight className="size-4" />}>All {list.length}</Button></Link>
             </div>
-            <div className="relative mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {formats.length > 0 && (
+              <div className="relative mt-5 flex flex-wrap items-center gap-1.5">
+                <span className="mr-1 text-[11px] font-semibold uppercase tracking-wider text-muted">Popular formats</span>
+                {formats.map(({ format, count }) => (
+                  <Link key={format} to={`/tools?format=${format}`} className="rounded-md border border-border bg-surface-2/40 px-2 py-1 font-mono text-[11px] text-muted transition hover:border-transparent hover:text-fg" style={{ ['--tw-ring-color' as string]: c.color }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = c.color + '22' }} onMouseLeave={(e) => { e.currentTarget.style.background = '' }}>.{format.toLowerCase()} <span className="opacity-60">{count}</span></Link>
+                ))}
+              </div>
+            )}
+            <div className="relative mt-5 grid gap-2 @lg:grid-cols-2 @4xl:grid-cols-3">
               {top.map((t, i) => { const I = getIcon(t.icon); return (
-                <motion.div key={t.slug} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                  <Link to={`/${t.slug}`} className="group flex items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-3 transition hover:border-transparent hover:bg-surface-2">
-                    <I className="mt-0.5 size-4 shrink-0" style={{ color: c.color }} />
-                    <span className="min-w-0"><span className="block text-sm font-medium">{t.name}</span><span className="line-clamp-1 text-xs text-muted">{t.desc}</span></span>
+                <motion.div key={t.slug} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 12) * 0.03 }}>
+                  <Link to={`/${t.slug}`} className="group flex h-full items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-3 transition hover:border-transparent hover:bg-surface-2">
+                    <span data-cat={t.category} className="icon-anim mt-0.5 shrink-0" style={{ color: c.color }}><I className="size-4" /></span>
+                    <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="rounded px-1 text-[9px] font-bold" style={{ background: c.color + '22', color: c.color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{t.desc}</span></span>
                   </Link>
                 </motion.div>) })}
+              {list.length > top.length && (
+                <Link to={`/category/${c.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm text-muted transition hover:border-accent hover:text-fg">+{list.length - top.length} more {c.name.toLowerCase()} tools <ArrowRight className="size-3.5" /></Link>
+              )}
+            </div>
+            {pipe && (
+              <div className="relative mt-5 rounded-2xl border border-border bg-gradient-to-r from-accent/8 via-transparent to-accent-2/8 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-sm font-semibold"><Workflow className="size-4 text-accent" /> {pipe.kind === 'workspace' ? 'Try a pipeline' : 'Try a chain'}</div>
+                  <Link to={pipe.kind === 'workspace' ? '/workspace' : `/${pipe.steps[0].slug}`} className="text-xs text-accent hover:underline">{pipe.kind === 'workspace' ? 'Open Workspace' : `Start with ${pipe.steps[0].name}`}</Link>
+                </div>
+                <ol className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+                  {pipe.steps.map((t, i) => (
+                    <li key={t.slug} className="flex items-center gap-1.5">
+                      {i > 0 && <span className="flex items-center gap-1 text-muted">{pipe.kind === 'chain' && pipe.via ? <span className="font-mono text-[10px]">.{pipe.via.toLowerCase()}</span> : null}<ArrowRight className="size-3" /></span>}
+                      <Link to={`/${t.slug}`} className="flex min-h-8 items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 hover:border-accent"><span className="grid size-4 place-items-center rounded-full bg-accent/15 text-[9px] font-bold text-accent">{i + 1}</span>{t.name}</Link>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-2 text-xs text-muted">{pipe.kind === 'workspace' ? 'Chain these steps once, then run them on hundreds of files at the same time.' : 'The result of the first tool opens straight in the second with one tap after you download.'}</p>
+              </div>
+            )}
+            <div className="min-h-5 flex-1" aria-hidden="true" />
+            <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-xs text-muted">
+              <span><Counter value={list.length} className="font-semibold text-fg" /> tools</span>
+              <span><Counter value={allFormats(list).length} className="font-semibold text-fg" /> formats</span>
+              {ai > 0 && <span><span className="font-semibold text-fg">{ai}</span> on-device AI</span>}
+              {fresh > 0 && <span><span className="font-semibold text-fg">{fresh}</span> new</span>}
+              <span className="flex items-center gap-1"><Lock className="size-3" /> all local</span>
+              <span className="ml-auto flex flex-wrap gap-3">
+                {doc && <Link to={doc.path} className="link-underline hover:text-fg">Read the guide</Link>}
+                <Link to={`/category/${c.id}`} className="link-underline font-medium text-accent">Open {c.name}</Link>
+              </span>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -397,8 +456,10 @@ function SmartDrop() {
   const [demo, setDemo] = useState<{ blob: Blob; ms: number; url: string } | null>(null)
   const [busy, setBusy] = useState(false)
   const nav = useNavigate()
+  const [kind, setKind] = useState<{ label: string; format: string; mismatch: boolean; tools: ToolMeta[] } | null>(null)
   const pick = async (f: File) => {
-    setFile(f); setDemo(null)
+    setFile(f); setDemo(null); setKind(null)
+    detectFile(f).then((d) => setKind({ label: d.label, format: d.format, mismatch: d.mismatch, tools: toolsForFormat(d.format, f).slice(0, 10) })).catch(() => {})
     if (f.type.startsWith('image/') && f.type !== 'image/svg+xml') {
       setBusy(true)
       try {
@@ -409,9 +470,9 @@ function SmartDrop() {
       } catch {} finally { setBusy(false) }
     }
   }
-  const sugg = file ? suggestFor(file).map(toolBySlug).filter(Boolean) : []
+  const sugg = file ? (kind?.tools.length ? kind.tools : suggestFor(file).map(toolBySlug).filter(Boolean)) : []
   return (
-    <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6">
+    <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6" data-tour="drop">
       <div onPointerMove={spotlightMove} className="spotlight relative overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-10">
         <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative grid items-center gap-8 lg:grid-cols-2">
@@ -420,7 +481,7 @@ function SmartDrop() {
             <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Drop any file. OpenFile knows what to do.</h2>
             <p className="mt-3 text-muted">OpenFile detects the file type and suggests the right tools. Drop an image and watch it convert to WebP right here. Nothing leaves your machine.</p>
             <ul className="mt-5 space-y-2 text-sm">
-              {['PDFs, images, video, audio, Office docs, data files', 'Opens the tool with your file already loaded', 'Works offline once loaded'].map((x) => <li key={x} className="flex items-center gap-2"><Check className="size-4 text-success" />{x}</li>)}
+              {['PDFs, images, video, audio, Office docs, data files', 'Reads the bytes, so a wrong extension cannot fool it', 'Opens the tool with your file already loaded', 'Or drop a file on any page, any time'].map((x) => <li key={x} className="flex items-center gap-2"><Check className="size-4 text-success" />{x}</li>)}
             </ul>
           </div>
           <div>
@@ -430,6 +491,7 @@ function SmartDrop() {
               {!file ? (<><div className="grid size-14 place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-lg"><Upload className="size-6" /></div><div className="font-semibold">Drop a file or click to choose</div><div className="text-xs text-muted">Try a photo for the live WebP demo</div></>) : (
                 <div className="w-full text-left" onClick={(e) => e.preventDefault()}>
                   <div className="flex items-center justify-between gap-2"><div className="truncate font-medium">{file.name}</div><span className="shrink-0 text-xs text-muted">{formatBytes(file.size)}</span></div>
+                  {kind && <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted"><span className="rounded-md bg-accent/15 px-1.5 py-0.5 font-mono font-bold text-accent">{kind.format || '?'}</span>{kind.label}{kind.mismatch && <span className="text-warn">name and content do not match</span>}</div>}
                   {busy && <div className="shimmer mt-3 h-2 rounded-full" />}
                   {demo && (
                     <div className="mt-3 flex items-center gap-3 rounded-xl border border-success/30 bg-success/5 p-3">
@@ -442,7 +504,10 @@ function SmartDrop() {
                   <div className="mt-2 flex flex-wrap gap-2">
                     {sugg.map((t) => { const I = getIcon(t!.icon); return <button key={t!.slug} onClick={() => { setHandoff([file]); nav('/' + t!.slug) }} className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs hover:border-accent hover:text-accent cursor-pointer"><I className="size-3.5" />{t!.name}</button> })}
                   </div>
-                  <button onClick={() => { setFile(null); setDemo(null) }} className="mt-4 text-xs text-muted underline cursor-pointer">Choose another file</button>
+                  <div className="mt-4 flex flex-wrap gap-4">
+                    <button onClick={() => { setFile(null); setDemo(null); setKind(null) }} className="min-h-9 text-xs text-muted underline cursor-pointer">Choose another file</button>
+                    <button onClick={() => openDropSheet([file])} className="min-h-9 text-xs text-accent underline cursor-pointer">See every match</button>
+                  </div>
                 </div>
               )}
             </label>
@@ -479,7 +544,7 @@ function WorkspacePromo() {
             <p className="mt-3 text-muted">Batch-process hundreds of images or PDFs with a reusable recipe. Save recipes, re-run them, and download everything as a ZIP.</p>
             <Link to="/workspace"><Button size="lg" className="mt-6" icon={<ArrowRight className="size-4" />}>Open Workspace</Button></Link>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-5 shadow-2xl">
+          <Parallax speed={0.12}><div className="rounded-2xl border border-border bg-surface p-5 shadow-2xl">
             <div className="mb-4 flex items-center justify-between text-xs text-muted"><span className="font-mono">pipeline: product-photos</span><span>248 files</span></div>
             <div className="space-y-2">
               {steps.map((s, k) => (
@@ -490,7 +555,7 @@ function WorkspacePromo() {
                 </div>
               ))}
             </div>
-          </div>
+          </div></Parallax>
         </div>
       </div>
     </section>
@@ -503,9 +568,9 @@ function Compare() {
     <section className="mx-auto mt-28 max-w-4xl px-4 sm:px-6">
       <SectionHead kicker="Compare" title="OpenFile vs. typical upload-based tools" />
       <div className="overflow-hidden rounded-2xl border border-border bg-surface">
-        <div className="grid grid-cols-[1fr_120px_120px] border-b border-border bg-surface-2/60 px-5 py-3 text-xs font-bold uppercase tracking-wide text-muted"><span>Feature</span><span className="text-center text-accent">OpenFile</span><span className="text-center">Others</span></div>
+        <div className="grid grid-cols-[1fr_72px_72px] sm:grid-cols-[1fr_120px_120px] border-b border-border bg-surface-2/60 px-5 py-3 text-xs font-bold uppercase tracking-wide text-muted"><span>Feature</span><span className="text-center text-accent">OpenFile</span><span className="text-center">Others</span></div>
         {rows.map(([f, a, b]) => (
-          <div key={f} className="grid grid-cols-[1fr_120px_120px] border-b border-border px-5 py-3 text-sm last:border-0"><span>{f}</span><span className="flex justify-center">{a ? <Check className="size-5 text-success" /> : <X className="size-5 text-danger" />}</span><span className="flex justify-center">{b ? <Check className="size-5 text-success" /> : <X className="size-5 text-muted" />}</span></div>
+          <div key={f} className="grid grid-cols-[1fr_72px_72px] sm:grid-cols-[1fr_120px_120px] border-b border-border px-5 py-3 text-sm last:border-0"><span>{f}</span><span className="flex justify-center">{a ? <Check className="size-5 text-success" /> : <X className="size-5 text-danger" />}</span><span className="flex justify-center">{b ? <Check className="size-5 text-success" /> : <X className="size-5 text-muted" />}</span></div>
         ))}
       </div>
     </section>

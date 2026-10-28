@@ -5,16 +5,24 @@ import { Button, Field, Input, Label, Progress, Segmented, Slider, Switch, ToolG
 import { formatBytes } from '@/lib/files'
 import { BatchResults, BeforeAfter, ImageDrop, ThumbGrid, decode, exportCanvas, fmtFromMime, fmtSupported, hqResize, outName, quantizeCanvas, toCanvas, useImageList, type Fmt, type Item, type Result } from './_img/kit'
 
-type OutFmt = 'keep' | 'jpg' | 'webp' | 'avif'
-type R = { blob: Blob; url: string; state: 'run' | 'done' | 'err'; kept?: boolean; fmt?: Fmt; w?: number; h?: number; err?: string }
+type OutFmt = 'keep' | 'jpg' | 'webp' | 'avif' | 'jxl'
+type R = { blob: Blob; url: string; state: 'run' | 'done' | 'err'; kept?: boolean; fmt?: Fmt | 'jxl'; w?: number; h?: number; err?: string }
 
-async function compressOne(it: Item, o: { quality: number; maxW: number; fmt: OutFmt; neverLarger: boolean }) {
+async function compressOne(it: Item, o: { quality: number; maxW: number; fmt: OutFmt; neverLarger: boolean; pro: boolean }) {
   const img = await decode(it.file)
   let c = it.w > o.maxW && o.maxW > 0 ? hqResize(img, o.maxW, Math.round((it.h * o.maxW) / it.w)) : toCanvas(img)
-  let fmt: Fmt = o.fmt === 'keep' ? fmtFromMime(it.file.type, it.file.name) : o.fmt
-  if (!['jpg', 'webp', 'avif', 'png'].includes(fmt)) fmt = 'png'
-  if (fmt === 'png' && o.quality < 95) c = await quantizeCanvas(c, Math.max(16, Math.min(256, Math.round(o.quality * 2.7))))
-  let blob = await exportCanvas(c, fmt, o.quality / 100)
+  let fmt: Fmt | 'jxl' = o.fmt === 'keep' ? fmtFromMime(it.file.type, it.file.name) : o.fmt
+  if (!['jpg', 'webp', 'avif', 'png', 'jxl'].includes(fmt)) fmt = 'png'
+  let blob: Blob
+  if (o.pro || fmt === 'jxl') {
+    // WebAssembly codecs: MozJPEG, libwebp, libavif, libjxl, and palette quantisation + OxiPNG for PNG
+    const { encodeCanvas, quantize } = await import('@/lib/b2/codecs')
+    if (fmt === 'png' && o.quality < 95) c = await quantize(c, Math.max(16, Math.min(256, Math.round(o.quality * 2.7))), true)
+    blob = await encodeCanvas(c, fmt as any, { quality: o.quality, oxipngLevel: fmt === 'png' ? 3 : 0 })
+  } else {
+    if (fmt === 'png' && o.quality < 95) c = await quantizeCanvas(c, Math.max(16, Math.min(256, Math.round(o.quality * 2.7))))
+    blob = await exportCanvas(c, fmt as Fmt, o.quality / 100)
+  }
   let kept = false
   const sameFmt = fmtFromMime(it.file.type, it.file.name) === fmt
   if (o.neverLarger && sameFmt && c.width === it.w && blob.size >= it.file.size) { blob = it.file; kept = true }
@@ -28,13 +36,14 @@ export default function ImageCompressor() {
   const [maxW, setMaxW] = useState(1920)
   const [fmt, setFmt] = useState<OutFmt>('keep')
   const [neverLarger, setNeverLarger] = useState(true)
+  const [pro, setPro] = useState(true)
   const [res, setRes] = useState<Record<string, R>>({})
   const [compare, setCompare] = useState<string | null>(null)
   const run = useRef(0)
   const urls = useRef<string[]>([])
   useEffect(() => () => urls.current.forEach(URL.revokeObjectURL), [])
 
-  const opts = useMemo(() => ({ quality, maxW: resize ? maxW : 0, fmt, neverLarger }), [quality, resize, maxW, fmt, neverLarger])
+  const opts = useMemo(() => ({ quality, maxW: resize ? maxW : 0, fmt, neverLarger, pro }), [quality, resize, maxW, fmt, neverLarger, pro])
 
   // live re-compress whenever images or options change
   useEffect(() => {
@@ -65,7 +74,7 @@ export default function ImageCompressor() {
   const done = items.filter((i) => res[i.id]?.state === 'done')
   const progress = items.length ? done.length / items.length : 0
   const working = items.some((i) => res[i.id]?.state === 'run')
-  const results: Result[] = done.map((i) => ({ id: i.id, name: outName(i.file.name, res[i.id].fmt ?? 'png', res[i.id].kept ? '' : '-min'), blob: res[i.id].blob, originalSize: i.file.size, url: res[i.id].url, note: res[i.id].kept ? 'already optimal, kept original' : `${res[i.id].w}×${res[i.id].h}` }))
+  const results: Result[] = done.map((i) => ({ id: i.id, name: outName(i.file.name, (res[i.id].fmt ?? 'png') as Fmt, res[i.id].kept ? '' : '-min'), blob: res[i.id].blob, originalSize: i.file.size, url: res[i.id].url, note: res[i.id].kept ? 'already optimal, kept original' : `${res[i.id].w}×${res[i.id].h}` }))
   const cmp = compare ? items.find((i) => i.id === compare) : null
   const avifOk = fmtSupported('avif')
 
@@ -104,14 +113,17 @@ export default function ImageCompressor() {
           <div className="-mt-3 flex justify-between text-[11px] text-muted"><span>Smaller file</span><span>Better quality</span></div>
           <div>
             <Label>Output format</Label>
-            <Segmented value={fmt} onChange={setFmt} options={[{ value: 'keep', label: 'Keep' }, { value: 'jpg', label: 'JPG' }, { value: 'webp', label: 'WEBP' }, ...(avifOk ? [{ value: 'avif' as OutFmt, label: 'AVIF' }] : [])]} />
-            {!avifOk && <p className="mt-1.5 text-[11px] text-muted">AVIF encoding isn't available in this browser.</p>}
+            <Segmented value={fmt} onChange={setFmt} options={[{ value: 'keep', label: 'Keep' }, { value: 'jpg', label: 'JPG' }, { value: 'webp', label: 'WEBP' }, ...(avifOk || pro ? [{ value: 'avif' as OutFmt, label: 'AVIF' }] : []), { value: 'jxl' as OutFmt, label: 'JXL' }]} />
+            {!avifOk && !pro && <p className="mt-1.5 text-[11px] text-muted">AVIF encoding is not built into this browser. Turn on the best-compression engine to use it.</p>}
+            {fmt === 'jxl' && <p className="mt-1.5 text-[11px] text-muted">JPEG XL is very efficient but only some browsers can open it (Safari does). Keep a JPG copy for sharing.</p>}
             {fmt === 'keep' && items.some((i) => fmtFromMime(i.file.type, i.file.name) === 'png') && <p className="mt-1.5 text-[11px] text-muted">PNGs are compressed by smart color reduction. For the biggest savings choose WEBP.</p>}
           </div>
           <div className="space-y-3">
             <Switch checked={resize} onChange={setResize} label="Limit max width" />
             {resize && <Field label="Max width" hint="px"><Input type="number" min={16} value={maxW} onChange={(e) => setMaxW(Math.max(16, Number(e.target.value) || 0))} /></Field>}
             <Switch checked={neverLarger} onChange={setNeverLarger} label="Never make files larger" />
+            <Switch checked={pro} onChange={setPro} label="Best compression (MozJPEG, OxiPNG, libwebp)" />
+            {pro && <p className="text-[11px] text-muted">Uses WebAssembly encoders for smaller files at the same quality. A little slower; the engine loads once.</p>}
           </div>
           <div className="rounded-xl bg-surface-2/60 p-3">
             {working ? <Progress value={progress} label={`Compressing ${done.length}/${items.length}`} /> : (

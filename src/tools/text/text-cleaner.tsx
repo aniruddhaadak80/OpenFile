@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Undo2, Redo2, Trash2, CopyMinus, Rows3, ArrowDownAZ, ArrowUpZA, ArrowDown10, ListOrdered, Shuffle, Scissors, Space, WrapText, Code, Languages, Hash, Replace, FlipVertical, TextQuote, Eraser, Link2Off, Mail } from 'lucide-react'
-import { Button, Card, Field, Input, Switch, CopyButton, cn } from '@/components/ui'
+import { Button, Card, Field, Input, Select, Segmented, Switch, CopyButton, cn } from '@/components/ui'
+import { joinLines, splitToLines, padLines, wrapLines, type PadSide } from '@/lib/b5/linetools'
 import { toast } from '@/components/toast'
 import { randInt, useStored, DownloadButton, OpenFileButton } from '@/tools/dev/_dev/kit'
 
@@ -16,7 +17,11 @@ export default function TextCleaner() {
   const [caseIns, setCaseIns] = useState(true)
   const [prefix, setPrefix] = useState('- '); const [suffix, setSuffix] = useState('')
   const [find, setFind] = useState(''); const [repl, setRepl] = useState(''); const [useRe, setUseRe] = useState(false); const [reCase, setReCase] = useState(false)
-  const [joinWith, setJoinWith] = useState(' ')
+  const [joinWith, setJoinWith] = useState(', ')
+  const [joinQuote, setJoinQuote] = useState<'' | "'" | '"' | '`'>('')
+  const [joinWrap, setJoinWrap] = useState<'none' | '[]' | '()' | '{}'>('none')
+  const [padW, setPadW] = useState(10); const [padCh, setPadCh] = useState(' '); const [padSide, setPadSide] = useState<PadSide>('left'); const [padAuto, setPadAuto] = useState(true)
+  const [wrapW, setWrapW] = useState(80); const [wrapBreak, setWrapBreak] = useState(true)
 
   const apply = (name: string, fn: (s: string) => string) => {
     const out = fn(text)
@@ -108,11 +113,41 @@ export default function TextCleaner() {
           ))}
         </Card>
         <Card className="space-y-3 p-4">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Prefix / suffix · join</div>
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Prefix and suffix</div>
           <div className="grid grid-cols-2 gap-2"><Input value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder="Prefix" className="font-mono text-xs" /><Input value={suffix} onChange={(e) => setSuffix(e.target.value)} placeholder="Suffix" className="font-mono text-xs" /></div>
           <Button size="sm" variant="outline" className="w-full" onClick={() => apply('Added prefix/suffix', L((ls) => ls.map((l) => (l.trim() ? prefix + l + suffix : l))))}>Add to each non-empty line</Button>
-          <div className="flex gap-2"><Input value={joinWith} onChange={(e) => setJoinWith(e.target.value)} placeholder="Join with" className="font-mono text-xs" />
-            <Button size="sm" variant="outline" icon={<WrapText className="size-4" />} onClick={() => apply('Removed line breaks', (s) => lines(s).map((l) => l.trim()).filter(Boolean).join(joinWith.replace(/\\n/g, '\n').replace(/\\t/g, '\t')))}>Remove breaks</Button></div>
+        </Card>
+        <Card className="space-y-3 p-4">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Join and split</div>
+          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
+            <Input value={joinWith} onChange={(e) => setJoinWith(e.target.value)} placeholder="Delimiter" aria-label="Delimiter" className="font-mono text-xs" title="Use \n for a new line and \t for a tab" />
+            <Select value={joinQuote} onChange={setJoinQuote} options={[{ value: '', label: 'No quotes' }, { value: "'", label: "'a'" }, { value: '"', label: '"a"' }, { value: '`', label: '`a`' }]} className="w-24" />
+            <Select value={joinWrap} onChange={setJoinWrap} options={[{ value: 'none', label: 'No wrap' }, { value: '[]', label: '[ ]' }, { value: '()', label: '( )' }, { value: '{}', label: '{ }' }]} className="w-24" />
+          </div>
+          <div className="flex flex-wrap gap-1.5">{[[', ', 'comma'], ['\\t', 'tab'], [' | ', 'pipe'], [';', 'semicolon'], [' ', 'space'], ['', 'nothing']].map(([d, l]) => <button key={l} onClick={() => setJoinWith(d)} className={cn('rounded-md border px-2 py-0.5 text-[11px]', joinWith === d ? 'border-accent text-accent' : 'border-border text-muted hover:text-fg')}>{l}</button>)}</div>
+          <div className="grid grid-cols-2 gap-2">
+            <Button size="sm" variant="outline" icon={<WrapText className="size-4" />} onClick={() => apply('Joined lines', (s) => joinLines(s, { delim: joinWith, quote: joinQuote, skipEmpty: true, trim: true, wrapStart: joinWrap === 'none' ? '' : joinWrap[0], wrapEnd: joinWrap === 'none' ? '' : joinWrap[1] }))}>Join lines</Button>
+            <Button size="sm" variant="outline" icon={<Rows3 className="size-4" />} disabled={!joinWith} onClick={() => apply('Split into lines', (s) => splitToLines(s.replace(/^\s*[[({]|[\])}]\s*$/g, ''), joinWith))}>Split into lines</Button>
+          </div>
+        </Card>
+        <Card className="space-y-3 p-4">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Pad lines</div>
+          <Segmented value={padSide} onChange={setPadSide} options={[{ value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }, { value: 'center', label: 'Center' }]} />
+          <div className="grid grid-cols-2 gap-2">
+            <Field label="Width"><Input type="number" min={1} max={500} value={padW} disabled={padAuto} onChange={(e) => setPadW(Math.max(1, Math.min(500, Number(e.target.value) || 1)))} className="text-xs" /></Field>
+            <Field label="Fill character"><Input value={padCh} maxLength={2} onChange={(e) => setPadCh(e.target.value)} className="font-mono text-xs" placeholder="space" /></Field>
+          </div>
+          <Switch checked={padAuto} onChange={setPadAuto} label={<span className="text-xs">Match the longest line</span>} />
+          <Button size="sm" variant="outline" className="w-full" onClick={() => apply('Padded lines', (s) => padLines(s, padW, padCh || ' ', padSide, padAuto))}>Pad each line</Button>
+        </Card>
+        <Card className="space-y-3 p-4">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Wrap lines</div>
+          <div className="flex items-end gap-2">
+            <Field label="Max characters per line" className="flex-1"><Input type="number" min={5} max={1000} value={wrapW} onChange={(e) => setWrapW(Math.max(5, Math.min(1000, Number(e.target.value) || 5)))} className="text-xs" /></Field>
+            <div className="flex gap-1 pb-0.5">{[40, 72, 80, 100].map((n) => <button key={n} onClick={() => setWrapW(n)} className={cn('rounded-md border px-1.5 py-1 text-[11px]', wrapW === n ? 'border-accent text-accent' : 'border-border text-muted hover:text-fg')}>{n}</button>)}</div>
+          </div>
+          <Switch checked={wrapBreak} onChange={setWrapBreak} label={<span className="text-xs">Split words longer than the line</span>} />
+          <Button size="sm" variant="outline" className="w-full" onClick={() => apply(`Wrapped at ${wrapW}`, (s) => wrapLines(s, wrapW, wrapBreak))}>Wrap text</Button>
         </Card>
         <Card className="space-y-3 p-4">
           <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted"><Replace className="size-3.5" />Find & replace{matchCount !== null && <span className={cn('ml-auto normal-case tracking-normal', matchCount < 0 ? 'text-danger' : 'text-accent')}>{matchCount < 0 ? 'invalid regex' : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}</span>}</div>

@@ -3,6 +3,7 @@
 All media is rendered with open-source tools only: cairocffi + Pillow + numpy (graphics and procedural music),
 cairosvg (lucide icons from `node_modules/lucide-react`), kokoro-onnx (Kokoro-82M neural TTS, Apache-2.0) and ffmpeg.
 
+Render caches (voice clips, temp audio) go to `scripts/media-lib/.cache/` and should not be committed.
 Shared code lives in `scripts/media-lib/ofmedia.py` (palette, drawing helpers, music synth, TTS, mixing).
 Fonts (Inter, Space Grotesk, JetBrains Mono, all SIL OFL) are in `scripts/media-lib/fonts/`.
 
@@ -10,6 +11,7 @@ Fonts (Inter, Space Grotesk, JetBrains Mono, all SIL OFL) are in `scripts/media-
 
 ```bash
 pip install numpy pillow cairocffi cairosvg kokoro-onnx soundfile
+# in the Hark sandbox these live in a persistent folder: export PYTHONPATH=/workspace/work/video/pylib
 # Kokoro model files (~120 MB) are downloaded automatically into $OF_TTS_DIR
 # (default /workspace/work/video/tts): kokoro-v1.0.int8.onnx + voices-v1.0.bin
 ```

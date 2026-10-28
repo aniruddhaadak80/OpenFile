@@ -5,15 +5,24 @@ import { Button, Dropzone, Card, Label, Select, Segmented, Switch, Input, Textar
 import { toast } from '@/components/toast'
 import { downloadBlob, baseName } from '@/lib/files'
 import { useDebounced, Pill } from './_conv/shared'
-import { detectFormat, parseText, serialize, normalize, fromMatrix, OUT_EXT, OUT_MIME, type TableData, type InFormat, type OutFormat } from './_conv/tables'
+import { detectFormat as detectBase, parseText, serialize, normalize, fromMatrix, OUT_EXT as BASE_EXT, OUT_MIME as BASE_MIME, type TableData, type InFormat as BaseIn, type OutFormat as BaseOut } from './_conv/tables'
+import { parseXmlTable, tableToXml, looksLikeXml } from '@/lib/b5/tablexml'
+
+type InFormat = BaseIn | 'xml'
+type OutFormat = BaseOut | 'xml' | 'ods'
+const OUT_EXT: Record<OutFormat, string> = { ...BASE_EXT, xml: 'xml', ods: 'ods' }
+const OUT_MIME: Record<OutFormat, string> = { ...BASE_MIME, xml: 'application/xml', ods: 'application/vnd.oasis.opendocument.spreadsheet' }
+const BOOK_OUT = new Set<OutFormat>(['xlsx', 'ods'])
+const detectFormat = (t: string): InFormat => (looksLikeXml(t) ? 'xml' : detectBase(t))
+const SHEET_RE = /\.(xlsx|xls|xlsm|xlsb|ods|fods|numbers|dbf|wk[1-4]|qpw)$/i
 
 const IN_OPTS: { value: InFormat | 'auto'; label: string }[] = [
   { value: 'auto', label: 'Auto-detect' }, { value: 'csv', label: 'CSV' }, { value: 'tsv', label: 'TSV' }, { value: 'json', label: 'JSON' },
-  { value: 'markdown', label: 'Markdown table' }, { value: 'html', label: 'HTML table' }, { value: 'sql', label: 'SQL INSERT' },
+  { value: 'markdown', label: 'Markdown table' }, { value: 'html', label: 'HTML table' }, { value: 'sql', label: 'SQL INSERT' }, { value: 'xml', label: 'XML' },
 ]
 const OUT_OPTS: { value: OutFormat; label: string }[] = [
   { value: 'csv', label: 'CSV' }, { value: 'tsv', label: 'TSV' }, { value: 'xlsx', label: 'Excel' }, { value: 'json', label: 'JSON' }, { value: 'json-arrays', label: 'JSON arrays' },
-  { value: 'markdown', label: 'Markdown' }, { value: 'html', label: 'HTML' }, { value: 'sql', label: 'SQL' }, { value: 'yaml', label: 'YAML' },
+  { value: 'markdown', label: 'Markdown' }, { value: 'html', label: 'HTML' }, { value: 'sql', label: 'SQL' }, { value: 'yaml', label: 'YAML' }, { value: 'xml', label: 'XML' }, { value: 'ods', label: 'ODS' },
 ]
 const SAMPLE = `id,name,email,city,signup_date,plan,mrr
 1,Ada Lovelace,ada@example.com,London,2024-01-14,Pro,49
@@ -33,12 +42,17 @@ export default function TableConverter() {
   const [fileName, setFileName] = useState('table')
   const [wb, setWb] = useState<any>(null)
   const [sheet, setSheet] = useState('')
+  const [sheetExt, setSheetExt] = useState('xlsx')
   const [out, setOut] = useState<OutFormat>('json')
   const [tableName, setTableName] = useState('my_table')
   const [createTable, setCreateTable] = useState(false)
   const [inferTypes, setInferTypes] = useState(true)
   const [pretty, setPretty] = useState(true)
   const [output, setOutput] = useState('')
+  const [xmlRoot, setXmlRoot] = useState('rows')
+  const [xmlRow, setXmlRow] = useState('row')
+  const [xmlAttrs, setXmlAttrs] = useState(false)
+  const [recordPath, setRecordPath] = useState('')
   const [shown, setShown] = useState(PAGE)
   const dText = useDebounced(text, 250)
   const detected = useMemo(() => (dText.trim() ? detectFormat(dText) : null), [dText])
@@ -47,8 +61,15 @@ export default function TableConverter() {
   useEffect(() => {
     if (mode !== 'paste' || wb) return
     if (!dText.trim()) { setTable(null); setParseErr(null); return }
+    const fmt = inFmt === 'auto' ? detected! : inFmt
+    if (fmt === 'xml') {
+      let off = false
+      parseXmlTable(dText).then((t) => { if (off) return; setTable(normalize(t)); setRecordPath(t.recordPath); setParseErr(t.headers.length ? null : 'No records found.'); setShown(PAGE) })
+        .catch((e) => { if (!off) { setParseErr(e?.message || 'Could not parse the XML'); setTable(null) } })
+      return () => { off = true }
+    }
+    setRecordPath('')
     try {
-      const fmt = inFmt === 'auto' ? detected! : inFmt
       const t = parseText(dText, fmt, header)
       if (fmt === 'sql' && (t as any).table) setTableName((t as any).table)
       setTable(t); setParseErr(t.headers.length ? null : 'No rows found.'); setShown(PAGE)
@@ -67,26 +88,28 @@ export default function TableConverter() {
 
   // generate output
   useEffect(() => {
-    if (!table || out === 'xlsx') { setOutput(''); return }
+    if (!table || BOOK_OUT.has(out)) { setOutput(''); return }
+    if (out === 'xml') { setOutput(tableToXml(table, { root: xmlRoot, row: xmlRow, attributes: xmlAttrs, pretty })); return }
     let off = false
-    serialize(table, out, { tableName, createTable, inferTypes, pretty }).then((s) => { if (!off) setOutput(s) }).catch((e) => setOutput('Error: ' + e.message))
+    serialize(table, out as Exclude<BaseOut, 'xlsx'>, { tableName, createTable, inferTypes, pretty }).then((s) => { if (!off) setOutput(s) }).catch((e) => setOutput('Error: ' + e.message))
     return () => { off = true }
-  }, [table, out, tableName, createTable, inferTypes, pretty])
+  }, [table, out, tableName, createTable, inferTypes, pretty, xmlRoot, xmlRow, xmlAttrs])
 
   const onFile = async (files: File[]) => {
     const f = files[0]
     setFileName(baseName(f.name))
-    if (/\.(xlsx|xls|xlsm|ods)$/i.test(f.name)) {
+    if (SHEET_RE.test(f.name)) {
       const XLSX = await import('xlsx')
       try {
         const book = XLSX.read(await f.arrayBuffer(), { type: 'array', cellDates: true })
-        setWb(book); setSheet(book.SheetNames[0]); setText('')
-      } catch { setParseErr('Could not read that spreadsheet.') }
+        if (!book.SheetNames.length) throw new Error('empty')
+        setWb(book); setSheet(book.SheetNames[0]); setText(''); setSheetExt(f.name.split('.').pop()!.toLowerCase())
+      } catch { setParseErr(/\.numbers$/i.test(f.name) ? 'Could not read that Numbers file. If it came from a Mac, export it as a single file (File > Export To > Numbers, or as .xlsx) and try again.' : 'Could not read that spreadsheet. It may be password protected or damaged.') }
     } else {
       setWb(null)
       const t = await f.text()
       const ext = f.name.split('.').pop()?.toLowerCase()
-      setInFmt(ext === 'csv' ? 'csv' : ext === 'tsv' ? 'tsv' : ext === 'json' ? 'json' : ext === 'md' ? 'markdown' : ext === 'html' || ext === 'htm' ? 'html' : ext === 'sql' ? 'sql' : 'auto')
+      setInFmt(ext === 'csv' ? 'csv' : ext === 'tsv' ? 'tsv' : ext === 'json' ? 'json' : ext === 'md' ? 'markdown' : ext === 'html' || ext === 'htm' ? 'html' : ext === 'sql' ? 'sql' : ext === 'xml' ? 'xml' : 'auto')
       setText(t); setMode('paste')
     }
   }
@@ -101,15 +124,16 @@ export default function TableConverter() {
 
   const download = async () => {
     if (!table) return
-    if (out === 'xlsx') {
+    if (BOOK_OUT.has(out)) {
       const XLSX = await import('xlsx')
       const data = [table.headers, ...table.rows.map((r) => (inferTypes ? r.map((v) => { const n = Number(v); return v.trim() !== '' && Number.isFinite(n) && /^-?\d/.test(v.trim()) ? n : v }) : r))]
       const ws = XLSX.utils.aoa_to_sheet(data)
       ws['!cols'] = table.headers.map((h, i) => ({ wch: Math.min(50, Math.max(h.length, ...table.rows.slice(0, 200).map((r) => (r[i] ?? '').length)) + 2) }))
       const book = XLSX.utils.book_new()
       XLSX.utils.book_append_sheet(book, ws, (sheet || 'Sheet1').slice(0, 31))
-      const buf = XLSX.write(book, { type: 'array', bookType: 'xlsx' })
-      downloadBlob(new Blob([buf], { type: OUT_MIME.xlsx }), `${fileName}.xlsx`)
+      const bookType = out === 'ods' ? 'ods' : 'xlsx'
+      const buf = XLSX.write(book, { type: 'array', bookType })
+      downloadBlob(new Blob([buf], { type: OUT_MIME[out] }), `${fileName}.${bookType}`)
     } else downloadBlob(new Blob([output], { type: OUT_MIME[out] + ';charset=utf-8' }), `${fileName}.${OUT_EXT[out]}`)
     toast('Downloaded', 'success')
   }
@@ -129,18 +153,19 @@ export default function TableConverter() {
             </div>
           </div>
           {mode === 'file' && !wb ? (
-            <Dropzone compact accept=".csv,.tsv,.txt,.xlsx,.xls,.xlsm,.ods,.json,.md,.html,.htm,.sql" onFiles={onFile} label="Drop CSV, TSV, Excel, JSON, Markdown, HTML or SQL" />
+            <Dropzone compact accept=".csv,.tsv,.txt,.xlsx,.xls,.xlsm,.xlsb,.ods,.fods,.numbers,.dbf,.json,.md,.html,.htm,.sql,.xml" onFiles={onFile} label="Drop CSV, Excel, ODS, Numbers, JSON, XML, Markdown, HTML or SQL" sub="XLSX, XLS, XLSM, XLSB, ODS, Numbers and DBF sheets are read in your browser" />
           ) : wb ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-2/50 px-3 py-2 text-sm"><Table2 className="size-4 text-accent" /><span className="flex-1 truncate font-medium">{fileName}.xlsx</span><Button size="sm" variant="ghost" onClick={() => { setWb(null); setTable(null) }}>Remove</Button></div>
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-2/50 px-3 py-2 text-sm"><Table2 className="size-4 text-accent" /><span className="flex-1 truncate font-medium">{fileName}.{sheetExt}</span><Button size="sm" variant="ghost" onClick={() => { setWb(null); setTable(null) }}>Remove</Button></div>
               {wb.SheetNames.length > 1 && <div><Label>Sheet</Label><div className="flex flex-wrap gap-1.5">{wb.SheetNames.map((s: string) => <Pill key={s} active={s === sheet} onClick={() => setSheet(s)}>{s}</Pill>)}</div></div>}
             </div>
           ) : (
-            <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={'Paste CSV, TSV, JSON, a Markdown or HTML table, or SQL INSERT statements…'} className="h-64" spellCheck={false} />
+            <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={'Paste CSV, TSV, JSON, XML, a Markdown or HTML table, or SQL INSERT statements'} className="h-64" spellCheck={false} />
           )}
           <div className="flex flex-wrap items-center gap-3">
             {!wb && <div className="w-48"><Select value={inFmt} onChange={setInFmt} options={IN_OPTS} /></div>}
             {inFmt === 'auto' && detected && !wb && <Badge>Detected: {detected.toUpperCase()}</Badge>}
+            {recordPath && !wb && <span className="text-xs text-muted">Records: {recordPath}</span>}
             <Switch checked={header} onChange={setHeader} label="First row is header" />
           </div>
           <ErrorNote error={parseErr} />
@@ -152,19 +177,20 @@ export default function TableConverter() {
           <div className="flex flex-wrap gap-1.5">{OUT_OPTS.map((o) => <Pill key={o.value} active={out === o.value} onClick={() => setOut(o.value)}>{o.label}</Pill>)}</div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {out === 'sql' && <><div className="flex items-center gap-2"><span className="text-xs text-muted">Table</span><Input value={tableName} onChange={(e) => setTableName(e.target.value)} className="h-8 w-36 text-xs" /></div><Switch checked={createTable} onChange={setCreateTable} label="CREATE TABLE" /></>}
-            {['json', 'json-arrays', 'sql', 'yaml', 'xlsx'].includes(out) && <Switch checked={inferTypes} onChange={setInferTypes} label="Detect numbers & booleans" />}
-            {['json', 'json-arrays', 'html'].includes(out) && <Switch checked={pretty} onChange={setPretty} label="Pretty" />}
+            {out === 'xml' && <><div className="flex items-center gap-2"><span className="text-xs text-muted">Root</span><Input value={xmlRoot} onChange={(e) => setXmlRoot(e.target.value)} className="h-8 w-24 text-xs" aria-label="Root element" /></div><div className="flex items-center gap-2"><span className="text-xs text-muted">Row</span><Input value={xmlRow} onChange={(e) => setXmlRow(e.target.value)} className="h-8 w-24 text-xs" aria-label="Row element" /></div><Switch checked={xmlAttrs} onChange={setXmlAttrs} label="Columns as attributes" /></>}
+            {['json', 'json-arrays', 'sql', 'yaml', 'xlsx', 'ods'].includes(out) && <Switch checked={inferTypes} onChange={setInferTypes} label="Detect numbers and booleans" />}
+            {['json', 'json-arrays', 'html', 'xml'].includes(out) && <Switch checked={pretty} onChange={setPretty} label="Pretty" />}
           </div>
-          {out === 'xlsx' ? (
+          {BOOK_OUT.has(out) ? (
             <div className="grid h-64 place-items-center rounded-xl border border-dashed border-border text-center text-sm text-muted">
-              <div className="space-y-2"><Table2 className="mx-auto size-8 text-accent" /><div>{table ? `${table.rows.length} rows × ${table.headers.length} columns → .xlsx` : 'Add data on the left'}</div></div>
+              <div className="space-y-2"><Table2 className="mx-auto size-8 text-accent" /><div>{table ? `${table.rows.length} rows × ${table.headers.length} columns → .${OUT_EXT[out]}` : 'Add data on the left'}</div></div>
             </div>
           ) : (
-            <Textarea readOnly value={output} placeholder="Output appears here…" className="h-64" spellCheck={false} />
+            <Textarea readOnly value={output} placeholder="Output appears here" className="h-64" spellCheck={false} />
           )}
           <div className="flex flex-wrap gap-2">
             <Button icon={<Download className="size-4" />} disabled={!table} onClick={download}>Download .{OUT_EXT[out]}</Button>
-            {out !== 'xlsx' && <CopyButton text={output} size="md" />}
+            {!BOOK_OUT.has(out) && <CopyButton text={output} size="md" />}
           </div>
         </Card>
       </div>

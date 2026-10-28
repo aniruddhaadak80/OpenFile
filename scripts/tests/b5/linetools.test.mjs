@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict'
+import * as T from '../../../src/lib/b5/linetools.ts'
+assert.equal(T.joinLines('a\n b \n\nc', { delim: ', ', quote: '', skipEmpty: true, trim: true }), 'a, b, c')
+assert.equal(T.joinLines("a\nit's", { delim: ',', quote: "'", skipEmpty: true, trim: true, wrapStart: '(', wrapEnd: ')' }), "('a','it''s')")
+assert.equal(T.joinLines('a\nb', { delim: '\\t', quote: '"', skipEmpty: false, trim: false }), '"a"\t"b"')
+assert.equal(T.splitToLines('a, b ,c', ','), 'a\nb\nc')
+assert.equal(T.padLines('1\n22\n333', 3, '0', 'left'), '001\n022\n333')
+assert.equal(T.padLines('a\nbbb', 0, '.', 'right', true), 'a..\nbbb')
+assert.equal(T.padLines('a', 4, '*', 'center'), '*a**')
+assert.equal(T.wrapLines('the quick brown fox jumps', 10), 'the quick\nbrown fox\njumps')
+assert.equal(T.wrapLines('abcdefghijkl', 5), 'abcde\nfghij\nkl')
+assert.equal(T.wrapLines('abcdefghijkl xy', 5, false), 'abcdefghijkl\nxy')
+assert.equal(T.wrapLines('short\n\nthe quick brown', 9), 'short\n\nthe quick\nbrown')
+for (const l of T.wrapLines('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor', 20).split('\n')) assert.ok(l.length <= 20, l)
+console.log('linetools ok')

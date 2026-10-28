@@ -28,3 +28,31 @@ export function keepSegments(silences: Span[], duration: number, pad: number): S
 }
 
 export const selectExpr = (keep: Span[]) => keep.map((k) => `between(t,${k.start.toFixed(3)},${k.end.toFixed(3)})`).join('+')
+
+/** Find split points in the middle of quiet gaps (RMS in 20 ms windows). Pure, unit tested. */
+export function findSilenceSplits(mono: Float32Array, sr: number, thresholdDb: number, minSec: number): number[] {
+  const win = Math.max(1, Math.round(sr * 0.02))
+  const thr = Math.pow(10, thresholdDb / 20)
+  const splits: number[] = []
+  let runStart = -1
+  const n = Math.floor(mono.length / win)
+  for (let w = 0; w <= n; w++) {
+    let quiet = false
+    if (w < n) { let s = 0; for (let i = w * win; i < (w + 1) * win; i++) s += mono[i] * mono[i]; quiet = Math.sqrt(s / win) < thr }
+    if (quiet && runStart < 0) runStart = w
+    if (!quiet && runStart >= 0) {
+      const a = runStart * win / sr, b = w * win / sr
+      if (b - a >= minSec && a > 0.05 && w < n) splits.push((a + b) / 2)
+      runStart = -1
+    }
+  }
+  return splits
+}
+
+/** Turn split times into [start, end] parts covering 0..duration. */
+export function partsFromSplits(splits: number[], duration: number, minPart = 0.2): Span[] {
+  const pts = [0, ...splits.filter((t) => t > 0 && t < duration).sort((a, b) => a - b), duration]
+  const out: Span[] = []
+  for (let i = 0; i < pts.length - 1; i++) if (pts[i + 1] - pts[i] >= minPart) out.push({ start: pts[i], end: pts[i + 1] })
+  return out
+}

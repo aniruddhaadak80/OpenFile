@@ -7,14 +7,6 @@
     "bytes": 233210,
     "music": "G# 102 bpm piano"
   },
-  "json-formatter": {
-    "video": "media/tools/json-formatter.mp4",
-    "poster": "media/tools/json-formatter.jpg",
-    "duration": 8.0,
-    "voice": "bm_george 60% + bm_daniel 40%",
-    "bytes": 190826,
-    "music": "G# 88 bpm harp"
-  },
   "split-pdf": {
     "video": "media/tools/split-pdf.mp4",
     "poster": "media/tools/split-pdf.jpg",
@@ -55,14 +47,6 @@
     "bytes": 206520,
     "music": "F 104 bpm kalimba"
   },
-  "pdf-page-numbers": {
-    "video": "media/tools/pdf-page-numbers.mp4",
-    "poster": "media/tools/pdf-page-numbers.jpg",
-    "duration": 8.0,
-    "voice": "am_puck",
-    "bytes": 183591,
-    "music": "C 75 bpm harp"
-  },
   "rotate-pdf": {
     "video": "media/tools/rotate-pdf.mp4",
     "poster": "media/tools/rotate-pdf.jpg",
@@ -70,6 +54,14 @@
     "voice": "af_nicole",
     "bytes": 231785,
     "music": "E 88 bpm kalimba"
+  },
+  "pdf-page-numbers": {
+    "video": "media/tools/pdf-page-numbers.mp4",
+    "poster": "media/tools/pdf-page-numbers.jpg",
+    "duration": 8.0,
+    "voice": "am_puck",
+    "bytes": 183591,
+    "music": "C 75 bpm harp"
   },
   "pdf-watermark": {
     "video": "media/tools/pdf-watermark.mp4",
@@ -103,14 +95,6 @@
     "bytes": 190854,
     "music": "C 86 bpm harp"
   },
-  "unlock-pdf": {
-    "video": "media/tools/unlock-pdf.mp4",
-    "poster": "media/tools/unlock-pdf.jpg",
-    "duration": 8.0,
-    "voice": "am_eric",
-    "bytes": 177633,
-    "music": "F# 105 bpm glass"
-  },
   "protect-pdf": {
     "video": "media/tools/protect-pdf.mp4",
     "poster": "media/tools/protect-pdf.jpg",
@@ -118,6 +102,14 @@
     "voice": "af_kore",
     "bytes": 189786,
     "music": "E 95 bpm kalimba"
+  },
+  "unlock-pdf": {
+    "video": "media/tools/unlock-pdf.mp4",
+    "poster": "media/tools/unlock-pdf.jpg",
+    "duration": 8.0,
+    "voice": "am_eric",
+    "bytes": 177633,
+    "music": "F# 105 bpm glass"
   },
   "redact-pdf": {
     "video": "media/tools/redact-pdf.mp4",
@@ -215,14 +207,6 @@
     "bytes": 186795,
     "music": "D 98 bpm marimba"
   },
-  "resume-builder": {
-    "video": "media/tools/resume-builder.mp4",
-    "poster": "media/tools/resume-builder.jpg",
-    "duration": 9.0,
-    "voice": "am_michael 80% + am_fenrir 20%",
-    "bytes": 195374,
-    "music": "G# 78 bpm marimba"
-  },
   "invoice-generator": {
     "video": "media/tools/invoice-generator.mp4",
     "poster": "media/tools/invoice-generator.jpg",
@@ -230,6 +214,14 @@
     "voice": "af_heart 80% + af_bella 20%",
     "bytes": 222624,
     "music": "F 81 bpm piano"
+  },
+  "resume-builder": {
+    "video": "media/tools/resume-builder.mp4",
+    "poster": "media/tools/resume-builder.jpg",
+    "duration": 9.0,
+    "voice": "am_michael 80% + am_fenrir 20%",
+    "bytes": 195374,
+    "music": "G# 78 bpm marimba"
   },
   "pdf-to-image": {
     "video": "media/tools/pdf-to-image.mp4",
@@ -391,14 +383,6 @@
     "bytes": 187052,
     "music": "E 99 bpm kalimba"
   },
-  "image-watermark": {
-    "video": "media/tools/image-watermark.mp4",
-    "poster": "media/tools/image-watermark.jpg",
-    "duration": 8.0,
-    "voice": "af_sky 80% + af_heart 20%",
-    "bytes": 176398,
-    "music": "D# 90 bpm harp"
-  },
   "image-rotate-flip": {
     "video": "media/tools/image-rotate-flip.mp4",
     "poster": "media/tools/image-rotate-flip.jpg",
@@ -406,6 +390,14 @@
     "voice": "af_alloy 80% + af_heart 20%",
     "bytes": 207170,
     "music": "C 73 bpm rhodes"
+  },
+  "image-watermark": {
+    "video": "media/tools/image-watermark.mp4",
+    "poster": "media/tools/image-watermark.jpg",
+    "duration": 8.0,
+    "voice": "af_sky 80% + af_heart 20%",
+    "bytes": 176398,
+    "music": "D# 90 bpm harp"
   },
   "add-text-to-image": {
     "video": "media/tools/add-text-to-image.mp4",
@@ -455,14 +447,6 @@
     "bytes": 208189,
     "music": "F# 83 bpm marimba"
   },
-  "collage-maker": {
-    "video": "media/tools/collage-maker.mp4",
-    "poster": "media/tools/collage-maker.jpg",
-    "duration": 8.0,
-    "voice": "am_fenrir 70% + am_puck 30%",
-    "bytes": 194192,
-    "music": "B 92 bpm glass"
-  },
   "screenshot-studio": {
     "video": "media/tools/screenshot-studio.mp4",
     "poster": "media/tools/screenshot-studio.jpg",
@@ -471,13 +455,13 @@
     "bytes": 204659,
     "music": "G 96 bpm bell"
   },
-  "gif-maker": {
-    "video": "media/tools/gif-maker.mp4",
-    "poster": "media/tools/gif-maker.jpg",
+  "collage-maker": {
+    "video": "media/tools/collage-maker.mp4",
+    "poster": "media/tools/collage-maker.jpg",
     "duration": 8.0,
-    "voice": "am_puck 70% + am_fenrir 30%",
-    "bytes": 194027,
-    "music": "D# 94 bpm harp"
+    "voice": "am_fenrir 70% + am_puck 30%",
+    "bytes": 194192,
+    "music": "B 92 bpm glass"
   },
   "meme-generator": {
     "video": "media/tools/meme-generator.mp4",
@@ -487,13 +471,13 @@
     "bytes": 200016,
     "music": "G 89 bpm rhodes"
   },
-  "image-splitter": {
-    "video": "media/tools/image-splitter.mp4",
-    "poster": "media/tools/image-splitter.jpg",
+  "gif-maker": {
+    "video": "media/tools/gif-maker.mp4",
+    "poster": "media/tools/gif-maker.jpg",
     "duration": 8.0,
-    "voice": "bm_fable 70% + bm_daniel 30%",
-    "bytes": 192006,
-    "music": "B 105 bpm bell"
+    "voice": "am_puck 70% + am_fenrir 30%",
+    "bytes": 194027,
+    "music": "D# 94 bpm harp"
   },
   "image-to-base64": {
     "video": "media/tools/image-to-base64.mp4",
@@ -502,6 +486,14 @@
     "voice": "bf_isabella 70% + bf_lily 30%",
     "bytes": 220513,
     "music": "G 80 bpm marimba"
+  },
+  "image-splitter": {
+    "video": "media/tools/image-splitter.mp4",
+    "poster": "media/tools/image-splitter.jpg",
+    "duration": 8.0,
+    "voice": "bm_fable 70% + bm_daniel 30%",
+    "bytes": 192006,
+    "music": "B 105 bpm bell"
   },
   "color-picker-image": {
     "video": "media/tools/color-picker-image.mp4",
@@ -575,14 +567,6 @@
     "bytes": 204888,
     "music": "C# 86 bpm marimba"
   },
-  "video-frames": {
-    "video": "media/tools/video-frames.mp4",
-    "poster": "media/tools/video-frames.jpg",
-    "duration": 8.0,
-    "voice": "bf_lily 70% + bf_isabella 30%",
-    "bytes": 242340,
-    "music": "A# 100 bpm kalimba"
-  },
   "video-upscaler": {
     "video": "media/tools/video-upscaler.mp4",
     "poster": "media/tools/video-upscaler.jpg",
@@ -590,6 +574,14 @@
     "voice": "am_onyx 70% + am_fenrir 30%",
     "bytes": 311451,
     "music": "D 89 bpm piano"
+  },
+  "video-frames": {
+    "video": "media/tools/video-frames.mp4",
+    "poster": "media/tools/video-frames.jpg",
+    "duration": 8.0,
+    "voice": "bf_lily 70% + bf_isabella 30%",
+    "bytes": 242340,
+    "music": "A# 100 bpm kalimba"
   },
   "screen-recorder": {
     "video": "media/tools/screen-recorder.mp4",
@@ -655,6 +647,14 @@
     "bytes": 210053,
     "music": "A 86 bpm glass"
   },
+  "json-formatter": {
+    "video": "media/tools/json-formatter.mp4",
+    "poster": "media/tools/json-formatter.jpg",
+    "duration": 8.0,
+    "voice": "bm_george 60% + bm_daniel 40%",
+    "bytes": 190826,
+    "music": "G# 88 bpm harp"
+  },
   "jwt-decoder": {
     "video": "media/tools/jwt-decoder.mp4",
     "poster": "media/tools/jwt-decoder.jpg",
@@ -703,14 +703,6 @@
     "bytes": 258787,
     "music": "C# 91 bpm bell"
   },
-  "regex-tester": {
-    "video": "media/tools/regex-tester.mp4",
-    "poster": "media/tools/regex-tester.jpg",
-    "duration": 8.0,
-    "voice": "am_echo 60% + am_puck 40%",
-    "bytes": 185204,
-    "music": "D 86 bpm harp"
-  },
   "barcode-generator": {
     "video": "media/tools/barcode-generator.mp4",
     "poster": "media/tools/barcode-generator.jpg",
@@ -718,6 +710,14 @@
     "voice": "af_aoede 60% + af_nicole 40%",
     "bytes": 219511,
     "music": "C 74 bpm piano"
+  },
+  "regex-tester": {
+    "video": "media/tools/regex-tester.mp4",
+    "poster": "media/tools/regex-tester.jpg",
+    "duration": 8.0,
+    "voice": "am_echo 60% + am_puck 40%",
+    "bytes": 185204,
+    "music": "D 86 bpm harp"
   },
   "regex-builder": {
     "video": "media/tools/regex-builder.mp4",
@@ -767,6 +767,14 @@
     "bytes": 184235,
     "music": "D 73 bpm piano"
   },
+  "yaml-json": {
+    "video": "media/tools/yaml-json.mp4",
+    "poster": "media/tools/yaml-json.jpg",
+    "duration": 8.77,
+    "voice": "af_nova 60% + af_nicole 40%",
+    "bytes": 193905,
+    "music": "F 104 bpm kalimba"
+  },
   "sql-formatter": {
     "video": "media/tools/sql-formatter.mp4",
     "poster": "media/tools/sql-formatter.jpg",
@@ -775,13 +783,13 @@
     "bytes": 181783,
     "music": "F# 73 bpm glass"
   },
-  "yaml-json": {
-    "video": "media/tools/yaml-json.mp4",
-    "poster": "media/tools/yaml-json.jpg",
-    "duration": 8.77,
-    "voice": "af_nova 60% + af_nicole 40%",
-    "bytes": 193187,
-    "music": "F 104 bpm kalimba"
+  "erd-diagram": {
+    "video": "media/tools/erd-diagram.mp4",
+    "poster": "media/tools/erd-diagram.jpg",
+    "duration": 8.0,
+    "voice": "bf_lily 60% + bf_alice 40%",
+    "bytes": 188906,
+    "music": "G 72 bpm kalimba"
   },
   "html-entities": {
     "video": "media/tools/html-entities.mp4",
@@ -790,14 +798,6 @@
     "voice": "bm_daniel 60% + bm_lewis 40%",
     "bytes": 173831,
     "music": "E 99 bpm harp"
-  },
-  "erd-diagram": {
-    "video": "media/tools/erd-diagram.mp4",
-    "poster": "media/tools/erd-diagram.jpg",
-    "duration": 8.0,
-    "voice": "bf_lily 60% + bf_alice 40%",
-    "bytes": 188906,
-    "music": "G 72 bpm kalimba"
   },
   "number-base": {
     "video": "media/tools/number-base.mp4",
@@ -878,5 +878,1757 @@
     "voice": "am_fenrir 60% + am_liam 40%",
     "bytes": 195543,
     "music": "C# 81 bpm harp"
+  },
+  "color-converter": {
+    "video": "media/tools/color-converter.mp4",
+    "poster": "media/tools/color-converter.jpg",
+    "duration": 11.53,
+    "voice": "af_nicole 60% + af_nova 40%",
+    "bytes": 325419,
+    "music": "E 73 bpm kalimba"
+  },
+  "gradient-generator": {
+    "video": "media/tools/gradient-generator.mp4",
+    "poster": "media/tools/gradient-generator.jpg",
+    "duration": 8.43,
+    "voice": "am_puck 60% + am_onyx 40%",
+    "bytes": 203113,
+    "music": "D# 104 bpm kalimba"
+  },
+  "css-studio": {
+    "video": "media/tools/css-studio.mp4",
+    "poster": "media/tools/css-studio.jpg",
+    "duration": 8.0,
+    "voice": "af_aoede 60% + af_alloy 40%",
+    "bytes": 181745,
+    "music": "A 85 bpm marimba"
+  },
+  "favicon-generator": {
+    "video": "media/tools/favicon-generator.mp4",
+    "poster": "media/tools/favicon-generator.jpg",
+    "duration": 9.5,
+    "voice": "am_echo 60% + am_michael 40%",
+    "bytes": 214680,
+    "music": "A 94 bpm marimba"
+  },
+  "svg-optimizer": {
+    "video": "media/tools/svg-optimizer.mp4",
+    "poster": "media/tools/svg-optimizer.jpg",
+    "duration": 8.97,
+    "voice": "af_kore 60% + af_sky 40%",
+    "bytes": 199165,
+    "music": "B 76 bpm harp"
+  },
+  "sketch-board": {
+    "video": "media/tools/sketch-board.mp4",
+    "poster": "media/tools/sketch-board.jpg",
+    "duration": 8.0,
+    "voice": "am_eric 60% + am_fenrir 40%",
+    "bytes": 192135,
+    "music": "E 89 bpm glass"
+  },
+  "placeholder-image": {
+    "video": "media/tools/placeholder-image.mp4",
+    "poster": "media/tools/placeholder-image.jpg",
+    "duration": 8.0,
+    "voice": "bf_alice 60% + bf_emma 40%",
+    "bytes": 191420,
+    "music": "F# 100 bpm rhodes"
+  },
+  "resize-pdf-pages": {
+    "video": "media/tools/resize-pdf-pages.mp4",
+    "poster": "media/tools/resize-pdf-pages.jpg",
+    "duration": 10.87,
+    "voice": "bm_lewis 60% + bm_george 40%",
+    "bytes": 233351,
+    "music": "F 95 bpm piano"
+  },
+  "split-page-halves": {
+    "video": "media/tools/split-page-halves.mp4",
+    "poster": "media/tools/split-page-halves.jpg",
+    "duration": 9.53,
+    "voice": "af_sarah 60% + af_jessica 40%",
+    "bytes": 228775,
+    "music": "G 98 bpm harp"
+  },
+  "flip-pdf": {
+    "video": "media/tools/flip-pdf.mp4",
+    "poster": "media/tools/flip-pdf.jpg",
+    "duration": 10.57,
+    "voice": "af_nova 60% + af_river 40%",
+    "bytes": 259565,
+    "music": "E 82 bpm kalimba"
+  },
+  "overlay-pdf": {
+    "video": "media/tools/overlay-pdf.mp4",
+    "poster": "media/tools/overlay-pdf.jpg",
+    "duration": 10.07,
+    "voice": "am_onyx 60% + am_echo 40%",
+    "bytes": 208346,
+    "music": "B 106 bpm glass"
+  },
+  "pdf-poster": {
+    "video": "media/tools/pdf-poster.mp4",
+    "poster": "media/tools/pdf-poster.jpg",
+    "duration": 8.27,
+    "voice": "bf_lily 60% + bf_emma 40%",
+    "bytes": 205440,
+    "music": "D# 72 bpm bell"
+  },
+  "alternate-mix-pdf": {
+    "video": "media/tools/alternate-mix-pdf.mp4",
+    "poster": "media/tools/alternate-mix-pdf.jpg",
+    "duration": 10.87,
+    "voice": "bm_daniel 60% + bm_george 40%",
+    "bytes": 235739,
+    "music": "G 93 bpm glass"
+  },
+  "pdf-bookmarks": {
+    "video": "media/tools/pdf-bookmarks.mp4",
+    "poster": "media/tools/pdf-bookmarks.jpg",
+    "duration": 10.33,
+    "voice": "af_alloy 60% + af_heart 40%",
+    "bytes": 230940,
+    "music": "C 88 bpm harp"
+  },
+  "pdf-link-editor": {
+    "video": "media/tools/pdf-link-editor.mp4",
+    "poster": "media/tools/pdf-link-editor.jpg",
+    "duration": 10.13,
+    "voice": "af_sky 60% + af_bella 40%",
+    "bytes": 221752,
+    "music": "D 72 bpm piano"
+  },
+  "create-pdf-form": {
+    "video": "media/tools/create-pdf-form.mp4",
+    "poster": "media/tools/create-pdf-form.jpg",
+    "duration": 10.5,
+    "voice": "af_river 60% + af_aoede 40%",
+    "bytes": 241893,
+    "music": "C 82 bpm bell"
+  },
+  "pdf-attachments": {
+    "video": "media/tools/pdf-attachments.mp4",
+    "poster": "media/tools/pdf-attachments.jpg",
+    "duration": 9.23,
+    "voice": "af_heart 60% + af_sarah 40%",
+    "bytes": 233284,
+    "music": "C 78 bpm kalimba"
+  },
+  "pdf-viewer-preferences": {
+    "video": "media/tools/pdf-viewer-preferences.mp4",
+    "poster": "media/tools/pdf-viewer-preferences.jpg",
+    "duration": 10.5,
+    "voice": "am_michael 60% + am_liam 40%",
+    "bytes": 241358,
+    "music": "B 80 bpm bell"
+  },
+  "remove-annotations": {
+    "video": "media/tools/remove-annotations.mp4",
+    "poster": "media/tools/remove-annotations.jpg",
+    "duration": 9.63,
+    "voice": "af_bella 60% + af_nova 40%",
+    "bytes": 217986,
+    "music": "F# 103 bpm glass"
+  },
+  "sanitize-pdf": {
+    "video": "media/tools/sanitize-pdf.mp4",
+    "poster": "media/tools/sanitize-pdf.jpg",
+    "duration": 10.7,
+    "voice": "am_fenrir 60% + am_onyx 40%",
+    "bytes": 233331,
+    "music": "B 88 bpm bell"
+  },
+  "pdf-inspector": {
+    "video": "media/tools/pdf-inspector.mp4",
+    "poster": "media/tools/pdf-inspector.jpg",
+    "duration": 10.57,
+    "voice": "af_nicole 60% + af_alloy 40%",
+    "bytes": 231092,
+    "music": "A# 83 bpm glass"
+  },
+  "rasterize-pdf": {
+    "video": "media/tools/rasterize-pdf.mp4",
+    "poster": "media/tools/rasterize-pdf.jpg",
+    "duration": 9.73,
+    "voice": "am_puck 60% + am_michael 40%",
+    "bytes": 246399,
+    "music": "B 77 bpm kalimba"
+  },
+  "remove-blank-pages": {
+    "video": "media/tools/remove-blank-pages.mp4",
+    "poster": "media/tools/remove-blank-pages.jpg",
+    "duration": 9.87,
+    "voice": "bf_isabella 60% + bf_alice 40%",
+    "bytes": 228952,
+    "music": "B 99 bpm bell"
+  },
+  "pdf-adjust-colors": {
+    "video": "media/tools/pdf-adjust-colors.mp4",
+    "poster": "media/tools/pdf-adjust-colors.jpg",
+    "duration": 10.63,
+    "voice": "bm_fable 60% + bm_lewis 40%",
+    "bytes": 235992,
+    "music": "F 102 bpm bell"
+  },
+  "extract-pdf-images": {
+    "video": "media/tools/extract-pdf-images.mp4",
+    "poster": "media/tools/extract-pdf-images.jpg",
+    "duration": 10.27,
+    "voice": "af_aoede 60% + af_sky 40%",
+    "bytes": 296152,
+    "music": "D 75 bpm harp"
+  },
+  "search-pdfs": {
+    "video": "media/tools/search-pdfs.mp4",
+    "poster": "media/tools/search-pdfs.jpg",
+    "duration": 10.67,
+    "voice": "am_echo 60% + am_fenrir 40%",
+    "bytes": 232945,
+    "music": "G 106 bpm bell"
+  },
+  "linearize-pdf": {
+    "video": "media/tools/linearize-pdf.mp4",
+    "poster": "media/tools/linearize-pdf.jpg",
+    "duration": 9.9,
+    "voice": "af_kore 60% + af_jessica 40%",
+    "bytes": 241696,
+    "music": "B 96 bpm piano"
+  },
+  "pdf-to-pdfa": {
+    "video": "media/tools/pdf-to-pdfa.mp4",
+    "poster": "media/tools/pdf-to-pdfa.jpg",
+    "duration": 9.27,
+    "voice": "bf_alice 60% + bf_lily 40%",
+    "bytes": 221852,
+    "music": "F# 78 bpm marimba"
+  },
+  "validate-pdfa": {
+    "video": "media/tools/validate-pdfa.mp4",
+    "poster": "media/tools/validate-pdfa.jpg",
+    "duration": 10.97,
+    "voice": "bm_lewis 60% + bm_daniel 40%",
+    "bytes": 248026,
+    "music": "B 88 bpm bell"
+  },
+  "pdf-accessibility-check": {
+    "video": "media/tools/pdf-accessibility-check.mp4",
+    "poster": "media/tools/pdf-accessibility-check.jpg",
+    "duration": 10.23,
+    "voice": "af_sarah 60% + af_river 40%",
+    "bytes": 239181,
+    "music": "D 98 bpm rhodes"
+  },
+  "sign-pdf-certificate": {
+    "video": "media/tools/sign-pdf-certificate.mp4",
+    "poster": "media/tools/sign-pdf-certificate.jpg",
+    "duration": 10.5,
+    "voice": "af_heart 80% + af_nova 20%",
+    "bytes": 241612,
+    "music": "D 100 bpm piano"
+  },
+  "verify-pdf-signature": {
+    "video": "media/tools/verify-pdf-signature.mp4",
+    "poster": "media/tools/verify-pdf-signature.jpg",
+    "duration": 10.63,
+    "voice": "am_michael 80% + am_onyx 20%",
+    "bytes": 236670,
+    "music": "F# 94 bpm glass"
+  },
+  "scan-to-pdf": {
+    "video": "media/tools/scan-to-pdf.mp4",
+    "poster": "media/tools/scan-to-pdf.jpg",
+    "duration": 8.73,
+    "voice": "af_bella 80% + af_nova 20%",
+    "bytes": 183417,
+    "music": "C# 74 bpm glass"
+  },
+  "cover-letter-builder": {
+    "video": "media/tools/cover-letter-builder.mp4",
+    "poster": "media/tools/cover-letter-builder.jpg",
+    "duration": 8.0,
+    "voice": "am_fenrir 80% + am_onyx 20%",
+    "bytes": 183639,
+    "music": "C 100 bpm marimba"
+  },
+  "e-invoice-generator": {
+    "video": "media/tools/e-invoice-generator.mp4",
+    "poster": "media/tools/e-invoice-generator.jpg",
+    "duration": 12.0,
+    "voice": "af_nicole 80% + af_nova 20%",
+    "bytes": 258417,
+    "music": "D# 74 bpm harp"
+  },
+  "e-invoice-viewer": {
+    "video": "media/tools/e-invoice-viewer.mp4",
+    "poster": "media/tools/e-invoice-viewer.jpg",
+    "duration": 12.0,
+    "voice": "am_puck 80% + am_onyx 20%",
+    "bytes": 262121,
+    "music": "F 93 bpm piano"
+  },
+  "pdf-embed-code": {
+    "video": "media/tools/pdf-embed-code.mp4",
+    "poster": "media/tools/pdf-embed-code.jpg",
+    "duration": 8.43,
+    "voice": "af_aoede 80% + af_nova 20%",
+    "bytes": 183019,
+    "music": "C 77 bpm kalimba"
+  },
+  "pdf-to-markdown": {
+    "video": "media/tools/pdf-to-markdown.mp4",
+    "poster": "media/tools/pdf-to-markdown.jpg",
+    "duration": 10.43,
+    "voice": "am_echo 80% + am_onyx 20%",
+    "bytes": 261556,
+    "music": "F# 100 bpm piano"
+  },
+  "pdf-to-html": {
+    "video": "media/tools/pdf-to-html.mp4",
+    "poster": "media/tools/pdf-to-html.jpg",
+    "duration": 10.87,
+    "voice": "af_kore 80% + af_nova 20%",
+    "bytes": 271275,
+    "music": "G 103 bpm harp"
+  },
+  "pdf-to-epub": {
+    "video": "media/tools/pdf-to-epub.mp4",
+    "poster": "media/tools/pdf-to-epub.jpg",
+    "duration": 9.1,
+    "voice": "am_eric 80% + am_onyx 20%",
+    "bytes": 229801,
+    "music": "C# 81 bpm bell"
+  },
+  "pdf-to-rtf": {
+    "video": "media/tools/pdf-to-rtf.mp4",
+    "poster": "media/tools/pdf-to-rtf.jpg",
+    "duration": 10.87,
+    "voice": "af_sarah 80% + af_nova 20%",
+    "bytes": 268113,
+    "music": "A 75 bpm marimba"
+  },
+  "pdf-to-odf": {
+    "video": "media/tools/pdf-to-odf.mp4",
+    "poster": "media/tools/pdf-to-odf.jpg",
+    "duration": 10.63,
+    "voice": "am_liam 80% + am_onyx 20%",
+    "bytes": 278791,
+    "music": "F 95 bpm marimba"
+  },
+  "pdf-to-tiff": {
+    "video": "media/tools/pdf-to-tiff.mp4",
+    "poster": "media/tools/pdf-to-tiff.jpg",
+    "duration": 9.87,
+    "voice": "af_nova 80% + af_sarah 20%",
+    "bytes": 242924,
+    "music": "F# 105 bpm kalimba"
+  },
+  "svg-to-pdf": {
+    "video": "media/tools/svg-to-pdf.mp4",
+    "poster": "media/tools/svg-to-pdf.jpg",
+    "duration": 10.8,
+    "voice": "am_onyx 80% + am_liam 20%",
+    "bytes": 269784,
+    "music": "C# 91 bpm glass"
+  },
+  "zip-to-pdf": {
+    "video": "media/tools/zip-to-pdf.mp4",
+    "poster": "media/tools/zip-to-pdf.jpg",
+    "duration": 10.53,
+    "voice": "af_alloy 80% + af_sarah 20%",
+    "bytes": 256514,
+    "music": "C# 98 bpm bell"
+  },
+  "pdf-to-svg": {
+    "video": "media/tools/pdf-to-svg.mp4",
+    "poster": "media/tools/pdf-to-svg.jpg",
+    "duration": 10.87,
+    "voice": "af_sky 80% + af_sarah 20%",
+    "bytes": 276891,
+    "music": "C 83 bpm kalimba"
+  },
+  "powerpoint-to-pdf": {
+    "video": "media/tools/powerpoint-to-pdf.mp4",
+    "poster": "media/tools/powerpoint-to-pdf.jpg",
+    "duration": 10.63,
+    "voice": "af_jessica 80% + af_sarah 20%",
+    "bytes": 273608,
+    "music": "C# 87 bpm kalimba"
+  },
+  "xps-to-pdf": {
+    "video": "media/tools/xps-to-pdf.mp4",
+    "poster": "media/tools/xps-to-pdf.jpg",
+    "duration": 10.77,
+    "voice": "af_river 80% + af_sarah 20%",
+    "bytes": 272375,
+    "music": "F# 79 bpm harp"
+  },
+  "compress-to-size": {
+    "video": "media/tools/compress-to-size.mp4",
+    "poster": "media/tools/compress-to-size.jpg",
+    "duration": 10.93,
+    "voice": "am_liam 60% + am_echo 40%",
+    "bytes": 281257,
+    "music": "A 77 bpm kalimba"
+  },
+  "raw-converter": {
+    "video": "media/tools/raw-converter.mp4",
+    "poster": "media/tools/raw-converter.jpg",
+    "duration": 10.33,
+    "voice": "af_nova 60% + af_heart 40%",
+    "bytes": 276317,
+    "music": "G# 88 bpm bell"
+  },
+  "pro-image-converter": {
+    "video": "media/tools/pro-image-converter.mp4",
+    "poster": "media/tools/pro-image-converter.jpg",
+    "duration": 8.47,
+    "voice": "am_onyx 60% + am_eric 40%",
+    "bytes": 240258,
+    "music": "G# 86 bpm marimba"
+  },
+  "svg-converter": {
+    "video": "media/tools/svg-converter.mp4",
+    "poster": "media/tools/svg-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_alloy 60% + af_bella 40%",
+    "bytes": 299335,
+    "music": "A# 85 bpm piano"
+  },
+  "icon-converter": {
+    "video": "media/tools/icon-converter.mp4",
+    "poster": "media/tools/icon-converter.jpg",
+    "duration": 9.5,
+    "voice": "af_jessica 60% + af_aoede 40%",
+    "bytes": 272679,
+    "music": "F# 75 bpm harp"
+  },
+  "passport-photo": {
+    "video": "media/tools/passport-photo.mp4",
+    "poster": "media/tools/passport-photo.jpg",
+    "duration": 9.1,
+    "voice": "af_river 60% + af_kore 40%",
+    "bytes": 214362,
+    "music": "G 102 bpm glass"
+  },
+  "psd-viewer": {
+    "video": "media/tools/psd-viewer.mp4",
+    "poster": "media/tools/psd-viewer.jpg",
+    "duration": 11.7,
+    "voice": "af_heart 60% + af_nova 40%",
+    "bytes": 254680,
+    "music": "D# 89 bpm glass"
+  },
+  "image-compare": {
+    "video": "media/tools/image-compare.mp4",
+    "poster": "media/tools/image-compare.jpg",
+    "duration": 10.3,
+    "voice": "am_michael 60% + am_onyx 40%",
+    "bytes": 236111,
+    "music": "G# 84 bpm rhodes"
+  },
+  "font-converter": {
+    "video": "media/tools/font-converter.mp4",
+    "poster": "media/tools/font-converter.jpg",
+    "duration": 10.53,
+    "voice": "bf_emma 60% + bf_alice 40%",
+    "bytes": 270238,
+    "music": "B 94 bpm piano"
+  },
+  "3d-viewer": {
+    "video": "media/tools/3d-viewer.mp4",
+    "poster": "media/tools/3d-viewer.jpg",
+    "duration": 10.87,
+    "voice": "bm_george 60% + bm_lewis 40%",
+    "bytes": 342139,
+    "music": "D# 92 bpm glass"
+  },
+  "3d-converter": {
+    "video": "media/tools/3d-converter.mp4",
+    "poster": "media/tools/3d-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_bella 60% + af_alloy 40%",
+    "bytes": 345219,
+    "music": "D# 95 bpm harp"
+  },
+  "dxf-viewer": {
+    "video": "media/tools/dxf-viewer.mp4",
+    "poster": "media/tools/dxf-viewer.jpg",
+    "duration": 11.0,
+    "voice": "am_fenrir 60% + am_michael 40%",
+    "bytes": 228824,
+    "music": "C 90 bpm harp"
+  },
+  "cad-converter": {
+    "video": "media/tools/cad-converter.mp4",
+    "poster": "media/tools/cad-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_nicole 60% + af_sky 40%",
+    "bytes": 237533,
+    "music": "G 89 bpm bell"
+  },
+  "photo-effects": {
+    "video": "media/tools/photo-effects.mp4",
+    "poster": "media/tools/photo-effects.jpg",
+    "duration": 8.0,
+    "voice": "am_puck 60% + am_fenrir 40%",
+    "bytes": 205695,
+    "music": "C 104 bpm glass"
+  },
+  "hdr-exr-viewer": {
+    "video": "media/tools/hdr-exr-viewer.mp4",
+    "poster": "media/tools/hdr-exr-viewer.jpg",
+    "duration": 11.93,
+    "voice": "bf_isabella 60% + bf_lily 40%",
+    "bytes": 298837,
+    "music": "C 104 bpm piano"
+  },
+  "halftone-generator": {
+    "video": "media/tools/halftone-generator.mp4",
+    "poster": "media/tools/halftone-generator.jpg",
+    "duration": 10.33,
+    "voice": "bm_fable 60% + bm_daniel 40%",
+    "bytes": 247797,
+    "music": "G 104 bpm piano"
+  },
+  "pixel-art-converter": {
+    "video": "media/tools/pixel-art-converter.mp4",
+    "poster": "media/tools/pixel-art-converter.jpg",
+    "duration": 9.37,
+    "voice": "af_aoede 60% + af_jessica 40%",
+    "bytes": 224909,
+    "music": "C# 83 bpm piano"
+  },
+  "html-to-image": {
+    "video": "media/tools/html-to-image.mp4",
+    "poster": "media/tools/html-to-image.jpg",
+    "duration": 11.33,
+    "voice": "af_kore 60% + af_river 40%",
+    "bytes": 242989,
+    "music": "A 94 bpm marimba"
+  },
+  "color-blindness-simulator": {
+    "video": "media/tools/color-blindness-simulator.mp4",
+    "poster": "media/tools/color-blindness-simulator.jpg",
+    "duration": 8.87,
+    "voice": "am_eric 60% + am_echo 40%",
+    "bytes": 213992,
+    "music": "G 74 bpm rhodes"
+  },
+  "font-viewer": {
+    "video": "media/tools/font-viewer.mp4",
+    "poster": "media/tools/font-viewer.jpg",
+    "duration": 8.2,
+    "voice": "af_sarah 60% + af_heart 40%",
+    "bytes": 214732,
+    "music": "D 103 bpm piano"
+  },
+  "font-subsetter": {
+    "video": "media/tools/font-subsetter.mp4",
+    "poster": "media/tools/font-subsetter.jpg",
+    "duration": 8.4,
+    "voice": "am_liam 60% + am_eric 40%",
+    "bytes": 224164,
+    "music": "G 102 bpm piano"
+  },
+  "lithophane-maker": {
+    "video": "media/tools/lithophane-maker.mp4",
+    "poster": "media/tools/lithophane-maker.jpg",
+    "duration": 10.33,
+    "voice": "af_nova 60% + af_bella 40%",
+    "bytes": 332104,
+    "music": "C# 85 bpm rhodes"
+  },
+  "stl-inspector": {
+    "video": "media/tools/stl-inspector.mp4",
+    "poster": "media/tools/stl-inspector.jpg",
+    "duration": 8.0,
+    "voice": "am_onyx 60% + am_liam 40%",
+    "bytes": 297705,
+    "music": "G# 105 bpm kalimba"
+  },
+  "mock-data-generator": {
+    "video": "media/tools/mock-data-generator.mp4",
+    "poster": "media/tools/mock-data-generator.jpg",
+    "duration": 10.6,
+    "voice": "bf_lily 60% + bf_isabella 40%",
+    "bytes": 244645,
+    "music": "A# 77 bpm kalimba"
+  },
+  "dicom-viewer": {
+    "video": "media/tools/dicom-viewer.mp4",
+    "poster": "media/tools/dicom-viewer.jpg",
+    "duration": 10.77,
+    "voice": "bm_daniel 60% + bm_fable 40%",
+    "bytes": 270571,
+    "music": "G 75 bpm harp"
+  },
+  "exif-editor": {
+    "video": "media/tools/exif-editor.mp4",
+    "poster": "media/tools/exif-editor.jpg",
+    "duration": 10.8,
+    "voice": "af_sky 60% + af_aoede 40%",
+    "bytes": 258392,
+    "music": "D# 92 bpm rhodes"
+  },
+  "card-maker": {
+    "video": "media/tools/card-maker.mp4",
+    "poster": "media/tools/card-maker.jpg",
+    "duration": 10.67,
+    "voice": "af_jessica 60% + af_kore 40%",
+    "bytes": 238571,
+    "music": "D# 85 bpm piano"
+  },
+  "mockup-generator": {
+    "video": "media/tools/mockup-generator.mp4",
+    "poster": "media/tools/mockup-generator.jpg",
+    "duration": 10.7,
+    "voice": "af_river 60% + af_sarah 40%",
+    "bytes": 255733,
+    "music": "C# 80 bpm harp"
+  },
+  "social-image-maker": {
+    "video": "media/tools/social-image-maker.mp4",
+    "poster": "media/tools/social-image-maker.jpg",
+    "duration": 10.17,
+    "voice": "af_heart 60% + af_alloy 40%",
+    "bytes": 232815,
+    "music": "D 104 bpm bell"
+  },
+  "gltf-optimizer": {
+    "video": "media/tools/gltf-optimizer.mp4",
+    "poster": "media/tools/gltf-optimizer.jpg",
+    "duration": 12.0,
+    "voice": "am_michael 60% + am_fenrir 40%",
+    "bytes": 345170,
+    "music": "E 105 bpm kalimba"
+  },
+  "json-to-types": {
+    "video": "media/tools/json-to-types.mp4",
+    "poster": "media/tools/json-to-types.jpg",
+    "duration": 9.83,
+    "voice": "af_bella 60% + af_sky 40%",
+    "bytes": 220940,
+    "music": "G 90 bpm bell"
+  },
+  "object-remover": {
+    "video": "media/tools/object-remover.mp4",
+    "poster": "media/tools/object-remover.jpg",
+    "duration": 9.03,
+    "voice": "af_nova 80% + af_jessica 20%",
+    "bytes": 280480,
+    "music": "E 106 bpm glass"
+  },
+  "colorize-photo": {
+    "video": "media/tools/colorize-photo.mp4",
+    "poster": "media/tools/colorize-photo.jpg",
+    "duration": 10.3,
+    "voice": "af_alloy 80% + af_jessica 20%",
+    "bytes": 328109,
+    "music": "A# 72 bpm rhodes"
+  },
+  "photo-enhancer": {
+    "video": "media/tools/photo-enhancer.mp4",
+    "poster": "media/tools/photo-enhancer.jpg",
+    "duration": 8.0,
+    "voice": "af_sky 80% + af_jessica 20%",
+    "bytes": 239812,
+    "music": "C# 80 bpm marimba"
+  },
+  "layer-editor": {
+    "video": "media/tools/layer-editor.mp4",
+    "poster": "media/tools/layer-editor.jpg",
+    "duration": 8.0,
+    "voice": "af_jessica 80% + af_sky 20%",
+    "bytes": 172900,
+    "music": "D# 80 bpm piano"
+  },
+  "gif-optimizer": {
+    "video": "media/tools/gif-optimizer.mp4",
+    "poster": "media/tools/gif-optimizer.jpg",
+    "duration": 8.0,
+    "voice": "af_river 80% + af_sky 20%",
+    "bytes": 209339,
+    "music": "G 97 bpm piano"
+  },
+  "gif-editor": {
+    "video": "media/tools/gif-editor.mp4",
+    "poster": "media/tools/gif-editor.jpg",
+    "duration": 10.2,
+    "voice": "af_heart 80% + af_river 20%",
+    "bytes": 257125,
+    "music": "F# 95 bpm marimba"
+  },
+  "animated-converter": {
+    "video": "media/tools/animated-converter.mp4",
+    "poster": "media/tools/animated-converter.jpg",
+    "duration": 10.73,
+    "voice": "af_bella 80% + af_river 20%",
+    "bytes": 289389,
+    "music": "A 84 bpm rhodes"
+  },
+  "gif-transform": {
+    "video": "media/tools/gif-transform.mp4",
+    "poster": "media/tools/gif-transform.jpg",
+    "duration": 12.0,
+    "voice": "af_nicole 80% + af_river 20%",
+    "bytes": 295995,
+    "music": "G 100 bpm marimba"
+  },
+  "gif-speed-reverse": {
+    "video": "media/tools/gif-speed-reverse.mp4",
+    "poster": "media/tools/gif-speed-reverse.jpg",
+    "duration": 10.07,
+    "voice": "af_aoede 80% + af_river 20%",
+    "bytes": 259313,
+    "music": "G 94 bpm glass"
+  },
+  "gif-overlay": {
+    "video": "media/tools/gif-overlay.mp4",
+    "poster": "media/tools/gif-overlay.jpg",
+    "duration": 10.33,
+    "voice": "af_kore 80% + af_river 20%",
+    "bytes": 227555,
+    "music": "B 77 bpm kalimba"
+  },
+  "gif-effects": {
+    "video": "media/tools/gif-effects.mp4",
+    "poster": "media/tools/gif-effects.jpg",
+    "duration": 9.3,
+    "voice": "af_sarah 80% + af_river 20%",
+    "bytes": 238526,
+    "music": "F# 96 bpm kalimba"
+  },
+  "gif-combine": {
+    "video": "media/tools/gif-combine.mp4",
+    "poster": "media/tools/gif-combine.jpg",
+    "duration": 8.8,
+    "voice": "af_nova 80% + af_river 20%",
+    "bytes": 209092,
+    "music": "A 73 bpm kalimba"
+  },
+  "gif-splitter": {
+    "video": "media/tools/gif-splitter.mp4",
+    "poster": "media/tools/gif-splitter.jpg",
+    "duration": 10.57,
+    "voice": "af_alloy 80% + af_river 20%",
+    "bytes": 244219,
+    "music": "G# 94 bpm piano"
+  },
+  "static-to-gif": {
+    "video": "media/tools/static-to-gif.mp4",
+    "poster": "media/tools/static-to-gif.jpg",
+    "duration": 9.87,
+    "voice": "af_sky 80% + af_river 20%",
+    "bytes": 257764,
+    "music": "C 89 bpm rhodes"
+  },
+  "gif-analyzer": {
+    "video": "media/tools/gif-analyzer.mp4",
+    "poster": "media/tools/gif-analyzer.jpg",
+    "duration": 9.4,
+    "voice": "af_jessica 80% + af_river 20%",
+    "bytes": 226700,
+    "music": "B 73 bpm bell"
+  },
+  "gif-repair": {
+    "video": "media/tools/gif-repair.mp4",
+    "poster": "media/tools/gif-repair.jpg",
+    "duration": 8.9,
+    "voice": "af_river 80% + af_jessica 20%",
+    "bytes": 224250,
+    "music": "G# 98 bpm piano"
+  },
+  "sprite-sheet": {
+    "video": "media/tools/sprite-sheet.mp4",
+    "poster": "media/tools/sprite-sheet.jpg",
+    "duration": 9.4,
+    "voice": "af_heart 70% + af_bella 30%",
+    "bytes": 229659,
+    "music": "D# 72 bpm harp"
+  },
+  "gif-to-bitmap": {
+    "video": "media/tools/gif-to-bitmap.mp4",
+    "poster": "media/tools/gif-to-bitmap.jpg",
+    "duration": 12.0,
+    "voice": "am_michael 70% + am_fenrir 30%",
+    "bytes": 307941,
+    "music": "F 76 bpm glass"
+  },
+  "webp-maker": {
+    "video": "media/tools/webp-maker.mp4",
+    "poster": "media/tools/webp-maker.jpg",
+    "duration": 10.33,
+    "voice": "bf_emma 70% + bf_isabella 30%",
+    "bytes": 270516,
+    "music": "D 75 bpm piano"
+  },
+  "apng-maker": {
+    "video": "media/tools/apng-maker.mp4",
+    "poster": "media/tools/apng-maker.jpg",
+    "duration": 10.17,
+    "voice": "bm_george 70% + bm_fable 30%",
+    "bytes": 246539,
+    "music": "C 103 bpm marimba"
+  },
+  "jxl-maker": {
+    "video": "media/tools/jxl-maker.mp4",
+    "poster": "media/tools/jxl-maker.jpg",
+    "duration": 10.93,
+    "voice": "af_bella 70% + af_heart 30%",
+    "bytes": 275932,
+    "music": "G# 89 bpm marimba"
+  },
+  "lottie-converter": {
+    "video": "media/tools/lottie-converter.mp4",
+    "poster": "media/tools/lottie-converter.jpg",
+    "duration": 12.0,
+    "voice": "am_fenrir 70% + am_michael 30%",
+    "bytes": 321494,
+    "music": "G# 99 bpm harp"
+  },
+  "aseprite-converter": {
+    "video": "media/tools/aseprite-converter.mp4",
+    "poster": "media/tools/aseprite-converter.jpg",
+    "duration": 11.8,
+    "voice": "af_nicole 70% + af_heart 30%",
+    "bytes": 315140,
+    "music": "B 79 bpm marimba"
+  },
+  "motion-photo-extractor": {
+    "video": "media/tools/motion-photo-extractor.mp4",
+    "poster": "media/tools/motion-photo-extractor.jpg",
+    "duration": 11.03,
+    "voice": "am_puck 70% + am_michael 30%",
+    "bytes": 301050,
+    "music": "C# 82 bpm piano"
+  },
+  "legacy-anim-converter": {
+    "video": "media/tools/legacy-anim-converter.mp4",
+    "poster": "media/tools/legacy-anim-converter.jpg",
+    "duration": 11.27,
+    "voice": "bf_isabella 70% + bf_emma 30%",
+    "bytes": 305194,
+    "music": "A# 90 bpm rhodes"
+  },
+  "video-crop": {
+    "video": "media/tools/video-crop.mp4",
+    "poster": "media/tools/video-crop.jpg",
+    "duration": 9.27,
+    "voice": "bm_fable 70% + bm_george 30%",
+    "bytes": 211683,
+    "music": "F# 83 bpm harp"
+  },
+  "video-rotate": {
+    "video": "media/tools/video-rotate.mp4",
+    "poster": "media/tools/video-rotate.jpg",
+    "duration": 9.73,
+    "voice": "af_aoede 70% + af_heart 30%",
+    "bytes": 239634,
+    "music": "C# 72 bpm rhodes"
+  },
+  "video-reverse": {
+    "video": "media/tools/video-reverse.mp4",
+    "poster": "media/tools/video-reverse.jpg",
+    "duration": 8.43,
+    "voice": "am_echo 70% + am_michael 30%",
+    "bytes": 267394,
+    "music": "A# 86 bpm harp"
+  },
+  "video-resize": {
+    "video": "media/tools/video-resize.mp4",
+    "poster": "media/tools/video-resize.jpg",
+    "duration": 8.8,
+    "voice": "af_kore 70% + af_heart 30%",
+    "bytes": 253287,
+    "music": "G# 98 bpm piano"
+  },
+  "video-loop": {
+    "video": "media/tools/video-loop.mp4",
+    "poster": "media/tools/video-loop.jpg",
+    "duration": 8.5,
+    "voice": "am_eric 70% + am_michael 30%",
+    "bytes": 244127,
+    "music": "F 90 bpm glass"
+  },
+  "video-watermark": {
+    "video": "media/tools/video-watermark.mp4",
+    "poster": "media/tools/video-watermark.jpg",
+    "duration": 9.27,
+    "voice": "bf_alice 70% + bf_emma 30%",
+    "bytes": 207107,
+    "music": "F# 100 bpm bell"
+  },
+  "add-text-to-video": {
+    "video": "media/tools/add-text-to-video.mp4",
+    "poster": "media/tools/add-text-to-video.jpg",
+    "duration": 10.27,
+    "voice": "bm_lewis 70% + bm_george 30%",
+    "bytes": 238654,
+    "music": "G 102 bpm bell"
+  },
+  "add-audio-to-video": {
+    "video": "media/tools/add-audio-to-video.mp4",
+    "poster": "media/tools/add-audio-to-video.jpg",
+    "duration": 10.43,
+    "voice": "af_sarah 70% + af_heart 30%",
+    "bytes": 279373,
+    "music": "F 85 bpm glass"
+  },
+  "video-overlay": {
+    "video": "media/tools/video-overlay.mp4",
+    "poster": "media/tools/video-overlay.jpg",
+    "duration": 10.63,
+    "voice": "am_liam 70% + am_michael 30%",
+    "bytes": 253751,
+    "music": "F# 99 bpm kalimba"
+  },
+  "split-screen-video": {
+    "video": "media/tools/split-screen-video.mp4",
+    "poster": "media/tools/split-screen-video.jpg",
+    "duration": 9.47,
+    "voice": "af_nova 70% + af_heart 30%",
+    "bytes": 233756,
+    "music": "C# 99 bpm piano"
+  },
+  "video-filters": {
+    "video": "media/tools/video-filters.mp4",
+    "poster": "media/tools/video-filters.jpg",
+    "duration": 10.7,
+    "voice": "am_onyx 70% + am_michael 30%",
+    "bytes": 283079,
+    "music": "D# 103 bpm bell"
+  },
+  "blur-video": {
+    "video": "media/tools/blur-video.mp4",
+    "poster": "media/tools/blur-video.jpg",
+    "duration": 8.13,
+    "voice": "bf_lily 70% + bf_emma 30%",
+    "bytes": 185937,
+    "music": "A 105 bpm marimba"
+  },
+  "video-stabilizer": {
+    "video": "media/tools/video-stabilizer.mp4",
+    "poster": "media/tools/video-stabilizer.jpg",
+    "duration": 8.93,
+    "voice": "bm_daniel 70% + bm_george 30%",
+    "bytes": 253486,
+    "music": "A# 90 bpm glass"
+  },
+  "video-fps": {
+    "video": "media/tools/video-fps.mp4",
+    "poster": "media/tools/video-fps.jpg",
+    "duration": 10.73,
+    "voice": "af_alloy 70% + af_heart 30%",
+    "bytes": 282450,
+    "music": "A# 73 bpm piano"
+  },
+  "freeze-frame": {
+    "video": "media/tools/freeze-frame.mp4",
+    "poster": "media/tools/freeze-frame.jpg",
+    "duration": 8.0,
+    "voice": "af_sky 70% + af_heart 30%",
+    "bytes": 243849,
+    "music": "C 84 bpm rhodes"
+  },
+  "video-delogo": {
+    "video": "media/tools/video-delogo.mp4",
+    "poster": "media/tools/video-delogo.jpg",
+    "duration": 8.5,
+    "voice": "af_jessica 70% + af_heart 30%",
+    "bytes": 196424,
+    "music": "B 82 bpm glass"
+  },
+  "burn-subtitles": {
+    "video": "media/tools/burn-subtitles.mp4",
+    "poster": "media/tools/burn-subtitles.jpg",
+    "duration": 8.67,
+    "voice": "af_river 70% + af_heart 30%",
+    "bytes": 237586,
+    "music": "G# 90 bpm marimba"
+  },
+  "images-to-video": {
+    "video": "media/tools/images-to-video.mp4",
+    "poster": "media/tools/images-to-video.jpg",
+    "duration": 10.57,
+    "voice": "af_heart 80% + af_nicole 20%",
+    "bytes": 312766,
+    "music": "F# 106 bpm piano"
+  },
+  "pdf-to-video": {
+    "video": "media/tools/pdf-to-video.mp4",
+    "poster": "media/tools/pdf-to-video.jpg",
+    "duration": 11.17,
+    "voice": "am_michael 80% + am_puck 20%",
+    "bytes": 326030,
+    "music": "G# 106 bpm harp"
+  },
+  "video-background-remover": {
+    "video": "media/tools/video-background-remover.mp4",
+    "poster": "media/tools/video-background-remover.jpg",
+    "duration": 9.47,
+    "voice": "bf_emma 80% + bf_alice 20%",
+    "bytes": 234665,
+    "music": "G 86 bpm bell"
+  },
+  "video-repair": {
+    "video": "media/tools/video-repair.mp4",
+    "poster": "media/tools/video-repair.jpg",
+    "duration": 8.87,
+    "voice": "bm_george 80% + bm_lewis 20%",
+    "bytes": 243683,
+    "music": "G# 94 bpm glass"
+  },
+  "media-info": {
+    "video": "media/tools/media-info.mp4",
+    "poster": "media/tools/media-info.jpg",
+    "duration": 10.87,
+    "voice": "af_bella 80% + af_nicole 20%",
+    "bytes": 318290,
+    "music": "D# 81 bpm kalimba"
+  },
+  "teleprompter": {
+    "video": "media/tools/teleprompter.mp4",
+    "poster": "media/tools/teleprompter.jpg",
+    "duration": 9.07,
+    "voice": "am_fenrir 80% + am_puck 20%",
+    "bytes": 206805,
+    "music": "D# 91 bpm bell"
+  },
+  "device-test": {
+    "video": "media/tools/device-test.mp4",
+    "poster": "media/tools/device-test.jpg",
+    "duration": 11.33,
+    "voice": "af_nicole 80% + af_bella 20%",
+    "bytes": 256246,
+    "music": "B 103 bpm piano"
+  },
+  "archive-extractor": {
+    "video": "media/tools/archive-extractor.mp4",
+    "poster": "media/tools/archive-extractor.jpg",
+    "duration": 8.0,
+    "voice": "af_nicole 60% + af_jessica 40%",
+    "bytes": 187143,
+    "music": "C 102 bpm piano"
+  },
+  "archive-creator": {
+    "video": "media/tools/archive-creator.mp4",
+    "poster": "media/tools/archive-creator.jpg",
+    "duration": 12.0,
+    "voice": "af_aoede 60% + af_river 40%",
+    "bytes": 260900,
+    "music": "A 85 bpm glass"
+  },
+  "archive-converter": {
+    "video": "media/tools/archive-converter.mp4",
+    "poster": "media/tools/archive-converter.jpg",
+    "duration": 10.63,
+    "voice": "af_kore 60% + af_heart 40%",
+    "bytes": 241039,
+    "music": "D# 99 bpm harp"
+  },
+  "file-compressor": {
+    "video": "media/tools/file-compressor.mp4",
+    "poster": "media/tools/file-compressor.jpg",
+    "duration": 11.1,
+    "voice": "am_eric 60% + am_michael 40%",
+    "bytes": 259643,
+    "music": "E 91 bpm kalimba"
+  },
+  "subtitle-converter": {
+    "video": "media/tools/subtitle-converter.mp4",
+    "poster": "media/tools/subtitle-converter.jpg",
+    "duration": 11.53,
+    "voice": "af_sarah 60% + af_bella 40%",
+    "bytes": 305010,
+    "music": "B 97 bpm harp"
+  },
+  "subtitle-editor": {
+    "video": "media/tools/subtitle-editor.mp4",
+    "poster": "media/tools/subtitle-editor.jpg",
+    "duration": 8.0,
+    "voice": "am_liam 60% + am_michael 40%",
+    "bytes": 220740,
+    "music": "E 95 bpm rhodes"
+  },
+  "subtitle-sync": {
+    "video": "media/tools/subtitle-sync.mp4",
+    "poster": "media/tools/subtitle-sync.jpg",
+    "duration": 10.53,
+    "voice": "am_onyx 60% + am_michael 40%",
+    "bytes": 293590,
+    "music": "F# 86 bpm marimba"
+  },
+  "extract-subtitles": {
+    "video": "media/tools/extract-subtitles.mp4",
+    "poster": "media/tools/extract-subtitles.jpg",
+    "duration": 10.73,
+    "voice": "af_alloy 60% + af_aoede 40%",
+    "bytes": 293981,
+    "music": "B 86 bpm rhodes"
+  },
+  "subtitle-translator": {
+    "video": "media/tools/subtitle-translator.mp4",
+    "poster": "media/tools/subtitle-translator.jpg",
+    "duration": 10.7,
+    "voice": "af_sky 60% + af_kore 40%",
+    "bytes": 298167,
+    "music": "A 97 bpm harp"
+  },
+  "audio-speed-pitch": {
+    "video": "media/tools/audio-speed-pitch.mp4",
+    "poster": "media/tools/audio-speed-pitch.jpg",
+    "duration": 9.2,
+    "voice": "af_jessica 60% + af_sarah 40%",
+    "bytes": 257682,
+    "music": "D# 94 bpm rhodes"
+  },
+  "volume-booster": {
+    "video": "media/tools/volume-booster.mp4",
+    "poster": "media/tools/volume-booster.jpg",
+    "duration": 10.57,
+    "voice": "af_river 60% + af_nova 40%",
+    "bytes": 270491,
+    "music": "E 100 bpm marimba"
+  },
+  "noise-remover": {
+    "video": "media/tools/noise-remover.mp4",
+    "poster": "media/tools/noise-remover.jpg",
+    "duration": 8.77,
+    "voice": "af_heart 60% + af_sky 40%",
+    "bytes": 259400,
+    "music": "A# 89 bpm piano"
+  },
+  "audio-tag-editor": {
+    "video": "media/tools/audio-tag-editor.mp4",
+    "poster": "media/tools/audio-tag-editor.jpg",
+    "duration": 10.8,
+    "voice": "af_bella 60% + af_jessica 40%",
+    "bytes": 322856,
+    "music": "B 86 bpm glass"
+  },
+  "ringtone-maker": {
+    "video": "media/tools/ringtone-maker.mp4",
+    "poster": "media/tools/ringtone-maker.jpg",
+    "duration": 10.67,
+    "voice": "am_fenrir 60% + am_puck 40%",
+    "bytes": 320551,
+    "music": "G# 87 bpm bell"
+  },
+  "audio-reverse": {
+    "video": "media/tools/audio-reverse.mp4",
+    "poster": "media/tools/audio-reverse.jpg",
+    "duration": 8.0,
+    "voice": "af_nicole 60% + af_river 40%",
+    "bytes": 215565,
+    "music": "C 104 bpm glass"
+  },
+  "audio-equalizer": {
+    "video": "media/tools/audio-equalizer.mp4",
+    "poster": "media/tools/audio-equalizer.jpg",
+    "duration": 9.87,
+    "voice": "am_puck 60% + am_echo 40%",
+    "bytes": 244629,
+    "music": "A 89 bpm marimba"
+  },
+  "silence-remover": {
+    "video": "media/tools/silence-remover.mp4",
+    "poster": "media/tools/silence-remover.jpg",
+    "duration": 9.13,
+    "voice": "af_aoede 60% + af_heart 40%",
+    "bytes": 269553,
+    "music": "G 77 bpm piano"
+  },
+  "audio-mixer": {
+    "video": "media/tools/audio-mixer.mp4",
+    "poster": "media/tools/audio-mixer.jpg",
+    "duration": 8.3,
+    "voice": "am_echo 60% + am_eric 40%",
+    "bytes": 225586,
+    "music": "A# 96 bpm rhodes"
+  },
+  "audio-splitter": {
+    "video": "media/tools/audio-splitter.mp4",
+    "poster": "media/tools/audio-splitter.jpg",
+    "duration": 9.63,
+    "voice": "af_kore 60% + af_bella 40%",
+    "bytes": 234088,
+    "music": "G# 98 bpm harp"
+  },
+  "waveform-image": {
+    "video": "media/tools/waveform-image.mp4",
+    "poster": "media/tools/waveform-image.jpg",
+    "duration": 9.47,
+    "voice": "am_eric 60% + am_liam 40%",
+    "bytes": 245963,
+    "music": "E 106 bpm harp"
+  },
+  "midi-player": {
+    "video": "media/tools/midi-player.mp4",
+    "poster": "media/tools/midi-player.jpg",
+    "duration": 8.87,
+    "voice": "am_liam 60% + am_onyx 40%",
+    "bytes": 253155,
+    "music": "C# 89 bpm marimba"
+  },
+  "music-visualizer": {
+    "video": "media/tools/music-visualizer.mp4",
+    "poster": "media/tools/music-visualizer.jpg",
+    "duration": 10.63,
+    "voice": "af_nova 60% + af_aoede 40%",
+    "bytes": 325607,
+    "music": "D# 81 bpm kalimba"
+  },
+  "pdf-to-speech": {
+    "video": "media/tools/pdf-to-speech.mp4",
+    "poster": "media/tools/pdf-to-speech.jpg",
+    "duration": 10.7,
+    "voice": "af_alloy 60% + af_kore 40%",
+    "bytes": 313111,
+    "music": "A 81 bpm glass"
+  },
+  "vocal-remover": {
+    "video": "media/tools/vocal-remover.mp4",
+    "poster": "media/tools/vocal-remover.jpg",
+    "duration": 9.27,
+    "voice": "af_sky 60% + af_sarah 40%",
+    "bytes": 289320,
+    "music": "D# 84 bpm bell"
+  },
+  "ebook-converter": {
+    "video": "media/tools/ebook-converter.mp4",
+    "poster": "media/tools/ebook-converter.jpg",
+    "duration": 8.63,
+    "voice": "af_jessica 60% + af_nova 40%",
+    "bytes": 198060,
+    "music": "E 79 bpm harp"
+  },
+  "ebook-reader": {
+    "video": "media/tools/ebook-reader.mp4",
+    "poster": "media/tools/ebook-reader.jpg",
+    "duration": 10.53,
+    "voice": "af_river 60% + af_alloy 40%",
+    "bytes": 243142,
+    "music": "D 84 bpm harp"
+  },
+  "epub-editor": {
+    "video": "media/tools/epub-editor.mp4",
+    "poster": "media/tools/epub-editor.jpg",
+    "duration": 9.63,
+    "voice": "af_heart 60% + af_jessica 40%",
+    "bytes": 221555,
+    "music": "D# 74 bpm harp"
+  },
+  "comic-converter": {
+    "video": "media/tools/comic-converter.mp4",
+    "poster": "media/tools/comic-converter.jpg",
+    "duration": 12.0,
+    "voice": "am_michael 60% + am_puck 40%",
+    "bytes": 258021,
+    "music": "F# 103 bpm glass"
+  },
+  "document-converter": {
+    "video": "media/tools/document-converter.mp4",
+    "poster": "media/tools/document-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_bella 60% + af_river 40%",
+    "bytes": 314277,
+    "music": "A 85 bpm marimba"
+  },
+  "office-viewer": {
+    "video": "media/tools/office-viewer.mp4",
+    "poster": "media/tools/office-viewer.jpg",
+    "duration": 9.03,
+    "voice": "am_fenrir 60% + am_echo 40%",
+    "bytes": 239567,
+    "music": "B 78 bpm bell"
+  },
+  "markdown-to-docx": {
+    "video": "media/tools/markdown-to-docx.mp4",
+    "poster": "media/tools/markdown-to-docx.jpg",
+    "duration": 10.77,
+    "voice": "af_nicole 60% + af_heart 40%",
+    "bytes": 271676,
+    "music": "F# 72 bpm harp"
+  },
+  "docx-to-markdown": {
+    "video": "media/tools/docx-to-markdown.mp4",
+    "poster": "media/tools/docx-to-markdown.jpg",
+    "duration": 8.0,
+    "voice": "am_puck 60% + am_eric 40%",
+    "bytes": 216020,
+    "music": "D 106 bpm piano"
+  },
+  "rtf-converter": {
+    "video": "media/tools/rtf-converter.mp4",
+    "poster": "media/tools/rtf-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_aoede 60% + af_bella 40%",
+    "bytes": 307560,
+    "music": "A 100 bpm bell"
+  },
+  "email-viewer": {
+    "video": "media/tools/email-viewer.mp4",
+    "poster": "media/tools/email-viewer.jpg",
+    "duration": 10.1,
+    "voice": "am_echo 60% + am_liam 40%",
+    "bytes": 280694,
+    "music": "D# 79 bpm marimba"
+  },
+  "pdf-summarizer": {
+    "video": "media/tools/pdf-summarizer.mp4",
+    "poster": "media/tools/pdf-summarizer.jpg",
+    "duration": 9.63,
+    "voice": "am_eric 60% + am_onyx 40%",
+    "bytes": 294731,
+    "music": "C 82 bpm kalimba"
+  },
+  "translate-pdf": {
+    "video": "media/tools/translate-pdf.mp4",
+    "poster": "media/tools/translate-pdf.jpg",
+    "duration": 11.63,
+    "voice": "af_sarah 60% + af_aoede 40%",
+    "bytes": 279948,
+    "music": "A# 89 bpm bell"
+  },
+  "question-generator": {
+    "video": "media/tools/question-generator.mp4",
+    "poster": "media/tools/question-generator.jpg",
+    "duration": 10.43,
+    "voice": "af_nova 60% + af_kore 40%",
+    "bytes": 324107,
+    "music": "F# 75 bpm harp"
+  },
+  "chat-pdf": {
+    "video": "media/tools/chat-pdf.mp4",
+    "poster": "media/tools/chat-pdf.jpg",
+    "duration": 10.23,
+    "voice": "am_onyx 60% + am_fenrir 40%",
+    "bytes": 300324,
+    "music": "A# 96 bpm bell"
+  },
+  "data-converter": {
+    "video": "media/tools/data-converter.mp4",
+    "poster": "media/tools/data-converter.jpg",
+    "duration": 10.7,
+    "voice": "am_onyx 70% + am_puck 30%",
+    "bytes": 290619,
+    "music": "F# 73 bpm kalimba"
+  },
+  "csv-editor": {
+    "video": "media/tools/csv-editor.mp4",
+    "poster": "media/tools/csv-editor.jpg",
+    "duration": 10.63,
+    "voice": "bf_lily 70% + bf_alice 30%",
+    "bytes": 240000,
+    "music": "F# 78 bpm kalimba"
+  },
+  "sqlite-viewer": {
+    "video": "media/tools/sqlite-viewer.mp4",
+    "poster": "media/tools/sqlite-viewer.jpg",
+    "duration": 10.6,
+    "voice": "bm_daniel 70% + bm_lewis 30%",
+    "bytes": 227460,
+    "music": "D# 95 bpm marimba"
+  },
+  "parquet-viewer": {
+    "video": "media/tools/parquet-viewer.mp4",
+    "poster": "media/tools/parquet-viewer.jpg",
+    "duration": 10.6,
+    "voice": "af_alloy 70% + af_nicole 30%",
+    "bytes": 238530,
+    "music": "C# 73 bpm piano"
+  },
+  "geo-converter": {
+    "video": "media/tools/geo-converter.mp4",
+    "poster": "media/tools/geo-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_sky 70% + af_nicole 30%",
+    "bytes": 312522,
+    "music": "F# 97 bpm marimba"
+  },
+  "json-diff": {
+    "video": "media/tools/json-diff.mp4",
+    "poster": "media/tools/json-diff.jpg",
+    "duration": 9.03,
+    "voice": "af_jessica 70% + af_nicole 30%",
+    "bytes": 194906,
+    "music": "D 97 bpm marimba"
+  },
+  "json-query": {
+    "video": "media/tools/json-query.mp4",
+    "poster": "media/tools/json-query.jpg",
+    "duration": 11.17,
+    "voice": "af_river 70% + af_nicole 30%",
+    "bytes": 253190,
+    "music": "G# 90 bpm marimba"
+  },
+  "json-schema-validator": {
+    "video": "media/tools/json-schema-validator.mp4",
+    "poster": "media/tools/json-schema-validator.jpg",
+    "duration": 11.53,
+    "voice": "af_heart 70% + af_kore 30%",
+    "bytes": 253231,
+    "music": "G 85 bpm rhodes"
+  },
+  "xml-tools": {
+    "video": "media/tools/xml-tools.mp4",
+    "poster": "media/tools/xml-tools.jpg",
+    "duration": 10.7,
+    "voice": "am_michael 70% + am_eric 30%",
+    "bytes": 240271,
+    "music": "F 80 bpm rhodes"
+  },
+  "password-hasher": {
+    "video": "media/tools/password-hasher.mp4",
+    "poster": "media/tools/password-hasher.jpg",
+    "duration": 10.7,
+    "voice": "af_bella 70% + af_kore 30%",
+    "bytes": 253632,
+    "music": "F# 86 bpm rhodes"
+  },
+  "encryption-tool": {
+    "video": "media/tools/encryption-tool.mp4",
+    "poster": "media/tools/encryption-tool.jpg",
+    "duration": 12.0,
+    "voice": "am_fenrir 70% + am_eric 30%",
+    "bytes": 291734,
+    "music": "F 80 bpm rhodes"
+  },
+  "pgp-tool": {
+    "video": "media/tools/pgp-tool.mp4",
+    "poster": "media/tools/pgp-tool.jpg",
+    "duration": 12.0,
+    "voice": "af_nicole 70% + af_kore 30%",
+    "bytes": 278151,
+    "music": "A# 86 bpm kalimba"
+  },
+  "key-generator": {
+    "video": "media/tools/key-generator.mp4",
+    "poster": "media/tools/key-generator.jpg",
+    "duration": 12.0,
+    "voice": "am_puck 70% + am_eric 30%",
+    "bytes": 272990,
+    "music": "E 76 bpm piano"
+  },
+  "cert-decoder": {
+    "video": "media/tools/cert-decoder.mp4",
+    "poster": "media/tools/cert-decoder.jpg",
+    "duration": 12.0,
+    "voice": "af_aoede 70% + af_kore 30%",
+    "bytes": 278220,
+    "music": "E 98 bpm glass"
+  },
+  "otp-generator": {
+    "video": "media/tools/otp-generator.mp4",
+    "poster": "media/tools/otp-generator.jpg",
+    "duration": 9.3,
+    "voice": "am_echo 70% + am_eric 30%",
+    "bytes": 220890,
+    "music": "C# 80 bpm piano"
+  },
+  "bip39-generator": {
+    "video": "media/tools/bip39-generator.mp4",
+    "poster": "media/tools/bip39-generator.jpg",
+    "duration": 11.57,
+    "voice": "af_kore 70% + af_aoede 30%",
+    "bytes": 277657,
+    "music": "A# 89 bpm marimba"
+  },
+  "cipher-tools": {
+    "video": "media/tools/cipher-tools.mp4",
+    "poster": "media/tools/cipher-tools.jpg",
+    "duration": 10.6,
+    "voice": "am_eric 70% + am_echo 30%",
+    "bytes": 264999,
+    "music": "F# 86 bpm piano"
+  },
+  "encoding-recipes": {
+    "video": "media/tools/encoding-recipes.mp4",
+    "poster": "media/tools/encoding-recipes.jpg",
+    "duration": 10.9,
+    "voice": "af_sarah 70% + af_aoede 30%",
+    "bytes": 265956,
+    "music": "G 89 bpm harp"
+  },
+  "string-escape": {
+    "video": "media/tools/string-escape.mp4",
+    "poster": "media/tools/string-escape.jpg",
+    "duration": 10.73,
+    "voice": "am_liam 70% + am_echo 30%",
+    "bytes": 268803,
+    "music": "G# 101 bpm piano"
+  },
+  "ip-subnet-calculator": {
+    "video": "media/tools/ip-subnet-calculator.mp4",
+    "poster": "media/tools/ip-subnet-calculator.jpg",
+    "duration": 10.57,
+    "voice": "af_nova 70% + af_aoede 30%",
+    "bytes": 247285,
+    "music": "C# 74 bpm bell"
+  },
+  "mac-address-tools": {
+    "video": "media/tools/mac-address-tools.mp4",
+    "poster": "media/tools/mac-address-tools.jpg",
+    "duration": 10.63,
+    "voice": "am_onyx 70% + am_echo 30%",
+    "bytes": 267968,
+    "music": "D 104 bpm harp"
+  },
+  "device-info": {
+    "video": "media/tools/device-info.mp4",
+    "poster": "media/tools/device-info.jpg",
+    "duration": 10.7,
+    "voice": "af_alloy 70% + af_aoede 30%",
+    "bytes": 257840,
+    "music": "F# 105 bpm rhodes"
+  },
+  "meta-tag-generator": {
+    "video": "media/tools/meta-tag-generator.mp4",
+    "poster": "media/tools/meta-tag-generator.jpg",
+    "duration": 10.4,
+    "voice": "af_sky 70% + af_aoede 30%",
+    "bytes": 260688,
+    "music": "C 86 bpm marimba"
+  },
+  "http-status-codes": {
+    "video": "media/tools/http-status-codes.mp4",
+    "poster": "media/tools/http-status-codes.jpg",
+    "duration": 9.57,
+    "voice": "af_jessica 70% + af_aoede 30%",
+    "bytes": 228430,
+    "music": "F 82 bpm bell"
+  },
+  "mime-lookup": {
+    "video": "media/tools/mime-lookup.mp4",
+    "poster": "media/tools/mime-lookup.jpg",
+    "duration": 8.2,
+    "voice": "af_river 70% + af_aoede 30%",
+    "bytes": 203117,
+    "music": "B 76 bpm kalimba"
+  },
+  "keycode-info": {
+    "video": "media/tools/keycode-info.mp4",
+    "poster": "media/tools/keycode-info.jpg",
+    "duration": 9.2,
+    "voice": "af_heart 70% + af_sarah 30%",
+    "bytes": 216425,
+    "music": "F 95 bpm rhodes"
+  },
+  "basic-auth-generator": {
+    "video": "media/tools/basic-auth-generator.mp4",
+    "poster": "media/tools/basic-auth-generator.jpg",
+    "duration": 10.63,
+    "voice": "am_michael 70% + am_liam 30%",
+    "bytes": 264715,
+    "music": "D# 105 bpm marimba"
+  },
+  "html-wysiwyg": {
+    "video": "media/tools/html-wysiwyg.mp4",
+    "poster": "media/tools/html-wysiwyg.jpg",
+    "duration": 10.7,
+    "voice": "af_bella 70% + af_sarah 30%",
+    "bytes": 256948,
+    "music": "A 93 bpm bell"
+  },
+  "docker-compose-converter": {
+    "video": "media/tools/docker-compose-converter.mp4",
+    "poster": "media/tools/docker-compose-converter.jpg",
+    "duration": 8.87,
+    "voice": "am_fenrir 70% + am_liam 30%",
+    "bytes": 215259,
+    "music": "F# 88 bpm glass"
+  },
+  "chmod-calculator": {
+    "video": "media/tools/chmod-calculator.mp4",
+    "poster": "media/tools/chmod-calculator.jpg",
+    "duration": 12.0,
+    "voice": "af_nicole 70% + af_sarah 30%",
+    "bytes": 265231,
+    "music": "G# 99 bpm piano"
+  },
+  "phone-parser": {
+    "video": "media/tools/phone-parser.mp4",
+    "poster": "media/tools/phone-parser.jpg",
+    "duration": 9.5,
+    "voice": "am_puck 70% + am_liam 30%",
+    "bytes": 227251,
+    "music": "A# 97 bpm rhodes"
+  },
+  "iban-validator": {
+    "video": "media/tools/iban-validator.mp4",
+    "poster": "media/tools/iban-validator.jpg",
+    "duration": 10.63,
+    "voice": "af_aoede 70% + af_sarah 30%",
+    "bytes": 246311,
+    "music": "D# 83 bpm glass"
+  },
+  "file-identifier": {
+    "video": "media/tools/file-identifier.mp4",
+    "poster": "media/tools/file-identifier.jpg",
+    "duration": 8.9,
+    "voice": "am_echo 70% + am_liam 30%",
+    "bytes": 211702,
+    "music": "G# 80 bpm rhodes"
+  },
+  "hex-viewer": {
+    "video": "media/tools/hex-viewer.mp4",
+    "poster": "media/tools/hex-viewer.jpg",
+    "duration": 8.77,
+    "voice": "af_kore 70% + af_sarah 30%",
+    "bytes": 201261,
+    "music": "D 78 bpm harp"
+  },
+  "gettext-converter": {
+    "video": "media/tools/gettext-converter.mp4",
+    "poster": "media/tools/gettext-converter.jpg",
+    "duration": 10.83,
+    "voice": "am_eric 70% + am_liam 30%",
+    "bytes": 261321,
+    "music": "G# 107 bpm harp"
+  },
+  "bulk-file-renamer": {
+    "video": "media/tools/bulk-file-renamer.mp4",
+    "poster": "media/tools/bulk-file-renamer.jpg",
+    "duration": 8.97,
+    "voice": "af_sarah 70% + af_kore 30%",
+    "bytes": 210604,
+    "music": "E 102 bpm bell"
+  },
+  "cheat-sheets": {
+    "video": "media/tools/cheat-sheets.mp4",
+    "poster": "media/tools/cheat-sheets.jpg",
+    "duration": 8.47,
+    "voice": "am_liam 70% + am_eric 30%",
+    "bytes": 217626,
+    "music": "C 73 bpm rhodes"
+  },
+  "time-zone-converter": {
+    "video": "media/tools/time-zone-converter.mp4",
+    "poster": "media/tools/time-zone-converter.jpg",
+    "duration": 9.57,
+    "voice": "af_nova 70% + af_kore 30%",
+    "bytes": 236679,
+    "music": "F# 86 bpm bell"
+  },
+  "html-to-markdown": {
+    "video": "media/tools/html-to-markdown.mp4",
+    "poster": "media/tools/html-to-markdown.jpg",
+    "duration": 10.73,
+    "voice": "am_onyx 70% + am_eric 30%",
+    "bytes": 257949,
+    "music": "A 79 bpm glass"
+  },
+  "spell-checker": {
+    "video": "media/tools/spell-checker.mp4",
+    "poster": "media/tools/spell-checker.jpg",
+    "duration": 10.13,
+    "voice": "af_alloy 70% + af_kore 30%",
+    "bytes": 238183,
+    "music": "F 95 bpm piano"
+  },
+  "fancy-text": {
+    "video": "media/tools/fancy-text.mp4",
+    "poster": "media/tools/fancy-text.jpg",
+    "duration": 10.63,
+    "voice": "af_sky 70% + af_kore 30%",
+    "bytes": 256576,
+    "music": "F 95 bpm marimba"
+  },
+  "math-evaluator": {
+    "video": "media/tools/math-evaluator.mp4",
+    "poster": "media/tools/math-evaluator.jpg",
+    "duration": 10.63,
+    "voice": "af_jessica 70% + af_kore 30%",
+    "bytes": 271239,
+    "music": "D 74 bpm rhodes"
+  },
+  "stopwatch-timer": {
+    "video": "media/tools/stopwatch-timer.mp4",
+    "poster": "media/tools/stopwatch-timer.jpg",
+    "duration": 9.17,
+    "voice": "af_river 70% + af_kore 30%",
+    "bytes": 221105,
+    "music": "G# 72 bpm rhodes"
+  },
+  "emoji-picker": {
+    "video": "media/tools/emoji-picker.mp4",
+    "poster": "media/tools/emoji-picker.jpg",
+    "duration": 9.33,
+    "voice": "af_heart 70% + af_nova 30%",
+    "bytes": 215560,
+    "music": "A 82 bpm piano"
+  },
+  "ascii-art": {
+    "video": "media/tools/ascii-art.mp4",
+    "poster": "media/tools/ascii-art.jpg",
+    "duration": 10.3,
+    "voice": "am_michael 70% + am_onyx 30%",
+    "bytes": 233400,
+    "music": "D 89 bpm kalimba"
+  },
+  "coordinate-converter": {
+    "video": "media/tools/coordinate-converter.mp4",
+    "poster": "media/tools/coordinate-converter.jpg",
+    "duration": 10.5,
+    "voice": "af_bella 70% + af_nova 30%",
+    "bytes": 258842,
+    "music": "F# 81 bpm bell"
+  },
+  "random-generator": {
+    "video": "media/tools/random-generator.mp4",
+    "poster": "media/tools/random-generator.jpg",
+    "duration": 8.67,
+    "voice": "am_fenrir 70% + am_onyx 30%",
+    "bytes": 214252,
+    "music": "A 80 bpm marimba"
+  },
+  "text-reverser": {
+    "video": "media/tools/text-reverser.mp4",
+    "poster": "media/tools/text-reverser.jpg",
+    "duration": 9.2,
+    "voice": "af_nicole 70% + af_nova 30%",
+    "bytes": 207077,
+    "music": "C# 105 bpm kalimba"
+  },
+  "line-numbers": {
+    "video": "media/tools/line-numbers.mp4",
+    "poster": "media/tools/line-numbers.jpg",
+    "duration": 9.8,
+    "voice": "am_puck 70% + am_onyx 30%",
+    "bytes": 234076,
+    "music": "C 94 bpm marimba"
+  },
+  "slug-generator": {
+    "video": "media/tools/slug-generator.mp4",
+    "poster": "media/tools/slug-generator.jpg",
+    "duration": 8.43,
+    "voice": "af_aoede 70% + af_nova 30%",
+    "bytes": 201880,
+    "music": "F# 80 bpm rhodes"
+  },
+  "text-extractor": {
+    "video": "media/tools/text-extractor.mp4",
+    "poster": "media/tools/text-extractor.jpg",
+    "duration": 10.73,
+    "voice": "am_echo 70% + am_onyx 30%",
+    "bytes": 254650,
+    "music": "D# 73 bpm marimba"
+  },
+  "list-tools": {
+    "video": "media/tools/list-tools.mp4",
+    "poster": "media/tools/list-tools.jpg",
+    "duration": 10.5,
+    "voice": "af_kore 70% + af_nova 30%",
+    "bytes": 249267,
+    "music": "C 72 bpm piano"
+  },
+  "currency-converter": {
+    "video": "media/tools/currency-converter.mp4",
+    "poster": "media/tools/currency-converter.jpg",
+    "duration": 8.13,
+    "voice": "am_eric 70% + am_onyx 30%",
+    "bytes": 199434,
+    "music": "A 88 bpm glass"
   }
 }

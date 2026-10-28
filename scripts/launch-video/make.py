@@ -27,10 +27,10 @@ VOICE = ('af_heart', None, 1.0)   # warm US female
 VO = [
     ('personal', "Your files are personal. Contracts, photos, recordings, code."),
     ('upload', "So why do so many online tools ask you to upload them?"),
-    ('meet', "Meet OpenFile. Over a hundred free tools that run right in your browser."),
+    ('meet', "Meet OpenFile. Over three hundred free tools that run right in your browser."),
     ('cats', "Merge, split and sign PDFs. Convert documents. Compress and resize images. "
              "Trim video, edit audio, format code, compare text, and work with color."),
-    ('soon', "3D, archives and fonts are on the way."),
+    ('soon', "Now with 3D models, archives, fonts, eBooks and AI that runs on your device."),
     ('private', "And your files never leave your device. No uploads, no accounts, no watermarks. It even works offline."),
     ('flow', "Chain tools into one flow, and run it on hundreds of files at once."),
     ('end', "OpenFile. Free, open source, and private."),
@@ -201,7 +201,7 @@ def sc_meet(c, g, t, d):
                 text(c, ch, f, x, 680 + (1 - k) * 50, gradient=GOLD_GRAD, anchor='lm', alpha=k)
             x += f.getlength(ch)
         k2 = ease_out((tt - 0.7) / 0.6)
-        text(c, '100+ free tools. All in your browser.', font(SANS, 46, 'Medium'), W / 2, 800 + (1 - k2) * 20, color=TEXT, alpha=k2 * 0.85)
+        text(c, '300+ free tools. All in your browser.', font(SANS, 46, 'Medium'), W / 2, 800 + (1 - k2) * 20, color=TEXT, alpha=k2 * 0.85)
 
 
 CAT_ORDER = ['pdf', 'convert', 'image', 'video', 'audio', 'dev', 'text', 'design']
@@ -240,7 +240,6 @@ def sc_cats(c, g, t, d):
     GL.dirty = True
     text(c, CAT_NAMES[cat], font(DISPLAY, 92, 'Bold'), 410 - (1 - k_in) * 40, 500, alpha=al, anchor='lm')
     text(c, CAT_LINE[cat], font(SANS, 36, 'Medium'), 412 - (1 - k_in) * 20, 590, color=ac, alpha=al, anchor='lm')
-    text(c, f"{len(BYCAT[cat])} tools", font(MONO, 30, 'Medium'), 412, 650, color=MUTED, alpha=al, anchor='lm')
     # right: fanned stack of tool cards flying in
     tl = BYCAT[cat]
     show = tl[:6]
@@ -279,7 +278,7 @@ def cube(c, g, cx, cy, s, t, color, alpha):
 
 def sc_soon(c, g, t, d):
     items = [('3D', 'Box', CYAN), ('Archives', 'FileArchive', GOLD), ('Fonts', 'Type', EMERALD)]
-    kinetic_words(c, 'Coming next', font(DISPLAY, 72, 'Bold'), W / 2, 210, t - 0.1)
+    kinetic_words(c, 'Now included', font(DISPLAY, 72, 'Bold'), W / 2, 210, t - 0.1)
     for i, (lab, ic, ac) in enumerate(items):
         k = ease_out_back((t - 0.3 - i * 0.18) / 0.6, 1.3)
         if k <= 0:
@@ -297,7 +296,7 @@ def sc_soon(c, g, t, d):
         else:
             text(c, 'Aa', font(DISPLAY, 150, 'Bold'), x, y - 60 + math.sin(t * 1.5) * 6, gradient=(hexrgb('#9FF5D5'), EMERALD), alpha=clamp(k))
         text(c, lab, font(SANS, 40, 'SemiBold'), x, y + 100, alpha=clamp(k))
-        text(c, 'COMING SOON', font(MONO, 20, 'Bold'), x, y + 150, color=ac, alpha=clamp(k), tracking=3)
+        text(c, 'NOW LIVE', font(MONO, 20, 'Bold'), x, y + 150, color=ac, alpha=clamp(k), tracking=3)
     GL.dirty = True
 
 

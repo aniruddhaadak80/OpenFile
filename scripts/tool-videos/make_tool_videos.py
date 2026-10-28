@@ -35,6 +35,30 @@ PAPER_LINE = hexrgb('#CFC9BD')
 INK = hexrgb('#1A1C20')
 
 
+def short_desc(s, limit=105):
+    """One short spoken/caption sentence from a registry description: drop parentheses, shorten long format lists."""
+    s = clean_copy(s)
+    if len(s) <= limit:
+        return s
+    s = re.sub(r'\s*\([^)]*\)', '', s)
+    s = re.split(r'(?<=[.])\s', s)[0]
+    head, sep, tail = s.partition(': ')
+    s = head if sep and len(head) >= 25 else (f'{head}, like {tail}' if sep else s)
+
+    def lists(m):
+        items = [x.strip() for x in re.split(r',\s*|\s+(?:and|or)\s+', m.group(0)) if x.strip() and x.strip() != 'more']
+        return ', '.join(items[:3]) + ' and more' if len(items) > 4 else m.group(0)
+    item = r"[A-Za-z0-9][\w.+-]*(?:\s(?!and\b|or\b|with\b)[A-Za-z0-9][\w.+-]*)?"
+    s = re.sub(rf"{item}(?:,\s*{item}){{3,}}(?:,?\s+(?:and|or)\s+(?:{item}|more))?", lists, s)
+    s = s.replace('and more and more', 'and more')
+    if len(s) > limit:
+        cut = max(s.rfind(', ', 0, limit), s.rfind(' with ', 0, limit))
+        if cut > 40:
+            s = s[:cut]
+    s = s.rstrip(' ,.') + '.'
+    return s
+
+
 def clean_copy(s):
     s = s.replace('—', ', ').replace('–', ' to ').replace('!', '.')
     return re.sub(r'\s+', ' ', s).strip()
@@ -896,6 +920,36 @@ def d_audio(c, g, t, d, P):
         text(c, typed(s_, t - 0.4, 22), font(SANS, 24, 'Medium'), CX, CY - 80, color=TEXT)
         k = ease_out((t - 1.2) / 0.8)
         waveform(c, wx + 100, CY + 40, ww - 200, 100 * k, s, GOLD, 1, n=50, t=t, live=True)
+    elif act == 'eq':
+        bands = ['32', '64', '125', '250', '500', '1k', '2k', '4k', '8k', '16k']
+        for i, b in enumerate(bands):
+            x = CX - 270 + i * 60
+            v = 0.5 + 0.35 * math.sin(t * 1.4 + i * 0.7) * ease_out((t - 0.5) / 0.8)
+            line(c, x, CY - 110, x, CY + 90, LINE, 4)
+            line(c, x, CY + 90, x, CY + 90 - 200 * v, P['cols'][i % 3], 4)
+            rrect(c, x - 14, CY + 90 - 200 * v - 7, 28, 14, 4, fill=TEXT)
+            text(c, b, font(MONO, 12, 'Medium'), x, CY + 112, color=MUTED)
+    elif act == 'midi':
+        rows = 12
+        for r_ in range(rows):
+            y = SY + 20 + r_ * 24
+            black = r_ % 12 in (1, 3, 6, 8, 10)
+            rrect(c, SX + 60, y, 50, 22, 3, fill=INK if black else PAPER)
+        rng = np.random.default_rng(s)
+        notes = [(rng.uniform(0, 12), int(rng.integers(0, rows)), rng.uniform(0.4, 1.4)) for _ in range(26)]
+        ph = SX + 130 + 120
+        for st, r_, ln in notes:
+            x = SX + 130 + (st - t * 1.2) * 70 + 120
+            if x + ln * 70 < SX + 120 or x > SX + SW:
+                continue
+            on = x <= ph <= x + ln * 70
+            rrect(c, max(SX + 120, x), SY + 22 + r_ * 24, ln * 70, 18, 4, fill=GOLD if on else P['cols'][r_ % 3], alpha=1 if on else 0.75)
+        line(c, ph, SY + 14, ph, SY + 14 + rows * 24 + 6, GOLD, 2)
+    elif act == 'speed':
+        k = ease_in_out((t - 0.9) / 1.2)
+        waveform(c, wx + ww * 0.1 * k, CY - 30, ww * (1 - 0.2 * k), 120, s, TEAL, 1, n=64)
+        text(c, f'{1 + 0.5 * k:.2f}x speed', font(MONO, 22, 'Bold'), CX - 120, CY + 100, color=GOLD)
+        text(c, f'{"+" if k > 0.5 else ""}{int(round(3 * k)) if k > 0.5 else 0} semitones', font(MONO, 22, 'Bold'), CX + 120, CY + 100, color=TEXT)
     elif act == 'merge':
         k = ease_in_out((t - 0.9) / 1.2)
         waveform(c, lerp(wx - 40, wx, k), CY - 30, ww / 2, 90, s, TEAL, 1, n=32)
@@ -937,6 +991,8 @@ DEV_SNIPPETS = {
     'regex-tester': (['/(\\w+)@(\\w+)\\.com/g', '', 'riya@mail.com, dev@open.com', '2 matches, 4 groups'], 'matched'),
     'regex-builder': (['starts with  "INV-"', 'then digits  4 times', 'end of line', '', '/^INV-\\d{4}$/'], 'built'),
     'password-generator': (['k7#Qm2!vRz9&Lp4x', '', 'amber-river-candle-north'], 'strong'),
+    'json-to-types': (['{"id": 7, "name": "Riya"}', '', 'interface User {', '  id: number', '  name: string', '}'], 'TypeScript'),
+    'mock-data-generator': (['[{"name": "Riya Sen",', '  "email": "riya@mail.com",', '  "city": "Kolkata"},', ' {"name": "Arjun Das", ...}]'], 'JSON'),
 }
 
 
@@ -1005,7 +1061,19 @@ def d_dev(c, g, t, d, P):
             c.set_source_rgba(*rgbf(GOLD, k)); c.set_line_width(2); c.stroke()
         badge(c, CX, SY + SH - 10, 'export SQL, Prisma, Drizzle', GOLD, ease_out((t - 2.2) / 0.4), 13)
         return
-    lines_, tag = DEV_SNIPPETS.get(slug, (['// ' + P['name']], 'done'))
+    if slug in DEV_SNIPPETS:
+        lines_, tag = DEV_SNIPPETS[slug]
+    else:
+        words, cur, wrapped = P.get('desc', '').split(), '', []
+        for w_ in words:
+            if len(cur) + len(w_) + 1 > 44:
+                wrapped.append(cur); cur = w_
+            else:
+                cur = (cur + ' ' + w_).strip()
+        if cur:
+            wrapped.append(cur)
+        lines_ = [f'$ openfile {slug}', ''] + ['# ' + w_ for w_ in wrapped[:3]] + ['', 'done on this device']
+        tag = 'local'
     wx, wy, ww, wh = CX - 300, SY + 4, 600, 300
     ox, oy = window(c, wx, wy, ww, wh, P['slug'] + ('.json' if 'json' in slug else ''))
     typed_lines(c, lines_, ox + 8, oy + 14, t - 0.4, cps=34, lh=32, size=18)
@@ -1352,7 +1420,7 @@ def plan(tool):
     cols = [pal[(seed + i * (1 + seed % 3)) % 5] for i in range(3)]
     if cols[0] != GOLD and rng.random() < 0.5:
         cols[0] = GOLD
-    P = dict(slug=slug, name=name, cat=cat, seed=seed % 1000, r=seed % 7, cols=cols, mirror=bool(seed & 1), n=3 + seed % 3)
+    P = dict(slug=slug, name=name, cat=cat, desc=short_desc(tool['desc']), seed=seed % 1000, r=seed % 7, cols=cols, mirror=bool(seed & 1), n=3 + seed % 3)
     fn = None
     # ---- action routing (slug first, then category defaults)
     if slug in ('merge-pdf', 'image-to-pdf'):
@@ -1390,11 +1458,59 @@ def plan(tool):
         vid_acts = {'video-trimmer': 'trim', 'video-to-gif': 'gif', 'extract-audio': 'extract', 'mute-video': 'mute', 'video-speed': 'speed',
                     'video-upscaler': 'upscale', 'screen-recorder': 'record', 'webcam-recorder': 'webcam'}
         aud_acts = {'audio-editor': 'editor', 'audio-converter': 'convert', 'voice-recorder': 'record', 'audio-transcriber': 'transcribe',
-                    'text-to-speech': 'tts'}
-        if slug in doc_acts:
+                    'text-to-speech': 'tts', 'audio-speed-pitch': 'speed', 'audio-equalizer': 'eq', 'midi-player': 'midi',
+                    'pdf-to-speech': 'tts', 'audio-mixer': 'merge', 'music-visualizer': 'record', 'waveform-image': 'convert'}
+        img_acts.update({'photo-effects': 'filters', 'hdr-exr-viewer': 'filters', 'halftone-generator': 'compare', 'pixel-art-converter': 'compare',
+                         'dicom-viewer': 'filters', 'exif-editor': 'exif', 'html-to-image': 'screenshot', 'color-blindness-simulator': 'compare',
+                         'card-maker': 'text', 'social-image-maker': 'text', 'mockup-generator': 'screenshot'})
+        doc_acts.update({'resize-pdf-pages': 'crop', 'flip-pdf': 'rotate', 'overlay-pdf': 'flatten', 'alternate-mix-pdf': 'organize',
+                         'pdf-bookmarks': 'reader', 'pdf-link-editor': 'edit', 'create-pdf-form': 'form', 'pdf-viewer-preferences': 'metadata',
+                         'remove-annotations': 'flatten', 'sanitize-pdf': 'redact', 'pdf-inspector': 'metadata', 'remove-blank-pages': 'delete',
+                         'pdf-adjust-colors': 'grayscale', 'search-pdfs': 'reader', 'validate-pdfa': 'ocr', 'pdf-accessibility-check': 'ocr'})
+        if cat == 'pdf' and slug not in doc_acts:
+            # keyword routing for PDF tools added later
+            for kw, act in (('merge', 'organize'), ('combine', 'organize'), ('rotate', 'rotate'), ('flip', 'rotate'), ('crop', 'crop'),
+                            ('sign', 'sign'), ('unlock', 'unlock'), ('protect', 'protect'), ('encrypt', 'protect'), ('watermark', 'watermark'),
+                            ('remove', 'delete'), ('delete', 'delete'), ('check', 'ocr'), ('valid', 'ocr'), ('ocr', 'ocr'), ('scan', 'ocr'),
+                            ('edit', 'edit'), ('form', 'form'), ('meta', 'metadata'), ('inspect', 'metadata'), ('color', 'grayscale'),
+                            ('gray', 'grayscale'), ('redact', 'redact'), ('compare', 'compare'), ('number', 'numbers'), ('header', 'header')):
+                if kw in slug:
+                    doc_acts[slug] = act
+                    break
+        if slug in ('split-page-halves', 'pdf-attachments', 'extract-pdf-images', 'pdf-poster'):
+            fn, P['kind'] = d_split, {'split-page-halves': 'pages', 'pdf-attachments': 'extract', 'extract-pdf-images': 'frames', 'pdf-poster': 'grid'}[slug]
+            if slug == 'split-page-halves':
+                P['n'] = 2
+        elif slug in ('rasterize-pdf', 'pdf-to-pdfa'):
+            fn, P['fmts'] = d_convert, (['PDF', 'PNG', 'PDF'] if slug == 'rasterize-pdf' else ['PDF', 'PDF/A'])
+        elif slug == 'linearize-pdf':
+            fn, P['kind'] = d_compress, 'doc'
+            P['kb'] = (4200.0, 1500.0)
+        elif slug in doc_acts:
             fn, P['act'] = d_doc, doc_acts[slug]
+        img_acts.update({'gif-optimizer': 'gif', 'gif-editor': 'gif', 'gif-transform': 'rotate', 'gif-speed-reverse': 'gif',
+                         'gif-overlay': 'watermark', 'gif-effects': 'filters', 'gif-combine': 'collage', 'gif-splitter': 'splitter',
+                         'static-to-gif': 'gif', 'gif-analyzer': 'exif', 'gif-repair': 'gif', 'sprite-sheet': 'splitter',
+                         'gif-to-bitmap': 'gif', 'webp-maker': 'gif', 'apng-maker': 'gif', 'jxl-maker': 'gif',
+                         'motion-photo-extractor': 'gif', 'video-crop': 'crop', 'video-rotate': 'rotate', 'video-watermark': 'watermark',
+                         'add-text-to-video': 'text', 'video-filters': 'filters', 'blur-video': 'blur', 'video-delogo': 'blur',
+                         'split-screen-video': 'collage', 'video-overlay': 'watermark', 'video-background-remover': 'bgremove'})
+        vid_acts.update({'video-reverse': 'speed', 'video-resize': 'upscale', 'video-fps': 'speed', 'add-audio-to-video': 'extract',
+                         'images-to-video': 'merge', 'pdf-to-video': 'merge', 'teleprompter': 'record', 'device-test': 'webcam',
+                         'video-stabilizer': 'play', 'freeze-frame': 'frames'})
+        if slug == 'burn-subtitles':
+            fn = d_extra; P['cat'] = 'subtitle'
+        elif slug in ('gif-optimizer',):
+            fn, P['kind'] = d_compress, 'img'
+            P['kb'] = (5200.0, 1300.0)
+        elif slug in ('animated-converter', 'lottie-converter', 'aseprite-converter', 'legacy-anim-converter', 'data-converter', 'geo-converter'):
+            fn, P['fmts'] = d_convert, convert_formats(tool)
+        elif slug == 'freeze-frame':
+            fn, P['kind'] = d_split, 'frames'
         elif slug in img_acts:
             fn, P['act'] = d_image, img_acts[slug]
+        elif cat == 'audio':
+            fn, P['act'] = d_audio, aud_acts.get(slug, ['editor', 'record', 'convert'][seed % 3] if slug not in aud_acts else aud_acts[slug])
         elif slug == 'video-frames':
             fn, P['kind'] = d_split, 'frames'
         elif slug in vid_acts:
@@ -1435,10 +1551,19 @@ def convert_formats(tool):
              'markdown-to-pdf': ['MD', 'PDF'], 'html-to-pdf': ['HTML', 'PDF'], 'text-to-pdf': ['TXT', 'PDF'], 'epub-to-pdf': ['EPUB', 'PDF']}
     if slug in fixed:
         return fixed[slug]
+    fixed2 = {'document-converter': ['DOCX', 'PDF', 'MD', 'HTML'], 'office-viewer': ['DOCX', 'XLSX', 'PPTX'],
+              'rtf-converter': ['RTF', 'PDF', 'DOCX'], 'email-viewer': ['EML', 'MSG', 'PDF']}
+    if slug in fixed2:
+        return fixed2[slug]
+    alias = {'MARKDOWN': 'MD', 'POWERPOINT': 'PPTX', 'EXCEL': 'XLSX', 'WORD': 'DOCX', 'IMAGE': 'PNG', 'TEXT': 'TXT', 'PHOTO': 'JPG'}
     m = re.match(r'(\w+) to (\w+)', name)
     if m:
-        return [m.group(1).upper()[:5], m.group(2).upper()[:5]]
-    return ['FILE', 'PDF']
+        return [alias.get(m.group(1).upper(), m.group(1).upper()[:5]), alias.get(m.group(2).upper(), m.group(2).upper()[:5])]
+    toks = []
+    for tk in re.findall(r'\b[A-Z][A-Z0-9]{1,4}\b', tool.get('desc') or ''):
+        if tk not in toks and tk not in ('PDF', 'AI', 'CSS', 'API'):
+            toks.append(tk)
+    return (toks[:4] if len(toks) >= 2 else ['FILE', 'PDF'])
 
 
 # ----------------------------------------------------------------------------- frame composition
@@ -1459,7 +1584,7 @@ class Renderer:
         self.gl = GlowLayer(W, H, 4)
         self.demo_start = 1.7
         self.outro = dur - 1.5
-        self.desc = clean_copy(tool['desc'])
+        self.desc = short_desc(tool['desc'])
 
     def caption_lines(self):
         f = font(SANS, 18, 'Medium')
@@ -1563,7 +1688,7 @@ def render_tool(job):
     try:
         os.makedirs(TMP, exist_ok=True)
         tts = get_tts(threads)
-        vo_text = clean_copy(f"{tool['name']}. {tool['desc']}")
+        vo_text = f"{re.sub(r'\s*\([^)]*\)', '', tool['name'])}. {short_desc(tool['desc'])}"
         speed = 1.0
         voice = tts.say(vo_text, voice_spec, speed)
         if len(voice) / SR > 8.0:
@@ -1593,6 +1718,18 @@ def render_tool(job):
         part = out + '.part.mp4'
         subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', vtmp, '-i', norm, '-map', '0:v', '-map', '1:a', '-c:v', 'copy',
                         '-c:a', 'aac', '-b:a', '48k', '-ac', '1', '-ar', '44100', '-shortest', '-movflags', '+faststart', part], check=True)
+        # hard size cap (target <= 350 KB): re-encode the video track tighter when a busy demo overshoots
+        tries = 0
+        while os.path.getsize(part) > 340 * 1024 and tries < 3:
+            tries += 1
+            kbps = int((330 * 1024 * 8 / dur - 52000) / 1000 * (0.92 ** (tries - 1)))
+            v2 = os.path.join(TMP, f'{slug}_v2.mp4')
+            subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', vtmp, '-c:v', 'libx264', '-preset', 'medium', '-tune', 'animation',
+                            '-crf', str(28 + 3 * tries), '-maxrate', f'{kbps}k', '-bufsize', f'{kbps}k', '-g', '90', '-pix_fmt', 'yuv420p',
+                            '-threads', '1', '-an', v2], check=True)
+            subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', v2, '-i', norm, '-map', '0:v', '-map', '1:a', '-c:v', 'copy',
+                            '-c:a', 'aac', '-b:a', '48k', '-ac', '1', '-ar', '44100', '-shortest', '-movflags', '+faststart', part], check=True)
+            os.remove(v2)
         os.replace(part, out)
         # poster: mid-demo frame
         pt = min(R.outro - 0.4, R.demo_start + 2.6)
@@ -1618,7 +1755,7 @@ def main():
     ap.add_argument('--still', nargs=3, metavar=('SLUG', 'T', 'PNG'))
     a = ap.parse_args()
     tools = load_registry()
-    voices = voice_sequence(len(tools))
+    voices = voice_sequence(max(len(tools) * 2, 400))
     vmap = {t['slug']: v for t, v in zip(tools, voices)}
     if a.still:
         tool = next(t for t in tools if t['slug'] == a.still[0])
@@ -1640,9 +1777,12 @@ def main():
                 dur = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', pth],
                                            capture_output=True, text=True).stdout.strip() or 0)
                 index[t['slug']] = dict(video=f"media/tools/{t['slug']}.mp4", poster=f"media/tools/{t['slug']}.jpg",
-                                        duration=round(dur, 2), voice=voice_name(vmap[t['slug']]), bytes=os.path.getsize(pth))
+                                        duration=round(dur, 2), voice=voice_name(vmap.get(t['slug'], voices[0])), bytes=os.path.getsize(pth))
             continue
-        spec = vmap[t['slug']]
+        spec = vmap.get(t['slug'])
+        used = {e.get('voice') for k_, e in index.items() if k_ != t['slug']} | {voice_name(tuple(j['voice'])) for j in todo}
+        if spec is None or voice_name(spec) in used:
+            spec = next((v for v in voices if voice_name(v) not in used), spec or voices[-1])
         todo.append(dict(tool=t, voice=list(spec), threads=1 if a.jobs > 1 else None))
     print(f'{len(tools)} tools in registry, rendering {len(todo)} with {a.jobs} jobs', flush=True)
     results = []

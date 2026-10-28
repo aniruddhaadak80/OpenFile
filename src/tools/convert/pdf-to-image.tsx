@@ -8,9 +8,10 @@ import { openPdfJs, renderPage } from '@/lib/pdf'
 import { baseName, canvasToBlob, downloadBlob, formatBytes, parsePageRanges, zipFiles } from '@/lib/files'
 import { FileBar, Lightbox, Reveal, ThumbGrid, pdfError } from './_conv/shared'
 
-type Fmt = 'png' | 'jpg' | 'webp'
-const MIMES: Record<Fmt, string> = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp' }
+type Fmt = 'png' | 'jpg' | 'webp' | 'gif' | 'bmp' | 'tiff'
+const MIMES: Record<Fmt, string> = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif', bmp: 'image/bmp', tiff: 'image/tiff' }
 interface Out { page: number; blob: Blob; url: string; w: number; h: number; name: string }
+const EXTRA = new Set<Fmt>(['gif', 'bmp', 'tiff'])
 
 export default function PdfToImage() {
   const [file, setFile] = useState<File | null>(null)
@@ -55,9 +56,15 @@ export default function PdfToImage() {
       const maxPx = 50_000_000 // keep within browser canvas limits
       if (vp.width * vp.height * scale * scale > maxPx) scale = Math.sqrt(maxPx / (vp.width * vp.height))
       const c = await renderPage(doc, n, scale)
-      const blob = await canvasToBlob(c, MIMES[fmt], fmt === 'png' ? undefined : quality / 100)
-      const name = `${baseName(file.name)}-page-${String(n).padStart(String(numPages).length, '0')}.${fmt}`
-      res.push({ page: n, blob, url: URL.createObjectURL(blob), w: c.width, h: c.height, name })
+      let blob: Blob, previewUrl: string
+      if (EXTRA.has(fmt)) {
+        const { encodeCanvasExtra } = await import('./_b1/encoders')
+        blob = await encodeCanvasExtra(c, fmt as 'gif' | 'bmp' | 'tiff', dpi)
+        // browsers cannot show TIFF, so preview with a PNG copy
+        previewUrl = URL.createObjectURL(fmt === 'tiff' ? await canvasToBlob(c, 'image/png') : blob)
+      } else { blob = await canvasToBlob(c, MIMES[fmt], fmt === 'png' ? undefined : quality / 100); previewUrl = URL.createObjectURL(blob) }
+      const name = `${baseName(file.name)}-page-${String(n).padStart(String(numPages).length, '0')}.${fmt === 'tiff' ? 'tif' : fmt}`
+      res.push({ page: n, blob, url: previewUrl, w: c.width, h: c.height, name })
       c.width = c.height = 0
       setOuts([...res])
       setP((k + 1) / order.length)
@@ -117,13 +124,15 @@ export default function PdfToImage() {
           )}
         </>}
         side={<>
-          <div><Label>Format</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'png', label: 'PNG' }, { value: 'jpg', label: 'JPG' }, { value: 'webp', label: 'WEBP' }]} /></div>
+          <div><Label>Format</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'png', label: 'PNG' }, { value: 'jpg', label: 'JPG' }, { value: 'webp', label: 'WEBP' }, { value: 'gif', label: 'GIF' }, { value: 'bmp', label: 'BMP' }, { value: 'tiff', label: 'TIFF' }]} />
+            {fmt === 'gif' && <p className="mt-1 text-[11px] text-muted">GIF is limited to 256 colors, so photos may look grainy. Best for simple pages.</p>}
+            {fmt === 'tiff' && <p className="mt-1 text-[11px] text-muted">One TIFF per page (LZW). For a single multi-page TIFF or black and white fax output, use PDF to TIFF.</p>}</div>
           <div>
             <Slider label="Resolution (DPI)" value={dpi} onChange={setDpi} min={72} max={300} step={1} />
             <div className="mt-2 flex flex-wrap gap-1.5">{[72, 96, 150, 200, 300].map((d) => <button key={d} onClick={() => setDpi(d)} className={`rounded-md border px-2 py-0.5 text-[11px] cursor-pointer ${dpi === d ? 'border-accent text-accent' : 'border-border text-muted hover:text-fg'}`}>{d}</button>)}</div>
             <div className="mt-2 text-xs text-muted">Page 1 output: <span className="font-mono text-fg">{px}</span></div>
           </div>
-          {fmt !== 'png' && <Slider label="Quality" value={quality} onChange={setQuality} min={40} max={100} suffix="%" />}
+          {(fmt === 'jpg' || fmt === 'webp') && <Slider label="Quality" value={quality} onChange={setQuality} min={40} max={100} suffix="%" />}
           {busy && <Progress value={progress} label={`Rendering ${Math.min(order.length, Math.round(progress * order.length) + 1)} of ${order.length}`} />}
           <ErrorNote error={error} />
           <Button size="lg" className="w-full" loading={busy} disabled={!order.length || !!thumbErr} icon={<Images className="size-5" />} onClick={convert}>

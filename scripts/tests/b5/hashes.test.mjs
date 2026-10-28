@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict'
+import { createHash, createHmac } from 'node:crypto'
+import * as H from '../../../src/lib/b5/hashes.ts'
+const data = new TextEncoder().encode('The quick brown fox jumps over the lazy dog')
+const r = await H.hashBytes(data, H.HASH_IDS, null)
+const node = (a) => createHash(a).update(data).digest('hex')
+assert.equal(r['MD5'].hex, node('md5'))
+assert.equal(r['SHA-1'].hex, node('sha1'))
+assert.equal(r['SHA-256'].hex, node('sha256'))
+assert.equal(r['SHA-512'].hex, node('sha512'))
+assert.equal(r['SHA3-256'].hex, node('sha3-256'))
+assert.equal(r['SHA3-512'].hex, node('sha3-512'))
+assert.equal(r['RIPEMD-160'].hex, node('ripemd160'))
+assert.equal(r['BLAKE2b-512'].hex, node('blake2b512'))
+assert.equal(r['BLAKE2s-256'].hex, node('blake2s256'))
+assert.equal(r['CRC32'].hex, '414fa339')
+assert.equal(r['Keccak-256'].hex, '4d741b6f1eb29cb2a9b9911c82f56fa8d73b04959d3d9d222895df6c0b28aa15')
+assert.equal(r['BLAKE3'].hex, '2f1514181aadccd913abd94cfa592701a5686ab23f8df1dff1b74710febc6d4a')
+assert.equal(r['xxHash32'].hex, 'e85ea4de')
+for (const id of H.HASH_IDS) assert.ok(r[id].hex && r[id].hex.length === H.algoById(id).bits / 4, id)
+// streaming in chunks equals one-shot
+const parts = [data.subarray(0, 7), data.subarray(7, 20), data.subarray(20)]
+const r2 = await H.hashChunks(parts, ['SHA-256', 'BLAKE3', 'xxHash128'], null)
+for (const k of Object.keys(r2)) assert.equal(r2[k].hex, r[k].hex)
+// HMAC
+const key = new TextEncoder().encode('key')
+const hm = await H.hashBytes(data, ['SHA-256', 'MD5', 'SHA3-256', 'CRC32', 'BLAKE2b-512'], key)
+assert.equal(hm['SHA-256'].hex, createHmac('sha256', 'key').update(data).digest('hex'))
+assert.equal(hm['MD5'].hex, createHmac('md5', 'key').update(data).digest('hex'))
+assert.equal(hm['SHA3-256'].hex, createHmac('sha3-256', 'key').update(data).digest('hex'))
+assert.ok(hm['CRC32'].error)
+assert.ok(hm['BLAKE2b-512'].hex)
+const b3 = await H.hashBytes(data, ['BLAKE3'], key); assert.match(b3['BLAKE3'].error, /32 bytes/)
+assert.deepEqual(Array.from(H.parseKey('0a:ff', 'hex')), [10, 255])
+assert.deepEqual(H.parseChecksumList('abcdef0123456789  file.bin\nSHA256 (x.iso) = ABCDEF0123456789\n'), [{ name: 'file.bin', hash: 'abcdef0123456789' }, { algo: 'SHA256', name: 'x.iso', hash: 'abcdef0123456789' }])
+assert.ok(H.algosForLength(64).includes('SHA-256'))
+console.log('hashes ok')

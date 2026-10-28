@@ -153,7 +153,8 @@ export function rotateRGBA(src: Uint8ClampedArray, w: number, h: number, deg: 0 
   if (deg === 0) return { rgba: src.slice(), width: w, height: h }
   const nw = deg === 180 ? w : h, nh = deg === 180 ? h : w
   const out = new Uint8ClampedArray(src.length)
-  const s32 = new Uint32Array(src.buffer, src.byteOffset, w * h), o32 = new Uint32Array(out.buffer)
+  const al = src.byteOffset % 4 ? src.slice() : src
+  const s32 = new Uint32Array(al.buffer, al.byteOffset, w * h), o32 = new Uint32Array(out.buffer)
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     let nx: number, ny: number
     if (deg === 90) { nx = h - 1 - y; ny = x } else if (deg === 180) { nx = w - 1 - x; ny = h - 1 - y } else { nx = y; ny = w - 1 - x }
@@ -164,7 +165,8 @@ export function rotateRGBA(src: Uint8ClampedArray, w: number, h: number, deg: 0 
 
 export function flipRGBA(src: Uint8ClampedArray, w: number, h: number, horizontal: boolean) {
   const out = new Uint8ClampedArray(src.length)
-  const s32 = new Uint32Array(src.buffer, src.byteOffset, w * h), o32 = new Uint32Array(out.buffer)
+  const al = src.byteOffset % 4 ? src.slice() : src
+  const s32 = new Uint32Array(al.buffer, al.byteOffset, w * h), o32 = new Uint32Array(out.buffer)
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const nx = horizontal ? w - 1 - x : x, ny = horizontal ? y : h - 1 - y
     o32[ny * w + nx] = s32[y * w + x]

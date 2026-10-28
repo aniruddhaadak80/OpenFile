@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Sheet as SheetIcon, Download, Rows3, Columns3, ScanText } from 'lucide-react'
 import { Button, Dropzone, ToolGrid, Label, Segmented, Slider, Switch, Input, Progress, ErrorNote, ResultCard, Badge, Empty, useJob, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
-import { baseName, downloadBlob, parsePageRanges, MIME } from '@/lib/files'
+import { baseName, downloadBlob, parsePageRanges, MIME, zipFiles } from '@/lib/files'
 import { FileBar, Pill, Reveal, Stat, pdfError, useDebounced } from './_conv/shared'
 import { openPdfRich, pageLayout } from './_conv/pdfOpen'
 import { groupLines, toGrid, parseNumberish, type Line } from './_conv/pdfText'
@@ -20,6 +20,8 @@ export default function PdfToExcel() {
   const [range, setRange] = useState('')
   const [view, setView] = useState(0)
   const [result, setResult] = useState<Blob | null>(null)
+  const [format, setFormat] = useState<'xlsx' | 'ods' | 'csv'>('xlsx')
+  const [delim, setDelim] = useState<',' | ';' | '\t'>(',')
   const load = useJob()
   const conv = useJob()
   const gap = useDebounced(cellGap, 150)
@@ -41,7 +43,7 @@ export default function PdfToExcel() {
 
   const included = useMemo(() => (range.trim() ? parsePageRanges(range, pages.length) : pages.map((_, i) => i)), [range, pages])
   const grids = useMemo(() => pages.map((p) => toGrid(p.lines, p.width, { cellGap: gap })), [pages, gap])
-  useEffect(() => setResult(null), [grids, numbers, layout, range])
+  useEffect(() => setResult(null), [grids, numbers, layout, range, format, delim])
   const cur = grids[view] ?? []
   const cols = Math.max(0, ...cur.map((r) => r.length))
   const totalRows = included.reduce((s, i) => s + (grids[i]?.length ?? 0), 0)
@@ -55,6 +57,18 @@ export default function PdfToExcel() {
 
   const exportXlsx = () => conv.run(async () => {
     if (!included.length) throw new Error('No pages selected.')
+    if (format === 'csv') {
+      const Papa = (await import('papaparse')).default
+      const csv = (rows: string[][]) => '\ufeff' + Papa.unparse(rows, { delimiter: delim })
+      const used = included.filter((i) => grids[i]?.length)
+      if (!used.length) throw new Error('No text found on the selected pages (scanned PDF?). Try OCR PDF first.')
+      if (layout === 'single' || used.length === 1) {
+        const all: string[][] = []
+        for (const i of used) { if (all.length) all.push([]); all.push(...grids[i]) }
+        setResult(new Blob([csv(all)], { type: 'text/csv;charset=utf-8' }))
+      } else setResult(await zipFiles(used.map((i) => ({ name: `${baseName(file!.name)}-page-${i + 1}.csv`, data: csv(grids[i]) }))))
+      toast('CSV ready', 'success'); return
+    }
     const XLSX = await import('xlsx')
     const wb = XLSX.utils.book_new()
     const mkSheet = (rows: string[][]) => {
@@ -71,8 +85,8 @@ export default function PdfToExcel() {
       for (const i of included) if (grids[i]?.length) XLSX.utils.book_append_sheet(wb, mkSheet(grids[i]), `Page ${i + 1}`)
     }
     if (!wb.SheetNames.length) throw new Error('No text found on the selected pages (scanned PDF?). Try OCR PDF first.')
-    const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' })
-    setResult(new Blob([buf], { type: MIME.xlsx }))
+    const buf = XLSX.write(wb, { type: 'array', bookType: format })
+    setResult(new Blob([buf], { type: format === 'ods' ? 'application/vnd.oasis.opendocument.spreadsheet' : MIME.xlsx }))
     toast('Spreadsheet ready', 'success')
   })
 
@@ -91,7 +105,7 @@ export default function PdfToExcel() {
         main={<>
           {load.busy && <Progress value={load.progress} label="Reading text positions" />}
           <ErrorNote error={load.error} />
-          {result && <Reveal k="r"><ResultCard blob={result} filename={`${baseName(file.name)}.xlsx`} title="Excel workbook ready" onReset={reset} /></Reveal>}
+          {result && <Reveal k="r"><ResultCard blob={result} filename={`${baseName(file.name)}.${format === 'csv' ? (result.type === 'application/zip' ? 'zip' : 'csv') : format}`} title={format === 'csv' ? 'CSV ready' : format === 'ods' ? 'OpenDocument spreadsheet ready' : 'Excel workbook ready'} onReset={reset} /></Reveal>}
           {pages.length > 0 && <>
             <div className="flex flex-wrap items-center gap-1.5">
               {pages.map((_, i) => <Pill key={i} active={i === view} onClick={() => setView(i)}><span className={cn(!included.includes(i) && 'line-through opacity-50')}>Page {i + 1}</span>{grids[i]?.length ? '' : ' ·∅'}</Pill>)}
@@ -126,12 +140,14 @@ export default function PdfToExcel() {
             <Slider label={<span className="inline-flex items-center gap-1.5"><Columns3 className="size-3.5" />Column split sensitivity</span>} value={cellGap} onChange={setCellGap} min={0.4} max={4} step={0.1} suffix="×" />
             <p className="mt-1 text-[11px] text-muted">Lower = split cells on smaller gaps (more columns). Raise it if words get split into separate columns.</p>
           </div>
+          <div><Label>Output format</Label><Segmented value={format} onChange={setFormat} options={[{ value: 'xlsx', label: 'Excel (XLSX)' }, { value: 'csv', label: 'CSV' }, { value: 'ods', label: 'ODS' }]} /></div>
+          {format === 'csv' && <div><Label>CSV separator</Label><Segmented value={delim} onChange={setDelim} options={[{ value: ',', label: 'Comma' }, { value: ';', label: 'Semicolon' }, { value: '\t', label: 'Tab' }]} /><p className="mt-1 text-[11px] text-muted">One sheet per page gives a ZIP with one CSV per page.</p></div>}
           <div><Label>Workbook layout</Label><Segmented value={layout} onChange={setLayout} options={[{ value: 'per-page', label: 'One sheet per page' }, { value: 'single', label: 'Single sheet' }]} /></div>
           <div><Label hint={range ? `${included.length} pages` : 'all'}>Pages</Label><Input value={range} onChange={(e) => setRange(e.target.value)} placeholder="e.g. 1-3, 5 (blank = all)" /></div>
           <Switch checked={numbers} onChange={setNumbers} label={<span className="inline-flex items-center gap-1.5"><Rows3 className="size-4 text-muted" />Convert numbers ($1,234.50 → 1234.5)</span>} />
           {conv.busy && <Progress value={0.6} label="Building workbook" />}
           <ErrorNote error={conv.error} />
-          <Button size="lg" className="w-full" loading={conv.busy} disabled={!pages.length || load.busy} icon={<SheetIcon className="size-5" />} onClick={exportXlsx}>Export to Excel</Button>
+          <Button size="lg" className="w-full" loading={conv.busy} disabled={!pages.length || load.busy} icon={<SheetIcon className="size-5" />} onClick={exportXlsx}>{format === 'csv' ? 'Export to CSV' : format === 'ods' ? 'Export to ODS' : 'Export to Excel'}</Button>
         </>}
       />
     </div>

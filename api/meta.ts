@@ -1,4 +1,4 @@
-// GET /api/meta?url=... — returns title/description/og:image for link previews (used by QR & tools)
+// GET /api/meta?url=...: returns title/description/og:image for link previews (used by QR & tools)
 export default async function handler(req: any, res: any) {
   try {
     const u = new URL(String(req.query?.url || ''))

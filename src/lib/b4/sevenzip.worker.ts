@@ -52,12 +52,18 @@ function explain(log: string[]): string {
   return line ? 'The archive engine reported: ' + line.slice(0, 200) : 'The archive engine failed.'
 }
 
+/** Run 7z. Exit codes are not reliable in this build, so errors are read from the log. */
 function call(sz: any, args: string[], log: string[]): number {
-  try { sz.callMain(args); return 0 } catch (e: any) {
-    if (typeof e === 'number') return e
-    if (e && typeof e.status === 'number') return e.status
-    log.push(String(e?.message || e)); return 2
+  const before = log.length
+  let code = 0
+  try { const r = sz.callMain(args); if (typeof r === 'number') code = r } catch (e: any) {
+    if (typeof e === 'number') code = e
+    else if (e && typeof e.status === 'number') code = e.status
+    else { log.push(String(e?.message || e)); code = 2 }
   }
+  const fresh = log.slice(before).join('\n')
+  if (!code && /ERROR:|Can ?not open|Wrong password|is not archive|Unexpected end|Headers Error|CRC Failed|Data Error/i.test(fresh)) code = 2
+  return code
 }
 
 self.onmessage = async (ev: MessageEvent<Job>) => {
@@ -75,7 +81,7 @@ self.onmessage = async (ev: MessageEvent<Job>) => {
       let files: InFile[] = []
       try { files = walk(FS, '/out') } catch { files = [] }
       const err = code !== 0 ? explain(log) : ''
-      if (err === 'PASSWORD') { post({ id: job.id, type: 'error', code: 'PASSWORD', message: job.password ? 'That password is not right. Try again.' : 'This archive is protected with a password.' }); return }
+      if (err === 'PASSWORD') { files = []; post({ id: job.id, type: 'error', code: 'PASSWORD', message: job.password ? 'That password is not right. Try again.' : 'This archive is protected with a password.' }); return }
       if (!files.length && code !== 0) throw new Error(err)
       post({ id: job.id, type: 'done', files, warning: code !== 0 ? err : undefined }, files.map((f) => f.data.buffer as ArrayBuffer))
       return

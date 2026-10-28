@@ -28,7 +28,11 @@ export default function BlogPost() {
   useEffect(() => {
     if (!post) return
     setPageMeta(`${post.title} | OpenFile Blog`, post.description)
-    setJsonLd('post', { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description: post.description, datePublished: post.date, author: { '@type': 'Person', name: AUTHOR.name, url: AUTHOR.links[0].url }, keywords: post.tags.join(', ') })
+    const home = location.origin + import.meta.env.BASE_URL
+    setJsonLd('post', { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'BlogPosting', headline: post.title, description: post.description, datePublished: post.date, dateModified: post.date, url: location.origin + location.pathname, mainEntityOfPage: location.origin + location.pathname, image: `${home}og.png`, wordCount: post.minutes * 220, author: { '@type': 'Person', name: AUTHOR.name, url: AUTHOR.links[0].url, sameAs: AUTHOR.links.map((l) => l.url) }, publisher: { '@type': 'Organization', name: 'OpenFile', logo: { '@type': 'ImageObject', url: `${home}icon-512.png` } }, keywords: post.tags.join(', ') },
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: home }, { '@type': 'ListItem', position: 2, name: 'Blog', item: home + 'blog' }, { '@type': 'ListItem', position: 3, name: post.title, item: location.origin + location.pathname }] },
+    ] })
     return () => setJsonLd('post', null)
   }, [slug])
 

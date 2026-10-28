@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ScanText, Languages, FileDown, FileText, Square, CheckCircle2, Loader2, Clock, X, Sparkles, Eye, EyeOff, ImagePlus } from 'lucide-react'
+import { ScanText, Languages, FileDown, FileText, Table2, Square, CheckCircle2, Loader2, Clock, X, Sparkles, Eye, EyeOff, ImagePlus } from 'lucide-react'
 import { Button, Dropzone, FileChip, Label, Input, Switch, Segmented, Spinner, ErrorNote, Progress, CopyButton, cn, Badge } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { openPdfJs, renderPage, pdfBlob, type PdfJsDoc } from '@/lib/pdf'
@@ -12,7 +12,20 @@ const LANGS = [
   { code: 'fra', label: 'Français' }, { code: 'deu', label: 'Deutsch' }, { code: 'por', label: 'Português' }, { code: 'ita', label: 'Italiano' },
   { code: 'jpn', label: '日本語 Japanese' }, { code: 'chi_sim', label: '简体中文 Chinese' }, { code: 'ara', label: 'العربية Arabic' }, { code: 'rus', label: 'Русский Russian' },
 ]
-const NON_LATIN = new Set(['hin', 'ben', 'jpn', 'chi_sim', 'ara', 'rus'])
+// More Tesseract traineddata languages, shown behind a search box. Each is downloaded once on first use.
+const MORE_LANGS = [
+  ['tam', 'தமிழ் Tamil'], ['tel', 'తెలుగు Telugu'], ['kan', 'ಕನ್ನಡ Kannada'], ['mal', 'മലയാളം Malayalam'], ['mar', 'मराठी Marathi'], ['guj', 'ગુજરાતી Gujarati'],
+  ['pan', 'ਪੰਜਾਬੀ Punjabi'], ['ori', 'ଓଡ଼ିଆ Odia'], ['urd', 'اردو Urdu'], ['nep', 'नेपाली Nepali'], ['sin', 'සිංහල Sinhala'], ['san', 'संस्कृतम् Sanskrit'],
+  ['chi_tra', '繁體中文 Chinese (Traditional)'], ['kor', '한국어 Korean'], ['tha', 'ไทย Thai'], ['vie', 'Tiếng Việt Vietnamese'], ['mya', 'မြန်မာ Burmese'], ['khm', 'ខ្មែរ Khmer'],
+  ['ind', 'Bahasa Indonesia'], ['msa', 'Bahasa Melayu'], ['tgl', 'Tagalog'], ['tur', 'Türkçe Turkish'], ['fas', 'فارسی Persian'], ['heb', 'עברית Hebrew'],
+  ['ell', 'Ελληνικά Greek'], ['ukr', 'Українська Ukrainian'], ['bul', 'Български Bulgarian'], ['srp', 'Српски Serbian'], ['bel', 'Беларуская Belarusian'], ['kaz', 'Қазақ Kazakh'],
+  ['pol', 'Polski Polish'], ['ces', 'Čeština Czech'], ['slk', 'Slovenčina Slovak'], ['slv', 'Slovenščina Slovenian'], ['hrv', 'Hrvatski Croatian'], ['hun', 'Magyar Hungarian'],
+  ['ron', 'Română Romanian'], ['nld', 'Nederlands Dutch'], ['swe', 'Svenska Swedish'], ['dan', 'Dansk Danish'], ['nor', 'Norsk Norwegian'], ['fin', 'Suomi Finnish'],
+  ['est', 'Eesti Estonian'], ['lav', 'Latviešu Latvian'], ['lit', 'Lietuvių Lithuanian'], ['isl', 'Íslenska Icelandic'], ['cat', 'Català Catalan'], ['eus', 'Euskara Basque'],
+  ['glg', 'Galego Galician'], ['gle', 'Gaeilge Irish'], ['cym', 'Cymraeg Welsh'], ['afr', 'Afrikaans'], ['swa', 'Kiswahili Swahili'], ['sqi', 'Shqip Albanian'],
+  ['aze', 'Azərbaycan Azerbaijani'], ['uzb', 'Oʻzbek Uzbek'], ['amh', 'አማርኛ Amharic'], ['kat', 'ქართული Georgian'], ['hye', 'Հայերեն Armenian'], ['lat', 'Latina Latin'],
+].map(([code, label]) => ({ code, label }))
+const NON_LATIN = new Set(['hin', 'ben', 'jpn', 'chi_sim', 'ara', 'rus', 'tam', 'tel', 'kan', 'mal', 'mar', 'guj', 'pan', 'ori', 'urd', 'nep', 'sin', 'san', 'chi_tra', 'kor', 'tha', 'mya', 'khm', 'fas', 'heb', 'ell', 'ukr', 'bul', 'srp', 'bel', 'kaz', 'amh', 'kat', 'hye'])
 type Quality = 'fast' | 'balanced' | 'best'
 const SCALE: Record<Quality, number> = { fast: 1.5, balanced: 2.2, best: 3 }
 
@@ -36,6 +49,9 @@ export default function OcrPdf() {
   const [pdfOut, setPdfOut] = useState<{ blob: Blob; warn: string | null } | null>(null)
   const [view, setView] = useState<number | null>(null)
   const [boxes, setBoxes] = useState(true)
+  const [langQuery, setLangQuery] = useState('')
+  const [outView, setOutView] = useState<'text' | 'table'>('text')
+  const [tables, setTables] = useState<{ label: string; rows: string[][] }[]>([])
   const cancel = useRef<{ stop: boolean; worker?: any }>({ stop: false })
 
   const total = src?.kind === 'pdf' ? src.doc.numPages : src?.files.length ?? 0
@@ -149,6 +165,31 @@ export default function OcrPdf() {
   const done = pages.filter((p) => p.status === 'done')
   const avgConf = done.length ? done.reduce((n, p) => n + p.conf, 0) / done.length : 0
   const viewed = view !== null ? pages.find((p) => p.index === view) : null
+  useEffect(() => {
+    if (running || !done.length) { setTables([]); return }
+    let alive = true
+    import('./_b1/ocrTable').then(({ wordsToTable }) => { if (alive) setTables(done.map((p) => ({ label: p.label, rows: wordsToTable(p.words) })).filter((t) => t.rows.length)) })
+    return () => { alive = false }
+  }, [pages, running])
+  async function downloadCsv() {
+    const { toCsv } = await import('./_b1/ocrTable')
+    const csv = tables.map((t) => (tables.length > 1 ? toCsv([[t.label]]) + '\r\n' : '') + toCsv(t.rows)).join('\r\n\r\n')
+    downloadBlob('\ufeff' + csv, `${baseName(name)}-tables.csv`, 'text/csv;charset=utf-8')
+  }
+  async function downloadXlsx() {
+    const XLSX = await import('xlsx')
+    const wb = XLSX.utils.book_new()
+    const used = new Set<string>()
+    tables.forEach((t, i) => {
+      let n = t.label.replace(/[\\/?*[\]:]/g, ' ').slice(0, 28) || `Page ${i + 1}`
+      while (used.has(n)) n = n.slice(0, 25) + ' ' + (i + 1)
+      used.add(n)
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(t.rows), n)
+    })
+    const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' })
+    downloadBlob(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${baseName(name)}-tables.xlsx`)
+  }
+  const langMatches = langQuery.trim() ? MORE_LANGS.filter((l) => l.label.toLowerCase().includes(langQuery.trim().toLowerCase()) || l.code.startsWith(langQuery.trim().toLowerCase())) : []
 
   if (!src) return (
     <div className="space-y-3">
@@ -165,7 +206,7 @@ export default function OcrPdf() {
             <div className="space-y-3">
               <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-xl shadow-accent/30"><ScanText className="size-7" /></div>
               <div className="font-semibold">{name} · {total} page{total === 1 ? '' : 's'}</div>
-              <p className="max-w-md text-sm text-muted">Choose the document languages on the right, then start. You'll get copyable text, a .txt file and a searchable PDF with an invisible text layer.</p>
+              <p className="max-w-md text-sm text-muted">Choose the document languages on the right, then start. You get copyable text, a .txt file, tables as CSV or Excel, and a searchable PDF with an invisible text layer. Photos and scans as images work too.</p>
             </div>
           </div>
         ) : (
@@ -223,7 +264,27 @@ export default function OcrPdf() {
                     <Button size="sm" variant="outline" icon={<FileText className="size-4" />} onClick={() => downloadBlob(fullText, `${baseName(name)}-ocr.txt`, 'text/plain;charset=utf-8')}>.txt</Button>
                   </div>
                 </div>
-                <textarea readOnly value={fullText} className="h-72 w-full resize-y rounded-xl border border-border bg-surface-2/50 p-3 font-mono text-[13px] leading-relaxed text-fg outline-none scrollbar-thin" dir="auto" />
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Segmented value={outView} onChange={setOutView} options={[{ value: 'text', label: 'Text' }, { value: 'table', label: 'Table' }]} />
+                  {outView === 'table' && tables.length > 0 && <div className="flex gap-2">
+                    <Button size="sm" variant="outline" icon={<Table2 className="size-4" />} onClick={downloadCsv}>.csv</Button>
+                    <Button size="sm" variant="outline" icon={<Table2 className="size-4" />} onClick={downloadXlsx}>.xlsx</Button>
+                  </div>}
+                </div>
+                {outView === 'text' ? <textarea readOnly value={fullText} className="h-72 w-full resize-y rounded-xl border border-border bg-surface-2/50 p-3 font-mono text-[13px] leading-relaxed text-fg outline-none scrollbar-thin" dir="auto" /> : (
+                  <div className="max-h-96 space-y-4 overflow-auto rounded-xl border border-border bg-surface-2/50 p-3 scrollbar-thin">
+                    {tables.length === 0 && <p className="text-sm text-muted">No table layout found in the recognised text.</p>}
+                    {tables.map((t, ti) => (
+                      <div key={ti} className="space-y-1.5">
+                        {tables.length > 1 && <div className="text-xs font-semibold text-muted">{t.label}</div>}
+                        <table className="w-full border-collapse text-xs" dir="auto">
+                          <tbody>{t.rows.slice(0, 200).map((r, ri) => <tr key={ri}>{r.map((c, ci) => <td key={ci} className="border border-border px-1.5 py-1 align-top">{c}</td>)}</tr>)}</tbody>
+                        </table>
+                      </div>
+                    ))}
+                    <p className="text-xs text-muted">Columns are found from the gaps between words. Check the result, and use Best accuracy for small print.</p>
+                  </div>
+                )}
               </motion.div>
             )}
           </>
@@ -242,10 +303,14 @@ export default function OcrPdf() {
           <div>
             <Label hint={`${langs.length} selected`}><span className="inline-flex items-center gap-1.5"><Languages className="size-3.5" />Languages</span></Label>
             <div className="flex flex-wrap gap-1.5">
-              {LANGS.map((l) => (
+              {[...LANGS, ...MORE_LANGS.filter((l) => langs.includes(l.code))].map((l) => (
                 <button key={l.code} type="button" disabled={running} onClick={() => toggleLang(l.code)} className={cn('rounded-lg border px-2 py-1 text-xs transition cursor-pointer disabled:opacity-50', langs.includes(l.code) ? 'border-accent bg-accent/10 font-medium text-fg' : 'border-border text-muted hover:border-accent/40')}>{l.label}</button>
               ))}
             </div>
+            <Input className="mt-2 !h-8 text-xs" value={langQuery} onChange={(e) => setLangQuery(e.target.value)} placeholder={`Find another language (${MORE_LANGS.length} more)`} aria-label="Find another OCR language" disabled={running} />
+            {langMatches.length > 0 && <div className="mt-1.5 flex max-h-32 flex-wrap gap-1.5 overflow-auto scrollbar-thin">
+              {langMatches.map((l) => <button key={l.code} type="button" disabled={running} onClick={() => { toggleLang(l.code); setLangQuery('') }} className={cn('rounded-lg border px-2 py-1 text-xs transition cursor-pointer disabled:opacity-50', langs.includes(l.code) ? 'border-accent bg-accent/10 font-medium text-fg' : 'border-border text-muted hover:border-accent/40')}>{l.label}</button>)}
+            </div>}
             {langs.length > 2 && <p className="mt-1.5 text-xs text-warn">Each extra language slows recognition, pick only those in the document.</p>}
           </div>
           <div>

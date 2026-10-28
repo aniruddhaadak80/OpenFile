@@ -8,7 +8,17 @@ import { takeHandoff } from '@/lib/handoff'
 export const cn = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
 
 type BtnProps = React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'; size?: 'sm' | 'md' | 'lg'; loading?: boolean; icon?: React.ReactNode }
-export function Button({ variant = 'primary', size = 'md', loading, icon, className, children, disabled, ...rest }: BtnProps) {
+/** Press ripple: a span that grows from the pointer and fades (transform and opacity only). */
+function ripple(e: React.PointerEvent<HTMLElement>) {
+  if (typeof document === 'undefined' || document.documentElement.classList.contains('reduce-motion')) return
+  const el = e.currentTarget, r = el.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2.2
+  const s = document.createElement('span')
+  s.className = 'ripple'; s.setAttribute('aria-hidden', 'true')
+  s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`
+  el.appendChild(s); setTimeout(() => s.remove(), 650)
+}
+
+export function Button({ variant = 'primary', size = 'md', loading, icon, className, children, disabled, onPointerDown, ...rest }: BtnProps) {
   const v = {
     primary: 'bg-gradient-brand text-on-accent font-semibold shadow-lg shadow-accent/25 hover:brightness-110 hover:shadow-accent/40',
     secondary: 'bg-surface-2 text-fg hover:bg-border',
@@ -18,7 +28,7 @@ export function Button({ variant = 'primary', size = 'md', loading, icon, classN
   }[variant]
   const s = { sm: 'h-8 px-3 text-xs', md: 'h-10 px-4 text-sm', lg: 'h-12 px-6 text-base' }[size]
   return (
-    <button {...rest} disabled={disabled || loading} className={cn('inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none', v, s, className)}>
+    <button {...rest} onPointerDown={(e) => { ripple(e); onPointerDown?.(e) }} disabled={disabled || loading} className={cn('btn-fx inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none', v, s, className)}>
       {loading ? <Loader2 className="size-4 animate-spin" /> : icon}
       {children}
     </button>
@@ -130,14 +140,18 @@ export function Dropzone({ onFiles, accept, multiple = false, label, sub, compac
       onClick={() => ref.current?.click()}
       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) { e.preventDefault(); ref.current?.click() } }}
       onDragOver={(e) => { e.preventDefault(); setOver(true) }}
-      onDragLeave={() => setOver(false)}
+      onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOver(false) }}
       onDrop={(e) => { e.preventDefault(); setOver(false); handle(e.dataTransfer.files) }}
       className={cn('group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center transition-all outline-none focus-visible:ring-4 focus-visible:ring-accent/25',
-        over ? 'border-accent bg-accent/10 scale-[1.01]' : 'border-border bg-surface hover:border-accent/60 hover:bg-accent/5', compact ? 'gap-2 p-5' : 'gap-4 p-10 sm:p-14', className)}
+        over ? 'dz-active border-accent bg-accent/10 scale-[1.01]' : 'border-border bg-surface hover:border-accent/60 hover:bg-accent/5', compact ? 'gap-2 p-5' : 'gap-4 p-10 sm:p-14', className)}
     >
+      <span className="dz-glow" aria-hidden="true" />
       <input ref={ref} type="file" hidden accept={accept} multiple={multiple} onChange={(e) => { handle(e.target.files); e.target.value = '' }} />
-      <div className={cn('grid place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-xl shadow-accent/30 transition group-hover:scale-110', compact ? 'size-10' : 'size-16')}><Upload className={compact ? 'size-5' : 'size-7'} /></div>
-      <div>
+      <div className="relative">
+        {!compact && [1, 2, 3].map((i) => <span key={i} aria-hidden="true" className={`dz-file dz-file-${i} absolute left-1/2 top-1/2 -ml-3.5 -mt-4 grid h-8 w-7 place-items-center rounded-md border border-border bg-surface text-[7px] font-bold shadow-lg`} style={{ color: ['#14B8A6', '#F5A524', '#38BDF8'][i - 1] }}>{['IMG', 'PDF', 'MP4'][i - 1]}</span>)}
+        <div className={cn('relative grid place-items-center rounded-2xl bg-gradient-brand text-on-accent shadow-xl shadow-accent/30 transition group-hover:scale-110', over && 'scale-110 -translate-y-1', compact ? 'size-10' : 'size-16')}><Upload className={cn(compact ? 'size-5' : 'size-7', over && 'animate-bounce')} /></div>
+      </div>
+      <div className="relative">
         <div className={cn('font-semibold', compact ? 'text-sm' : 'text-lg')}>{label ?? (multiple ? 'Drop files here or click to browse' : 'Drop a file here or click to browse')}</div>
         <div className="mt-1 text-xs text-muted">{sub ?? 'Files never leave your device, processed 100% in your browser.'}</div>
       </div>

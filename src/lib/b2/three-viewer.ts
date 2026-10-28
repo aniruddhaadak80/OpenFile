@@ -87,13 +87,14 @@ export class Viewer {
   }
   setExposure(v: number) { this.renderer.toneMappingExposure = v }
 
-  setObject(obj: THREE.Object3D, clips: THREE.AnimationClip[] = []) {
+  setObject(obj: THREE.Object3D, clips: THREE.AnimationClip[] = [], refit = true) {
+    const had = !!this.root
     this.clear()
     this.root = obj
     this.scene.add(obj)
     this.clips = clips
     if (clips.length) { this.mixer = new THREE.AnimationMixer(obj) }
-    this.fit()
+    if (refit || !had) this.fit()
     if (this.wire) this.setWireframe(true)
   }
 

@@ -2,17 +2,12 @@ import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { AlertTriangle } from 'lucide-react'
 import { Card, Segmented, Slider, CopyButton, Switch, cn } from '@/components/ui'
+import { parseBase, toBase, toRoman, fromRoman } from '@/lib/b5/numbase'
 
-const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz'
+const ROMAN_R = -1
 function parseBig(s: string, radix: number): bigint {
-  let t = s.trim().toLowerCase().replace(/[\s_']/g, '')
-  let neg = false
-  if (t.startsWith('-')) { neg = true; t = t.slice(1) } else if (t.startsWith('+')) t = t.slice(1)
-  if (radix === 16) t = t.replace(/^0x/, ''); if (radix === 2) t = t.replace(/^0b/, ''); if (radix === 8) t = t.replace(/^0o/, '')
-  if (!t) throw new Error('empty')
-  const R = BigInt(radix); let v = 0n
-  for (const ch of t) { const d = DIGITS.indexOf(ch); if (d < 0 || d >= radix) throw new Error(`“${ch}” is not a valid base-${radix} digit`); v = v * R + BigInt(d) }
-  return neg ? -v : v
+  if (radix === ROMAN_R) return BigInt(fromRoman(s))
+  return parseBase(s, radix)
 }
 const group = (s: string, n: number, sep = ' ') => { const neg = s.startsWith('-'); const b = neg ? s.slice(1) : s; const out = b.replace(new RegExp(`\\B(?=(.{${n}})+$)`, 'g'), sep); return (neg ? '-' : '') + out }
 
@@ -38,10 +33,11 @@ export default function NumberBase() {
 
   const show = (r: number, val: bigint | null) => {
     if (val === null) return ''
-    let s = val.toString(r); if (upper) s = s.toUpperCase()
-    return s
+    return toBase(val, r, upper)
   }
   const fieldVal = (r: number) => (src.r === r ? src.text : show(r, v))
+  const romanVal = src.r === ROMAN_R ? src.text : v === null ? '' : v >= 1n && v <= 3999999n ? toRoman(Number(v)) : ''
+  const romanNote = v === null || src.r === ROMAN_R ? '' : v < 1n ? 'Roman numerals start at 1' : v > 3999999n ? 'Too large for Roman numerals (limit 3,999,999)' : v > 3999n ? 'Uses an overline for thousands (vinculum)' : ''
 
   const bits = unsigned === null ? [] : unsigned.toString(2).padStart(Number(width), '0').split('')
   const flip = (i: number) => { if (unsigned === null) return; const nb = unsigned ^ (1n << BigInt(Number(width) - 1 - i)); setSrc({ r: 10, text: nb.toString() }) }
@@ -70,8 +66,15 @@ export default function NumberBase() {
         <div className="grid gap-3 md:grid-cols-2">
           {FIELDS.map((f) => row(f))}
           <div className={cn('rounded-xl border bg-surface p-3 md:col-span-2', src.r === custom && !FIELDS.some((f) => f.r === custom) ? 'border-accent ring-2 ring-accent/15' : 'border-border')}>
-            <div className="mb-2 flex items-center gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-muted">Custom base</span><Slider value={custom} onChange={setCustom} min={2} max={36} className="flex-1" /><span className="w-8 font-mono text-sm">{custom}</span></div>
-            <input value={fieldVal(custom)} onChange={(e) => setSrc({ r: custom, text: e.target.value })} spellCheck={false} className="w-full bg-transparent font-mono text-[17px] outline-none" placeholder="0" />
+            <div className="mb-2 flex items-center gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-muted">Custom base</span><Slider value={custom} onChange={setCustom} min={2} max={64} className="flex-1" /><span className="w-8 font-mono text-sm">{custom}</span></div>
+            <input value={fieldVal(custom)} onChange={(e) => setSrc({ r: custom, text: e.target.value })} spellCheck={false} aria-label={`Base ${custom}`} className="w-full bg-transparent font-mono text-[17px] outline-none" placeholder="0" />
+            {custom > 36 && <p className="mt-1 text-[11px] text-muted">Above base 36 the case matters: 0-9, A-Z, a-z{custom > 62 ? ', then + and /' : ''}.</p>}
+          </div>
+          <div className={cn('rounded-xl border bg-surface p-3 md:col-span-2', src.r === ROMAN_R ? 'border-accent ring-2 ring-accent/15' : 'border-border')}>
+            <div className="mb-1.5 flex items-center gap-2 text-xs"><span className="font-semibold uppercase tracking-wide text-muted">Roman numerals</span><span className="text-muted/70">I V X L C D M</span>
+              <div className="ml-auto">{romanVal && <CopyButton text={romanVal} label="" variant="ghost" />}</div></div>
+            <input value={romanVal} onChange={(e) => setSrc({ r: ROMAN_R, text: e.target.value })} spellCheck={false} aria-label="Roman numerals" className="w-full bg-transparent font-mono text-[17px] uppercase outline-none" placeholder="MMXXVI" />
+            {romanNote && <p className="mt-1 text-[11px] text-muted">{romanNote}</p>}
           </div>
         </div>
 
@@ -80,7 +83,7 @@ export default function NumberBase() {
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-sm font-semibold">Bit view</span>
               <Segmented value={width} onChange={setWidth} options={['8', '16', '32', '64', '128'].map((w) => ({ value: w as any, label: `${w}-bit` }))} />
-              {overflow && <span className="text-xs text-warn">Value doesn't fit in {width} bits, showing the low {width} bits</span>}
+              {overflow && <span className="text-xs text-warn">Value does not fit in {width} bits, showing the low {width} bits</span>}
             </div>
             <div className="flex flex-wrap gap-x-3 gap-y-2 font-mono">
               {Array.from({ length: Number(width) / 8 }, (_, byte) => (
@@ -92,7 +95,7 @@ export default function NumberBase() {
                         className={cn('grid h-7 w-5 place-items-center rounded text-xs font-semibold transition cursor-pointer', b === '1' ? 'bg-accent text-on-accent shadow-sm shadow-accent/40' : 'bg-surface-2 text-muted hover:bg-border', i === 0 && 'ring-1 ring-warn/60')}>{b}</motion.button>
                     })}
                   </div>
-                  <span className="text-[10px] text-muted">{(Number(width) - 1 - byte * 8)}–{Number(width) - 8 - byte * 8} · 0x{parseInt(bits.slice(byte * 8, byte * 8 + 8).join(''), 2).toString(16).toUpperCase().padStart(2, '0')}</span>
+                  <span className="text-[10px] text-muted">{(Number(width) - 1 - byte * 8)}-{Number(width) - 8 - byte * 8} · 0x{parseInt(bits.slice(byte * 8, byte * 8 + 8).join(''), 2).toString(16).toUpperCase().padStart(2, '0')}</span>
                 </div>
               ))}
             </div>
@@ -115,11 +118,11 @@ export default function NumberBase() {
           <Switch checked={grouped} onChange={setGrouped} label="Show digit grouping" />
           <div className="space-y-1 text-xs text-muted">
             <p>Arbitrary precision, powered by BigInt, so 100+ digit numbers convert exactly.</p>
-            <p>Negative numbers work in every base (with a leading −). Prefixes 0x / 0b / 0o and separators like _ or spaces are accepted.</p>
+            <p>Negative numbers work in every base (with a leading minus). Prefixes 0x / 0b / 0o and separators like _ or spaces are accepted. Any base from 2 to 64, plus Roman numerals.</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {[['255', 10], ['-1', 10], ['deadbeef', 16], ['1010_1010', 2], ['777', 8], ['18446744073709551615', 10]].map(([t, r]) => (
-              <button key={t as string} onClick={() => setSrc({ r: r as number, text: t as string })} className="rounded-lg border border-border px-2 py-1 font-mono text-[11px] text-muted hover:border-accent hover:text-fg">{t as string}<sub className="ml-0.5">{r}</sub></button>
+            {[['255', 10], ['-1', 10], ['deadbeef', 16], ['1010_1010', 2], ['777', 8], ['18446744073709551615', 10], ['MCMXCIV', ROMAN_R]].map(([t, r]) => (
+              <button key={t as string} onClick={() => setSrc({ r: r as number, text: t as string })} className="rounded-lg border border-border px-2 py-1 font-mono text-[11px] text-muted hover:border-accent hover:text-fg">{t as string}{r !== ROMAN_R && <sub className="ml-0.5">{r}</sub>}</button>
             ))}
           </div>
         </Card>

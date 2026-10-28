@@ -10,7 +10,10 @@ import { fmtTime, stamp, useMediaJob, useObjectUrl } from '@/tools/video/_media/
 import { JobPanel, Note, Reveal } from '@/tools/video/_media/ui'
 
 interface Item { id: string; file: File; buffer?: AudioBuffer; error?: string }
-type Fmt = 'wav' | 'mp3'
+type Fmt = 'wav' | 'mp3' | 'm4a' | 'ogg' | 'flac'
+type Curve = 'linear' | 'equal'
+/** Equal-power fade curve (sin/cos), smoother than a straight line for music. */
+export const fadeCurve = (dir: 'in' | 'out', level: number, n = 64) => Float32Array.from({ length: n }, (_, i) => { const x = i / (n - 1); return level * (dir === 'in' ? Math.sin((x * Math.PI) / 2) : Math.cos((x * Math.PI) / 2)) })
 
 function MiniWave({ buffer }: { buffer: AudioBuffer }) {
   const ref = useRef<HTMLCanvasElement>(null)
@@ -41,6 +44,7 @@ export default function AudioMerger() {
   const [mode, setMode] = useState<'gap' | 'crossfade'>('gap')
   const [gap, setGap] = useState(0)
   const [xfade, setXfade] = useState(2)
+  const [curve, setCurve] = useState<Curve>('equal')
   const [norm, setNorm] = useState(false)
   const [fmt, setFmt] = useState<Fmt>('wav')
   const [br, setBr] = useState('192')
@@ -73,7 +77,7 @@ export default function AudioMerger() {
   const onDragEnd = (e: DragEndEvent) => { const { active, over } = e; if (over && active.id !== over.id) { setItems((l) => arrayMove(l, l.findIndex((x) => x.id === active.id), l.findIndex((x) => x.id === over.id))); setResult(null) } }
 
   const ready = items.filter((x) => x.buffer)
-  const cf = mode === 'crossfade' ? Math.min(xfade, ...ready.map((x) => x.buffer!.duration / 2)) : 0
+  const cf = mode === 'crossfade' ? Math.max(0, Math.min(xfade, ...ready.map((x) => x.buffer!.duration / 2 - 0.02))) : 0
   const gp = mode === 'gap' ? gap : 0
   const total = ready.reduce((a, x, i) => a + x.buffer!.duration + (i ? gp - cf : 0), 0)
 
@@ -91,14 +95,14 @@ export default function AudioMerger() {
       const level = norm ? Math.min(4, 0.89 / (peakOf(b) || 1)) : 1
       if (i > 0) t += gp - cf
       g.gain.setValueAtTime(level, 0)
-      if (cf > 0 && i > 0) { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(level, t + cf) }
-      if (cf > 0 && i < ready.length - 1) { g.gain.setValueAtTime(level, t + b.duration - cf); g.gain.linearRampToValueAtTime(0, t + b.duration) }
+      if (cf > 0 && i > 0) { if (curve === 'equal') g.gain.setValueCurveAtTime(fadeCurve('in', level), t, cf); else { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(level, t + cf) } }
+      if (cf > 0 && i < ready.length - 1) { if (curve === 'equal') g.gain.setValueCurveAtTime(fadeCurve('out', level), t + b.duration - cf, cf); else { g.gain.setValueAtTime(level, t + b.duration - cf); g.gain.linearRampToValueAtTime(0, t + b.duration) } }
       s.connect(g).connect(ctx.destination); s.start(t)
       t += b.duration
     })
     const rendered = await ctx.startRendering()
     setProgress(fmt === 'wav' ? 0.9 : 0.3)
-    setLabel(fmt === 'wav' ? 'Encoding WAV…' : 'Encoding MP3…')
+    setLabel(`Encoding ${fmt.toUpperCase()}…`)
     const blob = await encodeBuffer(rendered, fmt, +br, (p) => setProgress(0.3 + p * 0.7))
     setResult(blob)
   })
@@ -124,10 +128,10 @@ export default function AudioMerger() {
         </>}
         side={<>
           <div><Label>Transition</Label><Segmented value={mode} onChange={setMode} options={[{ value: 'gap', label: 'Gap / back-to-back' }, { value: 'crossfade', label: 'Crossfade' }]} /></div>
-          {mode === 'gap' ? <Slider label="Silence between tracks" value={gap} onChange={setGap} min={0} max={10} step={0.5} suffix=" s" /> : <Slider label="Crossfade length" value={xfade} onChange={setXfade} min={0.5} max={10} step={0.5} suffix=" s" />}
+          {mode === 'gap' ? <Slider label="Silence between tracks" value={gap} onChange={setGap} min={0} max={10} step={0.5} suffix=" s" /> : <><Slider label="Crossfade length" value={xfade} onChange={setXfade} min={0.5} max={10} step={0.5} suffix=" s" /><div><Label>Fade shape</Label><Segmented value={curve} onChange={setCurve} options={[{ value: 'equal', label: 'Smooth (equal power)' }, { value: 'linear', label: 'Linear' }]} /><p className="mt-1 text-xs text-muted">Smooth keeps the loudness steady through the blend, which suits music. Linear dips slightly in the middle.</p></div></>}
           <div><Switch checked={norm} onChange={setNorm} label="Even out volume" /><p className="mt-1 text-xs text-muted">Peak-normalizes each track so none is much quieter.</p></div>
-          <div><Label>Output</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'wav', label: 'WAV' }, { value: 'mp3', label: 'MP3' }]} /></div>
-          {fmt === 'mp3' && <div><Label>Bitrate</Label><Segmented value={br} onChange={setBr} options={['128', '192', '256', '320'].map((v) => ({ value: v, label: v }))} /></div>}
+          <div><Label>Output</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'wav', label: 'WAV' }, { value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A' }, { value: 'ogg', label: 'OGG' }, { value: 'flac', label: 'FLAC' }]} /></div>
+          {(fmt === 'mp3' || fmt === 'm4a' || fmt === 'ogg') && <div><Label>Bitrate</Label><Segmented value={br} onChange={setBr} options={['128', '192', '256', '320'].map((v) => ({ value: v, label: v }))} /></div>}
           <Button size="lg" className="w-full" icon={<ListMusic className="size-5" />} onClick={merge} loading={job.busy} disabled={ready.length < 2 || ready.length !== items.filter((x) => !x.error).length}>Merge {ready.length} tracks</Button>
           <JobPanel job={job} onRetry={merge} />
           {items.some((x) => x.error) && <Note tone="warn">Tracks that couldn't be decoded will be skipped.</Note>}

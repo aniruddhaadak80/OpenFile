@@ -597,6 +597,7 @@ def load_registry(path=None):
     for t in tools:
         if t['slug'] and t['name'] and t['category'] and t['slug'] not in seen:
             t['desc'] = t['desc'] or t['name']
+            t['name'] = t['name'].replace('⇄', '↔')   # the brand fonts have no glyph for ⇄
             seen.add(t['slug']); res.append(t)
     return res
 
@@ -889,7 +890,11 @@ def loudnorm_two_pass(src, dst, I=-14, TP=-1.0, LRA=11, extra=()):
 
 # ----------------------------------------------------------------------------- TTS
 PRON = [
-    (r'⇄', ' to and from '), (r'→', ' to '), (r'(\d)\s*×', r'\1 times'), (r'×', 'x'),
+    (r'⇄', ' to and from '), (r'↔', ' to and from '), (r'→', ' to '), (r'(\d)\s*×', r'\1 times'), (r'×', 'x'),
+    (r'(\d+)\s*KB\b', r'\1 kilobytes'), (r'(\d+)\s*MB\b', r'\1 megabytes'), (r'@font-face', 'font face'),
+    (r'\bWOFF2\b', 'woff 2'), (r'\bWOFF\b', 'woff'), (r'\b[Gg][Ll][Tt][Ff]\b', 'G L T F'), (r'\bSVGZ\b', 'S V G Z'),
+    (r'\bZ-up\b', 'Z up'), (r'\bJPEG\b', 'jay peg'), (r'\bTIFF\b', 'tiff'), (r'\bRAW\b', 'raw'),
+    (r'\b(GLB|OBJ|STL|PLY|USDZ|PSD|PSB|TTF|OTF|EOT|ICNS|CUR|ANI|PSNR|DNG|QOI|TGA)\b', lambda m: ' '.join(m.group(1))),
     (r'\bcURL\b', 'curl'), (r'\bJSON\b', 'Jason'), (r'\bYAML\b', 'yammel'), (r'\bSQL\b', 'sequel'),
     (r'\bJWTs?\b', 'J W T'), (r'\bUUIDs?\b', 'U U I Ds'), (r'\bEXIF\b', 'exif'), (r'\bHEIC\b', 'heek'), (r'\bHEIF\b', 'heef'),
     (r'\bWEBP\b', 'web P'), (r'\bWEBM\b', 'web M'), (r'\bAVIF\b', 'ay vif'), (r'\bDOCX\b', 'Word'), (r'\bXLSX\b', 'Excel'),
@@ -928,15 +933,14 @@ VOICE_ANCHOR = {'af': ['af_heart', 'af_bella', 'af_nicole'], 'am': ['am_michael'
 
 
 def voice_sequence(n):
-    """Deterministic list of n distinct voice specs. First lap: every pure English voice round-robin across
-    US/UK x female/male; later laps: the same rotation lightly blended (80/20) with a different strong
-    voice of the same group so every tool gets its own timbre."""
-    order = []
+    """Deterministic list of n distinct voice specs (voice, other, weight). First every pure English Kokoro voice,
+    round-robin across US/UK x female/male; then blends of each voice with another voice of the same group
+    (80/20, 70/30, 60/40, 50/50) in the same interleaved order, so every tool gets its own timbre."""
     groups = ['af', 'am', 'bf', 'bm', 'af', 'am']
     idx = {g: 0 for g in VOICE_GROUPS}
-    pure = []
-    used = set()
-    while len(pure) < sum(len(v) for v in VOICE_GROUPS.values()):
+    pure, used = [], set()
+    total = sum(len(v) for v in VOICE_GROUPS.values())
+    while len(pure) < total:
         for g in groups:
             lst = VOICE_GROUPS[g]
             while idx[g] < len(lst) and lst[idx[g]] in used:
@@ -944,23 +948,22 @@ def voice_sequence(n):
             if idx[g] < len(lst):
                 pure.append(lst[idx[g]]); used.add(lst[idx[g]]); idx[g] += 1
     order = [(v, None, 1.0) for v in pure]
-    lap = 1
-    while len(order) < n:
-        for v in pure:
-            g = v[:2]
-            anchors = [a for a in VOICE_ANCHOR[g] if a != v]
-            other = anchors[(lap - 1) % len(anchors)] if lap - 1 < len(anchors) else VOICE_GROUPS[g][(VOICE_GROUPS[g].index(v) + lap) % len(VOICE_GROUPS[g])]
-            if other == v:
-                other = anchors[0]
-            w = [0.8, 0.7, 0.6][min(lap - 1, 2)]
-            spec = (v, other, w)
-            if spec not in order:
-                order.append(spec)
-            if len(order) >= n:
-                break
-        lap += 1
-        if lap > 12:
-            break
+    seen = set()
+    for w in (0.8, 0.7, 0.6, 0.5):
+        for k in range(max(len(x) for x in VOICE_GROUPS.values())):
+            for v in pure:
+                grp = VOICE_GROUPS[v[:2]]
+                others = [a for a in VOICE_ANCHOR[v[:2]] if a != v] + [o for o in grp if o != v and o not in VOICE_ANCHOR[v[:2]]]
+                if k >= len(others):
+                    continue
+                o = others[k]
+                key = frozenset((v, o)) if w == 0.5 else (v, o, w)
+                if key in seen:
+                    continue
+                seen.add(key)
+                order.append((v, o, w))
+                if len(order) >= n:
+                    return order
     return order[:n]
 
 

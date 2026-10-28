@@ -66,7 +66,7 @@ export function ThemeSwitcher() {
   const Icon = mode === 'light' ? Sun : mode === 'black' ? Circle : Moon
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen((o) => !o)} className={cn('grid size-9 place-items-center rounded-xl text-muted transition hover:bg-surface-2 hover:text-fg cursor-pointer', open && 'bg-surface-2 text-fg')} aria-label="Theme and appearance" aria-expanded={open} aria-haspopup="dialog" title="Theme">
+      <button onClick={() => setOpen((o) => !o)} className={cn('grid size-11 place-items-center rounded-xl text-muted transition hover:bg-surface-2 hover:text-fg cursor-pointer md:size-9', open && 'bg-surface-2 text-fg')} aria-label="Theme and appearance" aria-expanded={open} aria-haspopup="dialog" title="Theme">
         <span className="relative"><Icon className="size-4" /><span className="absolute -bottom-1 -right-1 size-2 rounded-full ring-2 ring-bg" style={{ background: ACCENTS[prefs.accent].main }} /></span>
       </button>
       <AnimatePresence>

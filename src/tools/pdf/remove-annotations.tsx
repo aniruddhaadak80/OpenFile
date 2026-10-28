@@ -82,7 +82,7 @@ function Overlay({ doc, page, annots, groups }: { doc: any; page: number; annots
   useEffect(() => { let c = false; doc?.getPage(page + 1).then((p: any) => !c && setVp(p.getViewport({ scale: 1 }))); return () => { c = true } }, [doc, page])
   if (!vp) return null
   return <>{annots.filter((a) => a.subtype !== 'Popup').map((a, i) => {
-    const [x0, y0, x1, y1] = vp.convertToViewportRectangle(a.rect)
+    const [x0, y0] = vp.convertToViewportPoint(a.rect[0], a.rect[1]), [x1, y1] = vp.convertToViewportPoint(a.rect[2], a.rect[3])
     const l = Math.min(x0, x1), t = Math.min(y0, y1), w = Math.abs(x1 - x0), h = Math.abs(y1 - y0)
     const kill = groups.has(groupOf(a.subtype))
     return <div key={i} title={`${a.subtype}${a.contents ? ': ' + a.contents : ''}`} className={cn('absolute border-2', kill ? 'border-danger bg-danger/15' : 'border-muted/60 bg-muted/10')} style={{ left: `${(l / vp.width) * 100}%`, top: `${(t / vp.height) * 100}%`, width: `${(w / vp.width) * 100}%`, height: `${(h / vp.height) * 100}%` }} />

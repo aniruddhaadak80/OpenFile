@@ -101,7 +101,12 @@ async function exec(opts: RunOpts, collect: (ff: FFmpeg) => Promise<{ name: stri
     if (cancelled) throw new CancelledError()
     ff.on('log', onLog); ff.on('progress', onProg)
     const { fetchFile } = await import('@ffmpeg/util')
-    for (const i of opts.inputs) await ff.writeFile(i.name, i.file instanceof Uint8Array ? i.file : await fetchFile(i.file))
+    for (const i of opts.inputs) {
+      // inputs may live in a folder (for example fonts for the subtitles filter)
+      const dir = i.name.includes('/') ? i.name.slice(0, i.name.lastIndexOf('/')) : ''
+      if (dir) await ff.createDir(dir).catch(() => {})
+      await ff.writeFile(i.name, i.file instanceof Uint8Array ? i.file : await fetchFile(i.file))
+    }
     const code = await ff.exec(opts.args)
     if (cancelled) throw new CancelledError()
     if (code !== 0) throw new Error(friendly(lines, code))

@@ -4,7 +4,7 @@ import { DndContext, closestCenter, PointerSensor, KeyboardSensor, TouchSensor, 
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Dropzone, Label, ResultCard, Segmented, ToolGrid, Empty } from '@/components/ui'
+import { Button, Dropzone, Label, ResultCard, Segmented, Select, Slider, ToolGrid, Empty } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
 import { ffRun, ffProbe, extFromBlob, X264, type ProbeInfo } from './_media/engine'
 import { captureFrames, fmtTime, probeVideo, stamp, useMediaJob, useObjectUrl } from './_media/media'
@@ -13,6 +13,11 @@ import { JobPanel, Note, Reveal } from './_media/ui'
 interface Clip { id: string; file: File; url: string; duration: number; width: number; height: number; thumb?: string; playable: boolean }
 type Res = 'auto' | '1080' | '720' | '480'
 type Fit = 'pad' | 'crop'
+const TRANSITIONS = [
+  { value: 'none', label: 'None (straight cut)' }, { value: 'fade', label: 'Crossfade' }, { value: 'fadeblack', label: 'Fade through black' }, { value: 'fadewhite', label: 'Fade through white' },
+  { value: 'dissolve', label: 'Dissolve' }, { value: 'wipeleft', label: 'Wipe left' }, { value: 'wiperight', label: 'Wipe right' }, { value: 'slideleft', label: 'Slide left' },
+  { value: 'slideright', label: 'Slide right' }, { value: 'slideup', label: 'Slide up' }, { value: 'circleopen', label: 'Circle open' }, { value: 'radial', label: 'Radial' }, { value: 'pixelize', label: 'Pixelize' }, { value: 'zoomin', label: 'Zoom in' },
+]
 
 function Row({ clip, index, onRemove }: { clip: Clip; index: number; onRemove: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: clip.id })
@@ -39,6 +44,8 @@ export default function MergeVideos() {
   const [clips, setClips] = useState<Clip[]>([])
   const [res, setRes] = useState<Res>('auto')
   const [fit, setFit] = useState<Fit>('pad')
+  const [transition, setTransition] = useState('none')
+  const [td, setTd] = useState(0.8)
   const [result, setResult] = useState<Blob | null>(null)
   const resultUrl = useObjectUrl(result)
   const job = useMediaJob()
@@ -100,10 +107,26 @@ export default function MergeVideos() {
         : `anullsrc=r=44100:cl=stereo,atrim=duration=${d.toFixed(3)},aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`)
       pairs.push(`[v${i}][a${i}]`)
     })
-    const graph = `${parts.join(';')};${pairs.join('')}concat=n=${clips.length}:v=1:a=1[v][a]`
+    const durs = clips.map((c, i) => infos[i].duration || c.duration)
+    // crossfades overlap neighbouring clips, so each transition shortens the total by its length
+    const tdEff = transition === 'none' ? 0 : Math.max(0.1, Math.min(td, ...durs.map((d) => d / 2 - 0.05)))
+    let graph: string
+    if (!tdEff) graph = `${parts.join(';')};${pairs.join('')}concat=n=${clips.length}:v=1:a=1[v][a]`
+    else {
+      const chain: string[] = []
+      let lv = '[v0]', la = '[a0]', acc = durs[0]
+      for (let i = 1; i < clips.length; i++) {
+        const off = Math.max(0, acc - tdEff)
+        const ov = i === clips.length - 1 ? '[v]' : `[xv${i}]`, oa = i === clips.length - 1 ? '[a]' : `[xa${i}]`
+        chain.push(`${lv}[v${i}]xfade=transition=${transition}:duration=${tdEff.toFixed(3)}:offset=${off.toFixed(3)}${ov}`)
+        chain.push(`${la}[a${i}]acrossfade=d=${tdEff.toFixed(3)}${oa}`)
+        lv = ov; la = oa; acc = off + durs[i]
+      }
+      graph = `${parts.join(';')};${chain.join(';')}`
+    }
     const inputs = clips.map((c, i) => ({ name: `in${i}${extFromBlob(c.file)}`, file: c.file as Blob }))
     const args = [...inputs.flatMap((x) => ['-i', x.name]), '-filter_complex', graph, '-map', '[v]', '-map', '[a]', ...X264, '-crf', '22', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', 'out.mp4']
-    const sum = infos.reduce((a, x, i) => a + (x.duration || clips[i].duration), 0)
+    const sum = durs.reduce((a, d) => a + d, 0) - tdEff * (clips.length - 1)
     const blob = await ffRun({ inputs, args, output: 'out.mp4', duration: sum || undefined, onProgress: (p) => setProgress(0.05 + p * 0.95) })
     setResult(blob)
   })
@@ -131,6 +154,11 @@ export default function MergeVideos() {
             <Label>When sizes differ</Label>
             <Segmented value={fit} onChange={setFit} options={[{ value: 'pad', label: 'Fit (black bars)' }, { value: 'crop', label: 'Fill (crop)' }]} />
             {mixed && <p className="mt-1.5 text-xs text-warn">Your clips have different sizes, they'll be normalized to {target.w}×{target.h}.</p>}
+          </div>
+          <div>
+            <Label>Transition</Label>
+            <Select value={transition} onChange={setTransition} options={TRANSITIONS} />
+            {transition !== 'none' && <Slider className="mt-3" label="Transition length" value={td} onChange={setTd} min={0.2} max={2} step={0.1} suffix=" s" />}
           </div>
           <Note>All clips are re-encoded to H.264/AAC at 30 fps so they join seamlessly. Clips without sound get silent audio.</Note>
           <Button size="lg" className="w-full" icon={<Combine className="size-5" />} onClick={go} loading={job.busy} disabled={clips.length < 2}>Merge {clips.length} clips</Button>

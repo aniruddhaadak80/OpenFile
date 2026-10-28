@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Camera, ImageIcon, CameraOff, ExternalLink, Wifi, Link2, Phone, Mail, MapPin, IndianRupee, Contact, Type, Flashlight, Trash2, ClipboardPaste, SwitchCamera, MessageSquare, CalendarDays } from 'lucide-react'
-import { Button, Card, Dropzone, Segmented, CopyButton, Select, ErrorNote, Badge, cn } from '@/components/ui'
+import { Button, Card, Dropzone, Segmented, CopyButton, Select, ErrorNote, Badge, Switch, cn } from '@/components/ui'
+import { scanImage } from '@/lib/b5/zxing'
+import { FORMAT_GROUPS, formatsFor, gtinValid } from '@/lib/b5/barcode-read'
+import { Chip } from './_dev/kit'
 import { loadImage, createCanvas } from '@/lib/files'
 import { toast } from '@/components/toast'
 
-type Hit = { text: string; format: string; at: number; source: 'camera' | 'image' }
+type Hit = { text: string; format: string; label: string; at: number; source: 'camera' | 'image'; ecLevel?: string; bytesHex?: string }
+type Found = { text: string; format: string; label: string; points: { x: number; y: number }[]; ecLevel?: string; bytesHex?: string }
 
 declare global { interface Window { BarcodeDetector?: any } }
 const hasBD = () => typeof window !== 'undefined' && 'BarcodeDetector' in window
@@ -19,21 +23,37 @@ function getDetector() {
   return detectorP
 }
 
-/** Decode from a canvas-able source: BarcodeDetector first, then vendored jsQR fallback. */
-async function decode(src: CanvasImageSource & { width?: number; height?: number }, w: number, h: number, thorough = false): Promise<{ text: string; format: string }[]> {
+let engineState: 'zxing' | 'fallback' | null = null
+/** Decode from a canvas-able source. ZXing (WebAssembly) first, then the native BarcodeDetector, then the bundled jsQR. */
+async function decode(src: CanvasImageSource, w: number, h: number, thorough = false, formats: string[] = []): Promise<Found[]> {
+  if (engineState !== 'fallback') {
+    try {
+      const maxSide = thorough ? 2000 : 960
+      const k = Math.min(1, maxSide / Math.max(w, h))
+      const { canvas, ctx } = createCanvas(Math.round(w * k), Math.round(h * k))
+      ctx.drawImage(src, 0, 0, canvas.width, canvas.height)
+      const hits = await scanImage(ctx.getImageData(0, 0, canvas.width, canvas.height), { formats, thorough })
+      engineState = 'zxing'
+      return hits.map((x) => ({ ...x, points: x.points.map((p) => ({ x: p.x / k, y: p.y / k })) }))
+    } catch (e) {
+      if (engineState === 'zxing') throw e
+      engineState = 'fallback'
+      console.warn('ZXing failed to load, using fallback decoders', e)
+    }
+  }
   const det = await getDetector()
   if (det) {
-    try { const r = await det.detect(src); if (r.length) return r.map((x: any) => ({ text: x.rawValue, format: x.format })) } catch { /* fall through */ }
+    try { const r = await det.detect(src); if (r.length) return r.map((x: any) => ({ text: x.rawValue, format: x.format, label: x.format.replace(/_/g, ' ').toUpperCase(), points: (x.cornerPoints ?? []).map((p: any) => ({ x: p.x, y: p.y })) })) } catch { /* fall through */ }
   }
   const { default: jsQR } = await import('./_dev/jsqr')
   const sizes = thorough ? [Math.min(1600, Math.max(w, h)), 1000, 700, 480] : [Math.min(800, Math.max(w, h))]
-  for (const s of [...new Set(sizes)]) {
-    const k = Math.min(1, s / Math.max(w, h))
+  for (const sz of [...new Set(sizes)]) {
+    const k = Math.min(1, sz / Math.max(w, h))
     const { canvas, ctx } = createCanvas(w * k, h * k)
     ctx.drawImage(src, 0, 0, canvas.width, canvas.height)
     const d = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const r = jsQR(d.data, canvas.width, canvas.height, { inversionAttempts: thorough ? 'attemptBoth' : 'dontInvert' })
-    if (r?.data) return [{ text: r.data, format: 'qr_code' }]
+    if (r?.data) return [{ text: r.data, format: 'QRCode', label: 'QR Code', points: [] }]
   }
   return []
 }
@@ -59,25 +79,36 @@ export default function QrScanner() {
   const [tab, setTab] = useState<'camera' | 'image'>('camera')
   const [hits, setHits] = useState<Hit[]>([])
   const [err, setErr] = useState<string | null>(null)
-  const [bd, setBd] = useState<boolean | null>(null)
-  useEffect(() => { getDetector().then((d) => setBd(!!d)) }, [])
+  const [groups, setGroups] = useState<string[]>(['all'])
+  const [beep, setBeep] = useState(true)
+  const formats = formatsFor(groups)
+  const toggleGroup = (id: string) => setGroups((g) => id === 'all' ? ['all'] : (() => { const n = g.filter((x) => x !== 'all'); const r = n.includes(id) ? n.filter((x) => x !== id) : [...n, id]; return r.length ? r : ['all'] })())
 
-  const add = useCallback((text: string, format: string, source: Hit['source']) => {
-    setHits((h) => (h[0]?.text === text ? h : [{ text, format, at: Date.now(), source }, ...h.filter((x) => x.text !== text)].slice(0, 30)))
+  const add = useCallback((f: Found, source: Hit['source']) => {
+    setHits((h) => (h[0]?.text === f.text ? h : [{ text: f.text, format: f.format, label: f.label, ecLevel: f.ecLevel, bytesHex: f.bytesHex, at: Date.now(), source }, ...h.filter((x) => x.text !== f.text)].slice(0, 50)))
   }, [])
+  const exportCsv = () => {
+    const q = (v: string) => `"${v.replace(/"/g, '""')}"`
+    const csv = 'time,source,format,text\n' + hits.map((h) => [new Date(h.at).toISOString(), h.source, h.label, h.text].map(q).join(',')).join('\n') + '\n'
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'scans.csv'; a.click()
+  }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
       <div className="min-w-0 space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           <Segmented value={tab} onChange={(v) => { setTab(v); setErr(null) }} options={[{ value: 'camera', label: <span className="flex items-center gap-1.5"><Camera className="size-3.5" />Camera</span> }, { value: 'image', label: <span className="flex items-center gap-1.5"><ImageIcon className="size-3.5" />Image</span> }]} />
-          {bd !== null && <span className="text-xs text-muted">{bd ? 'Using native BarcodeDetector (QR + barcodes)' : 'Using built-in QR decoder (QR codes only in this browser)'}</span>}
+          <span className="text-xs text-muted">Reads QR, Data Matrix, Aztec, PDF417, EAN, UPC, Code 128 and more with the ZXing engine, right in your browser.</span>
         </div>
-        {tab === 'camera' ? <CameraScan onHit={add} setErr={setErr} /> : <ImageScan onHit={add} setErr={setErr} />}
+        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Barcode types to look for">
+          {FORMAT_GROUPS.map((g) => <Chip key={g.id} active={groups.includes(g.id)} onClick={() => toggleGroup(g.id)}>{g.label}</Chip>)}
+        </div>
+        {tab === 'camera' ? <CameraScan onHit={add} setErr={setErr} formats={formats} beep={beep} /> : <ImageScan onHit={add} setErr={setErr} formats={formats} />}
+        {tab === 'camera' && <Switch checked={beep} onChange={setBeep} label="Beep and vibrate on scan" />}
         <ErrorNote error={err} />
       </div>
       <aside className="space-y-3 lg:sticky lg:top-24 lg:self-start">
-        <div className="flex items-center justify-between"><div className="text-xs font-semibold uppercase tracking-wide text-muted">Results</div>{hits.length > 0 && <Button size="sm" variant="ghost" icon={<Trash2 className="size-4" />} onClick={() => setHits([])}>Clear</Button>}</div>
+        <div className="flex items-center justify-between"><div className="text-xs font-semibold uppercase tracking-wide text-muted">Results</div>{hits.length > 0 && <div className="flex gap-1"><Button size="sm" variant="ghost" onClick={exportCsv}>Export CSV</Button><Button size="sm" variant="ghost" icon={<Trash2 className="size-4" />} onClick={() => setHits([])}>Clear</Button></div>}</div>
         {hits.length === 0 && <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted">Scanned codes appear here with quick actions.</div>}
         <AnimatePresence initial={false}>{hits.map((h) => <ResultItem key={h.at + h.text} hit={h} />)}</AnimatePresence>
       </aside>
@@ -94,7 +125,7 @@ function ResultItem({ hit }: { hit: Hit }) {
         <div className="flex items-center gap-2">
           <div className="grid size-8 place-items-center rounded-lg bg-accent/15 text-accent"><Icon className="size-4" /></div>
           <div className="min-w-0 flex-1"><div className="text-sm font-semibold">{c.label}</div><div className="text-[11px] text-muted">{new Date(hit.at).toLocaleTimeString()} · {hit.source}</div></div>
-          <Badge>{hit.format.replace(/_/g, ' ').toUpperCase()}</Badge>
+          <Badge>{hit.label}</Badge>
         </div>
         {c.kind === 'wifi' && c.data ? (
           <div className="grid grid-cols-[80px_1fr] gap-1 rounded-lg bg-surface-2/60 p-3 text-sm">
@@ -109,6 +140,11 @@ function ResultItem({ hit }: { hit: Hit }) {
             {c.data.am && <><span className="text-muted">Amount</span><span>₹{c.data.am}</span></>}
             {c.data.tn && <><span className="text-muted">Note</span><span>{c.data.tn}</span></>}
           </div>
+        ) : /^(EAN|UPC|ISBN)/.test(hit.format) && /^\d+$/.test(hit.text) ? (
+          <div className="space-y-1 rounded-lg bg-surface-2/60 p-3 text-sm">
+            <div className="font-mono text-lg tracking-wider">{hit.text}</div>
+            <div className={cn('text-xs', gtinValid(hit.text) ? 'text-success' : 'text-warn')}>{gtinValid(hit.text) ? 'Check digit is valid' : 'Check digit does not match'}{hit.text.startsWith('978') || hit.text.startsWith('979') ? ' | ISBN (book)' : ''}</div>
+          </div>
         ) : <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-all rounded-lg bg-surface-2/60 p-3 font-mono text-[13px]">{hit.text}</pre>}
         <div className="flex flex-wrap gap-2">
           {'href' in c && c.href && <Button size="sm" icon={<ExternalLink className="size-4" />} onClick={() => window.open(c.href, c.kind === 'url' || c.kind === 'geo' ? '_blank' : '_self', 'noopener')}>{c.kind === 'url' ? 'Open link' : c.kind === 'upi' ? 'Pay with UPI app' : c.kind === 'tel' ? 'Call' : c.kind === 'geo' ? 'Open map' : c.kind === 'sms' ? 'Send SMS' : 'Open'}</Button>}
@@ -117,13 +153,16 @@ function ResultItem({ hit }: { hit: Hit }) {
           {c.kind === 'event' && <Button size="sm" variant="outline" icon={<CalendarDays className="size-4" />} onClick={() => { const body = /BEGIN:VCALENDAR/i.test(hit.text) ? hit.text : `BEGIN:VCALENDAR\nVERSION:2.0\n${hit.text}\nEND:VCALENDAR`; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([body], { type: 'text/calendar' })); a.download = 'event.ics'; a.click() }}>Add to calendar</Button>}
           <CopyButton text={hit.text} label={c.kind === 'wifi' ? 'Copy raw' : 'Copy'} />
         </div>
-        {c.kind === 'wifi' && <p className="text-[11px] text-muted">Browsers can't join Wi-Fi directly, copy the password, or scan this code with your phone's camera app to connect in one tap.</p>}
+        {(hit.ecLevel || hit.bytesHex) && <details className="text-[11px] text-muted"><summary className="cursor-pointer">Details</summary><div className="mt-1 space-y-1">{hit.ecLevel && <div>Error correction: {hit.ecLevel}</div>}{hit.bytesHex && <div className="max-h-24 overflow-auto break-all font-mono">{hit.bytesHex}</div>}</div></details>}
+        {c.kind === 'wifi' && <p className="text-[11px] text-muted">Browsers cannot join Wi-Fi directly. Copy the password, or scan this code with your phone camera app to connect in one tap.</p>}
       </Card>
     </motion.div>
   )
 }
 
-function CameraScan({ onHit, setErr }: { onHit: (t: string, f: string, s: 'camera') => void; setErr: (e: string | null) => void }) {
+function CameraScan({ onHit, setErr, formats, beep }: { onHit: (f: Found, s: 'camera') => void; setErr: (e: string | null) => void; formats: string[]; beep: boolean }) {
+  const fmtRef = useRef(formats); fmtRef.current = formats
+  const beepRef = useRef(beep); beepRef.current = beep
   const video = useRef<HTMLVideoElement>(null)
   const stream = useRef<MediaStream | null>(null)
   const raf = useRef<number>(0)
@@ -156,16 +195,17 @@ function CameraScan({ onHit, setErr }: { onHit: (t: string, f: string, s: 'camer
         if (busy || ts - lastRun < 120 || v.readyState < 2) return
         busy = true; lastRun = ts
         try {
-          const r = await decode(v, v.videoWidth, v.videoHeight)
+          const r = await decode(v, v.videoWidth, v.videoHeight, false, fmtRef.current)
           if (r.length) {
             const now = Date.now()
             if (r[0].text !== last.current.t || now - last.current.at > 3000) {
               last.current = { t: r[0].text, at: now }
-              r.forEach((x) => onHit(x.text, x.format, 'camera'))
-              setFlash(true); setTimeout(() => setFlash(false), 350); navigator.vibrate?.(60)
+              r.forEach((x) => onHit(x, 'camera'))
+              setFlash(true); setTimeout(() => setFlash(false), 350)
+              if (beepRef.current) { navigator.vibrate?.(60); playBeep() }
             }
           }
-        } finally { busy = false }
+        } catch { /* keep scanning */ } finally { busy = false }
       }
       raf.current = requestAnimationFrame(loop)
     } catch (e: any) {
@@ -205,26 +245,29 @@ function CameraScan({ onHit, setErr }: { onHit: (t: string, f: string, s: 'camer
             <Button variant="outline" size="sm" icon={<SwitchCamera className="size-4" />} onClick={() => { const i = devices.findIndex((d) => d.deviceId === devId); const n = devices[(i + 1) % devices.length]; setDevId(n.deviceId); start(n.deviceId) }}>Flip</Button>
             <Select value={devId} onChange={(v) => { setDevId(v); start(v) }} options={[{ value: '', label: 'Default camera' }, ...devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} className="h-8 max-w-56 text-xs" />
           </>}
-          <span className="ml-auto flex items-center gap-1.5 text-xs text-success"><span className="size-2 animate-pulse rounded-full bg-success" />Scanning…</span>
+          <span className="ml-auto flex items-center gap-1.5 text-xs text-success"><span className="size-2 animate-pulse rounded-full bg-success" />Scanning</span>
         </div>
       )}
     </Card>
   )
 }
 
-function ImageScan({ onHit, setErr }: { onHit: (t: string, f: string, s: 'image') => void; setErr: (e: string | null) => void }) {
+function ImageScan({ onHit, setErr, formats }: { onHit: (f: Found, s: 'image') => void; setErr: (e: string | null) => void; formats: string[] }) {
   const [url, setUrl] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [found, setFound] = useState<{ w: number; h: number; items: Found[] } | null>(null)
+  const lastBlob = useRef<Blob | null>(null)
   const run = useCallback(async (f: Blob) => {
-    setErr(null); setBusy(true)
-    const u = URL.createObjectURL(f); setUrl(u)
+    setErr(null); setBusy(true); setFound(null); lastBlob.current = f
+    const u = URL.createObjectURL(f); setUrl((old) => { if (old) URL.revokeObjectURL(old); return u })
     try {
       const img = await loadImage(u)
-      const r = await decode(img, img.naturalWidth, img.naturalHeight, true)
-      if (!r.length) setErr('No QR code found. Try a sharper, well-lit image where the code fills more of the frame.')
-      else { r.forEach((x) => onHit(x.text, x.format, 'image')); toast(`Found ${r.length} code${r.length > 1 ? 's' : ''}`) }
-    } catch (e: any) { setErr(e?.message ?? String(e)) } finally { setBusy(false) }
-  }, [onHit, setErr])
+      const r = await decode(img, img.naturalWidth, img.naturalHeight, true, formats)
+      setFound({ w: img.naturalWidth, h: img.naturalHeight, items: r })
+      if (!r.length) setErr(formats.length ? 'No code of the chosen types was found. Try All types, or a sharper image where the code fills more of the frame.' : 'No code found. Try a sharper, well lit image where the code fills more of the frame.')
+      else { r.forEach((x) => onHit(x, 'image')); toast(`Found ${r.length} code${r.length > 1 ? 's' : ''}`) }
+    } catch (e: any) { setErr(e?.message ? 'Could not read this image: ' + e.message : 'Could not read this image') } finally { setBusy(false) }
+  }, [onHit, setErr, formats.join()])
 
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => { const f = [...(e.clipboardData?.files ?? [])].find((x) => x.type.startsWith('image/')); if (f) run(f) }
@@ -238,9 +281,40 @@ function ImageScan({ onHit, setErr }: { onHit: (t: string, f: string, s: 'image'
 
   return (
     <div className="space-y-3">
-      <Dropzone onFiles={(f) => run(f[0])} accept="image/*" label="Drop a screenshot or photo with a QR code" sub="Or paste an image with Ctrl/⌘+V. Decoded locally, nothing is uploaded." compact={!!url} />
-      <div className="flex gap-2"><Button size="sm" variant="outline" icon={<ClipboardPaste className="size-4" />} onClick={pasteBtn}>Paste image</Button></div>
-      {url && <div className="checker relative overflow-hidden rounded-2xl border border-border"><img src={url} alt="" className={cn('mx-auto max-h-[420px] object-contain transition', busy && 'opacity-50 blur-[1px]')} />{busy && <div className="shimmer absolute inset-0" />}</div>}
+      <Dropzone onFiles={(f) => run(f[0])} accept="image/*" label="Drop a screenshot or photo with a QR code or barcode" sub="Finds every code in the picture. Or paste an image with Ctrl/⌘+V. Decoded locally, nothing is uploaded." compact={!!url} />
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" icon={<ClipboardPaste className="size-4" />} onClick={pasteBtn}>Paste image</Button>
+        {lastBlob.current && !busy && <Button size="sm" variant="ghost" onClick={() => run(lastBlob.current!)}>Scan again</Button>}
+      </div>
+      {url && (
+        <div className="checker relative overflow-hidden rounded-2xl border border-border">
+          <div className="relative mx-auto w-fit">
+            <img src={url} alt="Image being scanned" className={cn('block max-h-[420px] object-contain transition', busy && 'opacity-50 blur-[1px]')} />
+            {found && found.items.some((x) => x.points.length === 4) && (
+              <svg viewBox={`0 0 ${found.w} ${found.h}`} className="pointer-events-none absolute inset-0 size-full" preserveAspectRatio="none" aria-hidden>
+                {found.items.filter((x) => x.points.length === 4).map((x, i) => (
+                  <g key={i}>
+                    <polygon points={x.points.map((p) => `${p.x},${p.y}`).join(' ')} fill="rgba(34,211,238,.18)" stroke="#22d3ee" strokeWidth={Math.max(2, found.w / 250)} />
+                    <text x={x.points[0].x} y={Math.max(found.w / 40, x.points[0].y - found.w / 120)} fill="#22d3ee" fontSize={Math.max(12, found.w / 40)} fontWeight="700">{i + 1}. {x.label}</text>
+                  </g>
+                ))}
+              </svg>
+            )}
+          </div>
+          {busy && <div className="shimmer absolute inset-0" />}
+        </div>
+      )}
     </div>
   )
+}
+
+let audioCtx: AudioContext | null = null
+function playBeep() {
+  try {
+    audioCtx ??= new AudioContext()
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain()
+    o.frequency.value = 1320; g.gain.value = 0.06
+    o.connect(g).connect(audioCtx.destination)
+    o.start(); o.stop(audioCtx.currentTime + 0.08)
+  } catch { /* audio not available */ }
 }

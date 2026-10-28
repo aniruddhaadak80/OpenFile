@@ -16,7 +16,7 @@ type FitMode = 'contain' | 'cover'
 interface Img { id: string; name: string; size: number; blob: Blob | null; url: string | null; w: number; h: number; rot: number; status: 'loading' | 'ready' | 'error'; err?: string }
 
 let uid = 0
-const ACCEPT = 'image/*,.heic,.heif'
+const ACCEPT = 'image/*,.heic,.heif,.tif,.tiff,.svg'
 
 function pageFor(img: Img, size: SizeKey, orient: Orient, marginPt: number) {
   const rotated = img.rot % 180 !== 0
@@ -79,7 +79,12 @@ export default function ImageToPdf() {
 
   useEffect(() => () => imgs.forEach((i) => i.url && URL.revokeObjectURL(i.url)), []) // eslint-disable-line
 
-  const add = (files: File[]) => {
+  // multi-page TIFF and SVG are turned into PNG pages first
+  const add = async (files: File[]) => {
+    if (files.some((f) => /\.(tiff?|svg)$/i.test(f.name) || /image\/(tiff|svg)/.test(f.type))) { const { expandImageFiles } = await import('./_b1/expandImages'); files = await expandImageFiles(files) }
+    addFiles(files)
+  }
+  const addFiles = (files: File[]) => {
     setResult(null)
     const fresh: Img[] = files.map((f) => ({ id: `img${++uid}`, name: f.name, size: f.size, blob: null, url: null, w: 0, h: 0, rot: 0, status: 'loading' }))
     setImgs((s) => [...s, ...fresh])
@@ -154,7 +159,7 @@ export default function ImageToPdf() {
 
   const fileName = /\.pdf$/i.test(name) ? name : name + '.pdf'
 
-  if (!imgs.length) return <Dropzone multiple accept={ACCEPT} onFiles={add} label="Drop images to combine into a PDF" sub="JPG, PNG, WEBP, GIF, BMP, HEIC, processed 100% in your browser." />
+  if (!imgs.length) return <Dropzone multiple accept={ACCEPT} onFiles={add} label="Drop images to combine into a PDF" sub="JPG, PNG, WEBP, GIF, BMP, HEIC, multi-page TIFF and SVG, processed 100% in your browser." />
 
   return (
     <div className="space-y-5">

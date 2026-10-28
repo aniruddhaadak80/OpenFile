@@ -8,6 +8,7 @@ import { Cover } from '@/blog/Cover'
 import { setPageMeta } from '@/lib/seo'
 import { Reveal } from '@/components/motion'
 import { cn } from '@/components/ui'
+import { EmptyState } from '@/components/EmptyState'
 
 const base = import.meta.env.BASE_URL
 
@@ -38,8 +39,8 @@ export default function Blog() {
         <div className="mt-8 flex flex-col gap-3 md:flex-row md:items-center">
           <div className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-border bg-surface px-3 focus-within:border-accent"><Search className="size-4 text-muted" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search posts" aria-label="Search posts" className="flex-1 bg-transparent text-sm outline-none" /></div>
           <div className="flex flex-wrap gap-1.5">
-            <button onClick={() => setTag('')} className={cn('rounded-full px-3 py-1.5 text-xs transition cursor-pointer', !tag ? 'bg-fg text-bg' : 'border border-border text-muted hover:text-fg')}>All</button>
-            {ALL_TAGS.map((t) => <button key={t} onClick={() => setTag(t)} className={cn('rounded-full px-3 py-1.5 text-xs transition cursor-pointer', tag === t ? 'bg-accent text-on-accent' : 'border border-border text-muted hover:text-fg')}>#{t}</button>)}
+            <button onClick={() => setTag('')} className={cn('min-h-9 rounded-full px-3 py-1.5 text-xs transition cursor-pointer', !tag ? 'bg-fg text-bg' : 'border border-border text-muted hover:text-fg')}>All</button>
+            {ALL_TAGS.map((t) => <button key={t} onClick={() => setTag(t)} className={cn('min-h-9 rounded-full px-3 py-1.5 text-xs transition cursor-pointer', tag === t ? 'bg-accent text-on-accent' : 'border border-border text-muted hover:text-fg')}>#{t}</button>)}
           </div>
         </div>
         {featured && (
@@ -58,7 +59,7 @@ export default function Blog() {
         <motion.div layout className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">{rest.map((p, i) => <PostCard key={p.slug} p={p} i={i} />)}</AnimatePresence>
         </motion.div>
-        {!list.length && <p className="mt-16 text-center text-muted">No posts match that search.</p>}
+        {!list.length && <EmptyState className="mt-10" kind="search" title="No posts match that search" actions={<button onClick={() => { setQ(''); setTag('') }} className="min-h-10 rounded-xl border border-border px-4 text-sm hover:border-accent cursor-pointer">Show all posts</button>}>Try another word or tag.</EmptyState>}
       </div>
     </div>
   )

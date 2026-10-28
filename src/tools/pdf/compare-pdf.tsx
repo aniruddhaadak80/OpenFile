@@ -5,6 +5,14 @@ import { Button, Dropzone, FileChip, Switch, Segmented, Spinner, ErrorNote, Prog
 import { openPdfJs, allText, renderPage, type PdfJsDoc } from '@/lib/pdf'
 import { pdfError } from './_adv/pages'
 
+const isDocx = (f: File) => /\.docx$/i.test(f.name) || f.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+async function docxText(f: File): Promise<string> {
+  const mammoth: any = await import('mammoth')
+  const lib = mammoth.default ?? mammoth
+  const r = await lib.extractRawText({ arrayBuffer: await f.arrayBuffer() })
+  return String(r.value || '').replace(/\n{3,}/g, '\n\n').trim()
+}
+
 type Part = { value: string; added?: boolean; removed?: boolean }
 type PageDiff = { index: number; parts: Part[]; added: number; removed: number; same: number; onlyIn?: 'A' | 'B' }
 type Mode = 'side' | 'inline' | 'visual'
@@ -14,7 +22,8 @@ const words = (s: string) => (s.match(/\S+/g) ?? []).length
 export default function ComparePdf() {
   const [a, setA] = useState<File | null>(null)
   const [b, setB] = useState<File | null>(null)
-  const [docs, setDocs] = useState<{ a: PdfJsDoc; b: PdfJsDoc } | null>(null)
+  const [docs, setDocs] = useState<{ a: PdfJsDoc | null; b: PdfJsDoc | null } | null>(null)
+  const [wholeDoc, setWholeDoc] = useState(false)
   const [texts, setTexts] = useState<{ a: string[]; b: string[] } | null>(null)
   const [mode, setMode] = useState<Mode>('side')
   const [ignoreCase, setIgnoreCase] = useState(false)
@@ -26,12 +35,21 @@ export default function ComparePdf() {
     if (!a || !b) return
     let alive = true
     job.run(async (p) => {
-      let da: PdfJsDoc, db: PdfJsDoc
-      try { da = await openPdfJs(a) } catch (e) { throw new Error('Original: ' + pdfError(e)) }
-      try { db = await openPdfJs(b) } catch (e) { throw new Error('Changed: ' + pdfError(e)) }
-      const ta = await allText(da, (x) => p(x * 0.5))
-      const tb = await allText(db, (x) => p(0.5 + x * 0.5))
-      if (alive) { setDocs({ a: da, b: db }); setTexts({ a: ta, b: tb }) }
+      const load = async (f: File, label: string, from: number): Promise<{ doc: PdfJsDoc | null; text: string[] }> => {
+        if (isDocx(f)) {
+          try { const t = await docxText(f); p(from + 0.5); return { doc: null, text: [t] } } catch { throw new Error(`${label}: this Word file could not be read. Make sure it is a .docx file, not an older .doc.`) }
+        }
+        let d: PdfJsDoc
+        try { d = await openPdfJs(f) } catch (e) { throw new Error(`${label}: ` + pdfError(e)) }
+        return { doc: d, text: await allText(d, (x) => p(from + x * 0.5)) }
+      }
+      const ra = await load(a, 'Original', 0)
+      const rb = await load(b, 'Changed', 0.5)
+      // When a Word file is involved there are no real pages, so compare the whole text in one block.
+      const whole = !ra.doc || !rb.doc
+      const ta = whole ? [ra.text.join('\n\n')] : ra.text
+      const tb = whole ? [rb.text.join('\n\n')] : rb.text
+      if (alive) { setWholeDoc(whole); setDocs({ a: ra.doc, b: rb.doc }); setTexts({ a: ta, b: tb }) }
     })
     return () => { alive = false }
   }, [a, b])
@@ -81,24 +99,24 @@ export default function ComparePdf() {
         <Slot label="Changed" tone="success" file={b} onFile={setB} />
       </div>
 
-      {job.busy && <Progress value={job.progress} label="Extracting text from both PDFs…" />}
+      {job.busy && <Progress value={job.progress} label="Reading text from both files…" />}
       <ErrorNote error={job.error} />
 
       {!a || !b ? (
-        <Empty><GitCompare className="mx-auto mb-2 size-6 text-accent" />Add two versions of a document to see exactly what changed, word by word and pixel by pixel.</Empty>
+        <Empty><GitCompare className="mx-auto mb-2 size-6 text-accent" />Add two versions of a document to see exactly what changed, word by word and pixel by pixel. PDF and Word (.docx) files both work.</Empty>
       ) : stats && docs && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Stat icon={Plus} label="Words added" value={stats.added} cls="text-success" />
             <Stat icon={Minus} label="Words removed" value={stats.removed} cls="text-danger" />
-            <Stat icon={Layers} label="Pages changed" value={`${stats.changedPages} / ${diffs!.length}`} cls="text-accent" />
+            {wholeDoc ? <Stat icon={Layers} label="Words compared" value={stats.same + Math.max(stats.added, stats.removed)} cls="text-accent" /> : <Stat icon={Layers} label="Pages changed" value={`${stats.changedPages} / ${diffs!.length}`} cls="text-accent" />}
             <Stat icon={Equal} label="Similarity" value={`${(stats.similarity * 100).toFixed(1)}%`} cls="text-fg" />
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Tabs value={mode} onChange={setMode} tabs={[
               { value: 'side', label: <span className="inline-flex items-center gap-1.5"><Columns2 className="size-4" />Side by side</span> },
               { value: 'inline', label: <span className="inline-flex items-center gap-1.5"><AlignLeft className="size-4" />Inline</span> },
-              { value: 'visual', label: <span className="inline-flex items-center gap-1.5"><ImageIcon className="size-4" />Visual</span> },
+              ...(docs.a && docs.b ? [{ value: 'visual' as Mode, label: <span className="inline-flex items-center gap-1.5"><ImageIcon className="size-4" />Visual</span> }] : []),
             ]} />
             {mode !== 'visual' && <div className="flex flex-wrap items-center gap-4">
               <Switch checked={onlyChanged} onChange={setOnlyChanged} label={<span className="text-sm">Changed pages only</span>} />
@@ -111,13 +129,13 @@ export default function ComparePdf() {
 
           <AnimatePresence mode="wait">
             <motion.div key={mode} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
-              {mode === 'visual' ? <VisualDiff a={docs.a} b={docs.b} diffs={diffs!} /> : (
+              {mode === 'visual' && docs.a && docs.b ? <VisualDiff a={docs.a} b={docs.b} diffs={diffs!} /> : (
                 <div className="space-y-4">
-                  {shownDiffs.length === 0 && <Empty>{stats.changedPages === 0 ? 'No text differences, the two documents read identically.' : 'Nothing to show.'}</Empty>}
+                  {shownDiffs.length === 0 && <Empty>{stats.changedPages === 0 ? 'No text differences. The two documents read the same.' : 'Nothing to show.'}</Empty>}
                   {shownDiffs.map((d) => (
                     <div key={d.index} className="overflow-hidden rounded-2xl border border-border bg-surface">
                       <div className="flex items-center justify-between border-b border-border bg-surface-2/50 px-4 py-2 text-xs">
-                        <span className="font-semibold">Page {d.index + 1}{d.onlyIn && <span className="ml-2 font-normal text-muted">only in {d.onlyIn === 'A' ? 'original' : 'changed'}</span>}</span>
+                        <span className="font-semibold">{wholeDoc ? 'Whole document' : `Page ${d.index + 1}`}{d.onlyIn && <span className="ml-2 font-normal text-muted">only in {d.onlyIn === 'A' ? 'original' : 'changed'}</span>}</span>
                         <span className="flex gap-3 font-mono"><span className="text-success">+{d.added}</span><span className="text-danger">−{d.removed}</span></span>
                       </div>
                       {mode === 'side' ? (
@@ -144,7 +162,7 @@ function Slot({ label, tone, file, onFile }: { label: string; tone: 'danger' | '
     <div className="space-y-2">
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"><span className={cn('size-2 rounded-full', tone === 'danger' ? 'bg-danger' : 'bg-success')} />{label}</div>
       {file ? <FileChip file={file} onRemove={() => onFile(null)} extra={<FileText className="size-4 text-muted" />} />
-        : <Dropzone compact accept="application/pdf,.pdf" onFiles={(f) => onFile(f[0])} label={`Drop the ${label.toLowerCase()} PDF`} sub="Stays on your device" />}
+        : <Dropzone compact accept="application/pdf,.pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onFiles={(f) => onFile(f[0])} label={`Drop the ${label.toLowerCase()} PDF or DOCX`} sub="Stays on your device" />}
     </div>
   )
 }
@@ -170,13 +188,13 @@ function DiffText({ parts, show }: { parts: Part[]; show: 'A' | 'B' | 'both' }) 
   )
 }
 
-type VMode = 'highlight' | 'overlay' | 'swipe'
+type VMode = 'highlight' | 'overlay' | 'side' | 'swipe'
 function VisualDiff({ a, b, diffs }: { a: PdfJsDoc; b: PdfJsDoc; diffs: PageDiff[] }) {
   const n = Math.max(a.numPages, b.numPages)
   const [page, setPage] = useState(() => Math.max(0, diffs.findIndex((d) => d.added || d.removed)))
   const [vmode, setVmode] = useState<VMode>('highlight')
   const [swipe, setSwipe] = useState(50)
-  const [imgs, setImgs] = useState<{ a: string | null; b: string | null; diff: string | null; overlay: string | null; pct: number; w: number; h: number } | null>(null)
+  const [imgs, setImgs] = useState<{ a: string | null; b: string | null; diff: string | null; overlay: string | null; mask: string | null; pct: number; w: number; h: number } | null>(null)
   const [busy, setBusy] = useState(false)
   const token = useRef(0)
 
@@ -192,7 +210,7 @@ function VisualDiff({ a, b, diffs }: { a: PdfJsDoc; b: PdfJsDoc; diffs: PageDiff
       const norm = (c: HTMLCanvasElement | null) => { const o = document.createElement('canvas'); o.width = w; o.height = h; const x = o.getContext('2d')!; x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); if (c) x.drawImage(c, 0, 0); return o }
       const na = norm(ca), nb = norm(cb)
       const da = na.getContext('2d')!.getImageData(0, 0, w, h), db = nb.getContext('2d')!.getImageData(0, 0, w, h)
-      const hl = new ImageData(w, h), ov = new ImageData(w, h)
+      const hl = new ImageData(w, h), ov = new ImageData(w, h), mk = new ImageData(w, h)
       let changed = 0
       for (let i = 0; i < da.data.length; i += 4) {
         const la = 0.299 * da.data[i] + 0.587 * da.data[i + 1] + 0.114 * da.data[i + 2]
@@ -203,6 +221,7 @@ function VisualDiff({ a, b, diffs }: { a: PdfJsDoc; b: PdfJsDoc; diffs: PageDiff
         if (diff) {
           changed++
           if (la < lb) { hl.data[i] = 230; hl.data[i + 1] = 40; hl.data[i + 2] = 60 } else { hl.data[i] = 22; hl.data[i + 1] = 163; hl.data[i + 2] = 74 }
+          mk.data[i] = 245; mk.data[i + 1] = 165; mk.data[i + 2] = 36; mk.data[i + 3] = 110
         } else { hl.data[i] = hl.data[i + 1] = hl.data[i + 2] = base }
         hl.data[i + 3] = 255
         // overlay: A in red channel, B in cyan; identical ink shows dark grey
@@ -210,7 +229,7 @@ function VisualDiff({ a, b, diffs }: { a: PdfJsDoc; b: PdfJsDoc; diffs: PageDiff
       }
       const toUrl = (d: ImageData) => { const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d')!.putImageData(d, 0, 0); return c.toDataURL('image/png') }
       if (t !== token.current) return
-      setImgs({ a: na.toDataURL('image/jpeg', 0.85), b: nb.toDataURL('image/jpeg', 0.85), diff: toUrl(hl), overlay: toUrl(ov), pct: changed / (w * h), w, h })
+      setImgs({ a: na.toDataURL('image/jpeg', 0.85), b: nb.toDataURL('image/jpeg', 0.85), diff: toUrl(hl), overlay: toUrl(ov), mask: toUrl(mk), pct: changed / (w * h), w, h })
       setBusy(false)
     })().catch(() => setBusy(false))
   }, [page, a, b])
@@ -222,13 +241,24 @@ function VisualDiff({ a, b, diffs }: { a: PdfJsDoc; b: PdfJsDoc; diffs: PageDiff
           <Button size="sm" variant="ghost" disabled={page <= 0} onClick={() => setPage(page - 1)} icon={<ChevronLeft className="size-4" />} aria-label="Previous page" />
           <span className="min-w-24 text-center font-mono text-xs text-muted">Page {page + 1} / {n}</span>
           <Button size="sm" variant="ghost" disabled={page >= n - 1} onClick={() => setPage(page + 1)} icon={<ChevronRight className="size-4" />} aria-label="Next page" />
+          {imgs && imgs.diff && <a href={imgs.diff} download={`diff-page-${page + 1}.png`} className="ml-2 text-xs text-accent underline-offset-2 hover:underline">Save diff image</a>}
           {imgs && <span className={cn('ml-2 rounded-md px-2 py-0.5 text-xs font-medium', imgs.pct > 0.0005 ? 'bg-warn/15 text-warn' : 'bg-success/15 text-success')}>{imgs.pct > 0.0005 ? `${(imgs.pct * 100).toFixed(2)}% of pixels differ` : 'Visually identical'}</span>}
         </div>
-        <Segmented value={vmode} onChange={setVmode} options={[{ value: 'highlight', label: 'Highlight' }, { value: 'overlay', label: 'Overlay' }, { value: 'swipe', label: 'Swipe' }]} />
+        <Segmented value={vmode} onChange={setVmode} options={[{ value: 'highlight', label: 'Highlight' }, { value: 'overlay', label: 'Overlay' }, { value: 'side', label: 'Side by side' }, { value: 'swipe', label: 'Swipe' }]} />
       </div>
       {vmode === 'swipe' && <Slider value={swipe} onChange={setSwipe} min={0} max={100} />}
       <div className="flex justify-center rounded-2xl border border-border bg-surface-2/50 p-3 sm:p-6 checker">
-        {!imgs ? <div className="grid h-96 place-items-center"><Spinner label="Rendering…" /></div> : (
+        {!imgs ? <div className="grid h-96 place-items-center"><Spinner label="Rendering…" /></div> : vmode === 'side' ? (
+          <div className={cn('grid w-full gap-3 sm:grid-cols-2', busy && 'opacity-60')}>
+            {([['Original', imgs.a, 'bg-danger/90'], ['Changed', imgs.b, 'bg-success/90']] as const).map(([lbl, src, cls]) => (
+              <figure key={lbl} className="relative shadow-xl ring-1 ring-black/10" style={{ aspectRatio: `${imgs.w} / ${imgs.h}` }}>
+                <img src={src!} alt={lbl} className="absolute inset-0 h-full w-full" />
+                <img src={imgs.mask!} alt="" aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
+                <figcaption className={cn('absolute left-2 top-2 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase text-white', cls)}>{lbl}</figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
           <div className={cn('relative w-full max-w-3xl shadow-xl ring-1 ring-black/10 transition-opacity', busy && 'opacity-60')} style={{ aspectRatio: `${imgs.w} / ${imgs.h}` }}>
             {vmode === 'highlight' && <img src={imgs.diff!} alt="Differences" className="absolute inset-0 h-full w-full" />}
             {vmode === 'overlay' && <img src={imgs.overlay!} alt="Overlay" className="absolute inset-0 h-full w-full" />}
@@ -245,6 +275,7 @@ function VisualDiff({ a, b, diffs }: { a: PdfJsDoc; b: PdfJsDoc; diffs: PageDiff
       <p className="text-center text-xs text-muted">
         {vmode === 'highlight' && <><span className="font-semibold text-danger">Red</span> = only in the original · <span className="font-semibold text-success">green</span> = only in the changed version.</>}
         {vmode === 'overlay' && <>Ink only in the original shows <span className="font-semibold text-danger">red</span>, ink only in the changed version shows <span className="font-semibold text-[#0bb]">cyan</span>; matching content looks dark.</>}
+        {vmode === 'side' && 'Both pages next to each other. Changed areas are tinted gold on each side.'}
         {vmode === 'swipe' && 'Drag the slider to wipe between the two versions.'}
       </p>
     </div>

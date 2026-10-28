@@ -1,4 +1,276 @@
 import type { ToolMeta } from '../registry'
 
 // Batch 1 tools. Keep entries here (not in registry.ts) so parallel builders do not conflict.
-export const BATCH_1: ToolMeta[] = []
+// Batch 1: PDF power tools and PDF conversions.
+export const BATCH_1: ToolMeta[] = [
+  // ---------- PDF: page layout ----------
+  {
+    slug: 'resize-pdf-pages', name: 'Change PDF Page Size', desc: 'Scale or fit pages to A4, Letter, A5 or a custom size, with margins. Text stays sharp.', category: 'pdf', icon: 'Scaling', badge: 'NEW',
+    tags: ['page size', 'scale', 'a4', 'letter', 'resize', 'margin'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Each page is placed on a new sheet as vector content with pdf-lib, so text and drawings are not re-rendered and stay sharp. Rotated pages are handled so they appear upright.',
+    tips: ['Use Fit to keep everything visible, or Fill to cover the sheet edge to edge.', 'Turn on a margin if your printer cannot print to the edge.'],
+    related: ['crop-pdf', 'nup-pdf', 'pdf-poster'],
+  },
+  {
+    slug: 'split-page-halves', name: 'Split Pages in Half', desc: 'Cut two-page spreads and two-up scans into single pages, left and right or top and bottom.', category: 'pdf', icon: 'SplitSquareHorizontal', badge: 'NEW',
+    tags: ['spread', 'two-up', 'book scan', 'cut', 'divide'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Each page is copied twice and each copy is cropped to one half by changing its page box with pdf-lib. Nothing is re-rendered, so quality and text are untouched.',
+    faq: [{ q: 'My book reads right to left. Can I change the order?', a: 'Yes. Turn on "Right page first" and the right half comes before the left half.' }],
+    related: ['crop-pdf', 'organize-pdf', 'alternate-mix-pdf'],
+  },
+  {
+    slug: 'flip-pdf', name: 'Flip / Mirror PDF', desc: 'Mirror PDF pages left to right or top to bottom for transfers, back-lit prints and glass scans.', category: 'pdf', icon: 'FlipHorizontal2', badge: 'NEW',
+    tags: ['mirror', 'flip', 'reverse', 'iron-on', 'transfer'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'A mirror transform is wrapped around each page\'s content with pdf-lib. Content stays vector and link areas are moved to match.',
+    related: ['rotate-pdf', 'organize-pdf'],
+  },
+  {
+    slug: 'overlay-pdf', name: 'Overlay PDF', desc: 'Lay one PDF over or under another: letterheads, stationery, form backgrounds and stamps.', category: 'pdf', icon: 'Layers2', badge: 'NEW',
+    tags: ['letterhead', 'stationery', 'background', 'stamp', 'merge layers', 'underlay'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Pages of the overlay file are embedded as reusable vector objects and drawn behind or in front of each page of the main file with pdf-lib. The overlay is stored once, so files stay small.',
+    tips: ['For a letterhead, choose Behind content and Page 1 on all.', 'Scanned pages are solid images. Put the overlay on top with lower opacity instead.'],
+    related: ['pdf-watermark', 'merge-pdf', 'pdf-header-footer'],
+  },
+  {
+    slug: 'pdf-poster', name: 'Print Poster (Tile PDF)', desc: 'Enlarge one page across several sheets with overlap, cut marks and sheet labels.', category: 'pdf', icon: 'Grid3x3', badge: 'NEW',
+    tags: ['poster', 'tile', 'tiling', 'banner', 'large print', 'enlarge'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'The chosen page is embedded once as vector content and each sheet shows a clipped part of it, so it stays sharp at any size. Overlap strips and cut marks help you line the sheets up.',
+    steps: ['Drop a PDF and pick the page to enlarge.', 'Choose how many sheets across and down, or set a scale.', 'Pick the sheet size, margin and overlap.', 'Download and print at 100% (actual size).'],
+    related: ['resize-pdf-pages', 'nup-pdf'],
+  },
+  {
+    slug: 'alternate-mix-pdf', name: 'Alternate & Mix PDFs', desc: 'Interleave front and back scans into one double-sided PDF, or mix pages from several files.', category: 'pdf', icon: 'Shuffle', badge: 'NEW',
+    tags: ['interleave', 'duplex', 'double sided', 'odd even', 'collate', 'merge alternately'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Pages are taken in turn from each file (optionally in reverse) and copied into a new PDF with pdf-lib. Pages are copied, not re-rendered.',
+    faq: [{ q: 'Why is the second file reversed by default?', a: 'When you flip a stack to scan the back sides, the last back side is scanned first. Reversing puts them back in order.' }],
+    related: ['merge-pdf', 'organize-pdf', 'split-page-halves'],
+  },
+  // ---------- PDF: structure ----------
+  {
+    slug: 'pdf-bookmarks', name: 'Edit Bookmarks / Outline', desc: 'Add, edit, reorder and nest PDF bookmarks, or build them from the headings in the text.', category: 'pdf', icon: 'BookMarked', badge: 'NEW',
+    tags: ['outline', 'table of contents', 'toc', 'navigation', 'chapters'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'The existing outline is read with pdf-lib and shown as an editable list. Build from headings reads the text with PDF.js and picks lines set in larger type. Saving writes a fresh nested outline.',
+    related: ['pdf-reader', 'split-pdf', 'pdf-viewer-preferences'],
+  },
+  {
+    slug: 'pdf-link-editor', name: 'Edit PDF Links', desc: 'Add, move and remove web and page links, or turn every web address in the text into a link.', category: 'pdf', icon: 'Link2', badge: 'NEW',
+    tags: ['hyperlink', 'url', 'clickable', 'internal link', 'mailto'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Existing link annotations are read with pdf-lib and drawn as boxes over the page. You can draw new boxes, point them at a web address, an email or a page, and save them back as standard link annotations.',
+    related: ['remove-annotations', 'pdf-bookmarks', 'edit-pdf'],
+  },
+  {
+    slug: 'create-pdf-form', name: 'Create Fillable PDF Form', desc: 'Add text fields, checkboxes, radio buttons, dropdowns, lists and signature fields to any PDF.', category: 'pdf', icon: 'FormInput', badge: 'NEW', popular: true,
+    tags: ['fillable', 'acroform', 'form builder', 'form fields', 'checkbox', 'interactive'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'You draw fields on the rendered page. pdf-lib then writes standard AcroForm fields with appearances, so they work in Acrobat, browsers and phone apps.',
+    steps: ['Drop a PDF.', 'Pick a field type and click or drag on the page.', 'Name the field and set defaults or choices.', 'Save the fillable PDF.'],
+    related: ['fill-pdf-form', 'flatten-pdf', 'sign-pdf'],
+  },
+  {
+    slug: 'pdf-attachments', name: 'PDF Attachments', desc: 'List, extract, add and remove files embedded inside a PDF.', category: 'pdf', icon: 'Paperclip', badge: 'NEW',
+    tags: ['embedded files', 'attach', 'portfolio', 'extract attachment'], inputs: ['PDF', 'Any file'], outputs: ['PDF', 'ZIP'],
+    how: 'pdf-lib reads the embedded files name tree and file attachment annotations. New files are stored as compressed embedded file streams with their name, type and description.',
+    related: ['sanitize-pdf', 'pdf-inspector', 'e-invoice-generator'],
+  },
+  {
+    slug: 'pdf-viewer-preferences', name: 'PDF Viewer Preferences', desc: 'Set the opening page, zoom, page layout, side panel, full screen and toolbar options.', category: 'pdf', icon: 'MonitorCog', badge: 'NEW',
+    tags: ['open action', 'initial view', 'zoom', 'page layout', 'full screen', 'hide toolbar'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Writes the catalog page layout, page mode, open action and viewer preferences dictionary with pdf-lib. Readers apply them when the file opens.',
+    related: ['pdf-metadata', 'pdf-bookmarks'],
+  },
+  {
+    slug: 'remove-annotations', name: 'Remove Annotations', desc: 'Strip comments, highlights, drawings, stamps, links or form fields, by type and page.', category: 'pdf', icon: 'MessageSquareOff', badge: 'NEW',
+    tags: ['delete comments', 'remove highlights', 'clean markup', 'strip notes'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'pdf-lib reads each page\'s annotation list, groups them by type and keeps only the ones you want. Page content is not touched.',
+    related: ['flatten-pdf', 'sanitize-pdf', 'pdf-link-editor'],
+  },
+  {
+    slug: 'sanitize-pdf', name: 'Sanitize PDF', desc: 'Remove JavaScript, embedded files, links, metadata, comments and hidden layers before sharing.', category: 'pdf', icon: 'ShieldCheck', badge: 'NEW',
+    tags: ['clean', 'remove javascript', 'privacy', 'security', 'strip metadata', 'safe pdf'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Every object in the file is scanned with pdf-lib. Scripts and risky actions are neutralised, and the parts you choose (files, metadata, links, layers and more) are removed before the file is rewritten.',
+    related: ['pdf-metadata', 'redact-pdf', 'remove-annotations', 'pdf-inspector'],
+  },
+  {
+    slug: 'pdf-inspector', name: 'PDF Inspector', desc: 'See page sizes, fonts and whether they are embedded, images, scripts, version, encryption and word counts.', category: 'pdf', icon: 'FileSearch', badge: 'NEW',
+    tags: ['analyze', 'statistics', 'fonts', 'word count', 'properties', 'info'], inputs: ['PDF'], outputs: ['JSON'],
+    how: 'pdf-lib walks every object to list fonts, images, actions, forms and metadata. PDF.js reads the text to count words, characters and lines per page.',
+    related: ['pdf-metadata', 'validate-pdfa', 'pdf-accessibility-check', 'word-counter'],
+  },
+  // ---------- PDF: rendering ----------
+  {
+    slug: 'rasterize-pdf', name: 'Rasterize PDF', desc: 'Turn every page into an image-only PDF at the resolution you choose.', category: 'pdf', icon: 'ImageDown', badge: 'NEW',
+    tags: ['flatten to image', 'image pdf', 'non-editable', 'print as image'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'PDF.js renders each page to a canvas at the chosen DPI and pdf-lib builds a new PDF from those images.',
+    related: ['flatten-pdf', 'compress-pdf', 'pdf-grayscale'],
+  },
+  {
+    slug: 'remove-blank-pages', name: 'Remove Blank Pages', desc: 'Find and delete blank or nearly blank scanned pages automatically, with a manual override.', category: 'pdf', icon: 'FileX2', badge: 'NEW',
+    tags: ['blank page', 'empty page', 'scan cleanup', 'delete pages'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'PDF.js renders a small preview of each page and the share of non-white pixels is measured, ignoring a thin border. Pages under the limit (and without text) are marked. The rest are copied unchanged with pdf-lib.',
+    related: ['delete-pdf-pages', 'organize-pdf', 'ocr-pdf'],
+  },
+  {
+    slug: 'pdf-adjust-colors', name: 'Adjust PDF Colors', desc: 'Dark mode, invert, grayscale, sepia, black and white, contrast and color replacement for PDFs.', category: 'pdf', icon: 'Palette', badge: 'NEW',
+    tags: ['dark mode', 'invert colors', 'night mode', 'sepia', 'contrast', 'recolor'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'PDF.js renders each page, the colors are adjusted pixel by pixel on a canvas, and pdf-lib builds a new PDF from the images.',
+    related: ['pdf-grayscale', 'rasterize-pdf'],
+  },
+  {
+    slug: 'extract-pdf-images', name: 'Extract PDF Images', desc: 'Pull embedded images out of a PDF at original quality and download them as a ZIP.', category: 'pdf', icon: 'Images', badge: 'NEW', popular: true,
+    tags: ['save images', 'export pictures', 'get photos', 'rip images'], inputs: ['PDF'], outputs: ['JPG', 'PNG', 'JP2', 'ZIP'],
+    how: 'pdf-lib finds every image object used on the pages. JPEG and JPEG 2000 images are saved byte for byte. Other images are decoded (including predictors, palettes, CMYK and soft masks) and saved as lossless PNG.',
+    related: ['pdf-to-image', 'pdf-inspector'],
+  },
+  {
+    slug: 'search-pdfs', name: 'Search in PDFs', desc: 'Full-text search across many PDFs at once, with context and the match highlighted on the page.', category: 'pdf', icon: 'SearchCode', badge: 'NEW',
+    tags: ['find text', 'search multiple pdfs', 'grep', 'full text', 'regex'], inputs: ['PDF'], outputs: [],
+    how: 'PDF.js extracts the text of every page of every file into memory. Searches run instantly on that text, with optional case, whole-word and regular expression matching.',
+    related: ['pdf-reader', 'pdf-to-text', 'ocr-pdf'],
+  },
+  {
+    slug: 'linearize-pdf', name: 'Web-Optimize PDF', desc: 'Linearize a PDF for fast web view and pack it with compressed object streams.', category: 'pdf', icon: 'Zap', badge: 'NEW',
+    tags: ['fast web view', 'linearize', 'optimize', 'qpdf', 'streaming'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'Runs qpdf (Apache-2.0) compiled to WebAssembly. It reorders the file so the first page can show while the rest downloads, recompresses streams and drops unused resources.',
+    faq: [{ q: 'Does this change how the PDF looks?', a: 'No. Only the file structure changes. Note that rewriting a signed PDF makes existing digital signatures invalid.' }],
+    related: ['compress-pdf', 'repair-pdf'],
+  },
+  // ---------- PDF: standards ----------
+  {
+    slug: 'pdf-to-pdfa', name: 'PDF to PDF/A', desc: 'Convert to archival PDF/A-1b, 2b or 3b: color profile, XMP metadata, no scripts, with a strict image mode.', category: 'pdf', icon: 'Archive', badge: 'NEW',
+    tags: ['pdfa', 'archive', 'long-term', 'iso 19005', 'compliance'], inputs: ['PDF'], outputs: ['PDF'],
+    how: 'pdf-lib removes scripts and forbidden actions, adds an sRGB output intent with a built-in ICC profile, writes PDF/A XMP metadata that mirrors the document info, adds a file ID and makes annotations printable. Strict mode first renders pages as images with PDF.js so missing fonts and transparency are no longer an issue.',
+    faq: [{ q: 'Is the result certified?', a: 'It is a careful best effort. Fonts that are not embedded in the original cannot be added in the browser, so use strict mode for those files and confirm with a certified validator when the law requires it.' }],
+    related: ['validate-pdfa', 'pdf-inspector', 'e-invoice-generator'],
+  },
+  {
+    slug: 'validate-pdfa', name: 'Check PDF/A', desc: 'Quick PDF/A report: identification, fonts, color profile, encryption, scripts, transparency and metadata.', category: 'pdf', icon: 'BadgeCheck', badge: 'NEW',
+    tags: ['pdfa validator', 'verify pdfa', 'archive check', 'compliance'], inputs: ['PDF'], outputs: [],
+    how: 'pdf-lib reads the file structure and checks the PDF/A rules that most often fail. It is a heuristic check, not a certified validation.',
+    related: ['pdf-to-pdfa', 'pdf-inspector'],
+  },
+  {
+    slug: 'pdf-accessibility-check', name: 'PDF Accessibility Checker', desc: 'Check tags, alt text, language, title, headings, table headers, tab order and real text.', category: 'pdf', icon: 'Accessibility', badge: 'NEW',
+    tags: ['pdf/ua', 'wcag', 'a11y', 'screen reader', 'tagged pdf', 'section 508'], inputs: ['PDF'], outputs: [],
+    how: 'pdf-lib walks the structure tree to count figures with alt text, headings and table headers, and checks language, title and tab order. PDF.js checks which pages have real text.',
+    related: ['pdf-inspector', 'ocr-pdf', 'pdf-metadata'],
+  },
+  // ---------- PDF: signatures ----------
+  {
+    slug: 'sign-pdf-certificate', name: 'Digital Signature (Certificate)', desc: 'Sign a PDF with your .p12 or .pfx certificate, visibly or invisibly, without uploading it.', category: 'pdf', icon: 'FileKey2', badge: 'NEW',
+    tags: ['digital signature', 'certificate', 'pkcs12', 'pfx', 'p12', 'esign', 'pades'], inputs: ['PDF', 'P12', 'PFX'], outputs: ['PDF'],
+    how: 'node-forge opens your PKCS#12 certificate and builds a detached CMS signature (SHA-256) over the exact bytes of the PDF. The signature is appended as an incremental update, so earlier signatures stay valid. You can also create a self-signed test certificate with WebCrypto.',
+    faq: [{ q: 'Will Adobe Reader show the signature as valid?', a: 'Reader will confirm the document has not changed since signing. It shows the signer as trusted only if the certificate comes from a provider on its trust list, or if you add your certificate as trusted.' }, { q: 'Does my certificate get uploaded?', a: 'No. The certificate file and password are only used inside this browser tab.' }],
+    related: ['verify-pdf-signature', 'sign-pdf', 'protect-pdf'],
+  },
+  {
+    slug: 'verify-pdf-signature', name: 'Verify PDF Signatures', desc: 'Check digital signatures: was the file changed, who signed it, certificate chain and timestamps.', category: 'pdf', icon: 'ShieldCheck', badge: 'NEW',
+    tags: ['validate signature', 'check signature', 'certificate chain', 'timestamp', 'tamper'], inputs: ['PDF'], outputs: [],
+    how: 'Each signature dictionary is read with pdf-lib. The signed byte ranges are hashed with WebCrypto and compared to the CMS message digest, the signature is verified against the signer\'s public key (RSA, RSA-PSS or ECDSA), the certificate chain is checked link by link, and embedded RFC 3161 timestamps are decoded.',
+    related: ['sign-pdf-certificate', 'pdf-inspector'],
+  },
+  // ---------- PDF: scanning and documents ----------
+  {
+    slug: 'scan-to-pdf', name: 'Scan to PDF', desc: 'Turn phone photos or your camera into a clean multi-page PDF: edge detection, straightening, black and white.', category: 'pdf', icon: 'ScanLine', badge: 'NEW', popular: true,
+    tags: ['document scanner', 'camera', 'photo to pdf', 'receipt', 'perspective', 'whiteboard'], inputs: ['JPG', 'PNG', 'HEIC', 'Camera'], outputs: ['PDF'],
+    how: 'The page is found as the largest bright shape in the photo, then straightened with a perspective transform you can fine-tune by dragging the corners. Cleanup uses auto levels for color and an adaptive threshold for crisp black and white. pdf-lib builds the PDF.',
+    steps: ['Drop photos of your pages, or press Use the camera.', 'Check the corners on each page and drag them if needed.', 'Pick Color, Gray or Black & white.', 'Save all pages as one PDF.'],
+    related: ['ocr-pdf', 'image-to-pdf', 'compress-pdf'],
+  },
+  {
+    slug: 'cover-letter-builder', name: 'Cover Letter Builder', desc: 'Write a cover letter from a template, pick a design, and bundle it with your resume and certificates into one PDF.', category: 'pdf', icon: 'Mail', badge: 'NEW',
+    tags: ['job application', 'cover letter', 'motivation letter', 'resume bundle', 'career'], inputs: ['PDF', 'JPG', 'PNG'], outputs: ['PDF'],
+    how: 'The letter is laid out with pdf-lib using embedded Liberation Sans, so it looks identical everywhere and its text is readable by applicant tracking systems. Attached PDFs and images are appended in your order with a bookmark each.',
+    related: ['resume-builder', 'merge-pdf', 'compress-pdf'],
+  },
+  {
+    slug: 'e-invoice-generator', name: 'E-Invoice Generator', desc: 'Create EN 16931 e-invoices: Factur-X / ZUGFeRD PDF with embedded XML, or XRechnung in CII or UBL.', category: 'pdf', icon: 'ReceiptEuro', badge: 'NEW',
+    tags: ['zugferd', 'factur-x', 'xrechnung', 'ubl', 'cii', 'en 16931', 'e-rechnung', 'peppol'], inputs: ['Form', 'PDF', 'XML'], outputs: ['PDF', 'XML'],
+    how: 'The invoice data is written as UN/CEFACT CII or UBL 2.1 XML. For Factur-X a readable invoice PDF is laid out with embedded fonts (or your own PDF is used), the XML is attached as factur-x.xml and the file is turned into PDF/A-3b with the required XMP metadata. Totals and key business rules are checked before export.',
+    faq: [{ q: 'Is this accepted in Germany from 2025?', a: 'Factur-X / ZUGFeRD (EN 16931 profile) and XRechnung are the formats named for German B2B e-invoicing. Public bodies often require XRechnung with a Leitweg-ID as buyer reference.' }],
+    related: ['e-invoice-viewer', 'invoice-generator', 'pdf-to-pdfa'],
+  },
+  {
+    slug: 'e-invoice-viewer', name: 'E-Invoice Viewer & Validator', desc: 'Read XRechnung, UBL, CII and Factur-X / ZUGFeRD invoices in plain language and check their totals and rules.', category: 'pdf', icon: 'FileCheck2', badge: 'NEW',
+    tags: ['xrechnung viewer', 'zugferd viewer', 'factur-x', 'ubl', 'validate invoice', 'e-rechnung anzeigen'], inputs: ['XML', 'PDF'], outputs: ['PDF', 'XML'],
+    how: 'XML is read with a small built-in parser and mapped to one invoice model for both CII and UBL. For hybrid PDFs the embedded XML is extracted first. EN 16931 calculation rules, required fields, IBAN checksums and key XRechnung rules are checked, and a readable PDF can be generated.',
+    related: ['e-invoice-generator', 'pdf-attachments'],
+  },
+  {
+    slug: 'pdf-embed-code', name: 'PDF Embed Code', desc: 'Generate HTML to embed a PDF on your website: a PDF.js viewer that works on phones, or iframe and object code.', category: 'pdf', icon: 'Code2', badge: 'NEW',
+    tags: ['embed pdf', 'iframe', 'website', 'html', 'pdf viewer', 'pdf.js'], inputs: ['URL'], outputs: ['HTML'],
+    how: 'Builds a copy-ready HTML snippet from your options. The viewer option renders pages with PDF.js from a CDN, so it works in every browser, including phones that do not show PDFs inline. You can preview it with a local file.',
+    related: ['pdf-reader', 'linearize-pdf', 'compress-pdf'],
+  },
+  // ---------- CONVERT ----------
+  {
+    slug: 'pdf-to-markdown', name: 'PDF to Markdown', desc: 'Turn PDF text into clean Markdown with headings, lists, bold and italic text, and tables.', category: 'convert', icon: 'FileDown', badge: 'NEW',
+    tags: ['md', 'markdown', 'llm', 'notes', 'obsidian', 'github'], inputs: ['PDF'], outputs: ['MD', 'ZIP'],
+    how: 'PDF.js reads every text item with its position, size and font. Lines are grouped into headings (by size), paragraphs, lists and tables, running headers and page numbers are dropped, and the result is written as GitHub-flavoured Markdown.',
+    related: ['pdf-to-text', 'pdf-to-word', 'markdown-to-pdf'],
+  },
+  {
+    slug: 'pdf-to-html', name: 'PDF to HTML', desc: 'Convert a PDF into a clean responsive web page, or an exact-looking page with selectable text.', category: 'convert', icon: 'Code2', badge: 'NEW',
+    tags: ['web page', 'html5', 'responsive', 'reflow', 'publish'], inputs: ['PDF'], outputs: ['HTML'],
+    how: 'Reflow mode rebuilds headings, paragraphs, lists and tables from the PDF text into semantic HTML with readable CSS. Exact mode renders each page with PDF.js and places an invisible, selectable text layer on top. Both produce one self-contained file.',
+    related: ['pdf-to-markdown', 'html-to-pdf', 'pdf-to-epub'],
+  },
+  {
+    slug: 'pdf-to-epub', name: 'PDF to EPUB', desc: 'Make a reflowable EPUB e-book from a PDF, with chapters, a contents list and a cover.', category: 'convert', icon: 'BookOpen', badge: 'NEW',
+    tags: ['ebook', 'kindle', 'kobo', 'e-reader', 'reflow'], inputs: ['PDF'], outputs: ['EPUB'],
+    how: 'The PDF text is rebuilt into headings, paragraphs, lists and tables, split into chapters at headings (or every few pages) and packed as an EPUB 3 file with a navigation document, NCX and cover image.',
+    related: ['epub-to-pdf', 'pdf-to-html', 'pdf-to-markdown'],
+  },
+  {
+    slug: 'pdf-to-rtf', name: 'PDF to RTF', desc: 'Convert PDF text into an RTF document with paragraphs, headings, lists, tables and images kept.', category: 'convert', icon: 'FileType', badge: 'NEW',
+    tags: ['rich text', 'wordpad', 'textedit', 'word'], inputs: ['PDF'], outputs: ['RTF'],
+    how: 'Text and layout are read with PDF.js, rebuilt into paragraphs, headings, lists and tables, and written as Rich Text Format by a small built-in writer. Pages without text are embedded as PNG pictures.',
+    related: ['pdf-to-word', 'pdf-to-odf', 'pdf-to-text'],
+  },
+  {
+    slug: 'pdf-to-odf', name: 'PDF to ODT / ODS / ODP', desc: 'Convert a PDF to OpenDocument text, spreadsheet or presentation for LibreOffice and friends.', category: 'convert', icon: 'FileSpreadsheet', badge: 'NEW',
+    tags: ['odt', 'ods', 'odp', 'libreoffice', 'opendocument', 'openoffice'], inputs: ['PDF'], outputs: ['ODT', 'ODS', 'ODP'],
+    how: 'ODT rebuilds headings, paragraphs, lists and tables. ODS places text into rows and columns, one sheet per page. ODP puts each page on a slide as an image. Files are written as standard OpenDocument packages.',
+    related: ['pdf-to-word', 'pdf-to-excel', 'pdf-to-ppt'],
+  },
+  {
+    slug: 'pdf-to-tiff', name: 'PDF to TIFF', desc: 'Export PDF pages as a multi-page TIFF in color, grayscale or black and white, with LZW or ZIP compression.', category: 'convert', icon: 'FileImage', badge: 'NEW',
+    tags: ['tif', 'fax', 'archive', 'multipage tiff', 'g4'], inputs: ['PDF'], outputs: ['TIFF', 'ZIP'],
+    how: 'PDF.js renders each page at the chosen DPI and a built-in TIFF writer stores them as baseline TIFF (RGB, 8-bit gray or 1-bit) with LZW, Deflate or PackBits compression and the correct resolution tags.',
+    related: ['pdf-to-image', 'image-to-pdf'],
+  },
+  {
+    slug: 'svg-to-pdf', name: 'SVG to PDF', desc: 'Convert SVG graphics to a vector PDF, one page per file, at their own size or on A4 or Letter.', category: 'convert', icon: 'FileCode2', badge: 'NEW',
+    tags: ['vector', 'svg', 'logo', 'illustration', 'print'], inputs: ['SVG'], outputs: ['PDF'],
+    how: 'Each SVG is drawn into a jsPDF document with svg2pdf.js, which turns paths, shapes, gradients and text into real PDF vector operations. Nothing is rasterized.',
+    related: ['svg-optimizer', 'image-to-pdf', 'image-to-svg'],
+  },
+  {
+    slug: 'zip-to-pdf', name: 'ZIP to PDF', desc: 'Turn every image, PDF and text file inside a ZIP into one PDF, in the order you choose.', category: 'convert', icon: 'FileArchive', badge: 'NEW',
+    tags: ['archive', 'combine', 'images to pdf', 'batch', 'comic'], inputs: ['ZIP'], outputs: ['PDF'],
+    how: 'fflate unpacks the ZIP in memory. JPEG and PNG images are placed without re-compression, other images (WEBP, GIF, BMP, AVIF, TIFF, SVG) are drawn through a canvas, PDFs are merged page by page and text files become text pages. A bookmark is added per file.',
+    related: ['image-to-pdf', 'merge-pdf'],
+  },
+  {
+    slug: 'pdf-to-svg', name: 'PDF to SVG', desc: 'Turn PDF pages into SVG files with sharp vector shapes, real text and the original fonts, ready to edit.', category: 'convert', icon: 'PenTool', badge: 'NEW',
+    tags: ['vector', 'svg', 'illustrator', 'inkscape', 'figma', 'logo', 'pdf to vector'], inputs: ['PDF'], outputs: ['SVG', 'ZIP'],
+    how: 'PDF.js reads the drawing commands of each page and a built-in writer turns them into SVG: paths, strokes, dashes, clipping, linear and radial gradients, pictures and text. Embedded fonts are copied into the SVG so it looks the same, with an invisible copy of the text so you can still search and copy it. An image mode is there for pages with effects that SVG cannot show.',
+    steps: ['Drop a PDF.', 'Check the live preview and choose Vector or Image with text layer.', 'Pick the pages, then convert. Several pages come as a ZIP.'],
+    tips: ['Turn off font embedding if you want to edit the words in a design app.', 'Tiled patterns and soft masks are simplified. The preview shows a note when that happens.'],
+    related: ['svg-to-pdf', 'pdf-to-image', 'pdf-to-html'],
+  },
+  {
+    slug: 'powerpoint-to-pdf', name: 'PowerPoint to PDF', desc: 'Convert PPTX slides to PDF in your browser, as slides, slides with speaker notes, or handouts.', category: 'convert', icon: 'Presentation', badge: 'NEW',
+    tags: ['pptx', 'ppt', 'slides', 'presentation', 'handout', 'speaker notes', 'keynote'], inputs: ['PPTX', 'PPSX', 'POTX'], outputs: ['PDF'],
+    how: 'The PPTX package is unzipped and each slide is rebuilt from its XML: text boxes with their fonts and colors, pictures, tables, filled shapes and backgrounds, with positions taken from the layout and master. Every slide is drawn in a sealed frame and placed into a PDF with jsPDF. Charts, SmartArt and gradients are skipped.',
+    steps: ['Drop a .pptx file.', 'Choose Slides, With notes or Handout.', 'Set the sharpness and convert.'],
+    faq: [{ q: 'Can I convert an old .ppt file?', a: 'Not directly. Open it in PowerPoint, Keynote or LibreOffice, save it as .pptx, then convert that.' }],
+    related: ['office-viewer', 'pdf-to-ppt', 'word-to-pdf'],
+  },
+  {
+    slug: 'xps-to-pdf', name: 'XPS to PDF', desc: 'Convert XPS and OXPS documents to PDF, PNG or SVG, with searchable text, right in your browser.', category: 'convert', icon: 'FileOutput', badge: 'NEW',
+    tags: ['xps', 'oxps', 'openxps', 'microsoft print to pdf', 'xps viewer', 'windows'], inputs: ['XPS', 'OXPS'], outputs: ['PDF', 'PNG', 'SVG'],
+    how: 'An XPS file is a ZIP of XML pages. Each page is translated to SVG: paths, solid, gradient and picture brushes, clipping, transforms and Glyphs text using the fonts stored in the file (including obfuscated ones). The browser draws the SVG and each page goes into a PDF as an image with an invisible text layer, so search and copy still work.',
+    steps: ['Drop an .xps or .oxps file.', 'Check the preview.', 'Pick PDF, PNG or SVG and convert.'],
+    tips: ['Pictures in JPEG XR format cannot be shown by browsers and are left out.'],
+    related: ['pdf-to-image', 'image-to-pdf', 'pdf-to-svg'],
+  },
+]

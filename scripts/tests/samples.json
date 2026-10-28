@@ -1,0 +1,953 @@
+{
+  "generated": "2026-10-28",
+  "verifiedWith": "curl -L full GET (HEAD for camera RAW files over 6 MB); every URL returned HTTP 200 on 2026-10-28",
+  "note": "Public sample files for format tests. Licences are as stated by each host; prefer CC0/public-domain entries for fixtures committed to the repo. Large RAW files are fetched on demand, never committed.",
+  "count": 105,
+  "samples": [
+    {
+      "family": "image",
+      "format": "avif",
+      "url": "https://raw.githubusercontent.com/link-u/avif-sample-images/master/fox.profile0.8bpc.yuv420.avif",
+      "bytes": 80743,
+      "license": "CC-BY-SA-4.0 (link-u samples)",
+      "contentType": "image/avif",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "avif",
+      "url": "https://raw.githubusercontent.com/strukturag/libheif/master/examples/example.avif",
+      "bytes": 113604,
+      "license": "test content (libheif repo, LGPL project)",
+      "contentType": "image/avif",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "bmp",
+      "url": "https://raw.githubusercontent.com/mathiasbynens/small/master/bmp.bmp",
+      "bytes": 30,
+      "license": "tiny test file, licence unspecified (mathiasbynens/small)",
+      "contentType": "image/bmp",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "dcm",
+      "url": "https://raw.githubusercontent.com/pydicom/pydicom/main/src/pydicom/data/test_files/CT_small.dcm",
+      "bytes": 39206,
+      "license": "pydicom test data (see repository licence notes)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "djvu",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Sarmatiae_Europeae_Descriptio_1578_-_0156.djvu",
+      "bytes": 88298,
+      "license": "Public domain",
+      "contentType": "image/vnd.djvu",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "exr",
+      "url": "https://raw.githubusercontent.com/AcademySoftwareFoundation/openexr-images/main/ScanLines/Desk.exr",
+      "bytes": 2424523,
+      "license": "ASWF OpenEXR test images (see repository licence)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "gif",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/05/Muybridge_race_horse_animated_184px.gif",
+      "bytes": 297201,
+      "license": "Public domain",
+      "contentType": "image/gif",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "hdr",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/venice_sunset_1k.hdr",
+      "bytes": 1397783,
+      "license": "CC0 (Poly Haven, via three.js examples)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "heic",
+      "url": "https://raw.githubusercontent.com/strukturag/libheif/master/examples/example.heic",
+      "bytes": 718114,
+      "license": "test content (libheif repo)",
+      "contentType": "image/heic",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "ico",
+      "url": "https://raw.githubusercontent.com/mathiasbynens/small/master/ico.ico",
+      "bytes": 70,
+      "license": "tiny test file, licence unspecified (mathiasbynens/small)",
+      "contentType": "image/vnd.microsoft.icon",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "jp2",
+      "url": "https://raw.githubusercontent.com/uclouvain/openjpeg-data/master/input/conformance/file1.jp2",
+      "bytes": 650678,
+      "license": "OpenJPEG conformance data (see repository)",
+      "contentType": "image/jp2",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "jpg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/01/Cr%C3%A2ne_%C3%A2ne_donkey_skull_mus%C3%A9e_v%C3%A9t%C3%A9rinaire_Maisons_alfort_1a.jpg",
+      "bytes": 848220,
+      "license": "CC0",
+      "contentType": "image/jpeg",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "jxl",
+      "url": "https://raw.githubusercontent.com/libjxl/conformance/master/testcases/bicycles/input.jxl",
+      "bytes": 73501,
+      "license": "BSD-3 (libjxl conformance)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "png",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/39/Cyclotron_patent.png",
+      "bytes": 46139,
+      "license": "Public domain",
+      "contentType": "image/png",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "psd",
+      "url": "https://raw.githubusercontent.com/meltingice/psd.js/master/examples/images/example.psd",
+      "bytes": 584222,
+      "license": "MIT repo example (psd.js)",
+      "contentType": "image/vnd.adobe.photoshop",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "svg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Structure_lysophosphatidylcholine.svg",
+      "bytes": 3717,
+      "license": "Public domain",
+      "contentType": "image/svg+xml",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "tiff",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/CE_1166_FBI_report_giving_approximation_of_expendiitures_which_Lee_Harvey_Oswald_made_during_his_travel_and_stay_in_Mexico_-_DPLA_-_073f8ad35240d0083d8baf1e3b8e99be_%28page_26%29.tiff",
+      "bytes": 481331,
+      "license": "Public domain",
+      "contentType": "image/tiff",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "webp",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Chris-stallings.webp",
+      "bytes": 14296,
+      "license": "Public domain",
+      "contentType": "image/webp",
+      "httpStatus": 200
+    },
+    {
+      "family": "image",
+      "format": "xcf",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Bar7.xcf",
+      "bytes": 33261,
+      "license": "CC0",
+      "contentType": "image/x-xcf",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "arw",
+      "url": "https://raw.pixls.us/data/SONY/ZV-E10M2/DSC00696.ARW",
+      "bytes": 28368896,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "cr2",
+      "url": "https://raw.pixls.us/data/Canon/EOS%205D%20Mark%20II/IMG_0051.CR2",
+      "bytes": 29077314,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "image/x-canon-cr2",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "cr3",
+      "url": "https://raw.pixls.us/data/Canon/EOS%20R5/Canon_EOS_R5_CRAW_ISO_100_crop_nodual.CR3",
+      "bytes": 6975574,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "dng",
+      "url": "https://raw.pixls.us/data/Apple/iPhone%2012%20Pro/IMG_1361.DNG",
+      "bytes": 29195592,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "nef",
+      "url": "https://raw.pixls.us/data/NIKON%20CORPORATION/NIKON%20D5300/DSC_0090-12bit-uncompressed.NEF",
+      "bytes": 24007380,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "image/x-nikon-nef",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "orf",
+      "url": "https://raw.pixls.us/data/OM%20Digital%20Solutions/OM-5MarkII/OM_System_OM-5_2_hires_a.ORF",
+      "bytes": 40863271,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "image/x-olympus-orf",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "pef",
+      "url": "https://raw.pixls.us/data/Pentax/K-1/IMGP8550.PEF",
+      "bytes": 46896111,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "raf",
+      "url": "https://raw.pixls.us/data/FUJIFILM/X-T50/DSCF0118.RAF",
+      "bytes": 87559168,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "raw",
+      "format": "rw2",
+      "url": "https://raw.pixls.us/data/Panasonic/DC-G9/P1000475.RW2",
+      "bytes": 131372032,
+      "license": "CC0 (raw.pixls.us)",
+      "contentType": "text/html; charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "av1-mp4",
+      "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/av1/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+      "bytes": 1045545,
+      "license": "CC-BY-3.0 (test-videos.co.uk)",
+      "contentType": "video/mp4",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "avi",
+      "url": "https://samples.ffmpeg.org/avi/dance1.avi",
+      "bytes": 887856,
+      "license": "FFmpeg samples archive",
+      "contentType": "video/x-msvideo",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "hevc-mp4",
+      "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h265/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+      "bytes": 1057627,
+      "license": "CC-BY-3.0 (test-videos.co.uk)",
+      "contentType": "video/mp4",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "mkv",
+      "url": "https://test-videos.co.uk/vids/bigbuckbunny/mkv/360/Big_Buck_Bunny_360_10s_1MB.mkv",
+      "bytes": 957162,
+      "license": "CC-BY-3.0 (Big Buck Bunny, test-videos.co.uk)",
+      "contentType": "video/x-matroska",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "mov",
+      "url": "https://samples.ffmpeg.org/mov/aacaudio.mov",
+      "bytes": 4225068,
+      "license": "FFmpeg samples archive",
+      "contentType": "video/quicktime",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "mp4",
+      "url": "https://download.samplelib.com/mp4/sample-5s.mp4",
+      "bytes": 2848208,
+      "license": "royalty-free (samplelib)",
+      "contentType": "video/mp4",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "mp4",
+      "url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4",
+      "bytes": 991017,
+      "license": "CC-BY-3.0 (Big Buck Bunny, test-videos.co.uk)",
+      "contentType": "video/mp4",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "webm",
+      "url": "https://download.samplelib.com/webm/sample-5s.webm",
+      "bytes": 6687499,
+      "license": "royalty-free (samplelib)",
+      "contentType": "video/webm",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "webm",
+      "url": "https://test-videos.co.uk/vids/bigbuckbunny/webm/vp9/360/Big_Buck_Bunny_360_10s_1MB.webm",
+      "bytes": 1052940,
+      "license": "CC-BY-3.0 (Big Buck Bunny, test-videos.co.uk)",
+      "contentType": "video/webm",
+      "httpStatus": 200
+    },
+    {
+      "family": "video",
+      "format": "webm",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Total_Solar_Eclipse_Reaches_Iceland_%28CIRA_2026-08-12_-_nolabels%29.webm",
+      "bytes": 977711,
+      "license": "Public domain",
+      "contentType": "video/webm",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "aac",
+      "url": "https://samples.ffmpeg.org/A-codecs/AAC/ct_faac-adts.aac",
+      "bytes": 299647,
+      "license": "FFmpeg samples archive",
+      "contentType": "audio/aac",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "flac",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Rm-sursilv-miu.flac",
+      "bytes": 19064,
+      "license": "CC0",
+      "contentType": "audio/x-flac",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "m4a",
+      "url": "https://samples.ffmpeg.org/A-codecs/AAC/8_Channel_ID.m4a",
+      "bytes": 136005,
+      "license": "FFmpeg samples archive",
+      "contentType": "audio/mp4",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "mid",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Ring_Leitmotiv_d46.mid",
+      "bytes": 158,
+      "license": "Public domain",
+      "contentType": "audio/midi",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "mp3",
+      "url": "https://download.samplelib.com/mp3/sample-3s.mp3",
+      "bytes": 52079,
+      "license": "royalty-free (samplelib)",
+      "contentType": "audio/mpeg",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "mp3",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Said_Musa_from_Belize_pronunciation_%28Voice_of_America%29.mp3",
+      "bytes": 33855,
+      "license": "Public domain (VOA)",
+      "contentType": "audio/mpeg",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "ogg",
+      "url": "https://samples.ffmpeg.org/ogg/Vorbis/1sec.ogg",
+      "bytes": 15912,
+      "license": "FFmpeg samples archive",
+      "contentType": "audio/ogg",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "ogg",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg",
+      "bytes": 104793,
+      "license": "CC-BY-SA-3.0 (Wikimedia Commons Example.ogg)",
+      "contentType": "application/ogg",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "opus",
+      "url": "https://opus-codec.org/static/examples/ehren-paper_lights-96.opus",
+      "bytes": 2629170,
+      "license": "Opus project demo sample",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "wav",
+      "url": "https://download.samplelib.com/wav/sample-3s.wav",
+      "bytes": 563756,
+      "license": "royalty-free (samplelib)",
+      "contentType": "audio/x-wav",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "wav",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/LL-Q150_%28fra%29-val_%28Eavq%29-o%C3%B9.wav",
+      "bytes": 76588,
+      "license": "CC0",
+      "contentType": "audio/x-wav",
+      "httpStatus": 200
+    },
+    {
+      "family": "audio",
+      "format": "webm",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Jorge_Abadia_from_Panama_pronunciation_%28Voice_of_America%29.webm",
+      "bytes": 55035,
+      "license": "Public domain",
+      "contentType": "video/webm",
+      "httpStatus": 200
+    },
+    {
+      "family": "pdf",
+      "format": "pdf",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Bewegungsinduktion.pdf",
+      "bytes": 20475,
+      "license": "CC0",
+      "contentType": "application/pdf",
+      "httpStatus": 200
+    },
+    {
+      "family": "pdf",
+      "format": "pdf",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Monitorul_Oficial_al_Rom%C3%A2niei._Partea_I_2005-03-23%2C_nr._243.pdf",
+      "bytes": 72614,
+      "license": "Public domain",
+      "contentType": "application/pdf",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "docx",
+      "url": "https://raw.githubusercontent.com/apache/poi/trunk/test-data/document/SampleDoc.docx",
+      "bytes": 11611,
+      "license": "Apache-2.0 (Apache POI test-data)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "docx",
+      "url": "https://raw.githubusercontent.com/python-openxml/python-docx/master/features/steps/test_files/par-known-styles.docx",
+      "bytes": 20901,
+      "license": "MIT (python-docx test file)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "odp",
+      "url": "https://raw.githubusercontent.com/jdum/odfdo/master/tests/samples/example.odp",
+      "bytes": 55687,
+      "license": "Apache-2.0 test file (odfdo)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "ods",
+      "url": "https://raw.githubusercontent.com/jdum/odfdo/master/tests/samples/simple_table.ods",
+      "bytes": 9461,
+      "license": "Apache-2.0 test file (odfdo)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "odt",
+      "url": "https://raw.githubusercontent.com/jdum/odfdo/master/tests/samples/example.odt",
+      "bytes": 11856,
+      "license": "Apache-2.0 test file (odfdo)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "pptx",
+      "url": "https://raw.githubusercontent.com/apache/poi/trunk/test-data/slideshow/SampleShow.pptx",
+      "bytes": 39083,
+      "license": "Apache-2.0 (Apache POI test-data)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "pptx",
+      "url": "https://raw.githubusercontent.com/scanny/python-pptx/master/features/steps/test_files/test.pptx",
+      "bytes": 37859,
+      "license": "MIT repo test file (python-pptx)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "xls",
+      "url": "https://raw.githubusercontent.com/apache/poi/trunk/test-data/spreadsheet/SampleSS.xls",
+      "bytes": 17408,
+      "license": "Apache-2.0 (Apache POI test-data)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "office",
+      "format": "xlsx",
+      "url": "https://raw.githubusercontent.com/apache/poi/trunk/test-data/spreadsheet/SampleSS.xlsx",
+      "bytes": 9112,
+      "license": "Apache-2.0 (Apache POI test-data)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "ebook",
+      "format": "azw3",
+      "url": "https://www.gutenberg.org/ebooks/11.kf8.images",
+      "bytes": 255506,
+      "license": "Public domain (Project Gutenberg #11)",
+      "contentType": "application/x-mobipocket-ebook",
+      "httpStatus": 200
+    },
+    {
+      "family": "ebook",
+      "format": "epub",
+      "url": "https://www.gutenberg.org/cache/epub/11/pg11-images-3.epub",
+      "bytes": 189249,
+      "license": "Public domain (Gutenberg, cache URL)",
+      "contentType": "application/epub+zip",
+      "httpStatus": 200
+    },
+    {
+      "family": "ebook",
+      "format": "mobi",
+      "url": "https://www.gutenberg.org/ebooks/11.kindle.images",
+      "bytes": 241000,
+      "license": "Public domain (Project Gutenberg #11)",
+      "contentType": "application/x-mobipocket-ebook",
+      "httpStatus": 200
+    },
+    {
+      "family": "archive",
+      "format": "7z",
+      "url": "https://raw.githubusercontent.com/miurahr/py7zr/master/tests/data/test_1.7z",
+      "bytes": 657,
+      "license": "LGPL repo test data (py7zr)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "archive",
+      "format": "rar",
+      "url": "https://raw.githubusercontent.com/markokr/rarfile/master/test/files/rar3-comment-plain.rar",
+      "bytes": 300,
+      "license": "ISC repo test data (rarfile)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "archive",
+      "format": "rar",
+      "url": "https://raw.githubusercontent.com/markokr/rarfile/master/test/files/rar5-solid.rar",
+      "bytes": 169,
+      "license": "ISC repo test data (rarfile)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "archive",
+      "format": "tar.gz",
+      "url": "https://github.com/madler/zlib/archive/refs/tags/v1.3.1.tar.gz",
+      "bytes": 1572744,
+      "license": "zlib licence (source archive)",
+      "contentType": "application/x-gzip",
+      "httpStatus": 200
+    },
+    {
+      "family": "archive",
+      "format": "tar.xz",
+      "url": "https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.xz",
+      "bytes": 1305740,
+      "license": "zlib licence (release)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "archive",
+      "format": "zip",
+      "url": "https://github.com/madler/zlib/archive/refs/tags/v1.3.1.zip",
+      "bytes": 1707811,
+      "license": "zlib licence (source archive)",
+      "contentType": "application/zip",
+      "httpStatus": 200
+    },
+    {
+      "family": "font",
+      "format": "otf",
+      "url": "https://raw.githubusercontent.com/IBM/plex/master/packages/plex-sans/fonts/complete/otf/IBMPlexSans-Regular.otf",
+      "bytes": 136352,
+      "license": "OFL (IBM Plex Sans)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "font",
+      "format": "ttf",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/lobster/Lobster-Regular.ttf",
+      "bytes": 406076,
+      "license": "OFL (Google Fonts)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "font",
+      "format": "ttf-variable",
+      "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf",
+      "bytes": 876576,
+      "license": "OFL (Google Fonts)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "font",
+      "format": "woff",
+      "url": "https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.woff",
+      "bytes": 30696,
+      "license": "OFL (Inter via Fontsource CDN)",
+      "contentType": "font/woff",
+      "httpStatus": 200
+    },
+    {
+      "family": "font",
+      "format": "woff2",
+      "url": "https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.woff2",
+      "bytes": 23664,
+      "license": "OFL (Inter via Fontsource CDN)",
+      "contentType": "font/woff2",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "3ds",
+      "url": "https://raw.githubusercontent.com/assimp/assimp/master/test/models/3DS/fels.3ds",
+      "bytes": 13326,
+      "license": "assimp test model (BSD-3 repo; per-model terms vary)",
+      "contentType": "image/3ds",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "3mf",
+      "url": "https://raw.githubusercontent.com/3MFConsortium/3mf-samples/master/examples/core/box.3mf",
+      "bytes": 1176,
+      "license": "BSD-2 (3MF Consortium samples)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "dae",
+      "url": "https://raw.githubusercontent.com/assimp/assimp/master/test/models/Collada/duck.dae",
+      "bytes": 284355,
+      "license": "assimp test model (BSD-3 repo; per-model terms vary)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "fbx",
+      "url": "https://raw.githubusercontent.com/assimp/assimp/master/test/models/FBX/box.fbx",
+      "bytes": 17200,
+      "license": "assimp test model (BSD-3 repo; per-model terms vary)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "glb",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Avocado/glTF-Binary/Avocado.glb",
+      "bytes": 8110040,
+      "license": "CC0 (Khronos sample: Avocado)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "gltf",
+      "url": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Box/glTF-Embedded/Box.gltf",
+      "bytes": 3791,
+      "license": "CC-BY-4.0 (Khronos sample: Box)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "obj",
+      "url": "https://raw.githubusercontent.com/alecjacobson/common-3d-test-models/master/data/spot.obj",
+      "bytes": 330624,
+      "license": "CC0 (Keenan Crane spot)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "ply",
+      "url": "https://raw.githubusercontent.com/assimp/assimp/master/test/models/PLY/cube.ply",
+      "bytes": 329,
+      "license": "assimp test model (BSD-3 repo; per-model terms vary)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "step",
+      "url": "https://raw.githubusercontent.com/kovacsv/occt-import-js/main/test/testfiles/simple-basic-cube/cube.stp",
+      "bytes": 8010,
+      "license": "LGPL repo test file (occt-import-js)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "3d",
+      "format": "stl",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/U%2B2033_Noto_Sans_20230523.stl",
+      "bytes": 3684,
+      "license": "CC0",
+      "contentType": "application/sla",
+      "httpStatus": 200
+    },
+    {
+      "family": "cad",
+      "format": "dxf",
+      "url": "https://raw.githubusercontent.com/gdsestimating/dxf-parser/master/test/data/arc1.dxf",
+      "bytes": 302,
+      "license": "MIT (dxf-parser test data)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "cad",
+      "format": "dxf",
+      "url": "https://raw.githubusercontent.com/gdsestimating/dxf-parser/master/test/data/blocks.dxf",
+      "bytes": 733713,
+      "license": "MIT (dxf-parser test data)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "subtitle",
+      "format": "ass",
+      "url": "https://raw.githubusercontent.com/papnkukn/subsrt/master/test/fixtures/sample.ass",
+      "bytes": 955,
+      "license": "MIT repo fixture (subsrt)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "subtitle",
+      "format": "lrc",
+      "url": "https://raw.githubusercontent.com/papnkukn/subsrt/master/test/fixtures/sample.lrc",
+      "bytes": 488,
+      "license": "MIT repo fixture (subsrt)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "subtitle",
+      "format": "sbv",
+      "url": "https://raw.githubusercontent.com/papnkukn/subsrt/master/test/fixtures/sample.sbv",
+      "bytes": 385,
+      "license": "MIT repo fixture (subsrt)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "subtitle",
+      "format": "smi",
+      "url": "https://raw.githubusercontent.com/papnkukn/subsrt/master/test/fixtures/sample.smi",
+      "bytes": 986,
+      "license": "MIT repo fixture (subsrt)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "subtitle",
+      "format": "srt",
+      "url": "https://raw.githubusercontent.com/papnkukn/subsrt/master/test/fixtures/sample.srt",
+      "bytes": 422,
+      "license": "MIT repo fixture (subsrt)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "subtitle",
+      "format": "vtt",
+      "url": "https://raw.githubusercontent.com/papnkukn/subsrt/master/test/fixtures/sample.vtt",
+      "bytes": 883,
+      "license": "MIT repo fixture (subsrt)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "arrow",
+      "url": "https://raw.githubusercontent.com/apache/arrow-testing/master/data/arrow-ipc-stream/integration/1.0.0-littleendian/generated_primitive.arrow_file",
+      "bytes": 22298,
+      "license": "Apache-2.0 (arrow-testing)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "avro",
+      "url": "https://raw.githubusercontent.com/apache/avro/main/share/test/data/weather.avro",
+      "bytes": 358,
+      "license": "Apache-2.0 (avro test data)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "csv",
+      "url": "https://raw.githubusercontent.com/datasets/country-codes/main/data/country-codes.csv",
+      "bytes": 133991,
+      "license": "ODC-PDDL (datasets/country-codes)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "csv",
+      "url": "https://raw.githubusercontent.com/datasets/country-list/main/data.csv",
+      "bytes": 3835,
+      "license": "ODC-PDDL (datasets/country-list, per datapackage)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "geojson",
+      "url": "https://raw.githubusercontent.com/datasets/geo-countries/main/data/countries.geojson",
+      "bytes": 14643641,
+      "license": "ODC-PDDL data (datasets/geo-countries)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "json",
+      "url": "https://raw.githubusercontent.com/datasets/geo-countries/main/datapackage.json",
+      "bytes": 2433,
+      "license": "ODC-PDDL data (datasets/geo-countries)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "parquet",
+      "url": "https://raw.githubusercontent.com/apache/parquet-testing/master/data/alltypes_plain.parquet",
+      "bytes": 1851,
+      "license": "Apache-2.0 (parquet-testing)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "sqlite",
+      "url": "https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_Sqlite.sqlite",
+      "bytes": 1007616,
+      "license": "Chinook sample database (repo licence: see repository)",
+      "contentType": "application/octet-stream",
+      "httpStatus": 200
+    },
+    {
+      "family": "data",
+      "format": "xml",
+      "url": "https://www.w3.org/TR/xml/REC-xml-20081126.xml",
+      "bytes": 211502,
+      "license": "W3C document licence (XML spec source)",
+      "contentType": "application/xml; qs=0.9",
+      "httpStatus": 200
+    },
+    {
+      "family": "geo",
+      "format": "gpx",
+      "url": "https://raw.githubusercontent.com/placemark/togeojson/main/test/data/run.gpx",
+      "bytes": 66712,
+      "license": "BSD-2 repo test data (togeojson)",
+      "contentType": "text/plain; charset=utf-8",
+      "httpStatus": 200
+    },
+    {
+      "family": "geo",
+      "format": "gpx",
+      "url": "https://www.topografix.com/fells_loop.gpx",
+      "bytes": 29894,
+      "license": "sample (TopoGrafix)",
+      "contentType": "application/gpx+xml",
+      "httpStatus": 200
+    },
+    {
+      "family": "geo",
+      "format": "kml",
+      "url": "https://developers.google.com/static/kml/documentation/KML_Samples.kml",
+      "bytes": 35920,
+      "license": "CC-BY-4.0 (Google KML samples)",
+      "contentType": "None",
+      "httpStatus": 200
+    }
+  ]
+}

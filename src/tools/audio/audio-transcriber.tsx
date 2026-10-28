@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Captions, FileText, X, Cpu, Zap, Clock } from 'lucide-react'
+import { Captions, FileText, X, Cpu, Zap, Clock, Flame } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Button, Dropzone, Label, Segmented, Select, Switch, ToolGrid, Progress, ErrorNote, CopyButton, Empty, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
@@ -8,6 +9,9 @@ import { decodeAudioFile } from '@/tools/video/_media/audio'
 import { fmtTime, useObjectUrl } from '@/tools/video/_media/media'
 import { EngineLoading, FileBar, Note, Reveal } from '@/tools/video/_media/ui'
 import { toSrt, toVtt, type Seg } from './_media/subtitles'
+import { groupWords, type Word } from './_b4/words'
+import { setHandoff } from '@/lib/handoff'
+import { toolBySlug } from '@/tools/registry'
 
 type ModelId = 'Xenova/whisper-tiny' | 'Xenova/whisper-base'
 type Stage = 'idle' | 'decoding' | 'loading' | 'transcribing' | 'done' | 'error'
@@ -34,7 +38,12 @@ export default function AudioTranscriber() {
   const [duration, setDuration] = useState(0)
   const [startedAt, setStartedAt] = useState(0)
   const worker = useRef<Worker | null>(null)
-  const player = useRef<HTMLAudioElement>(null)
+  const player = useRef<HTMLMediaElement | null>(null)
+  const [wordMode, setWordMode] = useState(false)
+  const [words, setWords] = useState<Word[]>([])
+  const [perCaption, setPerCaption] = useState(6)
+  const navigate = useNavigate()
+  const isVideo = !!file && (file.type.startsWith('video/') || /\.(mp4|mov|mkv|m4v|avi)$/i.test(file.name))
 
   useEffect(() => () => worker.current?.terminate(), [])
 
@@ -45,7 +54,7 @@ export default function AudioTranscriber() {
 
   const run = async () => {
     if (!file) return
-    setError(null); setSegs([]); setPartial(''); setProg({ done: 0, total: 1 }); setStage('decoding'); setStatus('Decoding audio…')
+    setError(null); setSegs([]); setWords([]); setPartial(''); setProg({ done: 0, total: 1 }); setStage('decoding'); setStatus('Decoding audio…')
     let pcm: Float32Array
     try {
       const buf = await decodeAudioFile(file, { sampleRate: 16000 })
@@ -71,14 +80,15 @@ export default function AudioTranscriber() {
         const out: Seg[] = chunks.length
           ? chunks.map((c, i) => ({ start: c.timestamp[0] ?? 0, end: c.timestamp[1] ?? chunks[i + 1]?.timestamp[0] ?? pcm.length / 16000, text: c.text })).filter((s) => s.text.trim())
           : [{ start: 0, end: pcm.length / 16000, text: m.result?.text ?? '' }]
-        setSegs(out); setStage('done')
+        if (wordMode && chunks.length) { setWords(out); setSegs(groupWords(out, perCaption)) } else setSegs(out)
+        setStage('done')
         if (!out.length || !out.some((s) => s.text.trim())) toast('No speech was detected', 'info')
       } else if (m.type === 'error') {
         setError(/webgpu|gpu/i.test(m.message) ? `${m.message}. Try turning off GPU acceleration.` : m.message); setStage('error')
       }
     }
     w.onerror = (ev) => { setError(ev.message || 'The speech engine crashed. Try the tiny model or a shorter file.'); setStage('error') }
-    w.postMessage({ type: 'run', audio: pcm, model, language: lang, task, device: gpu && hasGpu ? 'webgpu' : 'wasm' }, [pcm.buffer])
+    w.postMessage({ type: 'run', audio: pcm, model: wordMode ? model.replace('Xenova/whisper-', 'onnx-community/whisper-') + '_timestamped' : model, language: lang, task, device: gpu && hasGpu ? 'webgpu' : 'wasm', words: wordMode }, [pcm.buffer])
   }
 
   const cancel = () => { worker.current?.terminate(); worker.current = null; setStage(segs.length ? 'done' : 'idle'); toast('Cancelled', 'info') }
@@ -100,7 +110,9 @@ export default function AudioTranscriber() {
       <ToolGrid
         main={<>
           <FileBar file={file} onReset={reset} extra={duration ? <span className="font-mono text-xs text-muted">{fmtTime(duration, 0)}</span> : null} />
-          {url && <audio ref={player} src={url} controls className="w-full" onTimeUpdate={(e) => setCur((e.target as HTMLAudioElement).currentTime)} />}
+          {url && (isVideo
+            ? <video ref={(v) => { player.current = v }} src={url} controls playsInline className="max-h-[45vh] w-full rounded-2xl bg-black" onTimeUpdate={(e) => setCur((e.target as HTMLVideoElement).currentTime)} />
+            : <audio ref={(a) => { player.current = a }} src={url} controls className="w-full" onTimeUpdate={(e) => setCur((e.target as HTMLAudioElement).currentTime)} />)}
           {busy && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3 rounded-2xl border border-border bg-surface p-4">
               {stage === 'decoding' && <><div className="text-sm">{status}</div><EngineLoading /></>}
@@ -126,6 +138,7 @@ export default function AudioTranscriber() {
                     <Button size="sm" variant="outline" icon={<FileText className="size-4" />} onClick={() => downloadBlob(showTs ? withTs : plain, `${name}.txt`, 'text/plain')}>TXT</Button>
                     <Button size="sm" variant="outline" icon={<Captions className="size-4" />} onClick={() => downloadBlob(toSrt(segs), `${name}.srt`, 'text/plain')}>SRT</Button>
                     <Button size="sm" variant="outline" icon={<Captions className="size-4" />} onClick={() => downloadBlob(toVtt(segs), `${name}.vtt`, 'text/vtt')}>VTT</Button>
+                    {isVideo && toolBySlug('burn-subtitles') && <Button size="sm" icon={<Flame className="size-4" />} onClick={() => { setHandoff([file!, new File([toSrt(segs)], `${name}.srt`, { type: 'application/x-subrip' })]); navigate('/burn-subtitles') }}>Burn into video</Button>}
                   </div>
                 </div>
                 <div className="max-h-[480px] overflow-y-auto rounded-2xl border border-border bg-surface p-2 scrollbar-thin">
@@ -136,6 +149,7 @@ export default function AudioTranscriber() {
                     </button>
                   )) : <p className="whitespace-pre-wrap p-2 text-sm leading-relaxed">{plain}</p>}
                 </div>
+                {words.length > 0 && <div className="rounded-xl border border-border bg-surface p-3"><Label hint={`${perCaption} word${perCaption > 1 ? 's' : ''}`}>Words per caption</Label><input type="range" min={1} max={12} value={perCaption} onChange={(e) => { const n = +e.target.value; setPerCaption(n); setSegs(groupWords(words, n)) }} className="w-full cursor-pointer accent-[var(--accent)]" aria-label="Words per caption" /><p className="mt-1 text-xs text-muted">Short captions (1 to 3 words) suit vertical social videos. SRT and VTT exports use this grouping.</p></div>}
                 <p className="text-xs text-muted">{plain.split(/\s+/).filter(Boolean).length} words · click a line to jump there</p>
               </div>
             </Reveal>
@@ -148,6 +162,7 @@ export default function AudioTranscriber() {
             <p className="mt-1.5 text-xs text-muted">{model.endsWith('tiny') ? '~40 MB download, good for clear speech.' : '~80 MB download, better with accents & noise.'} Downloaded once, then cached.</p>
           </div>
           <div><Label>Language</Label><Select value={lang} onChange={setLang} options={LANGS.map(([v, l]) => ({ value: v, label: l }))} /></div>
+          <div><Switch checked={wordMode} onChange={setWordMode} label="Word-level timing" /><p className="mt-1 text-xs text-muted">Times every single word, so you can make short, punchy captions. Uses a slightly larger model download.</p></div>
           <div><Label>Task</Label><Segmented value={task} onChange={setTask} options={[{ value: 'transcribe', label: 'Transcribe' }, { value: 'translate', label: 'Translate → English' }]} /></div>
           {hasGpu && <div><Switch checked={gpu} onChange={setGpu} label={<span className="inline-flex items-center gap-1.5"><Zap className="size-4 text-warn" />GPU acceleration (WebGPU)</span>} /><p className="mt-1 text-xs text-muted">Much faster on supported GPUs; turn off if it fails.</p></div>}
           <Button size="lg" className="w-full" icon={<Captions className="size-5" />} onClick={run} loading={busy}>{segs.length ? 'Transcribe again' : 'Transcribe'}</Button>

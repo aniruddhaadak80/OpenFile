@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, ShieldCheck, Star, Zap, Infinity as Inf } from 'lucide-react'
 import { CATEGORIES, loadTool, toolBySlug } from '@/tools/registry'
@@ -13,6 +13,8 @@ import { WatchPreview } from '@/components/ToolPreview'
 import { BADGE_COLORS } from '@/components/ToolCard'
 import { motion } from 'framer-motion'
 import NotFound from './NotFound'
+import { MobileActionBar, QuickBar, WhatNext } from '@/components/ToolExtras'
+import { remountBus } from '@/lib/ux'
 
 export default function ToolPage() {
   const { slug = '' } = useParams()
@@ -22,6 +24,13 @@ export default function ToolPage() {
   const { push } = useRecent()
   const { isFav, toggle } = useFavorites()
   const guide = useMemo(() => (tool ? toolGuide(tool) : null), [slug])
+  const toolArea = useRef<HTMLDivElement>(null)
+  const [mount, setMount] = useState(0)
+  useEffect(() => remountBus.on(() => setMount((m) => m + 1)), [])
+  useEffect(() => {
+    const f = () => { if (tool) toggle(tool.slug) }
+    window.addEventListener('of:toggle-fav', f); return () => window.removeEventListener('of:toggle-fav', f)
+  }, [slug, toggle])
   useEffect(() => {
     if (!tool || !guide) return
     push(tool.slug)
@@ -33,6 +42,11 @@ export default function ToolPage() {
         { '@type': 'SoftwareApplication', name: tool.name, description: tool.desc, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any (web browser)', url, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } },
         { '@type': 'HowTo', name: `How to use ${tool.name}`, step: guide.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, text: s })) },
         { '@type': 'FAQPage', mainEntity: guide.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+        { '@type': 'BreadcrumbList', itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: location.origin + import.meta.env.BASE_URL },
+          { '@type': 'ListItem', position: 2, name: CATEGORIES.find((c) => c.id === tool.category)?.name ?? tool.category, item: `${location.origin}${import.meta.env.BASE_URL}category/${tool.category}` },
+          { '@type': 'ListItem', position: 3, name: tool.name, item: url },
+        ] },
       ],
     })
     return () => setJsonLd('tool', null)
@@ -41,14 +55,15 @@ export default function ToolPage() {
   const cat = CATEGORIES.find((c) => c.id === tool.category)!
   const Icon = getIcon(tool.icon)
   return (
-    <div className="relative">
+    <div className="pb-safe-bar relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-96 opacity-70" style={{ background: `radial-gradient(640px 240px at 18% 0%, ${cat.color}26, transparent), radial-gradient(500px 200px at 85% 0%, color-mix(in oklab, var(--accent) 10%, transparent), transparent)` }} />
       <div className="dot-bg pointer-events-none absolute inset-x-0 top-0 h-72 opacity-60" />
       <div className="relative mx-auto max-w-7xl px-4 pt-8 sm:px-6">
-        <nav className="flex items-center gap-1.5 text-xs text-muted">
+        <QuickBar current={tool.slug} className="mb-4" />
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs text-muted">
           <Link to="/" className="hover:text-fg">Home</Link><ChevronRight className="size-3" />
           <Link to={`/category/${cat.id}`} className="hover:text-fg">{cat.name}</Link><ChevronRight className="size-3" />
-          <span className="text-fg">{tool.name}</span>
+          <span className="text-fg" aria-current="page">{tool.name}</span>
         </nav>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="mt-5 flex flex-wrap items-start gap-4">
           <motion.div initial={{ scale: 0.8, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }} className="grid size-14 place-items-center rounded-2xl shadow-lg" style={{ background: cat.color + '1f', color: cat.color, boxShadow: `0 12px 40px -12px ${cat.color}66, inset 0 0 0 1px ${cat.color}33` }}><Icon className="size-7" /></motion.div>
@@ -56,7 +71,7 @@ export default function ToolPage() {
             <h1 className="flex flex-wrap items-center gap-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">{tool.name}{tool.badge && <Badge color={BADGE_COLORS[tool.badge]}>{tool.badge}</Badge>}</h1>
             <p className="mt-1.5 max-w-2xl text-muted">{tool.desc}</p>
           </div>
-          <button onClick={() => toggle(tool.slug)} className={cn('flex items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm cursor-pointer', isFav(tool.slug) ? 'text-warn' : 'text-muted hover:text-fg')}>
+          <button onClick={() => toggle(tool.slug)} title="Save (F)" aria-pressed={isFav(tool.slug)} className={cn('flex min-h-11 items-center gap-1.5 rounded-xl border border-border px-3 py-2 text-sm cursor-pointer', isFav(tool.slug) ? 'text-warn' : 'text-muted hover:text-fg')}>
             <Star className={cn('size-4', isFav(tool.slug) && 'fill-current')} /> {isFav(tool.slug) ? 'Saved' : 'Save'}
           </button>
         </motion.div>
@@ -65,8 +80,8 @@ export default function ToolPage() {
           <span className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1"><Zap className="size-3.5 text-warn" /> No sign-up</span>
           <span className="flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1"><Inf className="size-3.5 text-accent" /> No limits or watermarks</span>
         </div>
-        <div className="mt-8">
-          <ErrorBoundary key={slug}>
+        <div className="mt-8" ref={toolArea}>
+          <ErrorBoundary key={slug + ':' + mount}>
             <Suspense fallback={<ToolSkeleton />}>
               {Comp ? <Comp /> : <div className="rounded-2xl border border-border p-10 text-center text-muted">This tool is coming soon.</div>}
             </Suspense>
@@ -74,6 +89,8 @@ export default function ToolPage() {
         </div>
         <WatchPreview slug={tool.slug} name={tool.name} className="mx-auto mt-10 max-w-3xl" />
         <ToolGuideSection tool={tool} guide={guide} />
+        <WhatNext slug={tool.slug} />
+        <MobileActionBar container={toolArea} slug={tool.slug + ':' + mount} />
       </div>
     </div>
   )

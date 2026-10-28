@@ -102,6 +102,7 @@ export function applyPrefs(p = cache) {
   const mode = resolvedMode(p)
   root.classList.toggle('dark', mode !== 'light')
   root.classList.toggle('reduce-motion', resolvedReduceMotion(p))
+  root.classList.toggle('motion-full', p.reducedMotion === 'full')
   root.dataset.theme = mode
   root.dataset.accent = p.accent
   root.dataset.density = p.density

@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowDownUp, Search } from 'lucide-react'
+import { ArrowDownUp, Search, Download } from 'lucide-react'
 import { Button, Input, Segmented, Switch, CopyButton, cn } from '@/components/ui'
 import { copyText } from '@/lib/files'
 import { toast } from '@/components/toast'
-import { CodeArea, Pane } from './_dev/kit'
+import { CodeArea, Pane, downloadText } from './_dev/kit'
+import { htmlToText, DEFAULT_STRIP, type StripOpts } from '@/lib/b5/htmltext'
 
-// Latin-1 (160–255) entity names in code-point order
+// Latin-1 (160 to 255) entity names in code-point order
 const LATIN1 = 'nbsp iexcl cent pound curren yen brvbar sect uml copy ordf laquo not shy reg macr deg plusmn sup2 sup3 acute micro para middot cedil sup1 ordm raquo frac14 frac12 frac34 iquest Agrave Aacute Acirc Atilde Auml Aring AElig Ccedil Egrave Eacute Ecirc Euml Igrave Iacute Icirc Iuml ETH Ntilde Ograve Oacute Ocirc Otilde Ouml times Oslash Ugrave Uacute Ucirc Uuml Yacute THORN szlig agrave aacute acirc atilde auml aring aelig ccedil egrave eacute ecirc euml igrave iacute icirc iuml eth ntilde ograve oacute ocirc otilde ouml divide oslash ugrave uacute ucirc uuml yacute thorn yuml'.split(' ')
 const EXTRA: [string, number][] = [
   ['quot', 34], ['amp', 38], ['apos', 39], ['lt', 60], ['gt', 62], ['OElig', 338], ['oelig', 339], ['Scaron', 352], ['scaron', 353], ['Yuml', 376], ['fnof', 402], ['circ', 710], ['tilde', 732],
@@ -20,6 +21,7 @@ const EXTRA: [string, number][] = [
 ]
 const NAMES: [string, number][] = [...EXTRA.slice(0, 5), ...LATIN1.map((n, i) => [n, 160 + i] as [string, number]), ...EXTRA.slice(5)]
 const BY_CODE = new Map<number, string>(NAMES.map(([n, c]) => [c, n]))
+const BY_NAME = new Map<string, number>(NAMES)
 const DESC: Record<string, string> = { quot: 'double quote', amp: 'ampersand', apos: 'apostrophe', lt: 'less than', gt: 'greater than', nbsp: 'non-breaking space', copy: 'copyright', reg: 'registered', trade: 'trademark', euro: 'euro', pound: 'pound', yen: 'yen', cent: 'cent', rupee: 'Indian rupee', deg: 'degree', plusmn: 'plus-minus', times: 'multiply', divide: 'divide', mdash: 'em dash', ndash: 'en dash', hellip: 'ellipsis', bull: 'bullet', larr: 'left arrow', rarr: 'right arrow', uarr: 'up arrow', darr: 'down arrow', laquo: 'left guillemet', raquo: 'right guillemet', ldquo: 'left double quote', rdquo: 'right double quote', lsquo: 'left single quote', rsquo: 'right single quote', sect: 'section', para: 'pilcrow', infin: 'infinity', ne: 'not equal', le: 'less or equal', ge: 'greater or equal', hearts: 'heart', check: 'check mark', shy: 'soft hyphen', middot: 'middle dot', frac12: 'one half', micro: 'micro', sum: 'summation', radic: 'square root' }
 
 type Fmt = 'named' | 'decimal' | 'hex'
@@ -46,20 +48,30 @@ function decode(s: string) {
 }
 
 export default function HtmlEntities() {
-  const [dir, setDir] = useState<'encode' | 'decode'>('encode')
+  const [dir, setDir] = useState<'encode' | 'decode' | 'strip'>('encode')
+  const [strip, setStrip] = useState<StripOpts>(DEFAULT_STRIP)
   const [input, setInput] = useState('<p class="note">Fish & Chips, £4.99 © 2026 “OpenFile” → café</p>')
   const [fmt, setFmt] = useState<Fmt>('named')
   const [scope, setScope] = useState<Scope>('nonascii')
   const [nbsp, setNbsp] = useState(true)
   const [q, setQ] = useState('')
 
-  const out = useMemo(() => (dir === 'encode' ? encode(input, fmt, scope, nbsp) : decode(input)), [input, dir, fmt, scope, nbsp])
+  const out = useMemo(() => (dir === 'encode' ? encode(input, fmt, scope, nbsp) : dir === 'decode' ? decode(input) : htmlToText(input, strip, BY_NAME)), [input, dir, fmt, scope, nbsp, strip])
+  const setS = (k: keyof StripOpts) => (v: boolean) => setStrip((o) => ({ ...o, [k]: k === 'links' ? (v ? 'inline' : 'drop') : v }))
   const table = useMemo(() => NAMES.filter(([n, c]) => !q || n.toLowerCase().includes(q.toLowerCase()) || (DESC[n] ?? '').includes(q.toLowerCase()) || String.fromCodePoint(c) === q || String(c) === q), [q])
 
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-3">
-        <Segmented value={dir} onChange={setDir} options={[{ value: 'encode', label: 'Escape (encode)' }, { value: 'decode', label: 'Unescape (decode)' }]} />
+        <Segmented value={dir} onChange={setDir} options={[{ value: 'encode', label: 'Escape (encode)' }, { value: 'decode', label: 'Unescape (decode)' }, { value: 'strip', label: 'HTML to plain text' }]} />
+        {dir === 'strip' && <div className="flex flex-wrap gap-4">
+          <Switch checked={strip.blocks} onChange={setS('blocks')} label="Keep line breaks" />
+          <Switch checked={strip.lists} onChange={setS('lists')} label="List bullets" />
+          <Switch checked={strip.links === 'inline'} onChange={setS('links')} label="Show link URLs" />
+          <Switch checked={strip.images} onChange={setS('images')} label="Image alt text" />
+          <Switch checked={strip.collapse} onChange={setS('collapse')} label="Tidy spaces" />
+          <Switch checked={strip.decode} onChange={setS('decode')} label="Decode entities" />
+        </div>}
         {dir === 'encode' && <>
           <Segmented value={fmt} onChange={setFmt} options={[{ value: 'named', label: '&name;' }, { value: 'decimal', label: '&#123;' }, { value: 'hex', label: '&#x7B;' }]} />
           <Segmented value={scope} onChange={setScope} options={[{ value: 'unsafe', label: 'Only < > & " \'' }, { value: 'nonascii', label: '+ non-ASCII' }, { value: 'all', label: 'Everything' }]} />
@@ -67,12 +79,12 @@ export default function HtmlEntities() {
         </>}
       </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_auto_1fr]">
-        <Pane title={dir === 'encode' ? 'Text / HTML' : 'Escaped HTML'} className="h-72"><CodeArea value={input} onChange={setInput} lineNumbers={false} /></Pane>
-        <div className="flex items-center justify-center"><Button variant="outline" size="sm" icon={<ArrowDownUp className="size-4 lg:-rotate-90" />} onClick={() => { setInput(out); setDir(dir === 'encode' ? 'decode' : 'encode') }}>Swap</Button></div>
-        <Pane title={dir === 'encode' ? 'Escaped' : 'Decoded'} className="h-72" actions={<CopyButton text={out} variant="ghost" />}><CodeArea value={out} readOnly lineNumbers={false} /></Pane>
+        <Pane title={dir === 'encode' ? 'Text / HTML' : dir === 'decode' ? 'Escaped HTML' : 'HTML'} className="h-72"><CodeArea value={input} onChange={setInput} lineNumbers={false} /></Pane>
+        <div className="flex items-center justify-center">{dir !== 'strip' ? <Button variant="outline" size="sm" icon={<ArrowDownUp className="size-4 lg:-rotate-90" />} onClick={() => { setInput(out); setDir(dir === 'encode' ? 'decode' : 'encode') }}>Swap</Button> : <span className="text-xs text-muted">{out.length.toLocaleString()} chars</span>}</div>
+        <Pane title={dir === 'encode' ? 'Escaped' : dir === 'decode' ? 'Decoded' : 'Plain text'} className="h-72" actions={<>{dir === 'strip' && <Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={() => downloadText(out, 'text.txt')}>.txt</Button>}<CopyButton text={out} variant="ghost" /></>}><CodeArea value={out} readOnly lineNumbers={false} /></Pane>
       </div>
 
-      <Pane title="Entity reference" actions={<div className="relative"><Search className="absolute left-2.5 top-2 size-4 text-muted" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search: arrow, euro, ©…" className="h-8 w-56 pl-8 text-xs" /></div>}>
+      <Pane title="Entity reference" actions={<div className="relative"><Search className="absolute left-2.5 top-2 size-4 text-muted" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search: arrow, euro, ©" className="h-8 w-56 pl-8 text-xs" /></div>}>
         <div className="scrollbar-thin grid max-h-[420px] grid-cols-2 gap-px overflow-auto bg-border sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {table.map(([n, c]) => (
             <motion.button key={n} whileTap={{ scale: 0.97 }} onClick={async () => { if (await copyText(`&${n};`)) toast(`Copied &${n};`) }} title="Click to copy"

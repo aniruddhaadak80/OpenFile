@@ -8,7 +8,8 @@ import { ToolCard } from '@/components/ToolCard'
 import { Button, Segmented, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { formatBytes, downloadBlob } from '@/lib/files'
-import { useFavorites, useHistory, useRecent, useSettings, clearHistory, clearRecents, deleteHistoryEntry } from '@/lib/store'
+import { useFavorites, useHistory, useRecent, useSettings, clearHistory, clearRecents, deleteHistoryEntry, restoreHistory, restoreRecents } from '@/lib/store'
+import { EmptyState } from '@/components/EmptyState'
 import type { HistoryRow } from '@/lib/db'
 import { setPageMeta } from '@/lib/seo'
 
@@ -95,7 +96,7 @@ export default function History() {
         <section className="mt-12">
           <h2 className="mb-3 flex items-center gap-2 font-semibold"><Star className="size-4 text-warn" /> Favorites <span className="text-sm font-normal text-muted">{favTools.length}</span></h2>
           {favTools.length ? <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{favTools.map((t) => <ToolCard key={t.slug} tool={t} compact />)}</div>
-            : <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">Star a tool (hover a card, or use <span className="text-fg">Save</span> on a tool page) to pin it here and on the home page.</div>}
+            : <EmptyState compact kind="star" title="No favorites yet">Star a tool (tap the star on a card, use Save on a tool page, or press F) to pin it here and on the home page.</EmptyState>}
         </section>
 
         <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -108,12 +109,10 @@ export default function History() {
               </div>
             </div>
             {!filtered.length ? (
-              <div className="rounded-2xl border border-dashed border-border p-10 text-center">
-                <HistoryIcon className="mx-auto size-8 text-muted" />
-                <div className="mt-3 font-medium">{rows.length ? 'No activity matches your filter.' : 'No activity yet'}</div>
-                <p className="mt-1 text-sm text-muted">{rows.length ? 'Try a different search or filter.' : 'Open a tool and it will show up here.'}</p>
-                {!rows.length && <Link to="/tools" className="mt-5 inline-flex rounded-xl bg-gradient-brand px-4 py-2 text-sm font-medium text-on-accent">Browse tools</Link>}
-              </div>
+              <EmptyState kind={rows.length ? 'search' : 'clock'} title={rows.length ? 'No activity matches your filter' : 'No activity yet'}
+                actions={!rows.length ? <Link to="/tools" className="inline-flex min-h-10 items-center rounded-xl bg-gradient-brand px-4 text-sm font-medium text-on-accent">Browse tools</Link> : undefined}>
+                {rows.length ? 'Try a different search or filter.' : 'Open a tool and it will show up here. Only names and sizes are kept, never file contents.'}
+              </EmptyState>
             ) : (
               <div className="space-y-7">
                 {groups.map((g) => (
@@ -137,7 +136,7 @@ export default function History() {
                               </div>
                               <span className={cn('hidden shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider sm:inline', r.kind === 'download' ? 'bg-success/10 text-success' : 'bg-accent/10 text-accent')}>{r.kind === 'download' ? 'Saved' : 'Opened'}</span>
                               <time className="shrink-0 font-mono text-xs text-muted" dateTime={new Date(r.at).toISOString()}>{new Date(r.at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</time>
-                              <button onClick={() => r.id != null && void deleteHistoryEntry(r.id)} className="rounded-md p-1 text-muted opacity-0 transition hover:text-danger focus:opacity-100 group-hover:opacity-100 cursor-pointer" aria-label="Delete entry"><X className="size-4" /></button>
+                              <button onClick={() => { if (r.id == null) return; const keep = r; void deleteHistoryEntry(r.id); toast('Entry deleted', 'info', { undo: () => void restoreHistory([keep]) }) }} className="grid size-9 place-items-center rounded-md text-muted opacity-0 transition hover:text-danger focus:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100 cursor-pointer" aria-label="Delete entry"><X className="size-4" /></button>
                             </motion.li>
                           )
                         })}
@@ -164,7 +163,7 @@ export default function History() {
               ) : <p className="mt-2 text-sm text-muted">Use a few tools to see your top picks.</p>}
             </div>
             <div className="rounded-2xl border border-border bg-surface p-5">
-              <div className="flex items-center justify-between"><h3 className="font-semibold">Recently used</h3>{recents.length > 0 && <button onClick={() => { void clearRecents(); toast('Recent tools cleared') }} className="text-xs text-muted hover:text-danger cursor-pointer">Clear</button>}</div>
+              <div className="flex items-center justify-between"><h3 className="font-semibold">Recently used</h3>{recents.length > 0 && <button onClick={() => { const keep = recents; void clearRecents(); toast('Recent tools cleared', 'info', { undo: () => void restoreRecents(keep) }) }} className="text-xs text-muted hover:text-danger cursor-pointer">Clear</button>}</div>
               {recents.length ? (
                 <ul className="mt-3 space-y-1">
                   {recents.filter((r) => toolBySlug(r.slug)).slice(0, 10).map((r) => { const t = toolBySlug(r.slug)!; const I = getIcon(t.icon); return (
@@ -183,10 +182,10 @@ export default function History() {
             <motion.div initial={{ scale: 0.96, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, opacity: 0 }} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
               <div className="grid size-11 place-items-center rounded-xl bg-danger/15 text-danger"><Trash2 className="size-5" /></div>
               <h3 className="mt-4 font-display text-lg font-semibold">Clear all history?</h3>
-              <p className="mt-1.5 text-sm text-muted">This deletes your activity log ({rows.length} entries) and recently used tools from this browser. Favorites and settings are kept. This cannot be undone.</p>
+              <p className="mt-1.5 text-sm text-muted">This deletes your activity log ({rows.length} entries) and recently used tools from this browser. Favorites and settings are kept. You can undo for a few seconds right after.</p>
               <div className="mt-6 flex justify-end gap-2">
                 <Button variant="ghost" onClick={() => setConfirm(false)} autoFocus>Cancel</Button>
-                <Button variant="danger" onClick={async () => { await Promise.all([clearHistory(), clearRecents()]); setConfirm(false); toast('History cleared') }}>Clear everything</Button>
+                <Button variant="danger" onClick={async () => { const keepH = rows, keepR = recents; await Promise.all([clearHistory(), clearRecents()]); setConfirm(false); toast('History cleared', 'info', { undo: () => { void restoreHistory(keepH); void restoreRecents(keepR) } }) }}>Clear everything</Button>
               </div>
             </motion.div>
           </motion.div>

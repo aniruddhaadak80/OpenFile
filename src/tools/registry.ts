@@ -36,7 +36,7 @@ export interface ToolMeta {
   outputs?: string[]
 }
 
-export const CATEGORIES: { id: Category; name: string; blurb: string; color: string }[] = [
+const ALL_CATEGORIES: { id: Category; name: string; blurb: string; color: string }[] = [
   { id: 'pdf', name: 'PDF Tools', blurb: 'Merge, split, sign, protect and edit PDFs', color: '#F5A524' },
   { id: 'convert', name: 'Convert', blurb: 'Move between PDF, Office, Markdown, HTML and images', color: '#F97316' },
   { id: 'image', name: 'Image', blurb: 'Compress, resize, crop, remove backgrounds, upscale', color: '#10B981' },
@@ -144,7 +144,7 @@ const CORE_TOOLS: ToolMeta[] = [
   { slug: 'audio-converter', name: 'Audio Converter', desc: 'Convert MP3, WAV, OGG, AAC, FLAC and M4A.', category: 'audio', icon: 'RefreshCw' },
   { slug: 'voice-recorder', name: 'Voice Recorder', desc: 'Record your voice with live waveform and export.', category: 'audio', icon: 'Mic' },
   { slug: 'audio-transcriber', name: 'Audio Transcriber', desc: 'Transcribe speech with on-device Whisper AI and export SRT.', category: 'audio', icon: 'Captions', badge: 'AI' },
-  { slug: 'text-to-speech', name: 'Text to Speech', desc: 'Read text aloud with your system voices, adjust rate and pitch.', category: 'audio', icon: 'Volume2' },
+  { slug: 'text-to-speech', name: 'Text to Speech', desc: 'Read text aloud with system voices or a private neural voice, then save it as WAV.', category: 'audio', icon: 'Volume2', steps: ['Type or paste your text in the box.', 'Pick System voices or the Neural engine, then choose a voice.', 'Set the speed, then press Read aloud (or Ctrl+Enter).', 'Press Make WAV to save the audio file.'], inputs: ['Text'], outputs: ['WAV'] },
   { slug: 'audio-merger', name: 'Audio Merger', desc: 'Join multiple audio files into one track.', category: 'audio', icon: 'ListMusic' },
 
   // ---------- DEV ----------
@@ -191,6 +191,9 @@ const CORE_TOOLS: ToolMeta[] = [
 ]
 
 export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5]
+
+/** Only categories that have at least one tool are shown in the UI. */
+export const CATEGORIES = ALL_CATEGORIES.filter((c) => TOOLS.some((t) => t.category === c.id))
 
 export const toolBySlug = (slug: string) => TOOLS.find((t) => t.slug === slug)
 

@@ -146,7 +146,7 @@ export function vpToPdf(vp: any, r: { x0: number; y0: number; x1: number; y1: nu
   return [Math.min(ax, bx), Math.min(ay, by), Math.max(ax, bx), Math.max(ay, by)]
 }
 export function pdfToVp(vp: any, rect: number[]) {
-  const [ax, ay, bx, by] = vp.convertToViewportRectangle(rect)
+  const [ax, ay] = vp.convertToViewportPoint(rect[0], rect[1]), [bx, by] = vp.convertToViewportPoint(rect[2], rect[3])
   return { x0: Math.min(ax, bx), y0: Math.min(ay, by), x1: Math.max(ax, bx), y1: Math.max(ay, by) }
 }
 

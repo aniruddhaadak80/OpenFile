@@ -4,7 +4,7 @@ import { pipeline, env, WhisperTextStreamer } from '@huggingface/transformers'
 
 env.allowLocalModels = false
 
-type Msg = { type: 'run'; audio: Float32Array; model: string; language: string; task: 'transcribe' | 'translate'; device: 'wasm' | 'webgpu' }
+type Msg = { type: 'run'; audio: Float32Array; model: string; language: string; task: 'transcribe' | 'translate'; device: 'wasm' | 'webgpu'; words?: boolean }
 const post = (m: any) => (self as unknown as DedicatedWorkerGlobalScope).postMessage(m)
 
 let asr: any = null
@@ -41,7 +41,7 @@ self.onmessage = async (e: MessageEvent<Msg>) => {
     let streamer: any
     try { streamer = new WhisperTextStreamer(asr.tokenizer, { skip_prompt: true, callback_function: (text: string) => post({ type: 'partial', text }) }) } catch { streamer = undefined }
 
-    const opts: Record<string, any> = { chunk_length_s: 30, stride_length_s: 5, return_timestamps: true, task: d.task }
+    const opts: Record<string, any> = { chunk_length_s: 30, stride_length_s: 5, return_timestamps: d.words ? 'word' : true, task: d.task }
     if (d.language && d.language !== 'auto') opts.language = d.language
     if (streamer) opts.streamer = streamer
     let out: any

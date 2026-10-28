@@ -56,7 +56,7 @@ export default function Docs() {
         {/* main */}
         <main className="min-w-0">
           <div className="mb-6 flex items-center gap-2 lg:hidden">
-            <button onClick={() => setDrawer(true)} className="flex h-10 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm cursor-pointer"><Menu className="size-4" /> Docs menu</button>
+            <button onClick={() => setDrawer(true)} className="flex h-11 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm cursor-pointer" aria-label="Open docs menu"><Menu className="size-4" /> Docs menu</button>
             <div className="min-w-0 flex-1"><DocsSearch compact /></div>
           </div>
           <nav className="flex flex-wrap items-center gap-1.5 text-xs text-muted">

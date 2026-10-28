@@ -2,7 +2,7 @@
 // Everything here respects the reduced-motion preference (Settings or the OS) and only animates
 // transform and opacity, so it stays cheap on low-end devices.
 import React, { useEffect, useRef, useState } from 'react'
-import { motion, useInView, useMotionValue, useSpring, animate, type Variants } from 'framer-motion'
+import { motion, useInView, useMotionValue, useSpring, useScroll, useTransform, animate, type Variants } from 'framer-motion'
 import { useReducedMotion } from '@/lib/store'
 import { resolvedReduceMotion } from '@/lib/prefs'
 import { cn } from './ui'
@@ -75,7 +75,7 @@ export function Counter({ value, suffix = '', prefix = '', className, duration =
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true, margin: '-40px' })
   const reduce = useReducedMotion()
-  const [n, setN] = useState(reduce ? value : 0)
+  const [n, setN] = useState(value)
   useEffect(() => {
     if (!inView) return
     if (reduce) { setN(value); return }
@@ -181,4 +181,42 @@ export function GoldRing({ size = 420, className, children }: { size?: number; c
       {children && <div className="relative z-10">{children}</div>}
     </div>
   )
+}
+
+/** Gold wipe across the top of the page on every route change (fixed layer, transform and opacity only). */
+export function RouteWipe({ k }: { k: string }) {
+  const reduce = useReducedMotion()
+  if (reduce) return null
+  return (
+    <motion.div key={k} aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[55] h-[3px] origin-left"
+      style={{ background: 'linear-gradient(90deg, transparent, var(--accent-glow), var(--accent), var(--accent-2), transparent)' }}
+      initial={{ scaleX: 0, opacity: 1 }} animate={{ scaleX: [0, 1, 1], opacity: [1, 1, 0] }} transition={{ duration: 0.7, times: [0, 0.6, 1], ease }}>
+      <span className="absolute inset-y-0 right-0 w-24 blur-md" style={{ background: 'var(--accent-glow)' }} />
+    </motion.div>
+  )
+}
+
+/** Word-by-word reveal for headings. Non-string children fall back to a simple fade. */
+export function RevealText({ children, className, as = 'span', delay = 0 }: { children: React.ReactNode; className?: string; as?: 'span' | 'h1' | 'h2' | 'h3'; delay?: number }) {
+  const M = motion[as] as typeof motion.span
+  if (typeof children !== 'string') return <M className={className} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.6, delay, ease }}>{children}</M>
+  const words = children.split(' ')
+  return (
+    <M className={className} initial="hidden" whileInView="show" viewport={{ once: true, margin: '-40px' }} transition={{ staggerChildren: 0.06, delayChildren: delay }} aria-label={children}>
+      {words.map((w, i) => (
+        <span key={i} className="inline-block overflow-hidden pb-[0.08em] align-bottom" aria-hidden="true">
+          <motion.span className="inline-block" variants={{ hidden: { y: '105%', opacity: 0 }, show: { y: '0%', opacity: 1, transition: { duration: 0.55, ease } } }}>{w}{i < words.length - 1 ? '\u00a0' : ''}</motion.span>
+        </span>
+      ))}
+    </M>
+  )
+}
+
+/** Scroll-driven parallax: moves its children by `speed` x scroll distance while in view. */
+export function Parallax({ children, speed = 0.15, className }: { children: React.ReactNode; speed?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const reduce = useReducedMotion()
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], [`${speed * 100}px`, `${-speed * 100}px`])
+  return <motion.div ref={ref} className={className} style={reduce ? undefined : { y }}>{children}</motion.div>
 }

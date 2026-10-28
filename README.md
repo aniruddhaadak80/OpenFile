@@ -1,7 +1,7 @@
 <!-- OpenFile README: animated artwork lives in docs/assets/*.svg -->
 <p align="center">
   <a href="https://openfile-studio.vercel.app">
-    <img src="docs/assets/hero.svg" width="100%" alt="OpenFile — every file tool, one private browser tab"/>
+    <img src="docs/assets/hero.svg" width="100%" alt="OpenFile, every file tool, one private browser tab"/>
   </a>
 </p>
 
@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <b>117 free, open-source tools</b> for PDFs, images, video, audio, data and code —<br/>
+  <b>117 free, open-source tools</b> for PDFs, images, video, audio, data and code , <br/>
   processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
 </p>
 
@@ -57,7 +57,7 @@
 
 <p align="center">
   <a href="public/media/launch.mp4" title="Play the OpenFile launch film">
-    <img src="docs/assets/launch-card.svg" width="88%" alt="OpenFile launch film — click to play"/>
+    <img src="docs/assets/launch-card.svg" width="88%" alt="OpenFile launch film, click to play"/>
   </a>
   <br/>
   <sub>▶ <a href="public/media/launch.mp4"><b>Play the launch film</b></a> (<code>public/media/launch.mp4</code>) · or watch it on the <a href="https://openfile-studio.vercel.app">homepage</a></sub>
@@ -67,14 +67,14 @@
 
 ## ✨ Why OpenFile
 
-<p align="center"><img src="docs/assets/privacy.svg" width="100%" alt="Files never leave your device — processing happens inside the browser tab"/></p>
+<p align="center"><img src="docs/assets/privacy.svg" width="100%" alt="Files never leave your device, processing happens inside the browser tab"/></p>
 
 <table>
 <tr>
 <td width="33%" valign="top">
 
 ### 🔒 Private by design
-Everything runs on **WebAssembly, Canvas, Web Audio and Web Workers inside your tab**. There is no upload endpoint — your files never touch a server.
+Everything runs on **WebAssembly, Canvas, Web Audio and Web Workers inside your tab**. There is no upload endpoint, your files never touch a server.
 
 </td>
 <td width="33%" valign="top">
@@ -86,7 +86,7 @@ No upload queue, no download wait. Most jobs finish in **milliseconds** on your 
 <td width="33%" valign="top">
 
 ### 🤖 On-device AI
-[OCR PDF](https://openfile-studio.vercel.app/ocr-pdf) · [Background Remover](https://openfile-studio.vercel.app/background-remover) · [Image Upscaler](https://openfile-studio.vercel.app/image-upscaler) · [Blur & Redact Image](https://openfile-studio.vercel.app/blur-faces) · [Audio Transcriber](https://openfile-studio.vercel.app/audio-transcriber) — all run locally via WASM / WebGPU.
+[OCR PDF](https://openfile-studio.vercel.app/ocr-pdf) · [Background Remover](https://openfile-studio.vercel.app/background-remover) · [Image Upscaler](https://openfile-studio.vercel.app/image-upscaler) · [Blur & Redact Image](https://openfile-studio.vercel.app/blur-faces) · [Audio Transcriber](https://openfile-studio.vercel.app/audio-transcriber), all run locally via WASM / WebGPU.
 
 </td>
 </tr>
@@ -119,7 +119,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 | Where your file is processed | 🟢 **Your device** (browser tab) | 🔴 A remote server |
 | Upload / download wait | 🟢 None | 🔴 Every file, both ways |
 | Works offline | 🟢 Yes (PWA) | 🔴 No |
-| File-size or daily limits | 🟢 None — only your RAM | 🟠 Usually capped on free tiers |
+| File-size or daily limits | 🟢 None, only your RAM | 🟠 Usually capped on free tiers |
 | Account required | 🟢 Never | 🟠 Often, for full features |
 | Watermarks on output | 🟢 Never | 🟠 Common on free tiers |
 | On-device AI (OCR, background removal, Whisper) | 🟢 Yes | 🔴 Server-side, if available |
@@ -130,14 +130,14 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 
 ### 🌟 Highlights
 
-- 🧲 **Smart drop** — drop *any* file on the homepage; OpenFile detects the type, suggests the right tools and opens them with your file already loaded.
-- 🖊️ **[Sign](https://openfile-studio.vercel.app/sign-pdf) & [edit](https://openfile-studio.vercel.app/edit-pdf) PDFs** — draw/type/upload signatures, add text, shapes, highlights, images and freehand ink, then burn them in.
-- 🗂️ **[Organize visually](https://openfile-studio.vercel.app/organize-pdf)** — drag page thumbnails to reorder, rotate, duplicate, delete and insert pages.
-- 🕵️ **[True redaction](https://openfile-studio.vercel.app/redact-pdf)** — auto-detect emails, phones and card numbers or paint areas, then flatten so the text is really gone.
-- 🎞️ **Full media suite** — [trim](https://openfile-studio.vercel.app/video-trimmer), [compress](https://openfile-studio.vercel.app/video-compressor), [convert](https://openfile-studio.vercel.app/video-converter) and [GIF-ify](https://openfile-studio.vercel.app/video-to-gif) video with ffmpeg.wasm; [record your screen](https://openfile-studio.vercel.app/screen-recorder) with a webcam bubble.
-- ✏️ **[Sketch Whiteboard](https://openfile-studio.vercel.app/sketch-board)** — an infinite hand-drawn canvas with shapes, arrows, sticky notes, frames and presentation mode.
-- 🧾 **Business docs** — [GST/VAT invoices](https://openfile-studio.vercel.app/invoice-generator) and an [ATS-friendly resume builder](https://openfile-studio.vercel.app/resume-builder) with live preview.
-- 🧑‍💻 **Developer kit** — [JSON](https://openfile-studio.vercel.app/json-formatter), [JWT](https://openfile-studio.vercel.app/jwt-decoder), [regex](https://openfile-studio.vercel.app/regex-tester), [cURL → code](https://openfile-studio.vercel.app/curl-to-code) and an [ERD studio](https://openfile-studio.vercel.app/erd-diagram) exporting SQL / Prisma / Drizzle.
+- 🧲 **Smart drop**, drop *any* file on the homepage; OpenFile detects the type, suggests the right tools and opens them with your file already loaded.
+- 🖊️ **[Sign](https://openfile-studio.vercel.app/sign-pdf) & [edit](https://openfile-studio.vercel.app/edit-pdf) PDFs**, draw/type/upload signatures, add text, shapes, highlights, images and freehand ink, then burn them in.
+- 🗂️ **[Organize visually](https://openfile-studio.vercel.app/organize-pdf)**, drag page thumbnails to reorder, rotate, duplicate, delete and insert pages.
+- 🕵️ **[True redaction](https://openfile-studio.vercel.app/redact-pdf)**, auto-detect emails, phones and card numbers or paint areas, then flatten so the text is really gone.
+- 🎞️ **Full media suite**, [trim](https://openfile-studio.vercel.app/video-trimmer), [compress](https://openfile-studio.vercel.app/video-compressor), [convert](https://openfile-studio.vercel.app/video-converter) and [GIF-ify](https://openfile-studio.vercel.app/video-to-gif) video with ffmpeg.wasm; [record your screen](https://openfile-studio.vercel.app/screen-recorder) with a webcam bubble.
+- ✏️ **[Sketch Whiteboard](https://openfile-studio.vercel.app/sketch-board)**, an infinite hand-drawn canvas with shapes, arrows, sticky notes, frames and presentation mode.
+- 🧾 **Business docs**, [GST/VAT invoices](https://openfile-studio.vercel.app/invoice-generator) and an [ATS-friendly resume builder](https://openfile-studio.vercel.app/resume-builder) with live preview.
+- 🧑‍💻 **Developer kit**, [JSON](https://openfile-studio.vercel.app/json-formatter), [JWT](https://openfile-studio.vercel.app/jwt-decoder), [regex](https://openfile-studio.vercel.app/regex-tester), [cURL → code](https://openfile-studio.vercel.app/curl-to-code) and an [ERD studio](https://openfile-studio.vercel.app/erd-diagram) exporting SQL / Prisma / Drizzle.
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
@@ -210,11 +210,11 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 
 ### 📚 Every tool, one click away
 
-> **117 tools across 8 studios.** Each name is a deep link — `https://openfile-studio.vercel.app/<slug>` — that opens the tool directly.
+> **117 tools across 8 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
 > Legend: 🔥 Hot · ✨ New · 🤖 AI · ⭐ Popular · 🔁 Usable as a Workspace pipeline step
 
 <details open>
-<summary><b>📄 PDF Tools</b> — 28 tools · <i>Merge, split, sign, protect and edit PDFs</i></summary>
+<summary><b>📄 PDF Tools</b>, 28 tools · <i>Merge, split, sign, protect and edit PDFs</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -251,7 +251,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🔄 Convert</b> — 14 tools · <i>Move between PDF, Office, Markdown, HTML and images</i></summary>
+<summary><b>🔄 Convert</b>, 14 tools · <i>Move between PDF, Office, Markdown, HTML and images</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -274,7 +274,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🖼️ Image</b> — 21 tools · <i>Compress, resize, crop, remove backgrounds, upscale</i></summary>
+<summary><b>🖼️ Image</b>, 21 tools · <i>Compress, resize, crop, remove backgrounds, upscale</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -304,7 +304,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🎬 Video</b> — 12 tools · <i>Trim, compress, convert, GIF and record</i></summary>
+<summary><b>🎬 Video</b>, 12 tools · <i>Trim, compress, convert, GIF and record</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -325,7 +325,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🎧 Audio</b> — 6 tools · <i>Edit, convert, record and transcribe</i></summary>
+<summary><b>🎧 Audio</b>, 6 tools · <i>Edit, convert, record and transcribe</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -340,7 +340,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🧑‍💻 Developer</b> — 20 tools · <i>JSON, JWT, regex, hashes, cURL and more</i></summary>
+<summary><b>🧑‍💻 Developer</b>, 20 tools · <i>JSON, JWT, regex, hashes, cURL and more</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -369,7 +369,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>📝 Text &amp; Data</b> — 8 tools · <i>Diff, count, convert tables, format text</i></summary>
+<summary><b>📝 Text &amp; Data</b>, 8 tools · <i>Diff, count, convert tables, format text</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -386,7 +386,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </details>
 
 <details>
-<summary><b>🖌️ Design</b> — 8 tools · <i>Colors, CSS, favicons, SVG, whiteboards</i></summary>
+<summary><b>🖌️ Design</b>, 8 tools · <i>Colors, CSS, favicons, SVG, whiteboards</i></summary>
 <br/>
 <table>
 <tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
@@ -463,7 +463,7 @@ mindmap
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
-## 🔁 Workspace — batch pipelines
+## 🔁 Workspace, batch pipelines
 
 The **[Workspace](https://openfile-studio.vercel.app/workspace)** turns single tools into automations: pick a mode, stack steps, drop a folder of files, download one ZIP.
 
@@ -500,7 +500,7 @@ Merge all · Rotate pages · Page numbers · Watermark · Clean metadata · Comp
 <tr>
 <td colspan="2">
 
-**Built-in presets:** *Web-ready photos* · *Product catalog* · *Social avatars* · *Share-safe PDF pack* · *Confidential drafts* · *Shrink scans* — plus your own **saved recipes**, stored locally.
+**Built-in presets:** *Web-ready photos* · *Product catalog* · *Social avatars* · *Share-safe PDF pack* · *Confidential drafts* · *Shrink scans*, plus your own **saved recipes**, stored locally.
 
 </td>
 </tr>
@@ -514,7 +514,7 @@ Merge all · Rotate pages · Page numbers · Watermark · Clean metadata · Comp
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'system-ui, sans-serif','lineColor':'#F5A524','primaryTextColor':'#F5F3EE','clusterBkg':'#050505','clusterBorder':'#F5A524','titleColor':'#FFB224'}}}%%
 flowchart LR
     U["👤 You<br/>drop or pick files"]:::user --> BR
-    subgraph BR["🌐 Your browser tab — nothing leaves it"]
+    subgraph BR["🌐 Your browser tab, nothing leaves it"]
         direction LR
         RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>117 tools · import.meta.glob"]:::ui
         REG --> E1["📄 pdf-lib · PDF.js<br/>@cantoo/pdf-lib"]:::pdf
@@ -567,9 +567,9 @@ sequenceDiagram
     Note over U,B: The file never crosses the network. Closing the tab frees all memory.
 ```
 
-- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically — the homepage stays light even with 117 tools.
+- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 117 tools.
 - **Heavy engines load on demand** (ffmpeg core, OCR language data, AI weights) and are cached by the browser and the service worker.
-- **Zero-upload guarantee:** the optional Vercel functions (`/api/health`, `/api/fetch-page`, `/api/meta`) only ever receive a **URL you type** — never a file.
+- **Zero-upload guarantee:** the optional Vercel functions (`/api/health`, `/api/fetch-page`, `/api/meta`) only ever receive a **URL you type**, never a file.
 
 ➡️ Deeper dive: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** · Writing a tool: **[docs/TOOL_GUIDE.md](docs/TOOL_GUIDE.md)**
 
@@ -646,12 +646,12 @@ flowchart LR
 ```
 
 <details open>
-<summary><b>▲ Vercel</b> (recommended — includes the optional API routes)</summary>
+<summary><b>▲ Vercel</b> (recommended, includes the optional API routes)</summary>
 <br/>
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Faniruddhaadak80%2FOpenFile)
 
-1. Import the repo on Vercel — framework (**Vite**), build command and output dir are read from `vercel.json`.
+1. Import the repo on Vercel, framework (**Vite**), build command and output dir are read from `vercel.json`.
 2. Deploy. SPA rewrites, `/api/*` functions, immutable asset caching and security headers work out of the box.
 
 </details>
@@ -660,7 +660,7 @@ flowchart LR
 <summary><b>🐙 GitHub Pages</b> (static mirror)</summary>
 <br/>
 
-1. Fork the repo and push to `main` — `.github/workflows/deploy-pages.yml` runs `npm run build:pages` and publishes `dist/` to the `gh-pages` branch.
+1. Fork the repo and push to `main`, `.github/workflows/deploy-pages.yml` runs `npm run build:pages` and publishes `dist/` to the `gh-pages` branch.
 2. **Settings → Pages → Deploy from a branch → `gh-pages` / root** (one-time).
 3. Live at `https://<you>.github.io/OpenFile/`. Every tool works; only the URL mode of HTML → PDF needs the Vercel API.
 
@@ -736,7 +736,7 @@ OpenFile/
 │  ├─ pages/                 # Home, Tools, ToolPage, Workspace, About, Privacy, Status
 │  │  └─ workspace/steps.ts  # pipeline steps + presets
 │  └─ tools/
-│     ├─ registry.ts         # the catalog — 117 tools, 8 categories
+│     ├─ registry.ts         # the catalog, 117 tools, 8 categories
 │     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/
 ├─ .github/workflows/        # GitHub Pages deploy
 └─ vercel.json               # SPA rewrites + security headers
@@ -762,7 +762,7 @@ flowchart LR
     classDef e fill:#10B981,stroke:#A7F3D0,color:#050505
 ```
 
-- The one hard rule: **keep everything client-side** — PRs that upload user files will not be merged.
+- The one hard rule: **keep everything client-side**, PRs that upload user files will not be merged.
 - Heavy libraries must be **dynamically imported** inside handlers so each tool chunk stays small.
 - Add a screenshot or GIF for UI changes. Full conventions: **[docs/TOOL_GUIDE.md](docs/TOOL_GUIDE.md)** · **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 - Found a bug or want a tool? **[Open an issue](https://github.com/aniruddhaadak80/OpenFile/issues/new)**.
@@ -792,7 +792,7 @@ timeline
 
 - [x] 117 in-browser tools across 8 studios
 - [x] Batch Workspace with presets and saved recipes
-- [x] On-device AI — background removal, OCR, upscaling, transcription
+- [x] On-device AI, background removal, OCR, upscaling, transcription
 - [x] Installable PWA + offline mode
 - [ ] Desktop app (Tauri) with native file-system access
 - [ ] Shareable pipeline recipes via link
@@ -800,10 +800,10 @@ timeline
 
 ### 🔭 Coming soon
 
-- 🎞️ **Per-tool preview videos** — a short preview video for every tool.
+- 🎞️ **Per-tool preview videos**, a short preview video for every tool.
 - 🌗 **Black, light and system themes** with selectable **accent colours**.
-- 🧩 **New studios** — 3D models, archives, fonts, ebooks, CAD and subtitles.
-- 📰 **Interactive blog** — guides and project updates with live, interactive examples.
+- 🧩 **New studios**, 3D models, archives, fonts, ebooks, CAD and subtitles.
+- 📰 **Interactive blog**, guides and project updates with live, interactive examples.
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
@@ -818,7 +818,7 @@ Yes. Files are read into memory by your browser and processed with WebAssembly, 
 <details>
 <summary><b>Is it actually free? What's the catch?</b></summary>
 <br/>
-No catch. Because your device does the work, there are no server costs to recover — so no paywall, no watermark, no quota and no account. The code is MIT-licensed.
+No catch. Because your device does the work, there are no server costs to recover, so no paywall, no watermark, no quota and no account. The code is MIT-licensed.
 </details>
 
 <details>
@@ -830,7 +830,7 @@ Yes. OpenFile is an installable PWA. After the first visit the app shell is cach
 <details>
 <summary><b>How big can my files be?</b></summary>
 <br/>
-There is no artificial cap — the limit is your device's memory. Very large videos or PDFs with hundreds of pages work best on a desktop browser.
+There is no artificial cap, the limit is your device's memory. Very large videos or PDFs with hundreds of pages work best on a desktop browser.
 </details>
 
 <details>
@@ -857,13 +857,13 @@ Check your own browser on the in-app **[/status](https://openfile-studio.vercel.
 <details>
 <summary><b>Can I link straight to a tool?</b></summary>
 <br/>
-Yes — every tool has its own URL: <code>https://openfile-studio.vercel.app/&lt;slug&gt;</code>, for example <a href="https://openfile-studio.vercel.app/merge-pdf">/merge-pdf</a> or <a href="https://openfile-studio.vercel.app/background-remover">/background-remover</a>. Categories live at <code>/category/&lt;id&gt;</code>.
+Yes, every tool has its own URL: <code>https://openfile-studio.vercel.app/&lt;slug&gt;</code>, for example <a href="https://openfile-studio.vercel.app/merge-pdf">/merge-pdf</a> or <a href="https://openfile-studio.vercel.app/background-remover">/background-remover</a>. Categories live at <code>/category/&lt;id&gt;</code>.
 </details>
 
 <details>
 <summary><b>Can I self-host it for my team?</b></summary>
 <br/>
-Absolutely — see <a href="#%EF%B8%8F-self-hosting">Self-hosting</a>. It is a static build, so any static host, an internal nginx, or the Docker recipe above works.
+Absolutely, see <a href="#%EF%B8%8F-self-hosting">Self-hosting</a>. It is a static build, so any static host, an internal nginx, or the Docker recipe above works.
 </details>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
@@ -874,7 +874,7 @@ Absolutely — see <a href="#%EF%B8%8F-self-hosting">Self-hosting</a>. It is a s
   <a href="public/author/aniruddha-adak.webp"><img src="docs/assets/author-avatar.webp" width="160" height="160" alt="Aniruddha Adak"/></a>
 </p>
 
-<p align="center"><img src="docs/assets/author-card.svg" width="88%" alt="Built by Aniruddha Adak — open-source developer, agentic harnesses and agent skills"/></p>
+<p align="center"><img src="docs/assets/author-card.svg" width="88%" alt="Built by Aniruddha Adak, open-source developer, agentic harnesses and agent skills"/></p>
 
 <p align="center">
   <a href="https://github.com/aniruddhaadak80"><img src="https://img.shields.io/badge/GitHub-aniruddhaadak80-F5A524?style=for-the-badge&logo=github&logoColor=F5A524&labelColor=0B0D10" alt="GitHub"/></a>
@@ -891,14 +891,14 @@ Absolutely — see <a href="#%EF%B8%8F-self-hosting">Self-hosting</a>. It is a s
 <td width="50%" valign="top">
 
 ### 🌏 About
-**Aniruddha Adak** is an open-source developer from West Bengal, India (Kolkata area), with a **B.Tech in Computer Science &amp; Engineering (2026)**, who builds **agentic harnesses** and **production-grade agent skills** — and OpenFile, a fully in-browser file toolkit.
+**Aniruddha Adak** is an open-source developer from West Bengal, India (Kolkata area), with a **B.Tech in Computer Science &amp; Engineering (2026)**, who builds **agentic harnesses** and **production-grade agent skills**, and OpenFile, a fully in-browser file toolkit.
 
 </td>
 <td width="50%" valign="top">
 
 ### ⚡ Highlights
 - 🛠️ Active **open-source contributor**
-- 🏆 Frequent **hackathon builder** — MLH Global Hack Week, Hacktoberfest, DEV challenges
+- 🏆 Frequent **hackathon builder**, MLH Global Hack Week, Hacktoberfest, DEV challenges
 - ✍️ Writes **daily AI news on [DEV](https://dev.to/aniruddhaadak)**
 
 </td>
@@ -932,6 +932,6 @@ Built on the shoulders of giants: [pdf-lib](https://pdf-lib.js.org) · [PDF.js](
 <p align="center"><img src="docs/assets/divider-line.svg" width="100%" alt=""/></p>
 
 <p align="center">
-  <b>If OpenFile saved you an upload, please <a href="https://github.com/aniruddhaadak80/OpenFile">⭐ star the repo</a>!</b><br/>
+  <b>If OpenFile saved you an upload, please <a href="https://github.com/aniruddhaadak80/OpenFile">⭐ star the repo</a>.</b><br/>
   <sub>Made with ♥ by <a href="https://github.com/aniruddhaadak80">@aniruddhaadak80</a> · <a href="https://openfile-studio.vercel.app">openfile-studio.vercel.app</a> · <a href="https://aniruddhaadak80.github.io/OpenFile/">GitHub Pages mirror</a></sub>
 </p>

@@ -7,6 +7,7 @@ import { db, dbReady, pruneHistory, type FavoriteRow, type HistoryRow, type Rece
 import { getPrefs, subscribePrefs, writePrefsCache, resolvedTheme, resolvedMode, resolvedReduceMotion, normalizePrefs, applyNaming, DEFAULT_PREFS, currentToolSlug, type Prefs } from './prefs'
 import { setDownloadHooks } from './files'
 import { toolBySlug } from '@/tools/registry'
+import { toast } from '@/components/toast'
 
 type Live<T> = { get: () => T; set: (v: T) => void; subscribe: (fn: () => void) => () => void }
 function live<T>(query: () => Promise<T>, initial: T): Live<T> {
@@ -35,12 +36,22 @@ export async function toggleFavorite(slug: string) {
   await dbReady()
   try { if (has) await db.favorites.delete(slug); else await db.favorites.put({ slug, addedAt: Date.now() }) } catch { /* ignore */ }
 }
+/** Put back rows removed by a clear or delete (used by Undo toasts). */
+export async function restoreFavorites(rows: FavoriteRow[]) { favStore.set([...rows, ...favStore.get().filter((f) => !rows.some((r) => r.slug === f.slug))]); await dbReady(); try { await db.favorites.bulkPut(rows) } catch { /* ignore */ } }
+export async function restoreRecents(rows: RecentRow[]) { recentStore.set([...rows].sort((a, b) => b.lastUsed - a.lastUsed)); await dbReady(); try { await db.recents.bulkPut(rows) } catch { /* ignore */ } }
+export async function restoreHistory(rows: HistoryRow[]) { await dbReady(); try { await db.history.bulkPut(rows) } catch { /* ignore */ } }
 export async function clearFavorites() { favStore.set([]); await dbReady(); await db.favorites.clear() }
 
 export function useFavorites() {
   const rows = useLive(favStore)
   const fav = rows.map((r) => r.slug)
-  return { fav, rows, isFav: (s: string) => fav.includes(s), toggle: (s: string) => { void toggleFavorite(s) } }
+  return { fav, rows, isFav: (s: string) => fav.includes(s), toggle: (s: string, opts: { quiet?: boolean } = {}) => {
+    const had = fav.includes(s)
+    void toggleFavorite(s)
+    if (opts.quiet) return
+    const name = toolBySlug(s)?.name ?? s
+    toast(had ? `Removed ${name} from favorites` : `Saved ${name} to favorites`, had ? 'info' : 'success', { undo: () => void toggleFavorite(s) })
+  } }
 }
 
 /* ---------------- recents + activity ---------------- */

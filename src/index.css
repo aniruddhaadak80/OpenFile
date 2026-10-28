@@ -200,3 +200,111 @@ html[data-theme="black"] { --code-bg: #050505; }
 .docs-prose .not-prose a { color: inherit; text-decoration: none; }
 .docs-prose .not-prose pre { padding: .75rem; }
 .docs-prose h2[id], .docs-prose h3[id] { scroll-margin-top: 5.5rem; }
+
+/* =====================================================================
+   UX pass: layout safety, accessibility, micro-interactions, hero ring.
+   Everything animated here moves with transform or opacity only, and the
+   .reduce-motion rule above (plus the media query below) freezes it.
+   ===================================================================== */
+html, body { overflow-x: clip; }
+@media (prefers-reduced-motion: reduce) { html:not(.motion-full) *, html:not(.motion-full) *::before, html:not(.motion-full) *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
+@property --mx { syntax: '<length-percentage>'; inherits: true; initial-value: 50%; }
+@property --my { syntax: '<length-percentage>'; inherits: true; initial-value: 50%; }
+
+/* long words and file names never force a horizontal scroll */
+h1, h2, h3 { overflow-wrap: anywhere; }
+.prose-of table { display: block; max-width: 100%; overflow-x: auto; }
+pre, code { overflow-wrap: normal; }
+img, video, canvas, svg { max-width: 100%; }
+.hr-root svg, .hr-root canvas { max-width: none; }
+
+/* visible keyboard focus everywhere, including on dark cards and gold buttons */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.bg-gradient-brand:focus-visible { outline-color: var(--fg); }
+@media (forced-colors: active) { :focus-visible { outline: 2px solid CanvasText; } }
+
+/* AA contrast on the light (Sun) theme for status colours used as text */
+html[data-theme="light"] .text-success { color: #047857; }
+html[data-theme="light"] .text-warn { color: #a15c07; }
+html[data-theme="light"] .text-danger { color: #b91c1c; }
+html[data-theme="light"] .text-muted\/70 { color: var(--muted); }
+
+/* ---------- links: animated underline ---------- */
+.link-underline { position: relative; text-decoration: none; }
+.link-underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.link-underline:hover::after, .link-underline:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+
+/* ---------- nav: hover pill ---------- */
+.nav-pill::before { content: ""; position: absolute; inset: 2px; border-radius: 10px; background: var(--surface-2); opacity: 0; transform: scale(.85); transition: opacity .2s, transform .25s cubic-bezier(.2,.8,.2,1); z-index: -1; }
+.nav-pill { isolation: isolate; position: relative; }
+.nav-pill:hover::before, .nav-pill[aria-expanded="true"]::before { opacity: 1; transform: scale(1); }
+
+/* ---------- buttons: shine sweep and press ripple ---------- */
+.btn-fx { position: relative; overflow: hidden; isolation: isolate; }
+.btn-shine { position: relative; overflow: hidden; }
+.btn-fx::after, .btn-shine::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.38) 50%, transparent 65%); transform: translateX(-120%); }
+.btn-fx:hover::after, .btn-shine:hover::after { transform: translateX(120%); transition: transform .75s ease; }
+.ripple { position: absolute; border-radius: 9999px; pointer-events: none; background: currentColor; opacity: .28; transform: scale(0); animation: ripple .6s ease-out forwards; }
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+/* ---------- tool cards: gradient border sweep, glow trail, icon micro-animations ---------- */
+.sweep { position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; overflow: hidden; opacity: 0; transition: opacity .35s; z-index: 2;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.sweep::before { content: ""; position: absolute; left: 50%; top: 50%; width: 250%; aspect-ratio: 1; background: conic-gradient(from 0deg, transparent 0 62%, color-mix(in oklab, var(--c, var(--accent)) 90%, transparent) 78%, var(--accent-glow) 86%, transparent 96%); animation: sweep-rot 2.8s linear infinite paused; transform: translate(-50%, -50%); }
+.group:hover > .sweep, .group:focus-visible > .sweep { opacity: 1; }
+.group:hover > .sweep::before, .group:focus-visible > .sweep::before { animation-play-state: running; }
+@keyframes sweep-rot { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+.glow-trail { position: absolute; left: 0; top: 0; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 9999px; pointer-events: none; z-index: 0; opacity: 0;
+  background: radial-gradient(circle, color-mix(in oklab, var(--c, var(--accent)) 30%, transparent), transparent 70%); transform: translate(var(--mx), var(--my)); transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s; }
+.group:hover > .glow-trail { opacity: 1; }
+.icon-anim svg { transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+.group:hover .icon-anim svg, .group:focus-visible .icon-anim svg { animation: ic-bounce .6s cubic-bezier(.3,1.4,.5,1); }
+.group:hover .icon-anim[data-cat="pdf"] svg, .group:hover .icon-anim[data-cat="ebook"] svg { animation-name: ic-flip; }
+.group:hover .icon-anim[data-cat="image"] svg, .group:hover .icon-anim[data-cat="ai"] svg { animation-name: ic-pop; }
+.group:hover .icon-anim[data-cat="video"] svg, .group:hover .icon-anim[data-cat="subtitle"] svg { animation-name: ic-wiggle; }
+.group:hover .icon-anim[data-cat="audio"] svg { animation-name: ic-pulse; }
+.group:hover .icon-anim[data-cat="dev"] svg, .group:hover .icon-anim[data-cat="data"] svg { animation-name: ic-tilt; }
+.group:hover .icon-anim[data-cat="design"] svg, .group:hover .icon-anim[data-cat="convert"] svg { animation-name: ic-spin; }
+.group:hover .icon-anim[data-cat="3d"] svg, .group:hover .icon-anim[data-cat="cad"] svg { animation-name: ic-turn; }
+.group:hover .icon-anim[data-cat="font"] svg, .group:hover .icon-anim[data-cat="text"] svg { animation-name: ic-skew; }
+@keyframes ic-bounce { 0%,100% { transform: translateY(0) } 40% { transform: translateY(-4px) } 70% { transform: translateY(1px) } }
+@keyframes ic-flip { from { transform: perspective(200px) rotateY(0) } to { transform: perspective(200px) rotateY(360deg) } }
+@keyframes ic-pop { 0%,100% { transform: scale(1) } 45% { transform: scale(1.25) } }
+@keyframes ic-wiggle { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-12deg) } 60% { transform: rotate(10deg) } }
+@keyframes ic-pulse { 0%,100% { transform: scale(1) } 30% { transform: scale(1.18) } 60% { transform: scale(.94) } }
+@keyframes ic-tilt { 0%,100% { transform: rotate(0) translateX(0) } 50% { transform: rotate(-14deg) translateX(-1px) } }
+@keyframes ic-spin { to { transform: rotate(180deg) } }
+@keyframes ic-turn { from { transform: perspective(200px) rotateX(0) rotateY(0) } to { transform: perspective(200px) rotateX(20deg) rotateY(360deg) } }
+@keyframes ic-skew { 0%,100% { transform: skewX(0) } 40% { transform: skewX(-14deg) } 70% { transform: skewX(6deg) } }
+.icon-pop { transition: transform .3s cubic-bezier(.3,1.6,.5,1); }
+.group:hover .icon-pop { transform: scale(1.1) rotate(-6deg); }
+
+/* ---------- drop areas ---------- */
+.dz-glow { position: absolute; left: 50%; top: 50%; width: 160%; aspect-ratio: 1; pointer-events: none; opacity: 0; transition: opacity .3s; transform: translate(-50%, -50%);
+  background: conic-gradient(from 0deg, transparent, color-mix(in oklab, var(--accent) 22%, transparent), transparent 30%, color-mix(in oklab, var(--accent-2) 18%, transparent), transparent 60%); animation: sweep-rot 6s linear infinite paused; }
+.dz-active .dz-glow, .group:hover .dz-glow { opacity: 1; animation-play-state: running; }
+.dz-file { transition: transform .45s cubic-bezier(.3,1.5,.5,1), opacity .3s; opacity: 0; }
+.dz-active .dz-file { opacity: 1; }
+.dz-active .dz-file-1 { transform: translate(-46px, -26px) rotate(-16deg); }
+.dz-active .dz-file-2 { transform: translate(0, -40px) rotate(2deg); }
+.dz-active .dz-file-3 { transform: translate(46px, -24px) rotate(15deg); }
+.drop-dash { animation: dash-pulse 1.6s ease-in-out infinite; }
+@keyframes dash-pulse { 0%,100% { opacity: .55; transform: scale(1) } 50% { opacity: 1; transform: scale(.995) } }
+
+/* ---------- onboarding tour highlight ---------- */
+.tour-target { position: relative; z-index: 61; box-shadow: 0 0 0 3px var(--accent), 0 0 0 9px color-mix(in oklab, var(--accent) 22%, transparent), 0 0 60px 10px color-mix(in oklab, var(--accent-glow) 35%, transparent) !important; border-radius: 16px; transition: box-shadow .3s; }
+
+/* ---------- hero ring ---------- */
+.hr-spin { animation: hr-rot var(--dur, 20s) linear infinite; transform-origin: 50% 50%; transform-box: fill-box; }
+.hr-spin.hr-rev { animation-direction: reverse; }
+svg .hr-spin { transform-box: view-box; transform-origin: 100px 100px; }
+@keyframes hr-rot { to { transform: rotate(360deg); } }
+.hr-core { background: radial-gradient(circle, color-mix(in oklab, var(--accent-glow) 55%, transparent), color-mix(in oklab, var(--accent) 18%, transparent) 45%, transparent 72%); animation: hr-core 3.4s ease-in-out infinite; }
+@keyframes hr-core { 0%,100% { transform: scale(.88); opacity: .65 } 50% { transform: scale(1.08); opacity: 1 } }
+.hr-stream { animation-name: hr-stream; animation-timing-function: cubic-bezier(.55,0,.9,.6); animation-iteration-count: infinite; transform: rotate(var(--a)) translateX(var(--r)); opacity: 0; }
+@keyframes hr-stream { 0% { transform: rotate(var(--a)) translateX(var(--r)) scale(1); opacity: 0 } 15% { opacity: 1 } 85% { opacity: .9 } 100% { transform: rotate(var(--a)) translateX(0) scale(.2); opacity: 0 } }
+.reduce-motion .hr-stream { display: none; }
+
+/* safe area for the sticky mobile action bar */
+.pb-safe-bar { padding-bottom: calc(env(safe-area-inset-bottom) + 6rem); }
+@media (min-width: 1024px) { .pb-safe-bar { padding-bottom: 0; } }

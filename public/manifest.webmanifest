@@ -1,7 +1,7 @@
 {
   "name": "OpenFile | Private File Tools",
   "short_name": "OpenFile",
-  "description": "Free tools for PDF, images, video, audio and developers that run in your browser.",
+  "description": "Free tools for PDF, images, video, audio and developers that run in your browser. Share or open files straight into OpenFile.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -23,6 +23,145 @@
       "src": "favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    }
+  ],
+  "id": "./",
+  "categories": [
+    "productivity",
+    "utilities",
+    "photo",
+    "developer"
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "share_target": {
+    "action": "./share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": [
+            "application/pdf",
+            "image/*",
+            "video/*",
+            "audio/*",
+            "text/*",
+            "application/json",
+            "application/zip",
+            ".pdf",
+            ".docx",
+            ".xlsx",
+            ".pptx",
+            ".epub",
+            ".zip",
+            ".csv",
+            ".json",
+            ".md",
+            ".svg",
+            ".heic",
+            ".glb",
+            ".stl",
+            ".ttf",
+            ".otf",
+            ".woff",
+            ".woff2",
+            ".srt",
+            ".vtt"
+          ]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "application/pdf": [
+          ".pdf"
+        ],
+        "image/*": [
+          ".png",
+          ".jpg",
+          ".jpeg",
+          ".webp",
+          ".gif",
+          ".avif",
+          ".heic",
+          ".svg"
+        ],
+        "video/*": [
+          ".mp4",
+          ".webm",
+          ".mov",
+          ".mkv"
+        ],
+        "audio/*": [
+          ".mp3",
+          ".wav",
+          ".ogg",
+          ".flac",
+          ".m4a"
+        ],
+        "application/zip": [
+          ".zip"
+        ],
+        "text/csv": [
+          ".csv"
+        ],
+        "application/json": [
+          ".json"
+        ]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "shortcuts": [
+    {
+      "name": "All tools",
+      "url": "./tools",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Merge PDF",
+      "url": "./merge-pdf",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Compress images",
+      "url": "./image-compressor",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Workspace",
+      "url": "./workspace",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

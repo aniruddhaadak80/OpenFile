@@ -8,11 +8,15 @@ import { REPO_URL } from '@/components/Layout'
 import { AUTHOR } from '@/lib/author'
 import { SocialIcon } from '@/components/Author'
 import { Aurora, GoldRing, Reveal, Stagger, StaggerItem, Magnetic, spotlightMove } from '@/components/motion'
-import { setPageMeta } from '@/lib/seo'
+import { setJsonLd, setPageMeta } from '@/lib/seo'
 import { Button } from '@/components/ui'
 
 export default function About() {
-  useEffect(() => { setPageMeta('About | OpenFile', `OpenFile is an open-source workbench of ${TOOLS.length}+ file tools that run in your browser, made by ${AUTHOR.name}.`) }, [])
+  useEffect(() => {
+    setPageMeta('About | OpenFile', `OpenFile is an open-source workbench of ${TOOLS.length}+ file tools that run in your browser, made by ${AUTHOR.name}.`)
+    setJsonLd('about', { '@context': 'https://schema.org', '@type': 'Person', name: AUTHOR.name, url: location.origin + import.meta.env.BASE_URL + 'about#author', image: location.origin + AUTHOR.photo, jobTitle: 'Open-source developer', homeLocation: { '@type': 'Place', name: AUTHOR.location }, sameAs: AUTHOR.links.map((l) => l.url) })
+    return () => setJsonLd('about', null)
+  }, [])
   useEffect(() => { if (location.hash === '#author') setTimeout(() => document.getElementById('author')?.scrollIntoView({ behavior: 'smooth' }), 120) }, [])
   const stack = ['React 19', 'TypeScript', 'Vite', 'Tailwind CSS 4', 'Framer Motion', 'pdf-lib', 'PDF.js', 'ffmpeg.wasm', 'Tesseract.js', 'Transformers.js', 'Kokoro TTS', 'IMG.LY background removal', 'fflate', 'SheetJS', 'docx and mammoth', 'Dexie', 'Vercel Functions']
   const facts = [
@@ -87,7 +91,7 @@ export default function About() {
           <Reveal><h2 className="font-display text-2xl font-bold">What is inside</h2></Reveal>
           <Stagger className="mt-4 grid gap-3 sm:grid-cols-2">
             {CATEGORIES.map((c) => (
-              <StaggerItem key={c.id}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: c.color }} />{c.name}</span><span className="text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} tools</span></Link></StaggerItem>
+              <StaggerItem key={c.id}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: c.color }} />{c.name}</span><span className="text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</span></Link></StaggerItem>
             ))}
           </Stagger>
         </section>

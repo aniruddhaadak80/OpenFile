@@ -1,13 +1,16 @@
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Search, Menu, X, ChevronDown, Heart, ShieldCheck, Settings as SettingsIcon, History as HistoryIcon, Rss } from 'lucide-react'
+import { Search, Menu, X, ChevronDown, Heart, ShieldCheck, Settings as SettingsIcon, History as HistoryIcon, Rss, Keyboard, Download } from 'lucide-react'
 import { MotionConfig, AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MadeByCard } from './Author'
-import { PageTransition } from './motion'
+import { PageTransition, RouteWipe } from './motion'
 import { Logo, Github } from './Logo'
 import { CommandPalette } from './CommandPalette'
 import { Toaster } from './toast'
+import { GlobalDrop } from './DropFlow'
+import { ShortcutsOverlay, OnboardingTour, OfflineIndicator, InstallPrompt, OnlineDot, useGlobalShortcuts } from './Overlays'
+import { overlayBus, useInstall } from '@/lib/ux'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
 import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
@@ -21,6 +24,8 @@ export function Layout() {
   const [mobile, setMobile] = useState(false)
   const [mega, setMega] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const openPalette = useCallback(() => setPalette(true), [])
+  const { help, setHelp } = useGlobalShortcuts(openPalette)
   const loc = useLocation()
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 30, mass: 0.3 })
@@ -43,19 +48,19 @@ export function Layout() {
             <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline">v1.0</span>
           </Link>
           <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
-            <div className="relative" onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)}>
-              <button className="flex items-center gap-1 rounded-lg px-3 py-2 text-muted hover:text-fg cursor-pointer">Tools <ChevronDown className="size-3.5" /></button>
+            <div className="relative" onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)} onKeyDown={(e) => { if (e.key === 'Escape') setMega(false) }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMega(false) }}>
+              <button onClick={() => setMega((v) => !v)} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-3 py-2 text-muted hover:text-fg cursor-pointer">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
               <AnimatePresence>
               {mega && (
-                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} className="absolute left-0 top-full w-[860px] pt-2">
-                  <div className="grid grid-cols-4 gap-4 rounded-2xl border border-border bg-surface p-5 shadow-2xl">
+                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} className="absolute left-0 top-full w-[min(860px,calc(100vw-2rem))] pt-2">
+                  <div className="grid max-h-[75vh] grid-cols-3 gap-4 overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl scrollbar-thin lg:grid-cols-4">
                     {CATEGORIES.map((c) => (
                       <div key={c.id}>
                         <Link to={`/category/${c.id}`} className="mb-2 block text-xs font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.name}</Link>
                         <div className="space-y-0.5">
                           {TOOLS.filter((t) => t.category === c.id).slice(0, 6).map((t) => { const I = getIcon(t.icon); return (
                             <Link key={t.slug} to={`/${t.slug}`} className="flex items-center gap-2 rounded-md px-1.5 py-1 text-[13px] text-muted hover:bg-surface-2 hover:text-fg"><I className="size-3.5" />{t.name}</Link>) })}
-                          <Link to={`/category/${c.id}`} className="block px-1.5 py-1 text-xs text-accent">All {TOOLS.filter((t) => t.category === c.id).length} tools</Link>
+                          <Link to={`/category/${c.id}`} className="block px-1.5 py-1 text-xs text-accent">All {TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</Link>
                         </div>
                       </div>
                     ))}
@@ -65,33 +70,39 @@ export function Layout() {
               </AnimatePresence>
             </div>
             {[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/about', 'About']].map(([to, l]) => (
-              <NavLink key={to} to={to} className={({ isActive }) => cn('relative rounded-lg px-3 py-2 transition-colors hover:text-fg', isActive ? 'text-fg' : 'text-muted')}>
+              <NavLink key={to} to={to} className={({ isActive }) => cn('nav-pill relative rounded-lg px-3 py-2 transition-colors hover:text-fg', isActive ? 'text-fg' : 'text-muted')}>
                 {({ isActive }) => <>{l}{isActive && <motion.span layoutId="nav-underline" className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-accent" />}</>}
               </NavLink>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
-            <button onClick={() => setPalette(true)} className="hidden h-9 items-center gap-2 rounded-xl border border-border bg-surface-2/60 px-3 text-sm text-muted hover:text-fg sm:flex cursor-pointer">
+            <button data-tour="search" onClick={() => setPalette(true)} className="hidden h-9 items-center gap-2 rounded-xl border border-border bg-surface-2/60 px-3 text-sm text-muted hover:text-fg sm:flex cursor-pointer">
               <Search className="size-4" /> Search tools <kbd className="ml-4 rounded border border-border px-1.5 font-mono text-[10px]">Ctrl K</kbd>
             </button>
-            <button onClick={() => setPalette(true)} className="grid size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 sm:hidden" aria-label="Search"><Search className="size-4" /></button>
+            <button onClick={() => setPalette(true)} className="grid size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 sm:hidden" aria-label="Search"><Search className="size-4" /></button>
             <Link to="/history" className="hidden size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg md:grid" aria-label="History" title="History"><HistoryIcon className="size-4" /></Link>
             <Link to="/settings" className="hidden size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg md:grid" aria-label="Settings" title="Settings"><SettingsIcon className="size-4" /></Link>
-            <ThemeSwitcher />
-            <a href={REPO_URL} target="_blank" rel="noreferrer" className="grid size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg" aria-label="GitHub"><Github className="size-4" /></a>
-            <button onClick={() => setMobile(!mobile)} className="grid size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 md:hidden" aria-label="Menu">{mobile ? <X className="size-5" /> : <Menu className="size-5" />}</button>
+            <span data-tour="theme" className="inline-flex rounded-xl"><ThemeSwitcher /></span>
+            <a href={REPO_URL} target="_blank" rel="noreferrer" className="hidden size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg sm:grid md:size-9" aria-label="GitHub"><Github className="size-4" /></a>
+            <button onClick={() => setMobile(!mobile)} className="grid size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 md:hidden" aria-label={mobile ? 'Close menu' : 'Open menu'} aria-expanded={mobile} aria-controls="mobile-menu">{mobile ? <X className="size-5" /> : <Menu className="size-5" />}</button>
           </div>
         </div>
         {mobile && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="overflow-hidden border-t border-border bg-surface px-4 py-3 md:hidden">
-            <div className="grid grid-cols-2 gap-1">{[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/history', 'History'], ['/settings', 'Settings'], ['/changelog', 'Changelog'], ['/about', 'About'], ['/privacy', 'Privacy']].map(([to, l]) => <Link key={to} to={to} className="block rounded-lg px-3 py-2.5 text-sm hover:bg-surface-2">{l}</Link>)}</div>
-            <div className="mt-2 grid grid-cols-2 gap-1">{CATEGORIES.map((c) => <Link key={c.id} to={`/category/${c.id}`} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted"><span className="size-2 rounded-full" style={{ background: c.color }} />{c.name}</Link>)}</div>
+          <motion.div id="mobile-menu" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-surface px-4 py-3 md:hidden">
+            <div className="grid grid-cols-2 gap-1">{[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/history', 'History'], ['/settings', 'Settings'], ['/changelog', 'Changelog'], ['/about', 'About'], ['/privacy', 'Privacy']].map(([to, l]) => <Link key={to} to={to} className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-surface-2">{l}</Link>)}</div>
+            <div className="mt-2 grid grid-cols-2 gap-1">{CATEGORIES.map((c) => <Link key={c.id} to={`/category/${c.id}`} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-muted hover:bg-surface-2"><span className="size-2 rounded-full" style={{ background: c.color }} />{c.name}</Link>)}</div>
           </motion.div>
         )}
       </header>
-      <main id="main" className="flex-1"><AnimatePresence mode="wait" initial={false}><PageTransition key={loc.pathname} k={loc.pathname}><Suspense fallback={<RouteSkeleton />}><Outlet /></Suspense></PageTransition></AnimatePresence></main>
+      <RouteWipe k={loc.pathname} />
+      <main id="main" tabIndex={-1} className="flex-1 outline-none"><AnimatePresence mode="wait" initial={false}><PageTransition key={loc.pathname} k={loc.pathname}><Suspense fallback={<RouteSkeleton />}><Outlet /></Suspense></PageTransition></AnimatePresence></main>
       <Footer />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
+      <ShortcutsOverlay open={help} onClose={() => setHelp(false)} />
+      <GlobalDrop />
+      <OnboardingTour />
+      <OfflineIndicator />
+      <InstallPrompt />
       <Toaster />
     </div>
     </MotionConfig>
@@ -107,17 +118,18 @@ function Footer() {
           <p className="mt-3 max-w-xs text-sm text-muted">{TOOLS.length}+ free, open-source file tools that run entirely in your browser. No uploads, no sign-up, no watermarks.</p>
           <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs text-success"><ShieldCheck className="size-3.5" /> Zero-upload client sandbox</div>
           <MadeByCard className="mt-6 max-w-xs" />
+          <FooterApp />
         </div>
         {CATEGORIES.slice(0, 4).map((c) => (
           <div key={c.id}>
             <div className="mb-3 text-sm font-semibold">{c.name}</div>
-            <ul className="space-y-2 text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).slice(0, 5).map((t) => <li key={t.slug}><Link to={`/${t.slug}`} className="hover:text-fg">{t.name}</Link></li>)}</ul>
+            <ul className="space-y-2 text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).slice(0, 5).map((t) => <li key={t.slug}><Link to={`/${t.slug}`} className="link-underline hover:text-fg">{t.name}</Link></li>)}</ul>
           </div>
         ))}
         <div>
           <div className="mb-3 text-sm font-semibold">Resources</div>
           <ul className="space-y-2 text-sm text-muted">
-            {[['/docs', 'Documentation'], ['/blog', 'Blog'], ['/docs/self-hosting', 'Self-hosting'], ['/docs/api', 'API reference'], ['/changelog', 'Changelog'], ['/history', 'History'], ['/settings', 'Settings']].map(([to, l]) => <li key={to}><Link to={to} className="hover:text-fg">{l}</Link></li>)}
+            {[['/docs', 'Documentation'], ['/blog', 'Blog'], ['/docs/self-hosting', 'Self-hosting'], ['/docs/api', 'API reference'], ['/changelog', 'Changelog'], ['/history', 'History'], ['/settings', 'Settings']].map(([to, l]) => <li key={to}><Link to={to} className="link-underline hover:text-fg">{l}</Link></li>)}
           </ul>
         </div>
       </div>
@@ -128,6 +140,17 @@ function Footer() {
         </div>
       </div>
     </footer>
+  )
+}
+
+function FooterApp() {
+  const { canPrompt, installed, prompt } = useInstall()
+  return (
+    <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-muted">
+      <button onClick={() => overlayBus.emit('shortcuts')} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Keyboard className="size-3.5" /> Shortcuts <kbd className="rounded border border-border px-1 text-[10px]">?</kbd></button>
+      {canPrompt && !installed && <button onClick={() => void prompt()} className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border px-2.5 hover:border-accent hover:text-fg cursor-pointer"><Download className="size-3.5" /> Install app</button>}
+      <span className="px-1"><OnlineDot /></span>
+    </div>
   )
 }
 

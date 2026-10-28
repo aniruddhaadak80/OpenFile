@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   ZoomIn, ZoomOut, ChevronUp, ChevronDown, Search, X, Download, Maximize, Minimize, PanelLeft, LayoutList, ListTree, MoveHorizontal,
-  Expand, RotateCw, Printer, Copy, ChevronRight, Loader2, FileText,
+  Expand, RotateCw, Printer, Copy, ChevronRight, Loader2, FileText, MessageSquare, MessageSquareOff,
 } from 'lucide-react'
 import { Dropzone, Spinner, cn } from '@/components/ui'
 import { pdfjs, pageText, openPdfJs, type PdfJsDoc } from '@/lib/pdf'
@@ -12,6 +12,8 @@ import { PDF_ACCEPT, friendly, closeDoc } from './_core/kit'
 type Rect = { x: number; y: number; w: number; h: number } // fractions of the (unrotated-view) page
 type Match = { page: number; rects: Rect[] }
 type OutlineNode = { title: string; dest: any; url?: string | null; items: OutlineNode[]; bold?: boolean; italic?: boolean }
+type Note = { page: number; type: string; author: string; text: string; date: string; color?: string }
+const NOTE_TYPES: Record<string, string> = { Text: 'Comment', FreeText: 'Text box', Highlight: 'Highlight', Underline: 'Underline', StrikeOut: 'Strikeout', Squiggly: 'Squiggly', Ink: 'Drawing', Stamp: 'Stamp', Square: 'Rectangle', Circle: 'Ellipse', Line: 'Line', Polygon: 'Polygon', PolyLine: 'Polyline', Caret: 'Insert', FileAttachment: 'Attachment', Sound: 'Sound', Redact: 'Redaction' }
 const ZOOMS = [0.25, 0.33, 0.5, 0.67, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5]
 const GAP = 16
 
@@ -34,7 +36,7 @@ export default function PdfReader() {
   const [rot, setRot] = useState(0)
   const [current, setCurrent] = useState(1)
   const [pageInput, setPageInput] = useState('1')
-  const [side, setSide] = useState<'thumbs' | 'outline' | null>(typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'thumbs' : null)
+  const [side, setSide] = useState<'thumbs' | 'outline' | 'notes' | null>(typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'thumbs' : null)
   const [outline, setOutline] = useState<OutlineNode[] | null>(null)
   const [visible, setVisible] = useState<Set<number>>(new Set())
   const [query, setQuery] = useState('')
@@ -44,6 +46,30 @@ export default function PdfReader() {
   const [searching, setSearching] = useState<number | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [full, setFull] = useState(false)
+  const [showAnnots, setShowAnnots] = useState(true)
+  const [notes, setNotes] = useState<Note[] | null>(null)
+  const [printing, setPrinting] = useState<number | null>(null)
+  // read comments and markups when the Notes tab is opened
+  useEffect(() => {
+    if (side !== 'notes' || !doc || notes !== null) return
+    let off = false
+    ;(async () => {
+      const out: Note[] = []
+      for (let i = 1; i <= doc.numPages && !off; i++) {
+        try {
+          const ann = await (await doc.getPage(i)).getAnnotations({ intent: 'display' })
+          for (const a of ann as any[]) {
+            if (!NOTE_TYPES[a.subtype]) continue
+            const c = a.color ? `rgb(${a.color[0]}, ${a.color[1]}, ${a.color[2]})` : undefined
+            const d = a.modificationDate ? (pdfjs as any).PDFDateString?.toDateObject?.(a.modificationDate) : null
+            out.push({ page: i, type: NOTE_TYPES[a.subtype], author: a.titleObj?.str ?? '', text: a.contentsObj?.str ?? (a.subtype === 'FreeText' ? a.textContent?.join(' ') ?? '' : ''), date: d ? d.toLocaleDateString() : '', color: c })
+          }
+        } catch { /* skip page */ }
+      }
+      if (!off) setNotes(out)
+    })()
+    return () => { off = true }
+  }, [side, doc, notes])
   const shell = useRef<HTMLDivElement>(null)
   const scroller = useRef<HTMLDivElement>(null)
   const searchInput = useRef<HTMLInputElement>(null)
@@ -55,7 +81,7 @@ export default function PdfReader() {
   useEffect(() => {
     if (!file) return
     let cancel = false; let d: PdfJsDoc | null = null
-    setDoc(null); setErr(null); setSizes([]); setOutline(null); setMatches([]); textCache.current.clear(); setCurrent(1); setRot(0)
+    setDoc(null); setErr(null); setSizes([]); setOutline(null); setNotes(null); setMatches([]); textCache.current.clear(); setCurrent(1); setRot(0)
     ;(async () => {
       try {
         d = await openPdfJs(file)
@@ -231,7 +257,34 @@ export default function PdfReader() {
   useEffect(() => { const h = () => setFull(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h) }, [])
   const toggleFull = () => { if (document.fullscreenElement) document.exitFullscreen(); else shell.current?.requestFullscreen?.().catch(() => toast('Fullscreen is not available here', 'error')) }
 
-  const print = () => {
+  // print by rendering pages to images: works in every browser, including phones, and respects the annotation toggle
+  const print = async () => {
+    if (!doc || printing !== null) return
+    if (doc.numPages > 300) { printNative(); return }
+    setPrinting(0)
+    const urls: string[] = []
+    try {
+      for (let i = 1; i <= doc.numPages; i++) {
+        const pg = await doc.getPage(i)
+        const vp = pg.getViewport({ scale: 150 / 72 })
+        const c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height)
+        const ctx = c.getContext('2d')!; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height)
+        await pg.render({ canvasContext: ctx, viewport: vp, canvas: c, annotationMode: showAnnots ? (pdfjs as any).AnnotationMode.ENABLE_FORMS : (pdfjs as any).AnnotationMode.DISABLE, intent: 'print' } as any).promise
+        const b: Blob = await new Promise((r) => c.toBlob((x) => r(x!), 'image/jpeg', 0.9))
+        urls.push(URL.createObjectURL(b)); c.width = c.height = 0
+        setPrinting(i / doc.numPages)
+      }
+      const f = document.createElement('iframe')
+      f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
+      document.body.appendChild(f)
+      const d = f.contentDocument!
+      d.open(); d.write(`<!doctype html><html><head><title>${file?.name ?? 'Print'}</title><style>@page{margin:0}html,body{margin:0}img{display:block;width:100%;height:auto;break-after:page;page-break-after:always}img:last-child{break-after:auto;page-break-after:auto}</style></head><body>${urls.map((u) => `<img src="${u}">`).join('')}</body></html>`); d.close()
+      await Promise.all([...d.images].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = r; im.onerror = r }))))
+      f.contentWindow?.focus(); f.contentWindow?.print()
+      setTimeout(() => { f.remove(); urls.forEach((u) => URL.revokeObjectURL(u)) }, 60000)
+    } catch { urls.forEach((u) => URL.revokeObjectURL(u)); printNative() } finally { setPrinting(null) }
+  }
+  const printNative = () => {
     if (!file) return
     const url = URL.createObjectURL(file)
     const f = document.createElement('iframe')
@@ -292,7 +345,8 @@ export default function PdfReader() {
         <div className="ml-auto flex items-center gap-1">
           <button className={cn(tb, searchOpen && 'bg-surface-2 text-fg')} onClick={() => { setSearchOpen((s) => !s); setTimeout(() => searchInput.current?.focus(), 0) }} title="Search (Ctrl F)"><Search className="size-4" /></button>
           <button className={cn(tb, 'max-sm:hidden')} onClick={copyPage} title="Copy text of this page"><Copy className="size-4" /></button>
-          <button className={cn(tb, 'max-sm:hidden')} onClick={print} title="Print"><Printer className="size-4" /></button>
+          <button className={cn(tb, !showAnnots && 'text-muted', showAnnots && 'text-fg')} onClick={() => setShowAnnots((v) => !v)} title={showAnnots ? 'Hide comments and markups' : 'Show comments and markups'} aria-pressed={showAnnots}>{showAnnots ? <MessageSquare className="size-4" /> : <MessageSquareOff className="size-4" />}</button>
+          <button className={tb} onClick={print} disabled={printing !== null} title="Print">{printing !== null ? <span className="font-mono text-[10px]">{Math.round(printing * 100)}%</span> : <Printer className="size-4" />}</button>
           <button className={tb} onClick={() => downloadBlob(file, file.name)} title={`Download (${formatBytes(file.size)})`}><Download className="size-4" /></button>
           <button className={tb} onClick={toggleFull} title="Fullscreen">{full ? <Minimize className="size-4" /> : <Maximize className="size-4" />}</button>
           <button className={tb} onClick={reset} title="Close file"><X className="size-4" /></button>
@@ -319,12 +373,19 @@ export default function PdfReader() {
         {side && (
           <aside className="flex w-52 shrink-0 flex-col border-r border-border bg-surface max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-20 max-md:shadow-2xl">
             <div className="flex gap-1 border-b border-border p-1.5">
-              {([['thumbs', LayoutList, 'Pages'], ['outline', ListTree, 'Outline']] as const).map(([k, I, l]) => (
+              {([['thumbs', LayoutList, 'Pages'], ['outline', ListTree, 'Outline'], ['notes', MessageSquare, 'Notes']] as const).map(([k, I, l]) => (
                 <button key={k} onClick={() => setSide(k)} className={cn('flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-medium transition cursor-pointer', side === k ? 'bg-surface-2 text-fg' : 'text-muted hover:text-fg')}><I className="size-3.5" />{l}</button>
               ))}
             </div>
             <div className="min-h-0 flex-1 overflow-auto scrollbar-thin p-2">
-              {side === 'thumbs' ? (doc ? <ThumbList doc={doc} current={current} onPick={(p) => { goTo(p, 0, false); if (window.innerWidth < 768) setSide(null) }} matchPages={new Set(matches.map((m) => m.page))} /> : <Spinner />)
+              {side === 'notes' ? (notes === null ? <Spinner label="Reading comments…" /> : notes.length === 0 ? <div className="p-3 text-center text-xs text-muted">No comments or markups in this document.</div>
+                : <div className="space-y-1.5">{notes.map((nt, k) => (
+                  <button key={k} type="button" onClick={() => { goTo(nt.page); if (window.innerWidth < 768) setSide(null) }} className={cn('block w-full rounded-lg border border-border p-2 text-left text-xs transition hover:border-accent cursor-pointer', nt.page === current && 'bg-surface-2')}>
+                    <div className="flex items-center gap-1.5"><span className="size-2 shrink-0 rounded-full" style={{ background: nt.color ?? 'var(--accent)' }} /><span className="font-medium">{nt.type}</span><span className="ml-auto text-muted">p. {nt.page}</span></div>
+                    {nt.text && <div className="mt-1 line-clamp-4 whitespace-pre-wrap break-words text-fg/90">{nt.text}</div>}
+                    {(nt.author || nt.date) && <div className="mt-1 truncate text-[10px] text-muted">{[nt.author, nt.date].filter(Boolean).join(' · ')}</div>}
+                  </button>))}</div>)
+                : side === 'thumbs' ? (doc ? <ThumbList doc={doc} current={current} onPick={(p) => { goTo(p, 0, false); if (window.innerWidth < 768) setSide(null) }} matchPages={new Set(matches.map((m) => m.page))} /> : <Spinner />)
                 : outline === null ? <Spinner label="Loading…" /> : outline.length === 0 ? <div className="p-3 text-center text-xs text-muted">This document has no bookmarks.</div>
                   : <OutlineTree nodes={outline} onPick={openOutline} />}
             </div>
@@ -339,7 +400,8 @@ export default function PdfReader() {
                 return (
                   <div key={p} data-page={p} ref={(el) => { if (el) pageEls.current.set(p, el); else pageEls.current.delete(p) }}
                     className="relative shrink-0 bg-white shadow-lg ring-1 ring-black/5" style={{ width: Math.round(w * zoom), height: Math.round(h * zoom) }}>
-                    <PageCanvas doc={doc} page={p} zoom={zoom} rot={rot} visible={visible.has(p)} />
+                    <PageCanvas doc={doc} page={p} zoom={zoom} rot={rot} visible={visible.has(p)} annots={showAnnots} />
+                    {visible.has(p) && <LinkLayer doc={doc} page={p} rot={rot} onDest={async (dest) => { const t = await resolveDest(dest); if (t) goTo(t) }} />}
                     {pageMatches(p).map(({ m, i: mi }) => m.rects.map((r0, k) => {
                       const r = rotateRect(r0, rot)
                       return <div key={`${mi}-${k}`} className={cn('pointer-events-none absolute rounded-[2px] mix-blend-multiply transition-colors', mi === active ? 'bg-orange-400/70 ring-2 ring-orange-500' : 'bg-yellow-300/60')}
@@ -357,9 +419,9 @@ export default function PdfReader() {
   )
 }
 
-function PageCanvas({ doc, page, zoom, rot, visible }: { doc: PdfJsDoc; page: number; zoom: number; rot: number; visible: boolean }) {
+function PageCanvas({ doc, page, zoom, rot, visible, annots }: { doc: PdfJsDoc; page: number; zoom: number; rot: number; visible: boolean; annots: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null)
-  const done = useRef<{ zoom: number; rot: number } | null>(null)
+  const done = useRef<{ zoom: number; rot: number; annots: boolean } | null>(null)
   const [busy, setBusy] = useState(false)
   useEffect(() => {
     if (!visible) {
@@ -367,7 +429,7 @@ function PageCanvas({ doc, page, zoom, rot, visible }: { doc: PdfJsDoc; page: nu
       if (ref.current && done.current) { ref.current.width = 0; ref.current.height = 0; done.current = null }
       return
     }
-    if (done.current && done.current.zoom === zoom && done.current.rot === rot) return
+    if (done.current && done.current.zoom === zoom && done.current.rot === rot && done.current.annots === annots) return
     let task: any = null, cancelled = false
     const t = setTimeout(async () => {
       try {
@@ -380,21 +442,44 @@ function PageCanvas({ doc, page, zoom, rot, visible }: { doc: PdfJsDoc; page: nu
         off.width = Math.ceil(vp.width); off.height = Math.ceil(vp.height)
         const ctx = off.getContext('2d')!
         ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, off.width, off.height)
-        task = p.render({ canvasContext: ctx, viewport: vp, canvas: off } as any)
+        task = p.render({ canvasContext: ctx, viewport: vp, canvas: off, annotationMode: annots ? (pdfjs as any).AnnotationMode.ENABLE_FORMS : (pdfjs as any).AnnotationMode.DISABLE } as any)
         await task.promise
         if (cancelled || !ref.current) return
         const c = ref.current
         c.width = off.width; c.height = off.height
         c.getContext('2d')!.drawImage(off, 0, 0)
-        done.current = { zoom, rot }
+        done.current = { zoom, rot, annots }
       } catch { /* cancelled */ } finally { if (!cancelled) setBusy(false) }
     }, done.current ? 140 : 0)
     return () => { cancelled = true; clearTimeout(t); try { task?.cancel() } catch { /* ignore */ } }
-  }, [doc, page, zoom, rot, visible])
+  }, [doc, page, zoom, rot, visible, annots])
   return <>
     <canvas ref={ref} className="absolute inset-0 h-full w-full" />
     {busy && <div className="absolute inset-0 grid place-items-center"><Loader2 className="size-6 animate-spin text-neutral-300" /></div>}
   </>
+}
+
+/** Clickable areas for links: web links open in a new tab, internal links jump to their page. */
+function LinkLayer({ doc, page, rot, onDest }: { doc: PdfJsDoc; page: number; rot: number; onDest: (dest: any) => void }) {
+  const [links, setLinks] = useState<{ r: Rect; url?: string; dest?: any }[]>([])
+  useEffect(() => {
+    let off = false
+    doc.getPage(page).then(async (p) => {
+      const vp = p.getViewport({ scale: 1, rotation: p.rotate })
+      const ann = await p.getAnnotations({ intent: 'display' })
+      const out = ann.filter((a: any) => a.subtype === 'Link' && (a.url || a.dest || a.unsafeUrl)).map((a: any) => {
+        const [x1, y1] = vp.convertToViewportPoint(a.rect[0], a.rect[1]), [x2, y2] = vp.convertToViewportPoint(a.rect[2], a.rect[3])
+        return { r: { x: Math.min(x1, x2) / vp.width, y: Math.min(y1, y2) / vp.height, w: Math.abs(x2 - x1) / vp.width, h: Math.abs(y2 - y1) / vp.height }, url: a.url || a.unsafeUrl, dest: a.dest }
+      })
+      if (!off) setLinks(out)
+    }).catch(() => {})
+    return () => { off = true }
+  }, [doc, page])
+  return <>{links.map((l, i) => { const r = rotateRect(l.r, rot); const safe = l.url && /^(https?:|mailto:)/i.test(l.url); return (
+    <a key={i} href={safe ? l.url : undefined} target={safe ? '_blank' : undefined} rel="noopener noreferrer" title={l.url ?? 'Go to linked page'} aria-label={l.url ? `Link to ${l.url}` : 'Link to another page'}
+      onClick={(e) => { if (!safe) { e.preventDefault(); if (l.dest) onDest(l.dest) } }}
+      className="absolute cursor-pointer rounded-sm transition hover:bg-sky-400/20 focus-visible:outline-2 focus-visible:outline-sky-500"
+      style={{ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.w * 100}%`, height: `${r.h * 100}%` }} />) })}</>
 }
 
 function ThumbList({ doc, current, onPick, matchPages }: { doc: PdfJsDoc; current: number; onPick: (p: number) => void; matchPages: Set<number> }) {

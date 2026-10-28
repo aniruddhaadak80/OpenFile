@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Eraser, Download, Package, ImagePlus, Wand2 } from 'lucide-react'
-import { Button, ErrorNote, Label, Progress, Segmented, Slider, ToolGrid, cn } from '@/components/ui'
+import { Button, ErrorNote, Label, Progress, Segmented, Slider, Switch, ToolGrid, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { downloadBlob, zipFiles, formatBytes } from '@/lib/files'
 import { BeforeAfter, ColorInput, ImageDrop, StatusPill, ThumbGrid, blurCanvas, canvas, decode, toCanvas, useDebounced, useImageList, useObjectUrl, outName, type Item } from './_img/kit'
@@ -10,16 +10,46 @@ type BgMode = 'transparent' | 'color' | 'blur' | 'image'
 type Cut = { state: 'run' | 'done' | 'err'; blob?: Blob; err?: string }
 const SWATCHES = ['#ffffff', '#000000', '#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#14b8a6', '#e5e7eb']
 
-async function compose(orig: Blob, cut: Blob, mode: BgMode, color: string, blur: number, bgImg: HTMLImageElement | null, maxSide = 0) {
-  const [o, c] = await Promise.all([decode(orig), decode(cut)])
-  let w = c.naturalWidth, h = c.naturalHeight
+type Extra = { feather: number; shadow: number; fitBg: boolean; scale: number }
+const NO_EXTRA: Extra = { feather: 0, shadow: 0, fitBg: false, scale: 100 }
+
+/** Soften the cut-out edge by blurring its alpha mask (Batch 2 extension). */
+function featherCut(c: HTMLImageElement, px: number) {
+  const { canvas: out, ctx } = canvas(c.naturalWidth, c.naturalHeight)
+  ctx.drawImage(c, 0, 0)
+  if (px <= 0) return out
+  const mask = blurCanvas(out, px)
+  ctx.globalCompositeOperation = 'destination-in'; ctx.drawImage(mask, 0, 0); ctx.globalCompositeOperation = 'source-over'
+  return out
+}
+
+async function compose(orig: Blob, cut: Blob, mode: BgMode, color: string, blur: number, bgImg: HTMLImageElement | null, maxSide = 0, ex: Extra = NO_EXTRA) {
+  if (mode === 'image' && bgImg && ex.fitBg) return composeOnBackground(cut, bgImg, maxSide, ex)
+  const [o, c0] = await Promise.all([decode(orig), decode(cut)])
+  const c = featherCut(c0, ex.feather * Math.max(c0.naturalWidth, c0.naturalHeight) / 1000)
+  let w = c.width, h = c.height
   const s = maxSide && Math.max(w, h) > maxSide ? maxSide / Math.max(w, h) : 1
   w = Math.round(w * s); h = Math.round(h * s)
   const { canvas: out, ctx } = canvas(w, h)
   if (mode === 'color') { ctx.fillStyle = color; ctx.fillRect(0, 0, w, h) }
   if (mode === 'blur') { const { canvas: oc, ctx: octx } = canvas(w, h); octx.drawImage(o, 0, 0, w, h); ctx.drawImage(blurCanvas(oc, Math.max(1, (blur * Math.max(w, h)) / 1200)), 0, 0) }
   if (mode === 'image' && bgImg) { const k = Math.max(w / bgImg.naturalWidth, h / bgImg.naturalHeight); const bw = bgImg.naturalWidth * k, bh = bgImg.naturalHeight * k; ctx.drawImage(bgImg, (w - bw) / 2, (h - bh) / 2, bw, bh) }
-  ctx.drawImage(c, 0, 0, w, h)
+  if (ex.shadow > 0 && mode !== 'transparent') { ctx.save(); ctx.shadowColor = `rgba(0,0,0,${ex.shadow / 100})`; ctx.shadowBlur = Math.max(w, h) * 0.03; ctx.shadowOffsetY = Math.max(w, h) * 0.012; ctx.drawImage(c, 0, 0, w, h); ctx.restore() }
+  else ctx.drawImage(c, 0, 0, w, h)
+  return out
+}
+
+/** Place the subject on the background image at the background's own size (centred at the bottom). */
+async function composeOnBackground(cut: Blob, bgImg: HTMLImageElement, maxSide: number, ex: Extra) {
+  const c = featherCut(await decode(cut), ex.feather * 1.5)
+  let W = bgImg.naturalWidth, H = bgImg.naturalHeight
+  const s = maxSide && Math.max(W, H) > maxSide ? maxSide / Math.max(W, H) : 1
+  W = Math.round(W * s); H = Math.round(H * s)
+  const { canvas: out, ctx } = canvas(W, H)
+  ctx.drawImage(bgImg, 0, 0, W, H)
+  const k = Math.min(W / c.width, H / c.height) * (ex.scale / 100), cw = c.width * k, ch = c.height * k
+  if (ex.shadow > 0) { ctx.shadowColor = `rgba(0,0,0,${ex.shadow / 100})`; ctx.shadowBlur = Math.max(W, H) * 0.03; ctx.shadowOffsetY = Math.max(W, H) * 0.012 }
+  ctx.drawImage(c, (W - cw) / 2, H - ch, cw, ch)
   return out
 }
 const toPng = (c: HTMLCanvasElement, type = 'image/png', q?: number) => new Promise<Blob>((r, j) => c.toBlob((b) => (b ? r(b) : j(new Error('Export failed'))), type, q))
@@ -78,17 +108,22 @@ export default function BackgroundRemover() {
 
   const cur: Item | undefined = items.find((i) => i.id === sel) ?? items[0]
   const cutBlob = cur ? cuts[cur.id]?.blob : undefined
-  const settings = useDebounced({ mode, color, blur, bgImg }, 120)
+  const [feather, setFeather] = useState(0)
+  const [shadow, setShadow] = useState(0)
+  const [fitBg, setFitBg] = useState(true)
+  const [scale, setScale] = useState(90)
+  const ex: Extra = { feather, shadow, fitBg, scale }
+  const settings = useDebounced({ mode, color, blur, bgImg, feather, shadow, fitBg, scale }, 120)
   useEffect(() => {
     if (!cur || !cutBlob) { setPreview(null); return }
     let off = false
-    compose(cur.file, cutBlob, settings.mode, settings.color, settings.blur, settings.bgImg, 1600).then((c) => toPng(c)).then((b) => { if (!off) setPreview(b) }).catch(() => {})
+    compose(cur.file, cutBlob, settings.mode, settings.color, settings.blur, settings.bgImg, 1600, { feather: settings.feather, shadow: settings.shadow, fitBg: settings.fitBg, scale: settings.scale }).then((c) => toPng(c)).then((b) => { if (!off) setPreview(b) }).catch(() => {})
     return () => { off = true }
   }, [cur?.id, cutBlob, settings])
   const previewUrl = useObjectUrl(preview)
 
   const exportOne = async (it: Item) => {
-    const c = await compose(it.file, cuts[it.id].blob!, mode, color, blur, bgImg)
+    const c = await compose(it.file, cuts[it.id].blob!, mode, color, blur, bgImg, 0, ex)
     const opaque = mode !== 'transparent'
     return { name: outName(it.file.name, opaque && mode !== 'color' ? 'jpg' : 'png', '-nobg'), blob: opaque && mode !== 'color' ? await toPng(c, 'image/jpeg', 0.93) : await toPng(c) }
   }
@@ -141,8 +176,11 @@ export default function BackgroundRemover() {
             <input ref={bgInput} type="file" hidden accept="image/*" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) { setBgFile(f); setBgImg(await decode(f)) } }} />
             <Button variant="outline" className="w-full" icon={<ImagePlus className="size-4" />} onClick={() => bgInput.current?.click()}>{bgFile ? 'Change background image' : 'Choose background image'}</Button>
             {bgFile && <p className="mt-1.5 truncate text-[11px] text-muted">{bgFile.name}</p>}
+            {bgFile && <div className="mt-3 space-y-3"><Switch checked={fitBg} onChange={setFitBg} label="Use the background's size" />{fitBg && <Slider label="Subject size" value={scale} onChange={setScale} min={20} max={100} suffix="%" />}</div>}
           </div>
         )}
+        <Slider label="Soften edges" value={feather} onChange={setFeather} min={0} max={10} />
+        {mode !== 'transparent' && <Slider label="Subject shadow" value={shadow} onChange={setShadow} min={0} max={80} suffix="%" />}
         <div>
           <Label>Model</Label>
           <Segmented value={quality} onChange={(q) => setQuality(q)} options={[{ value: 'isnet_fp16', label: 'Best quality' }, { value: 'isnet_quint8', label: 'Faster' }]} />
@@ -151,7 +189,7 @@ export default function BackgroundRemover() {
         <ErrorNote error={error} />
         <div className="space-y-2">
           <Button size="lg" className="w-full" disabled={curState !== 'done'} icon={<Download className="size-4" />} onClick={downloadCurrent}>Download {mode === 'transparent' || mode === 'color' ? 'PNG' : 'JPG'}</Button>
-          {items.length > 1 && <Button variant="outline" className="w-full" disabled={!doneCount} loading={zipping} icon={<Package className="size-4" />} onClick={downloadAll}>Download all {doneCount} (ZIP)</Button>}
+          {items.length > 1 && <Button variant="outline" className="w-full" disabled={!doneCount} loading={zipping} icon={<Package className="size-4" />} onClick={downloadAll}>Download all {doneCount} with these settings (ZIP)</Button>}
           <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted"><Wand2 className="size-3" /> {doneCount}/{items.length} processed · on-device AI</p>
         </div>
         <Button variant="ghost" className="w-full" icon={<Eraser className="size-4" />} onClick={reset}>Start over</Button>

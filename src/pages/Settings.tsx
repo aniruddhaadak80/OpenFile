@@ -8,18 +8,22 @@ import { toast } from '@/components/toast'
 import { downloadBlob, formatBytes } from '@/lib/files'
 import { applyNaming, DEFAULT_PREFS, FONTS, type FontPref } from '@/lib/prefs'
 import { AccentSwatches, ThemeModes } from '@/components/ThemeSwitcher'
-import { useSettings, useFavorites, useRecent, useHistory, exportData, importData, clearFavorites, clearRecents, clearHistory } from '@/lib/store'
+import { useSettings, useFavorites, useRecent, useHistory, exportData, importData, clearFavorites, clearRecents, clearHistory, restoreFavorites, restoreRecents, restoreHistory } from '@/lib/store'
+import { overlayBus, setFlag, useInstall, useOnline } from '@/lib/ux'
+import { Keyboard, Compass, Smartphone } from 'lucide-react'
 import { setPageMeta } from '@/lib/seo'
 
-const SECTIONS = [['appearance', 'Appearance'], ['output', 'Files & output'], ['privacy', 'Privacy & data'], ['backup', 'Backup']] as const
+const SECTIONS = [['appearance', 'Appearance'], ['output', 'Files & output'], ['app', 'App & shortcuts'], ['privacy', 'Privacy & data'], ['backup', 'Backup']] as const
 const TOKENS: [string, string][] = [['{name}', 'original name'], ['{tool}', 'tool slug'], ['{date}', 'YYYY-MM-DD'], ['{time}', 'HHMMSS']]
 const PRESETS = ['{name}', '{name}-openfile', '{date}-{name}', '{name}-{tool}', '{name}-{date}-{time}']
 
 export default function Settings() {
   useEffect(() => { setPageMeta('Settings | OpenFile', 'Theme, accent, motion, default image quality, download names and backup of your OpenFile settings.') }, [])
   const { prefs, update, reset } = useSettings()
-  const { fav } = useFavorites()
-  const { recent } = useRecent()
+  const { fav, rows: favRows } = useFavorites()
+  const { recent, rows: recentRows } = useRecent()
+  const install = useInstall()
+  const online = useOnline()
   const history = useHistory()
   const [naming, setNaming] = useState(prefs.outputNaming)
   const [withHistory, setWithHistory] = useState(false)
@@ -120,14 +124,29 @@ export default function Settings() {
               </div>
             </Section>
 
+            <Section id="app" icon={Smartphone} title="App & shortcuts" sub="Install OpenFile, replay the tour and learn the keys.">
+              <Row title="Install as an app" sub={install.installed ? 'OpenFile is installed on this device.' : install.canPrompt ? 'Opens in its own window, works offline and accepts files shared from other apps.' : install.iosHint ? 'On iPhone or iPad: tap Share, then Add to Home Screen.' : 'Use your browser menu to install. The option appears after a short visit in supported browsers.'}>
+                <Button variant="outline" disabled={!install.canPrompt || install.installed} icon={<Download className="size-4" />} onClick={async () => { const r = await install.prompt(); if (r === 'accepted') toast('Installed') }}>{install.installed ? 'Installed' : 'Install'}</Button>
+              </Row>
+              <Row title="Keyboard shortcuts" sub="Press ? anywhere to see them. G then a letter jumps between pages.">
+                <Button variant="outline" icon={<Keyboard className="size-4" />} onClick={() => overlayBus.emit('shortcuts')}>Show shortcuts</Button>
+              </Row>
+              <Row title="Quick tour" sub="A short walk through search, Drop anything, categories and themes.">
+                <Link to="/" onClick={() => { setFlag('tour-done', false); setTimeout(() => overlayBus.emit('tour'), 600) }}><Button variant="outline" icon={<Compass className="size-4" />}>Replay tour</Button></Link>
+              </Row>
+              <Row title="Connection" sub={online ? 'Online. Tools download their engines the first time you use them.' : 'Offline. Tools you used before keep working from the cache.'}>
+                <span className={cn('rounded-full px-3 py-1 text-xs font-medium', online ? 'bg-success/10 text-success' : 'bg-warn/10 text-warn')}>{online ? 'Online' : 'Offline'}</span>
+              </Row>
+            </Section>
+
             <Section id="privacy" icon={ShieldCheck} title="Privacy & data" sub="Everything below lives only on this device.">
               <Row title="Record activity" sub="Log opened tools and downloads on the History page.">
                 <Switch checked={prefs.historyEnabled} onChange={(v) => { void update({ historyEnabled: v }); toast(v ? 'Activity recording on' : 'Activity recording paused') }} />
               </Row>
               <div className="grid gap-3 border-t border-border py-4 sm:grid-cols-3">
-                <DataTile icon={Star} label="Favorites" value={fav.length} onClear={() => { void clearFavorites(); toast('Favorites cleared') }} />
-                <DataTile icon={HistoryIcon} label="Recent tools" value={recent.length} onClear={() => { void clearRecents(); toast('Recent tools cleared') }} />
-                <DataTile icon={Database} label="History entries" value={history.length} onClear={() => { void clearHistory(); toast('History cleared') }} />
+                <DataTile icon={Star} label="Favorites" value={fav.length} onClear={() => { const keep = favRows; void clearFavorites(); toast('Favorites cleared', 'info', { undo: () => void restoreFavorites(keep) }) }} />
+                <DataTile icon={HistoryIcon} label="Recent tools" value={recent.length} onClear={() => { const keep = recentRows; void clearRecents(); toast('Recent tools cleared', 'info', { undo: () => void restoreRecents(keep) }) }} />
+                <DataTile icon={Database} label="History entries" value={history.length} onClear={() => { const keep = history; void clearHistory(); toast('History cleared', 'info', { undo: () => void restoreHistory(keep) }) }} />
               </div>
               <div className="border-t border-border py-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
