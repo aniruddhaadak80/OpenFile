@@ -1,78 +1,135 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="620" viewBox="0 0 1000 620" role="img" aria-label="Eight tool categories orbiting the OpenFile core">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="780" viewBox="0 0 1000 780" role="img" aria-label="16 tool categories orbiting the OpenFile core">
   <title>OpenFile categories</title>
   <defs>
     <radialGradient id="core"><stop offset="0" stop-color="#FFB224"/><stop offset=".7" stop-color="#F5A524"/><stop offset="1" stop-color="#9A5B05"/></radialGradient>
     <radialGradient id="halo"><stop offset="0" stop-color="#FFB224" stop-opacity=".5"/><stop offset="1" stop-color="#FFB224" stop-opacity="0"/></radialGradient>
   </defs>
   <g font-family="system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
-  <rect width="1000" height="620" rx="28" fill="#050505"/>
-  <circle cx="500" cy="310" r="225" fill="none" stroke="#F5A524" stroke-opacity=".28" stroke-width="2"/>
-  <circle cx="500" cy="310" r="155" fill="none" stroke="#14B8A6" stroke-opacity=".3" stroke-dasharray="2 9" stroke-width="2">
-    <animateTransform attributeName="transform" type="rotate" from="360 500 310" to="0 500 310" dur="40s" repeatCount="indefinite"/></circle>
-  <g transform="translate(500 310)"><g>
-    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="60s" repeatCount="indefinite"/>
-    <line x1="0" y1="0" x2="0.0" y2="-225.0" stroke="#F5A524" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="159.1" y2="-159.1" stroke="#38BDF8" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="225.0" y2="0.0" stroke="#10B981" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="159.1" y2="159.1" stroke="#22D3EE" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="0.0" y2="225.0" stroke="#14B8A6" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-159.1" y2="159.1" stroke="#FCD34D" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-225.0" y2="0.0" stroke="#5EEAD4" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-159.1" y2="-159.1" stroke="#E8C07A" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line>
-    <g transform="translate(0.0 -225.0)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#F5A524" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-0.0s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#F5A524" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">PDF Tools</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#F5A524">28 tools</text>
+  <rect width="1000" height="780" rx="28" fill="#050505"/>
+  <circle cx="500" cy="390" r="330" fill="none" stroke="#F5A524" stroke-opacity=".22" stroke-width="2"/>
+  <circle cx="500" cy="390" r="235" fill="none" stroke="#F5A524" stroke-opacity=".28" stroke-width="2"/>
+  <circle cx="500" cy="390" r="155" fill="none" stroke="#14B8A6" stroke-opacity=".3" stroke-dasharray="2 9" stroke-width="2">
+    <animateTransform attributeName="transform" type="rotate" from="360 500 390" to="0 500 390" dur="40s" repeatCount="indefinite"/></circle>
+  <g transform="translate(500 390)"><g>
+    <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="80s" repeatCount="indefinite"/>
+    <line x1="0" y1="0" x2="0" y2="-235" stroke="#F5A524" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="126.3" y2="-304.9" stroke="#F97316" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="166.2" y2="-166.2" stroke="#10B981" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="304.9" y2="-126.3" stroke="#38BDF8" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="235" y2="0" stroke="#14B8A6" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="304.9" y2="126.3" stroke="#22D3EE" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="166.2" y2="166.2" stroke="#84CC16" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="126.3" y2="304.9" stroke="#60A5FA" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="0" y2="235" stroke="#0EA5E9" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-126.3" y2="304.9" stroke="#FBBF24" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-166.2" y2="166.2" stroke="#2DD4BF" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-304.9" y2="126.3" stroke="#A3A3A3" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-235" y2="0" stroke="#FB923C" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-304.9" y2="-126.3" stroke="#FACC15" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-166.2" y2="-166.2" stroke="#4ADE80" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line><line x1="0" y1="0" x2="-126.3" y2="-304.9" stroke="#67E8F9" stroke-opacity=".35" stroke-width="2" stroke-dasharray="3 7"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></line>
+    <g transform="translate(0 -235)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#F5A524" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-0.0s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#F5A524" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">PDF</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#F5A524">58 tools</text>
     </g></g>
-    <g transform="translate(159.1 -159.1)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#38BDF8" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-0.4s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#38BDF8" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Convert</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#38BDF8">14 tools</text>
+    <g transform="translate(126.3 -304.9)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#F97316" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-0.3s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#F97316" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Convert</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#F97316">31 tools</text>
     </g></g>
-    <g transform="translate(225.0 0.0)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#10B981" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-0.8s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#10B981" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Image</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#10B981">21 tools</text>
+    <g transform="translate(166.2 -166.2)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#10B981" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-0.6s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#10B981" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Image</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#10B981">55 tools</text>
     </g></g>
-    <g transform="translate(159.1 159.1)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#22D3EE" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-1.2s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#22D3EE" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Video</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#22D3EE">12 tools</text>
+    <g transform="translate(304.9 -126.3)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#38BDF8" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-0.9s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#38BDF8" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Video</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#38BDF8">36 tools</text>
     </g></g>
-    <g transform="translate(0.0 225.0)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#14B8A6" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-1.6s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#14B8A6" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Audio</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#14B8A6">6 tools</text>
+    <g transform="translate(235 0)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#14B8A6" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-1.2s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#14B8A6" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Audio</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#14B8A6">21 tools</text>
     </g></g>
-    <g transform="translate(-159.1 159.1)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#FCD34D" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-2.0s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#FCD34D" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Developer</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#FCD34D">20 tools</text>
+    <g transform="translate(304.9 126.3)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#22D3EE" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-1.5s" repeatCount="indefinite"/></circle>
+      <rect x="-53.5" y="-28" width="107" height="56" rx="16" fill="#111418" stroke="#22D3EE" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Developer</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#22D3EE">49 tools</text>
     </g></g>
-    <g transform="translate(-225.0 0.0)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#5EEAD4" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-2.4s" repeatCount="indefinite"/></circle>
-      <rect x="-61.2" y="-34" width="122.5" height="68" rx="18" fill="#111418" stroke="#5EEAD4" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Text &amp; Data</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#5EEAD4">8 tools</text>
+    <g transform="translate(166.2 166.2)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#84CC16" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-1.8s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#84CC16" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Text</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#84CC16">24 tools</text>
     </g></g>
-    <g transform="translate(-159.1 -159.1)"><g>
-      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="60s" repeatCount="indefinite"/>
-      <circle r="58" fill="#E8C07A" opacity=".12"><animate attributeName="r" values="52;62;52" dur="3s" begin="-2.8s" repeatCount="indefinite"/></circle>
-      <rect x="-59.0" y="-34" width="118.0" height="68" rx="18" fill="#111418" stroke="#E8C07A" stroke-width="2"/>
-      <text y="-4" text-anchor="middle" font-size="16" font-weight="700" fill="#F5F3EE">Design</text>
-      <text y="20" text-anchor="middle" font-size="14" font-weight="600" fill="#E8C07A">8 tools</text>
+    <g transform="translate(126.3 304.9)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#60A5FA" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-2.1s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#60A5FA" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Design</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#60A5FA">15 tools</text>
+    </g></g>
+    <g transform="translate(0 235)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#0EA5E9" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-2.4s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#0EA5E9" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Data</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#0EA5E9">10 tools</text>
+    </g></g>
+    <g transform="translate(-126.3 304.9)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#FBBF24" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-2.7s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#FBBF24" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">AI</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#FBBF24">7 tools</text>
+    </g></g>
+    <g transform="translate(-166.2 166.2)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#2DD4BF" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-3.0s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#2DD4BF" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">3D</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#2DD4BF">5 tools</text>
+    </g></g>
+    <g transform="translate(-304.9 126.3)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#A3A3A3" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-3.3s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#A3A3A3" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Archives</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#A3A3A3">4 tools</text>
+    </g></g>
+    <g transform="translate(-235 0)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#FB923C" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-3.6s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#FB923C" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">eBooks</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#FB923C">4 tools</text>
+    </g></g>
+    <g transform="translate(-304.9 -126.3)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#FACC15" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-3.9s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#FACC15" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Fonts</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#FACC15">3 tools</text>
+    </g></g>
+    <g transform="translate(-166.2 -166.2)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#4ADE80" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-4.2s" repeatCount="indefinite"/></circle>
+      <rect x="-52.0" y="-28" width="104" height="56" rx="16" fill="#111418" stroke="#4ADE80" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">CAD</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#4ADE80">2 tools</text>
+    </g></g>
+    <g transform="translate(-126.3 -304.9)"><g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="80s" repeatCount="indefinite"/>
+      <circle r="48" fill="#67E8F9" opacity=".12"><animate attributeName="r" values="42;52;42" dur="3s" begin="-4.5s" repeatCount="indefinite"/></circle>
+      <rect x="-53.5" y="-28" width="107" height="56" rx="16" fill="#111418" stroke="#67E8F9" stroke-width="2"/>
+      <text y="-4" text-anchor="middle" font-size="15" font-weight="700" fill="#F5F3EE">Subtitles</text>
+      <text y="17" text-anchor="middle" font-size="13" font-weight="600" fill="#67E8F9">5 tools</text>
     </g></g>
   </g></g>
-  <circle cx="500" cy="310" r="120" fill="url(#halo)"><animate attributeName="r" values="100;135;100" dur="4s" repeatCount="indefinite"/></circle>
-  <circle cx="500" cy="310" r="74" fill="#0B0D10" stroke="url(#core)" stroke-width="6"/>
-  <circle cx="500" cy="310" r="82" fill="none" stroke="#FFB224" stroke-opacity=".35" stroke-width="2"><animate attributeName="stroke-opacity" values=".15;.6;.15" dur="3s" repeatCount="indefinite"/></circle>
-  <text x="500" y="314" text-anchor="middle" font-size="40" font-weight="800" fill="#F5A524">117</text>
-  <text x="500" y="340" text-anchor="middle" font-size="14" font-weight="600" letter-spacing="2" fill="#F5F3EE">TOOLS</text>
+  <circle cx="500" cy="390" r="120" fill="url(#halo)"><animate attributeName="r" values="100;135;100" dur="4s" repeatCount="indefinite"/></circle>
+  <circle cx="500" cy="390" r="74" fill="#0B0D10" stroke="url(#core)" stroke-width="6"/>
+  <circle cx="500" cy="390" r="82" fill="none" stroke="#FFB224" stroke-opacity=".35" stroke-width="2"><animate attributeName="stroke-opacity" values=".15;.6;.15" dur="3s" repeatCount="indefinite"/></circle>
+  <text x="500" y="394" text-anchor="middle" font-size="40" font-weight="800" fill="#F5A524">329</text>
+  <text x="500" y="420" text-anchor="middle" font-size="14" font-weight="600" letter-spacing="2" fill="#F5F3EE">TOOLS</text>
   </g>
 </svg>

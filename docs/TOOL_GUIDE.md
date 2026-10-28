@@ -3,6 +3,32 @@
 Every tool is one React component: `src/tools/<category>/<slug>.tsx` with a **default export** (no props).
 The registry (`src/tools/registry.ts`) already lists name/description/icon; the ToolPage renders the title, breadcrumb and badges, your component renders only the working UI underneath.
 
+## Categories
+<!-- categories:start -->
+16 categories, 329 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
+
+| Id | Studio | Tools | What it covers |
+|---|---|--:|---|
+| `pdf` | 📄 PDF Tools | 58 | Merge, split, sign, protect and edit PDFs |
+| `convert` | 🔄 Convert | 31 | Move between PDF, Office, Markdown, HTML and images |
+| `image` | 🖼️ Image | 55 | Compress, resize, crop, remove backgrounds, upscale |
+| `video` | 🎬 Video | 36 | Trim, compress, convert, GIF and record |
+| `audio` | 🎧 Audio | 21 | Edit, convert, record and transcribe |
+| `dev` | 🧑‍💻 Developer | 49 | JSON, JWT, regex, hashes, cURL and more |
+| `text` | 📝 Text & Data | 24 | Diff, count, convert tables, format text |
+| `design` | 🖌️ Design | 15 | Colors, CSS, favicons, SVG, whiteboards |
+| `data` | 📊 Data | 10 | CSV, Excel, JSON, SQLite, Parquet, maps and GPS |
+| `ai` | 🤖 AI | 7 | On-device AI for images, text and documents |
+| `3d` | 🧊 3D | 5 | View and convert GLB, GLTF, OBJ, STL, PLY and more |
+| `archive` | 🗜️ Archives | 4 | Open and create ZIP, 7Z, TAR, GZ and RAR |
+| `ebook` | 📚 eBooks | 4 | Read and convert EPUB, MOBI, FB2 and comics |
+| `font` | 🔤 Fonts | 3 | Convert, inspect and subset TTF, OTF, WOFF |
+| `cad` | 📐 CAD | 2 | View and convert DXF and other drawings |
+| `subtitle` | 💬 Subtitles | 5 | Convert, sync and edit SRT, VTT, ASS |
+<!-- categories:end -->
+
+New entries can go in `src/tools/registry.ts` or in one of the batch files (`src/tools/batches/b1.ts` to `b5.ts`), which the registry spreads into `TOOLS`. After adding or renaming a tool, run `node scripts/gen-readme-catalog.mjs` to refresh the README catalog, the stats artwork and this list.
+
 ## Rules
 - 100% client-side. No uploads. Use Web APIs, Canvas, WASM and the installed libraries.
 - Use the UI kit in `src/components/ui.tsx`: `Button, Card, Field, Label, Input, Textarea, Select, Slider, Switch, Segmented, Tabs, Badge, Progress, Spinner, CopyButton, Dropzone, FileChip, ResultCard, ToolGrid, Empty, ErrorNote, useJob, cn`. Toasts: `toast(msg, 'success'|'error'|'info')` from `@/components/toast`.

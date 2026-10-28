@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "postbuild:only": "node scripts/postbuild.mjs",
     "prebuild": "node scripts/gen-icons.mjs",
-    "prebuild:pages": "node scripts/gen-icons.mjs"
+    "prebuild:pages": "node scripts/gen-icons.mjs",
+    "docs:catalog": "node scripts/gen-readme-catalog.mjs"
   },
   "dependencies": {
     "@bokuweb/zstd-wasm": "^0.0.27",

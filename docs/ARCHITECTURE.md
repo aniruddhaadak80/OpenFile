@@ -2,7 +2,7 @@
 
 <p align="center"><img src="assets/privacy.svg" width="100%" alt="Files never leave your device"/></p>
 
-OpenFile is a static single-page app. Every one of its 117 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
+OpenFile is a static single-page app. Every one of its 329 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
 
 ## 1. The big picture
 
@@ -34,20 +34,30 @@ flowchart TB
 ## 2. Routing and the tool registry
 
 - `src/App.tsx` declares the routes: `/`, `/tools`, `/category/:id`, `/workspace`, `/about`, `/privacy`, `/status`, and the catch-all `/:slug` that renders `ToolPage`.
-- `src/tools/registry.ts` is the single source of truth: each `ToolMeta` has a `slug`, `name`, `desc`, `category`, Lucide `icon`, optional `badge` (`NEW` / `AI` / `HOT`), `popular` flag and optional `pipeline` mode (`image` / `pdf`) for the Workspace.
+- `src/tools/registry.ts` is the single source of truth. It holds the core tools and spreads in the entries from `src/tools/batches/b1.ts` to `b5.ts`, so parallel work on new tools never touches the same file. Each `ToolMeta` has a `slug`, `name`, `desc`, `category`, Lucide `icon`, optional `badge` (`NEW` / `AI` / `HOT` / `PRO`), `popular` flag and optional `pipeline` mode (`image` / `pdf`) for the Workspace.
 - `loadTool(slug)` resolves `./<category>/<slug>.tsx` through `import.meta.glob`, so Vite emits **one chunk per tool**. Adding a tool never makes the homepage heavier.
 
+<!-- arch-counts:start -->
 | Category | Tools |
 |---|:-:|
-| 📄 PDF Tools | 28 |
-| 🔄 Convert | 14 |
-| 🖼️ Image | 21 |
-| 🎬 Video | 12 |
-| 🎧 Audio | 6 |
-| 🧑‍💻 Developer | 20 |
-| 📝 Text & Data | 8 |
-| 🖌️ Design | 8 |
-| **Total** | **117** |
+| 📄 PDF Tools | 58 |
+| 🔄 Convert | 31 |
+| 🖼️ Image | 55 |
+| 🎬 Video | 36 |
+| 🎧 Audio | 21 |
+| 🧑‍💻 Developer | 49 |
+| 📝 Text & Data | 24 |
+| 🖌️ Design | 15 |
+| 📊 Data | 10 |
+| 🤖 AI | 7 |
+| 🧊 3D | 5 |
+| 🗜️ Archives | 4 |
+| 📚 eBooks | 4 |
+| 🔤 Fonts | 3 |
+| 📐 CAD | 2 |
+| 💬 Subtitles | 5 |
+| **Total** | **329** |
+<!-- arch-counts:end -->
 
 ## 3. Engines
 
