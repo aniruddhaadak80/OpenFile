@@ -1,0 +1,24 @@
+# keep the build context small: sources and lockfile only
+.git
+.github
+**/node_modules
+dist
+dist-ssr
+desktop/src-tauri/target
+desktop/node_modules
+mobile/android
+mobile/ios
+mobile/node_modules
+packages/cli/dist
+packages/cli/*.tgz
+scripts/media-lib/.cache
+*.log
+.env
+.env.*
+.vercel
+.DS_Store
+.vscode
+.idea
+Dockerfile
+docker-compose.yml
+.dockerignore

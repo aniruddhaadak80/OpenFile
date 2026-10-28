@@ -1,0 +1,384 @@
+name: Publish packages
+
+# Publishes OpenFile to GitHub Packages and tests what was published:
+#   ghcr.io/aniruddhaadak80/openfile   container image, linux/amd64 + linux/arm64, signed, with SBOM and provenance
+#   @aniruddhaadak80/openfile          npm CLI on npm.pkg.github.com that serves the app offline
+# The version comes from the tag (v1.2.0 -> 1.2.0), or from package.json on a manual run.
+on:
+  push:
+    tags: ['v*']
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (leave empty to use package.json)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-packages-${{ github.event.release.tag_name || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/aniruddhaadak80/openfile
+  NPM_PACKAGE: '@aniruddhaadak80/openfile'
+  NPM_REGISTRY: https://npm.pkg.github.com
+
+jobs:
+  version:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          if [ -n "${INPUT_VERSION:-}" ]; then V="$INPUT_VERSION"
+          elif [ -n "${RELEASE_TAG:-}" ]; then V="$RELEASE_TAG"
+          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then V="$GITHUB_REF_NAME"
+          else V="$(node -p "require('./package.json').version")"
+          fi
+          V="${V#v}"
+          if ! echo "$V" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$V' is not a semver version"; exit 1
+          fi
+          case "$V" in *-*) PRE=true ;; *) PRE=false ;; esac
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRE" >> "$GITHUB_OUTPUT"
+          echo "### Publishing OpenFile $V (prerelease: $PRE)" >> "$GITHUB_STEP_SUMMARY"
+
+  image:
+    name: Container image
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+    steps:
+      - uses: actions/checkout@v4
+      - name: Commit date
+        id: git
+        run: echo "created=$(git log -1 --format=%cI)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          flavor: latest=false
+          tags: |
+            type=semver,pattern={{version}},value=${{ env.VERSION }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
+            type=semver,pattern={{major}},value=${{ env.VERSION }},enable=${{ !startsWith(env.VERSION, '0.') }}
+            type=raw,value=latest,enable=${{ needs.version.outputs.prerelease == 'false' }}
+            type=sha,format=short,prefix=sha-
+          labels: |
+            org.opencontainers.image.title=OpenFile
+            org.opencontainers.image.description=OpenFile: 300+ free, private, in-browser tools for PDF, images, video, audio and developers. Files never leave the browser.
+            org.opencontainers.image.source=https://github.com/aniruddhaadak80/OpenFile
+            org.opencontainers.image.url=https://github.com/aniruddhaadak80/OpenFile
+            org.opencontainers.image.documentation=https://github.com/aniruddhaadak80/OpenFile/blob/main/docs/SELF_HOSTING.md
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.vendor=Aniruddha Adak
+            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.created=${{ steps.git.outputs.created }}
+          annotations: |
+            org.opencontainers.image.title=OpenFile
+            org.opencontainers.image.description=OpenFile: 300+ free, private, in-browser tools for PDF, images, video, audio and developers. Files never leave the browser.
+            org.opencontainers.image.source=https://github.com/aniruddhaadak80/OpenFile
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=${{ env.VERSION }}
+      - name: Build and push (linux/amd64, linux/arm64)
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          build-args: |
+            VERSION=${{ env.VERSION }}
+            REVISION=${{ github.sha }}
+            CREATED=${{ steps.git.outputs.created }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: GitHub build attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+      - uses: sigstore/cosign-installer@v3
+      - name: Sign with cosign (keyless, GitHub OIDC)
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: cosign sign --yes "${IMAGE}@${DIGEST}"
+      - name: Summary
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo "### Container image"
+            echo "Digest: \`${DIGEST}\`"
+            echo '```'
+            echo "$TAGS"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  image-test:
+    name: Test container image
+    needs: [version, image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+      attestations: read
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      DIGEST: ${{ needs.image.outputs.digest }}
+    steps:
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Manifest list has amd64 and arm64
+        run: |
+          set -euo pipefail
+          docker buildx imagetools inspect "${IMAGE}:${VERSION}" | tee inspect.txt
+          grep -q 'linux/amd64' inspect.txt
+          grep -q 'linux/arm64' inspect.txt
+          docker buildx imagetools inspect "${IMAGE}:sha-${GITHUB_SHA::7}" >/dev/null
+          docker buildx imagetools inspect "${IMAGE}@${DIGEST}" --format '{{ json .Image }}' > image.json
+          for k in org.opencontainers.image.source org.opencontainers.image.description org.opencontainers.image.licenses; do
+            jq -e --arg k "$k" '[.. | objects | .Labels? // empty | .[$k]] | map(select(. != null)) | length > 0' image.json >/dev/null || { echo "missing label $k"; exit 1; }
+          done
+          jq -r '[.. | objects | .Labels? // empty][0]' image.json
+      - uses: sigstore/cosign-installer@v3
+      - name: Verify the cosign signature
+        run: |
+          set -euo pipefail
+          cosign verify "${IMAGE}@${DIGEST}" \
+            --certificate-identity-regexp '^https://github.com/aniruddhaadak80/OpenFile/\.github/workflows/publish-packages\.yml@' \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null
+          echo "cosign signature verified"
+      - name: GitHub attestation verify
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh attestation verify "oci://${IMAGE}@${DIGEST}" -R "$GITHUB_REPOSITORY"
+      - name: Run the image (amd64) locked down
+        run: |
+          set -euo pipefail
+          docker run -d --name of --platform linux/amd64 -p 8080:8080 \
+            --read-only --tmpfs /data --tmpfs /config --cap-drop ALL --security-opt no-new-privileges \
+            "${IMAGE}@${DIGEST}"
+          docker run -d --name of-iso --platform linux/amd64 -p 8081:8080 -e OPENFILE_CROSS_ORIGIN_ISOLATION=true \
+            "${IMAGE}@${DIGEST}"
+          for i in $(seq 1 30); do
+            s=$(docker inspect -f '{{.State.Health.Status}}' of); echo "health: $s"
+            [ "$s" = healthy ] && break; sleep 2
+          done
+          [ "$(docker inspect -f '{{.State.Health.Status}}' of)" = healthy ]
+          [ "$(docker exec of id -u)" = 10001 ] && echo "runs as uid 10001"
+      - name: Smoke test HTTP
+        run: |
+          set -euo pipefail
+          B=http://127.0.0.1:8080
+          WASM=$(docker exec of sh -c 'ls /srv/assets | grep "\.wasm$" | head -1')
+          echo "wasm file: $WASM"
+          fail() { echo "FAIL: $*"; exit 1; }
+          check() { # url, expected status, header regex...
+            local url="$1" code="$2"; shift 2
+            curl -sS -o body.txt -D headers.txt -H 'Accept-Encoding: br, gzip' "$url"
+            tr -d '\r' < headers.txt > h.txt
+            grep -q "^HTTP/[0-9.]* $code" h.txt || { cat h.txt; fail "$url status, wanted $code"; }
+            for re in "$@"; do grep -qiE "$re" h.txt || { cat h.txt; fail "$url missing /$re/"; }; done
+            echo "ok  $code $url"
+          }
+          check "$B/" 200 '^content-type: text/html' '^cache-control: no-cache' '^x-content-type-options: nosniff' '^referrer-policy:' '^cross-origin-opener-policy: same-origin' '^x-frame-options: SAMEORIGIN'
+          if grep -qi '^cross-origin-embedder-policy' h.txt; then fail "COEP should be off by default"; fi
+          check "$B/merge-pdf" 200 '^content-type: text/html' '^cache-control: no-cache'
+          check "$B/some/deep/app/route" 200 '^content-type: text/html'
+          check "$B/manifest.webmanifest" 200 '^content-type: application/manifest\+json' '^cache-control: no-cache'
+          check "$B/sw.js" 200 '^content-type: text/javascript' '^cache-control: no-cache'
+          check "$B/assets/$WASM" 200 '^content-type: application/wasm' '^cache-control: public, max-age=31536000, immutable' '^content-encoding: (br|gzip)'
+          check "$B/assets/does-not-exist.js" 404
+          check "$B/healthz" 200
+          check "http://127.0.0.1:8081/" 200 '^cross-origin-embedder-policy: credentialless'
+          curl -sSf -o page.html "$B/"
+          grep -q '<div id="root"' page.html || fail "index.html has no app root"
+          curl -sSf -o tool.html "$B/merge-pdf"
+          grep -qi 'merge' tool.html || fail "tool route not pre-rendered"
+          curl -sSf -o raw.wasm -H 'Accept-Encoding: identity' "$B/assets/$WASM"
+          [ "$(head -c 4 raw.wasm | od -An -tx1 | tr -d ' \n')" = 0061736d ] || fail "wasm magic bytes"
+          echo "### Container smoke test passed" >> "$GITHUB_STEP_SUMMARY"
+      - name: Run the arm64 image under emulation
+        run: |
+          set -euo pipefail
+          docker run -d --name of-arm --platform linux/arm64 -p 8082:8080 "${IMAGE}@${DIGEST}"
+          [ "$(docker exec of-arm uname -m)" = aarch64 ]
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8082/healthz && break; sleep 2; done
+          curl -sSf -o /dev/null -w '%{http_code} %{content_type}\n' http://127.0.0.1:8082/
+          echo "arm64 image serves the app"
+      - name: Logs on failure
+        if: failure()
+        run: docker logs of || true
+
+  npm:
+    name: npm package
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      published: ${{ steps.publish.outputs.published }}
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: '@aniruddhaadak80'
+      - run: npm ci
+      - run: npm run build
+      - name: Bundle the app into the package
+        run: node packages/cli/scripts/prepare-dist.mjs --version "$VERSION"
+      - name: CLI serves the bundled app before publishing
+        working-directory: packages/cli
+        run: |
+          set -euo pipefail
+          node bin/openfile.mjs --no-open --port 5180 & PID=$!
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:5180/healthz && break; sleep 0.5; done
+          curl -sSf http://127.0.0.1:5180/ | grep -q '<div id="root"'
+          kill $PID
+      - name: Pack
+        working-directory: packages/cli
+        run: |
+          npm pack --json > pack.json
+          jq -r '.[0] | "package: \(.filename)  packed: \(.size / 1048576 | floor) MB  unpacked: \(.unpackedSize / 1048576 | floor) MB  files: \(.entryCount)"' pack.json | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Publish
+        id: publish
+        working-directory: packages/cli
+        run: |
+          set -euo pipefail
+          if npm view "${NPM_PACKAGE}@${VERSION}" version --registry "$NPM_REGISTRY" >/dev/null 2>&1; then
+            echo "::notice::${NPM_PACKAGE}@${VERSION} is already published, skipping"
+            echo "published=existing" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          TAG=latest
+          [ "${{ needs.version.outputs.prerelease }}" = true ] && TAG=next
+          npm publish --tag "$TAG"
+          echo "published=new" >> "$GITHUB_OUTPUT"
+          echo "### npm: published ${NPM_PACKAGE}@${VERSION} with dist-tag ${TAG}" >> "$GITHUB_STEP_SUMMARY"
+
+  npm-test:
+    name: Test npm package (${{ matrix.os }})
+    needs: [version, npm]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    defaults:
+      run:
+        shell: bash
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@aniruddhaadak80'
+      - name: npx the published CLI and curl it
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/try" && cd "$RUNNER_TEMP/try"
+          npx -y "${NPM_PACKAGE}@${VERSION}" --version > v.txt
+          cat v.txt
+          [ "$(tr -d '\r\n' < v.txt)" = "$VERSION" ] || { echo "version mismatch"; exit 1; }
+          npx -y "${NPM_PACKAGE}@${VERSION}" --no-open --port 5173 > server.log 2>&1 &
+          for i in $(seq 1 90); do curl -sf -o /dev/null http://127.0.0.1:5173/healthz && break; sleep 1; done
+          cat server.log
+          B=http://127.0.0.1:5173
+          fail() { echo "FAIL: $*"; exit 1; }
+          check() { # url, expected status, header regex...
+            local url="$1" code="$2"; shift 2
+            curl -sS -o body.txt -D headers.txt "$url"
+            tr -d '\r' < headers.txt > h.txt
+            grep -q "^HTTP/[0-9.]* $code" h.txt || { cat h.txt; fail "$url status, wanted $code"; }
+            for re in "$@"; do grep -qiE "$re" h.txt || { cat h.txt; fail "$url missing /$re/"; }; done
+            echo "ok  $code $url"
+          }
+          check "$B/" 200 '^content-type: text/html' '^cache-control: no-cache' '^cross-origin-opener-policy: same-origin'
+          grep -q '<div id="root"' body.txt || fail "app root"
+          check "$B/merge-pdf" 200 '^content-type: text/html'
+          check "$B/some/deep/app/route" 200 '^content-type: text/html'
+          check "$B/manifest.webmanifest" 200 '^content-type: application/manifest\+json' '^cache-control: no-cache'
+          check "$B/sw.js" 200 '^content-type: text/javascript' '^cache-control: no-cache'
+          check "$B/ffmpeg/ffmpeg-core.wasm" 200 '^content-type: application/wasm' '^cache-control: public, max-age=31536000, immutable'
+          check "$B/assets/does-not-exist.js" 404
+          echo "npm CLI smoke test passed on $RUNNER_OS" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Stop the server
+        if: always()
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then taskkill //F //IM node.exe || true; else pkill -f openfile || true; fi
+
+  visibility:
+    name: Public visibility check
+    needs: [version, image-test, npm-test]
+    if: always() && needs.image-test.result == 'success'
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Anonymous pull of the image manifest
+        run: |
+          TOKEN=$(curl -s "https://ghcr.io/token?scope=repository:aniruddhaadak80/openfile:pull" | jq -r .token)
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $TOKEN" \
+            -H 'Accept: application/vnd.oci.image.index.v1+json' "https://ghcr.io/v2/aniruddhaadak80/openfile/manifests/${VERSION}")
+          if [ "$CODE" = 200 ]; then echo "Image is public" | tee -a "$GITHUB_STEP_SUMMARY"
+          else echo "::warning::Image is not public yet (HTTP $CODE). Set it in Package settings, Danger Zone, Change visibility."; fi

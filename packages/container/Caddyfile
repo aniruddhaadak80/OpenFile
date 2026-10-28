@@ -1,0 +1,99 @@
+# OpenFile static server for the container image (ghcr.io/aniruddhaadak80/openfile).
+# Serves the built app from /srv with SPA fallback, precompressed brotli and gzip files,
+# long caching for hashed assets, no caching for the app shell, and security headers.
+#
+# Environment:
+#   PORT                     listen port inside the container (default 8080)
+#   OPENFILE_CROSS_ORIGIN_ISOLATION=true
+#                            also send Cross-Origin-Embedder-Policy: credentialless so the page is
+#                            cross-origin isolated (multi-threaded on-device AI). Off by default to match
+#                            the hosted site.
+{
+	admin off
+	auto_https off
+	persist_config off
+	log {
+		output stdout
+		format console
+		level WARN
+	}
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+:{$PORT:8080} {
+	root * /srv
+
+	# health probe for Docker, Compose and Kubernetes
+	handle /healthz {
+		header Cache-Control "no-store"
+		respond "ok" 200
+	}
+
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(self), microphone=(self), display-capture=(self)"
+		X-Frame-Options "SAMEORIGIN"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Resource-Policy "same-origin"
+		# default for everything the rules below do not set
+		?Cache-Control "public, max-age=3600"
+	}
+
+	@isolate expression `{env.OPENFILE_CROSS_ORIGIN_ISOLATION} == "true" || {env.OPENFILE_CROSS_ORIGIN_ISOLATION} == "1"`
+	header @isolate Cross-Origin-Embedder-Policy "credentialless"
+
+	# MIME types that some platforms get wrong
+	@wasm path *.wasm
+	header @wasm Content-Type "application/wasm"
+	@mjs path *.mjs
+	header @mjs Content-Type "text/javascript; charset=utf-8"
+	@manifest path *.webmanifest
+	header @manifest Content-Type "application/manifest+json; charset=utf-8"
+	@rss path /blog/rss.xml
+	header @rss Content-Type "application/xml; charset=utf-8"
+	@xsl path *.xsl
+	header @xsl Content-Type "text/xsl; charset=utf-8"
+
+	# hashed or versioned files never change
+	@immutable path /assets/* /fonts/* /ffmpeg/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+	@media path /media/*
+	header @media Cache-Control "public, max-age=2592000, stale-while-revalidate=31536000"
+	@og path /og/* /favicon.svg /favicon.ico /icon-*.png /og.png /apple-touch-icon.png
+	header @og Cache-Control "public, max-age=604800, stale-while-revalidate=31536000"
+	# the app shell, the service worker and the manifest must always be revalidated
+	@shell path / /index.html /sw.js /manifest.webmanifest /offline.html *.html */
+	header @shell Cache-Control "no-cache"
+
+	# missing static files are a real 404, never the SPA shell
+	@static path /assets/* /fonts/* /ffmpeg/* /media/* /og/*
+	handle @static {
+		file_server {
+			precompressed br gzip
+		}
+	}
+
+	handle {
+		route {
+			# pre-rendered route pages first (dist/<route>/index.html), then the SPA shell
+			try_files {path} {path}/index.html /index.html
+			@html path *.html
+			header @html Cache-Control "no-cache"
+			file_server {
+				precompressed br gzip
+			}
+		}
+	}
+
+	# compress whatever was not precompressed
+	encode zstd gzip
+
+	handle_errors {
+		header Cache-Control "no-store"
+		respond "{err.status_code} {err.status_text}"
+	}
+}

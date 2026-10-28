@@ -1120,6 +1120,58 @@ npm run dev          # → http://localhost:5173
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
+## 📦 Packages
+
+OpenFile is published on [GitHub Packages](https://github.com/aniruddhaadak80/OpenFile/packages) in two forms. Both are built and tested by [`.github/workflows/publish-packages.yml`](.github/workflows/publish-packages.yml) for every release.
+
+| Package | What it is | Get it |
+| --- | --- | --- |
+| [`ghcr.io/aniruddhaadak80/openfile`](https://github.com/aniruddhaadak80/OpenFile/pkgs/container/openfile) | Container image, `linux/amd64` and `linux/arm64`, non-root, signed with cosign, with SBOM and build provenance | `docker pull ghcr.io/aniruddhaadak80/openfile` |
+| [`@aniruddhaadak80/openfile`](https://github.com/aniruddhaadak80/OpenFile/pkgs/npm/openfile) | npm CLI that serves the full app from your machine, offline | `npx @aniruddhaadak80/openfile` |
+
+**Docker**
+
+```bash
+docker run -d --name openfile -p 8080:8080 ghcr.io/aniruddhaadak80/openfile:latest
+# open http://localhost:8080
+```
+
+Image tags: `latest`, the full version (`1.2.0`), the minor line (`1.2`), the major line (`1`) and the commit (`sha-<7 chars>`). Pin a version or a digest in production.
+
+**Docker Compose**
+
+```bash
+curl -O https://raw.githubusercontent.com/aniruddhaadak80/OpenFile/main/docker-compose.yml
+docker compose up -d
+```
+
+**npx**
+
+GitHub's npm registry needs a token even for public packages. Create a [personal access token (classic)](https://github.com/settings/tokens/new?scopes=read:packages&description=OpenFile%20npm) with only the `read:packages` scope, then add two lines to `~/.npmrc`:
+
+```ini
+@aniruddhaadak80:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_TOKEN
+```
+
+```bash
+npx @aniruddhaadak80/openfile                 # serves http://localhost:5173 and opens your browser
+npx @aniruddhaadak80/openfile --port 8080 --no-open
+npx @aniruddhaadak80/openfile --host 0.0.0.0  # share on your local network
+```
+
+Verify the image signature:
+
+```bash
+cosign verify ghcr.io/aniruddhaadak80/openfile:latest \
+  --certificate-identity-regexp '^https://github.com/aniruddhaadak80/OpenFile/' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+Settings, headers, reverse proxies and Kubernetes: [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
+
+<p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
+
 ## ☁️ Self-hosting
 
 OpenFile is a **static site**. Host it anywhere that serves files and rewrites unknown routes to `index.html`.

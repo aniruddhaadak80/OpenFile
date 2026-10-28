@@ -1,0 +1,35 @@
+{
+  "name": "@aniruddhaadak80/openfile",
+  "version": "0.0.0-development",
+  "description": "Run OpenFile locally and offline: 300+ private, in-browser tools for PDF, images, video, audio and developers.",
+  "keywords": ["openfile", "pdf", "image-converter", "video-converter", "offline", "privacy", "pwa", "wasm", "cli"],
+  "homepage": "https://github.com/aniruddhaadak80/OpenFile#packages",
+  "bugs": "https://github.com/aniruddhaadak80/OpenFile/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aniruddhaadak80/OpenFile.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "author": "Aniruddha Adak",
+  "type": "module",
+  "bin": {
+    "openfile": "bin/openfile.mjs"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "prepare-dist": "node scripts/prepare-dist.mjs",
+    "start": "node bin/openfile.mjs"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
