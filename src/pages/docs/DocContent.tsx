@@ -13,12 +13,29 @@ export function DocContent({ md, onHeadings, onRendered }: { md: string; onHeadi
   useEffect(() => { onHeadings(headings) }, [headings])
   useEffect(() => { const t = setTimeout(() => onRendered?.(), 60); return () => clearTimeout(t) }, [md])
 
-  // Heading "#" links: also copy the full URL, so a section can be shared in one click.
+  // Copy buttons on code and the "#" links on headings: copy with a fallback for browsers without the async
+  // clipboard, and always say what happened, so the click never feels like it did nothing.
   const onClickCapture = (e: React.MouseEvent) => {
-    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a.heading-anchor')
+    const t = e.target as HTMLElement
+    const btn = t.closest<HTMLButtonElement>('[data-copy]')
+    if (btn) {
+      e.stopPropagation()
+      const code = btn.closest('.code-block')?.querySelector('code')?.textContent ?? ''
+      void copy(code).then((ok) => {
+        btn.textContent = ok ? 'Copied' : 'Press Ctrl+C'
+        btn.classList.add('is-copied')
+        btn.setAttribute('aria-live', 'polite')
+        clearTimeout(Number(btn.dataset.timer))
+        btn.dataset.timer = String(window.setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('is-copied') }, 2500))
+        if (ok) toast('Code copied', 'success')
+        else selectCode(btn)
+      })
+      return
+    }
+    const a = t.closest<HTMLAnchorElement>('a.heading-anchor')
     if (!a) return
     const url = `${location.origin}${location.pathname}${a.getAttribute('href')}`
-    navigator.clipboard?.writeText(url).then(() => toast('Link to this section copied', 'info'), () => {})
+    void copy(url).then((ok) => toast(ok ? 'Link to this section copied' : 'Link is in the address bar', ok ? 'success' : 'info'))
   }
 
   return (
@@ -31,4 +48,22 @@ export function DocContent({ md, onHeadings, onRendered }: { md: string; onHeadi
       })}
     </div>
   )
+}
+
+async function copy(text: string): Promise<boolean> {
+  try { await navigator.clipboard.writeText(text); return true } catch { /* fall back below */ }
+  try {
+    const ta = document.createElement('textarea')
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'
+    document.body.appendChild(ta); ta.select()
+    const ok = document.execCommand('copy')
+    ta.remove()
+    return ok
+  } catch { return false }
+}
+function selectCode(btn: HTMLElement) {
+  const code = btn.closest('.code-block')?.querySelector('code')
+  if (!code) return
+  const r = document.createRange(); r.selectNodeContents(code)
+  const sel = getSelection(); sel?.removeAllRanges(); sel?.addRange(r)
 }

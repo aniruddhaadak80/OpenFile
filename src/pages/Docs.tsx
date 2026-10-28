@@ -30,9 +30,14 @@ function useActiveHeading(headings: Heading[]) {
     const onScroll = () => {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
+        // the last heading above the line; near the bottom of the page the line moves down, so short final
+        // sections (and a jump to one of them) still get highlighted
+        const atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8
+        const line = atEnd ? window.innerHeight * 0.6 : 140
         let cur: string | null = headings[0]?.id ?? null
-        for (const h of headings) { const el = document.getElementById(h.id); if (el && el.getBoundingClientRect().top < 140) cur = h.id }
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = headings[headings.length - 1].id
+        for (const h of headings) { const el = document.getElementById(h.id); if (el && el.getBoundingClientRect().top < line) cur = h.id }
+        const hash = decodeURIComponent(location.hash.slice(1))
+        if (atEnd && hash && headings.some((h) => h.id === hash)) { const el = document.getElementById(hash); const top = el?.getBoundingClientRect().top ?? -1; if (top >= 0 && top < window.innerHeight * 0.6) cur = hash }
         setActive(cur)
       })
     }
@@ -98,7 +103,7 @@ export default function Docs() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-80 opacity-60" style={{ background: `radial-gradient(700px 240px at 30% 0%, ${color ? color + '22' : 'color-mix(in oklab, var(--accent) 14%, transparent)'}, transparent)` }} />
         <div className="relative mx-auto grid max-w-[1440px] gap-8 px-4 pt-6 sm:px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:pt-8 xl:grid-cols-[260px_minmax(0,1fr)_220px] xl:gap-10">
           <aside className="hidden lg:block" aria-label="Docs navigation">
-            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pb-10 pr-2 scrollbar-thin">
+            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pb-10 pr-2 pt-1 scrollbar-thin">
               <SearchButton onOpen={() => setSearch(true)} />
               <Sidebar current={page} headings={headings} active={active} />
             </div>
