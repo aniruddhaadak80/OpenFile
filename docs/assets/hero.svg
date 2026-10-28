@@ -82,7 +82,7 @@
     <text x="600" y="92" font-size="15" font-weight="600" letter-spacing="4" fill="#F5A524">FREE · OPEN SOURCE · IN-BROWSER</text>
     <text x="600" y="232" font-size="118" font-weight="800" letter-spacing="-3" fill="url(#title)">OpenFile</text>
     <text x="600" y="286" font-size="30" font-weight="600" fill="#F5F3EE">Every file tool. One private browser tab.</text>
-    <text x="600" y="326" font-size="18" fill="#A8A29E">355 tools for PDF, images, video, audio, data and code, zero uploads</text>
+    <text x="600" y="326" font-size="18" fill="#A8A29E">360 tools for PDF, images, video, audio, data and code, zero uploads</text>
   </g>
   <g transform="translate(600 372)">
     <rect x="-128" y="-17" width="256" height="34" rx="17" fill="#111418" stroke="#10B981" stroke-opacity=".6"/>
