@@ -153,7 +153,7 @@ function Personal() {
   return (
     <section className="mx-auto mt-16 max-w-7xl px-4 sm:px-6">
       {f.length > 0 && <><h3 className="mb-3 flex items-center gap-2 font-semibold"><Star className="size-4 text-warn" /> Your favorites</h3><div className="mb-8 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{f.map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
-      {r.length > 0 && <><h3 className="mb-3 font-semibold text-muted">Recently used</h3><div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{r.slice(0, 6).map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
+      {r.length > 0 && <><h3 className="mb-3 flex items-center justify-between font-semibold text-muted"><span>Recently used</span><Link to="/history" className="text-sm font-normal text-accent hover:underline">View history →</Link></h3><div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{r.slice(0, 6).map((t) => <ToolCard key={t!.slug} tool={t!} compact />)}</div></>}
     </section>
   )
 }

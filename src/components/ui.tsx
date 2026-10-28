@@ -126,11 +126,13 @@ export function Dropzone({ onFiles, accept, multiple = false, label, sub, compac
   useEffect(() => { const h = takeHandoff(accept); if (h) onFiles(multiple ? h : h.slice(0, 1)) }, [])
   return (
     <div
+      role="button" tabIndex={0} aria-label={typeof label === 'string' ? label : multiple ? 'Choose files' : 'Choose a file'}
       onClick={() => ref.current?.click()}
+      onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) { e.preventDefault(); ref.current?.click() } }}
       onDragOver={(e) => { e.preventDefault(); setOver(true) }}
       onDragLeave={() => setOver(false)}
       onDrop={(e) => { e.preventDefault(); setOver(false); handle(e.dataTransfer.files) }}
-      className={cn('group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center transition-all',
+      className={cn('group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center transition-all outline-none focus-visible:ring-4 focus-visible:ring-accent/25',
         over ? 'border-accent bg-accent/10 scale-[1.01]' : 'border-border bg-surface hover:border-accent/60 hover:bg-accent/5', compact ? 'gap-2 p-5' : 'gap-4 p-10 sm:p-14', className)}
     >
       <input ref={ref} type="file" hidden accept={accept} multiple={multiple} onChange={(e) => { handle(e.target.files); e.target.value = '' }} />

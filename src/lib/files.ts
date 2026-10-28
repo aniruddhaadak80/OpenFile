@@ -1,4 +1,5 @@
 import { zipSync, strToU8 } from 'fflate'
+import { getPrefs } from './prefs'
 
 export function formatBytes(bytes: number, decimals = 1) {
   if (!Number.isFinite(bytes)) return '—'
@@ -9,18 +10,28 @@ export function formatBytes(bytes: number, decimals = 1) {
   return `${v.toFixed(decimals)} ${sizes[i]}`
 }
 
+/** Hooks installed by lib/store: apply the user's output-naming pattern and log downloads to local History. */
+type DownloadHooks = { rename?: (filename: string) => string; after?: (filename: string, size?: number) => void }
+let hooks: DownloadHooks = {}
+export function setDownloadHooks(h: DownloadHooks) { hooks = h }
+const finalName = (filename: string) => { try { return hooks.rename ? hooks.rename(filename) : filename } catch { return filename } }
+
 export function downloadBlob(data: Blob | Uint8Array | ArrayBuffer | string, filename: string, mime = 'application/octet-stream') {
   const blob = data instanceof Blob ? data : new Blob([data as BlobPart], { type: mime })
+  const name = finalName(filename)
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
-  a.href = url; a.download = filename
+  a.href = url; a.download = name
   document.body.appendChild(a); a.click(); a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 4000)
+  try { hooks.after?.(name, blob.size) } catch { /* ignore */ }
 }
 
 export function downloadDataUrl(dataUrl: string, filename: string) {
-  const a = document.createElement('a'); a.href = dataUrl; a.download = filename
+  const name = finalName(filename)
+  const a = document.createElement('a'); a.href = dataUrl; a.download = name
   document.body.appendChild(a); a.click(); a.remove()
+  try { hooks.after?.(name) } catch { /* ignore */ }
 }
 
 /** change/append extension: renameExt('a.png','webp') => 'a.webp' */
@@ -60,7 +71,9 @@ export function loadImage(src: Blob | string): Promise<HTMLImageElement> {
 }
 
 export function canvasToBlob(canvas: HTMLCanvasElement, type = 'image/png', quality?: number): Promise<Blob> {
-  return new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('Canvas export failed (format may be unsupported in this browser)'))), type, quality))
+  // When a tool does not pass a quality, use the user's default image quality from Settings (lossy formats only).
+  const q = quality ?? (/jpe?g|webp|avif/.test(type) ? getPrefs().imageQuality / 100 : undefined)
+  return new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('Canvas export failed (format may be unsupported in this browser)'))), type, q))
 }
 
 export function createCanvas(w: number, h: number) {

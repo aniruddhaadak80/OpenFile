@@ -19,3 +19,7 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 ## Installed libraries
 pdf-lib, @cantoo/pdf-lib (supports encryption: `PDFDocument.load(bytes,{password})`, `doc.encrypt({userPassword, ownerPassword, permissions})`), pdfjs-dist, jszip, fflate, qrcode, jsbarcode, tesseract.js, @ffmpeg/ffmpeg + @ffmpeg/util (via lib/ffmpeg), marked, dompurify, diff, lucide-react, heic2any, papaparse, xlsx, jspdf, html2canvas, framer-motion, crypto-js, docx, mammoth, pptxgenjs, imagetracerjs, gifenc, svgo (use `svgo/browser`), @imgly/background-removal, @huggingface/transformers, js-yaml, sql-formatter, cronstrue, exifr, signature_pad, @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities, react-router-dom.
 Lucide note: brand icons (Github etc.) are not in lucide; use `Github` from `@/components/Logo`.
+
+## Guide content (optional)
+Every tool page shows "How it works", steps, tips, FAQ and related tools, and the docs at `/docs/tools/<category>` list every tool. Content is generated from the category and the engines in `src/tools/engines.ts`, with hand-written overrides in `src/tools/guides.ts`. You can also set these optional registry fields: `how`, `steps`, `tips`, `faq`, `related`, `inputs`, `outputs`. New engines also need an entry in `ENGINE_INFO` (guides.ts).
+Docs pages are Markdown files in `src/docs/pages/`, listed in `src/docs/nav.ts` (one entry per line; `scripts/postbuild.mjs` reads it to pre-render routes and the sitemap).

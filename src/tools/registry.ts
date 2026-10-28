@@ -13,6 +13,22 @@ export interface ToolMeta {
   popular?: boolean
   /** Pipeline step support (used by the Workspace) */
   pipeline?: 'image' | 'pdf'
+  /* ---- Optional guide content (shown under the tool and in the Docs). All optional: when omitted,
+     src/tools/guides.ts generates sensible content from the category and the engines the tool uses. ---- */
+  /** One-paragraph "How it works" explanation */
+  how?: string
+  /** Numbered how-to steps */
+  steps?: string[]
+  /** Short practical tips */
+  tips?: string[]
+  /** Tool-specific FAQ entries (shown before the generic ones) */
+  faq?: { q: string; a: string }[]
+  /** Slugs of hand-picked related tools */
+  related?: string[]
+  /** Accepted input formats, e.g. ['PDF'] or ['JPG', 'PNG', 'WEBP'] */
+  inputs?: string[]
+  /** Output formats produced */
+  outputs?: string[]
 }
 
 export const CATEGORIES: { id: Category; name: string; blurb: string; color: string }[] = [

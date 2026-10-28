@@ -1,9 +1,11 @@
 import { Suspense, lazy, useEffect, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChevronRight, ShieldCheck, Star, Zap, Infinity as Inf } from 'lucide-react'
-import { CATEGORIES, TOOLS, loadTool, toolBySlug } from '@/tools/registry'
+import { CATEGORIES, loadTool, toolBySlug } from '@/tools/registry'
 import { getIcon } from '@/components/icons'
-import { ToolCard } from '@/components/ToolCard'
+import { ToolGuideSection } from '@/components/ToolGuide'
+import { toolGuide } from '@/tools/guides'
+import { setJsonLd, setPageMeta } from '@/lib/seo'
 import { Badge, Spinner, cn } from '@/components/ui'
 import { useFavorites, useRecent } from '@/lib/store'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
@@ -16,11 +18,25 @@ export default function ToolPage() {
   const Comp = useMemo(() => (loader ? lazy(loader) : null), [slug])
   const { push } = useRecent()
   const { isFav, toggle } = useFavorites()
-  useEffect(() => { if (tool) { push(tool.slug); document.title = `${tool.name} — OpenFile` } }, [slug])
-  if (!tool) return <NotFound />
+  const guide = useMemo(() => (tool ? toolGuide(tool) : null), [slug])
+  useEffect(() => {
+    if (!tool || !guide) return
+    push(tool.slug)
+    setPageMeta(`${tool.name} | Free and private in your browser | OpenFile`, `${tool.desc} Free, no uploads, no sign-up. Runs 100% in your browser.`)
+    const url = location.origin + location.pathname
+    setJsonLd('tool', {
+      '@context': 'https://schema.org',
+      '@graph': [
+        { '@type': 'SoftwareApplication', name: tool.name, description: tool.desc, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any (web browser)', url, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } },
+        { '@type': 'HowTo', name: `How to use ${tool.name}`, step: guide.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, text: s })) },
+        { '@type': 'FAQPage', mainEntity: guide.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+      ],
+    })
+    return () => setJsonLd('tool', null)
+  }, [slug])
+  if (!tool || !guide) return <NotFound />
   const cat = CATEGORIES.find((c) => c.id === tool.category)!
   const Icon = getIcon(tool.icon)
-  const related = TOOLS.filter((t) => t.category === tool.category && t.slug !== tool.slug).slice(0, 4)
   return (
     <div className="relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-80 opacity-60" style={{ background: `radial-gradient(600px 220px at 20% 0%, ${cat.color}22, transparent)` }} />
@@ -52,12 +68,7 @@ export default function ToolPage() {
             </Suspense>
           </ErrorBoundary>
         </div>
-        {related.length > 0 && (
-          <section className="mt-20">
-            <h2 className="mb-4 font-display text-xl font-semibold">More {cat.name.toLowerCase()}</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{related.map((t) => <ToolCard key={t.slug} tool={t} />)}</div>
-          </section>
-        )}
+        <ToolGuideSection tool={tool} guide={guide} />
       </div>
     </div>
   )

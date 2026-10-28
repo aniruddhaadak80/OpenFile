@@ -11,6 +11,9 @@ const Privacy = lazy(() => import('@/pages/Privacy'))
 const Status = lazy(() => import('@/pages/Status'))
 const Workspace = lazy(() => import('@/pages/Workspace'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
+const Docs = lazy(() => import('@/pages/Docs'))
+const History = lazy(() => import('@/pages/History'))
+const Settings = lazy(() => import('@/pages/Settings'))
 
 export default function App() {
   return (
@@ -25,6 +28,11 @@ export default function App() {
             <Route path="about" element={<About />} />
             <Route path="privacy" element={<Privacy />} />
             <Route path="status" element={<Status />} />
+            <Route path="docs" element={<Docs />} />
+            <Route path="docs/*" element={<Docs />} />
+            <Route path="changelog" element={<Docs />} />
+            <Route path="history" element={<History />} />
+            <Route path="settings" element={<Settings />} />
             <Route path=":slug" element={<ToolPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
