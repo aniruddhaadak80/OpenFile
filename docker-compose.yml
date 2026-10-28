@@ -11,8 +11,8 @@ services:
       OPENFILE_CROSS_ORIGIN_ISOLATION: "false"
     read_only: true
     tmpfs:
-      - /data
-      - /config
+      - /data:uid=10001,gid=10001
+      - /config:uid=10001,gid=10001
     cap_drop:
       - ALL
     security_opt:

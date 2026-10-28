@@ -23,7 +23,7 @@ OpenFile is a static web app. Every tool runs in the visitor's browser, so a ser
 
 ```bash
 docker run -d --name openfile --restart unless-stopped -p 8080:8080 \
-  --read-only --tmpfs /data --tmpfs /config --cap-drop ALL --security-opt no-new-privileges \
+  --read-only --tmpfs /data:uid=10001,gid=10001 --tmpfs /config:uid=10001,gid=10001 --cap-drop ALL --security-opt no-new-privileges \
   ghcr.io/aniruddhaadak80/openfile:latest
 ```
 

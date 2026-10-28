@@ -201,7 +201,7 @@ jobs:
         run: |
           set -euo pipefail
           docker run -d --name of --platform linux/amd64 -p 8080:8080 \
-            --read-only --tmpfs /data --tmpfs /config --cap-drop ALL --security-opt no-new-privileges \
+            --read-only --tmpfs /data:uid=10001,gid=10001 --tmpfs /config:uid=10001,gid=10001 --cap-drop ALL --security-opt no-new-privileges \
             "${IMAGE}@${DIGEST}"
           docker run -d --name of-iso --platform linux/amd64 -p 8081:8080 -e OPENFILE_CROSS_ORIGIN_ISOLATION=true \
             "${IMAGE}@${DIGEST}"
@@ -211,6 +211,8 @@ jobs:
           done
           [ "$(docker inspect -f '{{.State.Health.Status}}' of)" = healthy ]
           [ "$(docker exec of id -u)" = 10001 ] && echo "runs as uid 10001"
+          sleep 2
+          if docker logs of 2>&1 | grep -q ERROR; then docker logs of; echo "::warning::the server logged an error"; fi
       - name: Smoke test HTTP
         run: |
           set -euo pipefail
@@ -246,7 +248,10 @@ jobs:
       - name: Run the arm64 image under emulation
         run: |
           set -euo pipefail
-          docker run -d --name of-arm --platform linux/arm64 -p 8082:8080 "${IMAGE}@${DIGEST}"
+          # run the arm64 manifest by its own digest; the index digest is already pulled for amd64
+          ARM=$(docker buildx imagetools inspect --raw "${IMAGE}@${DIGEST}" | jq -r '.manifests[] | select(.platform.os == "linux" and .platform.architecture == "arm64") | .digest')
+          echo "arm64 manifest: $ARM"
+          docker run -d --name of-arm -p 8082:8080 "${IMAGE}@${ARM}"
           [ "$(docker exec of-arm uname -m)" = aarch64 ]
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:8082/healthz && break; sleep 2; done
           curl -sSf -o /dev/null -w '%{http_code} %{content_type}\n' http://127.0.0.1:8082/
