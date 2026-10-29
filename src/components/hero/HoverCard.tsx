@@ -8,11 +8,13 @@ import { lightData, posterUrl, videoUrl, type HoverInfo } from './pool'
 
 const CARD_W = 212
 
-function Preview({ slug, reduce }: { slug: string; reduce: boolean }) {
+function Preview({ slug }: { slug: string }) {
   const [ready, setReady] = useState(false)
   const [broken, setBroken] = useState(false)
   const ref = useRef<HTMLVideoElement>(null)
-  const playVideo = !reduce && !lightData()
+  // Hovering or tapping is a deliberate choice, so the preview plays even with reduced motion on, the same as
+  // the tool cards. Only data saver or a 2G connection keeps it to the still poster.
+  const playVideo = !lightData()
   useEffect(() => { setReady(false); setBroken(false) }, [slug])
   useEffect(() => { const v = ref.current; if (v) void v.play().catch(() => {}) }, [slug])
   if (broken) return null
@@ -27,7 +29,7 @@ function Preview({ slug, reduce }: { slug: string; reduce: boolean }) {
   )
 }
 
-export function HoverCard({ info, ringW, reduce, touch }: { info: HoverInfo | null; ringW: number; reduce: boolean; touch: boolean }) {
+export function HoverCard({ info, ringW, touch }: { info: HoverInfo | null; ringW: number; reduce: boolean; touch: boolean }) {
   if (!info || !ringW) return null
   const xPx = (info.x / 100) * ringW
   const half = CARD_W / 2
@@ -38,7 +40,7 @@ export function HoverCard({ info, ringW, reduce, touch }: { info: HoverInfo | nu
     <div role="tooltip" id="hr-card" className={cn('hr-card pointer-events-none absolute z-40', above ? 'hr-card-up' : 'hr-card-down')}
       style={{ left, top: `${info.y}%`, width: CARD_W, transform: `translate(-50%, ${above ? `calc(-100% - ${gap}px)` : `${gap}px`})` }}>
       <div className="rounded-xl border bg-surface/95 p-2.5 text-left shadow-2xl backdrop-blur" style={{ borderColor: info.color + '55', boxShadow: `0 18px 40px -16px ${info.color}88` }}>
-        {info.media && <Preview slug={info.media} reduce={reduce} />}
+        {info.media && <Preview slug={info.media} />}
         <div className="flex items-center gap-1.5">
           <span className="size-1.5 shrink-0 rounded-full" style={{ background: info.color }} />
           <span className="truncate text-[13px] font-semibold" style={{ color: info.color }}>{info.title}</span>
