@@ -189,23 +189,52 @@ const picks = (cat, n) => {
 }
 
 /* ---------- What's new */
+// Newest first. Every round: add the new work at the top, move older lines into the "Earlier" block.
 function whatsNew() {
+  const catLine = (id) => {
+    const c = categories.find((x) => x.id === id)
+    return c ? `[${c.name}](${SITE}/category/${id}) (${plural(byCat.get(id).length, 'tool')})` : id
+  }
   const L = []
-  L.push(`OpenFile now has **${TOTAL} tools in ${NCAT} studios**. This release adds whole new studios, more on-device AI and a smoother way to get files in.`)
+  L.push(`OpenFile now has **${TOTAL} tools in ${NCAT} studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.`)
   L.push('')
-  L.push(`- 🧊 **3D viewer and converter**: ${tl('3d-viewer')} opens GLB, glTF, OBJ, STL, PLY, FBX and more with orbit controls. ${tl('3d-converter')} moves models between formats and ${tl('gltf-optimizer')} shrinks them.`)
-  L.push(`- 🔤 **Fonts**: ${tl('font-converter')} (TTF, OTF, WOFF, WOFF2), ${tl('font-viewer')} and ${tl('font-subsetter')} for tiny web fonts.`)
-  L.push(`- 🗜️ **Archives**: ${tl('archive-extractor')} reads ZIP, 7Z, RAR, TAR and more. ${tl('archive-creator')} packs files, with optional AES-256 ZIP passwords, and ${tl('archive-converter')} turns RAR or 7Z into ZIP.`)
-  L.push(`- 📚 **eBooks**: ${tl('ebook-reader')}, ${tl('ebook-converter')} (EPUB, MOBI, AZW3, FB2 and more), ${tl('epub-editor')} and ${tl('comic-converter')} for CBZ and CBR.`)
-  L.push(`- 💬 **Subtitles**: ${tl('subtitle-converter')}, ${tl('subtitle-editor')}, ${tl('subtitle-sync')} and ${tl('extract-subtitles')} from MKV and MP4.`)
-  L.push(`- 📐 **CAD and DXF**: ${tl('dxf-viewer')} with layers and measuring, and ${tl('cad-converter')} for clean vector output you can print.`)
-  L.push(`- 📊 **Data**: ${tl('sqlite-viewer')}, ${tl('parquet-viewer')}, ${tl('csv-editor')} and ${tl('geo-converter')} for GPX, KML, GeoJSON and Shapefile.`)
-  L.push(`- 🤖 **On-device AI**: ${tl('chat-pdf')}, ${tl('colorize-photo')}, ${tl('object-remover')}, ${tl('photo-enhancer')} and ${tl('pdf-summarizer')}. Models download once and then run on your device.`)
-  L.push(`- 🧲 **Drop anything**: drag a file onto any page. OpenFile reads its bytes to work out the type and suggests the right tools.`)
-  L.push(`- ⚖️ **Compare tools**: on the [tools page](${SITE}/tools), pick up to three tools and see formats, engines, offline support and batch support side by side.`)
-  L.push(`- 📲 **Share target**: install the app, then share files from other apps straight into OpenFile.`)
-  L.push(`- 🎞️ **Per-tool preview videos**: short previews on tool pages and cards${previewCount ? ` (${previewCount} so far)` : ''}.`)
-  L.push(`- ✨ **New hero**: a gold ring in motion, with file chips that turn into their converted format. It pauses off screen and respects reduced motion.`)
+  L.push('**Apps and updates (v1.2.0)**')
+  L.push('')
+  L.push(`- 🔄 **Auto updates everywhere**: desktop apps update from signed GitHub Releases with *Install now*, *Later*, *What's new* and one-click rollback. Android checks the newest release, verifies the APK and opens the installer. The web app checks every 30 minutes and on focus.`)
+  L.push(`- 🖥️ **Desktop and mobile apps**: Windows, macOS, Linux (Tauri) and Android (Capacitor), plus the installable web app for iPhone, iPad and ChromeOS. See [Install](#-install).`)
+  L.push(`- 📱 **Install page with a device showcase**: [/install](https://aniruddhaadak80.github.io/OpenFile/install) shows the live OpenFile UI on Mac, Windows, Linux, iPad, Android tablet, iPhone and Android, and picks the right guide for your device.`)
+  L.push('')
+  L.push(`**Five new studios and 51 tools (v2.2.0)**`)
+  L.push('')
+  L.push(`- 🤖 **Local AI in Web Workers**: ${tl('image-captioner')}, ${tl('object-detector')}, ${tl('depth-map')}, ${tl('image-segmenter')}, ${tl('image-tagger')}, ${tl('similar-photo-finder')}, ${tl('sentiment-analyzer')}, ${tl('text-classifier')}, ${tl('entity-extractor')} and ${tl('semantic-file-search')}. Models run in a background worker, so the page never freezes, with download progress, Cancel and a CPU path when there is no WebGPU.`)
+  L.push(`- 🔐 ${catLine('privacy')}: ${tl('metadata-scrubber')}, ${tl('steganography')}, ${tl('pii-redactor')}, ${tl('zip-encrypt')}, ${tl('self-decrypting-file')} and more.`)
+  L.push(`- 🗺️ ${catLine('geo')}: ${tl('gpx-elevation-profile')}, ${tl('gpx-splits')}, ${tl('gpx-privacy-zone')}, ${tl('photo-location-map')}, ${tl('route-heatmap')} and more.`)
+  L.push(`- 🗂️ ${catLine('office')}: ${tl('xlsx-merger')}, ${tl('spreadsheet-compare')}, ${tl('pivot-table')}, ${tl('docx-find-replace')}, ${tl('ics-viewer')} and more.`)
+  L.push(`- 🧪 ${catLine('science')}: ${tl('latex-equation')}, ${tl('function-plotter')}, ${tl('periodic-table')}, ${tl('chemical-equation-balancer')}, ${tl('matrix-calculator')} and more.`)
+  L.push(`- 🎙️ ${catLine('creator')}: ${tl('audiogram-maker')}, ${tl('video-reframe')}, ${tl('carousel-maker')}, ${tl('word-cloud')}, ${tl('chapter-maker')} and more.`)
+  L.push('')
+  L.push('**Docs, blog and packages**')
+  L.push('')
+  L.push(`- 📚 **Docs site** at [/docs](${SITE}/docs) with search, scroll-spy, tabs, and tool, format and shortcut references generated from the code on every build.`)
+  L.push(`- 📰 **Blog** at [/blog](${SITE}/blog): every post has an explainer film, a cover loop, illustrations, a quiz and a read-aloud player with natural voices that remembers where you stopped.`)
+  L.push(`- 📦 **Packages**: a signed multi-arch container on \`ghcr.io\` and an npm CLI on GitHub Packages. See [Packages](#-packages).`)
+  L.push('')
+  L.push('**Safety and quality**')
+  L.push('')
+  L.push(`- 🛡️ **CodeQL and Dependabot**: code scanning on every push and weekly grouped dependency updates.`)
+  L.push(`- 🔒 **Security fixes**: attribute escaping in the ODT viewer, CAD to SVG and PDF reader print, and safe addresses only in the PDF embed preview.`)
+  L.push(`- ✅ **Parity and README checks**: every tool, studio and post must ship its preview video, icon, docs and catalog row, and the build fails if the README counts drift from the registry.`)
+  L.push('')
+  L.push('<details>')
+  L.push('<summary><b>Earlier: v2.0 and v2.1</b></summary>')
+  L.push('')
+  L.push(`- 🧊 **3D, fonts, archives, eBooks, subtitles and CAD studios**: ${tl('3d-viewer')}, ${tl('font-converter')}, ${tl('archive-extractor')}, ${tl('ebook-converter')}, ${tl('subtitle-converter')}, ${tl('dxf-viewer')} and more.`)
+  L.push(`- 📊 **Data**: ${tl('sqlite-viewer')}, ${tl('parquet-viewer')}, ${tl('csv-editor')} and ${tl('geo-converter')}.`)
+  L.push(`- 🤖 **On-device AI**: ${tl('chat-pdf')}, ${tl('colorize-photo')}, ${tl('object-remover')}, ${tl('photo-enhancer')} and ${tl('pdf-summarizer')}.`)
+  L.push(`- 🧑‍💻 **Text and developer tools**: ${tl('readability-score')}, ${tl('secret-scanner')}, ${tl('json-repair')}, ${tl('har-viewer')} and more.`)
+  L.push(`- 🧲 **Drop anything**, ⚖️ **compare tools**, 📲 **share target** and 🎞️ **per-tool preview videos**${previewCount ? ` (${previewCount} so far)` : ''}.`)
+  L.push('')
+  L.push('</details>')
   L.push('')
   L.push('Full list of changes: **[CHANGELOG.md](CHANGELOG.md)**')
   return L.join('\n')
@@ -318,17 +347,24 @@ function tree() {
     '│  ├─ health.ts              #   GET /api/health',
     '│  ├─ fetch-page.ts          #   GET /api/fetch-page?url=   (HTML → PDF)',
     '│  └─ meta.ts                #   GET /api/meta?url=         (link previews)',
+    '├─ desktop/                  # Tauri v2 desktop app (Windows, macOS, Linux)',
+    '├─ mobile/                   # Capacitor 8 apps (Android, iOS)',
+    '├─ packages/                 # cli/ (npm CLI) and container/ (ghcr.io image)',
     '├─ docs/',
     '│  ├─ assets/                # animated SVG artwork for this README',
+    '│  ├─ assets/readme/         # GIF teasers of the launch and apps films',
     '│  ├─ ARCHITECTURE.md        # deep dive: engines, routing, pipelines',
-    '│  └─ TOOL_GUIDE.md          # how to write a new tool',
+    '│  ├─ TOOL_GUIDE.md          # how to write a new tool',
+    '│  └─ INSTALL.md · AI.md · PRIVACY.md · SELF_HOSTING.md · more',
     '├─ public/',
-    '│  ├─ media/                 # launch.mp4, poster.jpg, tools/ preview videos + index.json',
+    '│  ├─ media/                 # launch.mp4, apps.mp4, blog/ films, tools/ preview videos + index.json',
     '│  ├─ og.png · icons         # social card, favicons, PWA icons',
     '│  ├─ manifest.webmanifest   # installable PWA + share target',
     '│  └─ sw.js                  # offline service worker',
-    '├─ scripts/                  # postbuild, icons, launch film and preview video tooling',
-    '│  └─ gen-readme-catalog.mjs # regenerates the catalog parts of README and docs',
+    '├─ scripts/                  # postbuild, icons, docs, versions, launch film and preview video tooling',
+    '│  ├─ gen-readme-catalog.mjs # regenerates the catalog parts of README and docs',
+    '│  ├─ check-parity.mjs       # every tool, studio and post ships the same assets',
+    '│  └─ readme/                # README checks and GIF teaser builder',
     '├─ src/',
     '│  ├─ blog/                  # blog posts with live demos',
     '│  ├─ components/            # UI kit, layout, command palette, drop anything, compare, previews',
@@ -342,7 +378,7 @@ function tree() {
     '│     ├─ engines.ts · guides.ts  # "How it works" content for every tool page',
     `│     └─ ${dirsA}`,
     dirsB ? `│        ${dirsB}` : null,
-    '├─ .github/workflows/        # GitHub Pages deploy',
+    '├─ .github/                  # Pages deploy, app releases, packages, CodeQL, Dependabot',
     '├─ CHANGELOG.md              # release notes',
     '└─ vercel.json               # SPA rewrites + security headers',
     '```',
@@ -462,6 +498,11 @@ function updateReadme(text) {
   s = replaceBlock(s, 'tree', tree(), 'README.md')
   // Inline counts (patterns match any number, so reruns keep working)
   s = s.replace(/(img\.shields\.io\/badge\/tools-)\d+(-)/g, `$1${TOTAL}$2`)
+  s = s.replace(/(img\.shields\.io\/badge\/categories-)\d+(-)/g, `$1${NCAT}$2`)
+  s = s.replace(/alt="\d+ categories"/g, `alt="${NCAT} categories"`)
+  s = s.replace(/<b>\d+ studios<\/b>/g, `<b>${NCAT} studios</b>`)
+  s = s.replace(/(<!-- count:tools -->)\d+/g, `$1${TOTAL}`)
+  s = s.replace(/(<!-- count:categories -->)\d+/g, `$1${NCAT}`)
   s = s.replace(/alt="\d+ tools"(\/>\s*\n\s*<img src="https:\/\/img\.shields\.io\/badge\/uploads)/, `alt="${TOTAL} tools"$1`)
   s = s.replace(/<b>\d+ free, open-source tools<\/b>/g, `<b>${TOTAL} free, open-source tools</b>`)
   s = s.replace(/alt="\d+ tools · \d+ categories · /g, `alt="${TOTAL} tools · ${NCAT} categories · `)

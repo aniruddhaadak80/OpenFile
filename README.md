@@ -14,6 +14,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/tools-411-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
+  <img src="https://img.shields.io/badge/categories-21-14B8A6?style=flat-square&labelColor=0B0D10" alt="21 categories"/>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest"><img src="https://img.shields.io/github/v/release/aniruddhaadak80/OpenFile?style=flat-square&label=release&color=F5A524&labelColor=0B0D10" alt="latest release"/></a>
   <img src="https://img.shields.io/badge/uploads-0_bytes-10B981?style=flat-square&labelColor=0B0D10" alt="0 uploads"/>
   <img src="https://img.shields.io/badge/runs-in_your_browser-14B8A6?style=flat-square&logo=googlechrome&logoColor=14B8A6&labelColor=0B0D10" alt="runs in your browser"/>
   <img src="https://img.shields.io/badge/React-19-22D3EE?style=flat-square&logo=react&logoColor=22D3EE&labelColor=0B0D10" alt="React 19"/>
@@ -29,28 +31,48 @@
   <a href="https://github.com/aniruddhaadak80/OpenFile/issues"><img src="https://img.shields.io/github/issues/aniruddhaadak80/OpenFile?style=flat-square&color=22D3EE&labelColor=0B0D10" alt="issues"/></a>
   <a href="https://github.com/aniruddhaadak80/OpenFile/commits/main"><img src="https://img.shields.io/github/last-commit/aniruddhaadak80/OpenFile?style=flat-square&color=10B981&labelColor=0B0D10" alt="last commit"/></a>
   <a href="https://github.com/aniruddhaadak80/OpenFile/actions"><img src="https://img.shields.io/github/actions/workflow/status/aniruddhaadak80/OpenFile/deploy-pages.yml?style=flat-square&label=pages%20deploy&logo=githubactions&logoColor=F5A524&labelColor=0B0D10" alt="Pages deploy"/></a>
+  <a href="https://github.com/aniruddhaadak80/OpenFile/actions/workflows/codeql.yml"><img src="https://img.shields.io/github/actions/workflow/status/aniruddhaadak80/OpenFile/codeql.yml?style=flat-square&label=CodeQL&logo=github&logoColor=14B8A6&labelColor=0B0D10" alt="CodeQL"/></a>
   <img src="https://img.shields.io/github/repo-size/aniruddhaadak80/OpenFile?style=flat-square&color=38BDF8&labelColor=0B0D10" alt="repo size"/>
 </p>
 
 <p align="center">
-  <b>411 free, open-source tools</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data and code, <br/>
-  processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
+  <b>411 free, open-source tools</b> in <b>21 studios</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data, code, <br/>
+  maps, office files, science, privacy and creators, processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
 </p>
 
 <p align="center">
   <a href="#-whats-new">What's new</a> ·
   <a href="#-launch-film">Launch film</a> ·
   <a href="#-install">Install</a> ·
-  <a href="#-why-openfile">Why</a> ·
   <a href="#-the-toolbox">Toolbox</a> ·
-  <a href="#-workspace--batch-pipelines">Workspace</a> ·
-  <a href="#%EF%B8%8F-architecture">Architecture</a> ·
   <a href="#-quick-start">Quick start</a> ·
   <a href="#%EF%B8%8F-self-hosting">Self-hosting</a> ·
-  <a href="#%EF%B8%8F-roadmap">Roadmap</a> ·
-  <a href="#-faq">FAQ</a> ·
-  <a href="#-built-by">Author</a>
+  <a href="#-contributing">Contributing</a>
 </p>
+
+<details>
+<summary><b>📑 Table of contents</b></summary>
+<br/>
+
+- [🆕 What's new](#-whats-new)
+- [🎬 Launch film](#-launch-film)
+- [📲 Install](#-install) (web, Windows, macOS, Linux, Android, iPhone, ChromeOS, auto updates)
+- [✨ Why OpenFile](#-why-openfile)
+- [🧰 The toolbox](#-the-toolbox) and [📚 every tool, one click away](#-every-tool-one-click-away)
+- [🔁 Workspace, batch pipelines](#-workspace-batch-pipelines)
+- [🏗️ Architecture](#%EF%B8%8F-architecture) and [🛠️ tech stack](#%EF%B8%8F-tech-stack)
+- [📚 Docs](#-docs) and [📰 Blog](#-blog)
+- [🚀 Quick start](#-quick-start)
+- [📦 Packages](#-packages) (container and npm CLI)
+- [☁️ Self-hosting](#%EF%B8%8F-self-hosting)
+- [🛡️ Security and quality](#%EF%B8%8F-security-and-quality)
+- [🗂️ Project structure](#%EF%B8%8F-project-structure)
+- [🤝 Contributing](#-contributing)
+- [🗺️ Roadmap](#%EF%B8%8F-roadmap)
+- [❓ FAQ](#-faq)
+- [👤 Built by](#-built-by)
+
+</details>
 
 <p align="center"><img src="docs/assets/stats.svg" width="100%" alt="411 tools · 21 categories · 0 uploads · 100% open source"/></p>
 
@@ -59,21 +81,45 @@
 ## 🆕 What's new
 
 <!-- whatsnew:start -->
-OpenFile now has **411 tools in 21 studios**. This release adds whole new studios, more on-device AI and a smoother way to get files in.
+OpenFile now has **411 tools in 21 studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.
 
-- 🧊 **3D viewer and converter**: [3D Model Viewer](https://openfile-studio.vercel.app/3d-viewer) opens GLB, glTF, OBJ, STL, PLY, FBX and more with orbit controls. [3D Model Converter](https://openfile-studio.vercel.app/3d-converter) moves models between formats and [GLB / glTF Optimizer](https://openfile-studio.vercel.app/gltf-optimizer) shrinks them.
-- 🔤 **Fonts**: [Font Converter](https://openfile-studio.vercel.app/font-converter) (TTF, OTF, WOFF, WOFF2), [Font Viewer & Inspector](https://openfile-studio.vercel.app/font-viewer) and [Font Subsetter](https://openfile-studio.vercel.app/font-subsetter) for tiny web fonts.
-- 🗜️ **Archives**: [Open Any Archive](https://openfile-studio.vercel.app/archive-extractor) reads ZIP, 7Z, RAR, TAR and more. [Create Archive](https://openfile-studio.vercel.app/archive-creator) packs files, with optional AES-256 ZIP passwords, and [Archive Converter](https://openfile-studio.vercel.app/archive-converter) turns RAR or 7Z into ZIP.
-- 📚 **eBooks**: [E-book Reader](https://openfile-studio.vercel.app/ebook-reader), [E-book Converter](https://openfile-studio.vercel.app/ebook-converter) (EPUB, MOBI, AZW3, FB2 and more), [EPUB Editor](https://openfile-studio.vercel.app/epub-editor) and [Comic Converter](https://openfile-studio.vercel.app/comic-converter) for CBZ and CBR.
-- 💬 **Subtitles**: [Subtitle Converter](https://openfile-studio.vercel.app/subtitle-converter), [Subtitle Editor](https://openfile-studio.vercel.app/subtitle-editor), [Subtitle Shift and Sync](https://openfile-studio.vercel.app/subtitle-sync) and [Extract Subtitles](https://openfile-studio.vercel.app/extract-subtitles) from MKV and MP4.
-- 📐 **CAD and DXF**: [DXF Viewer](https://openfile-studio.vercel.app/dxf-viewer) with layers and measuring, and [CAD to PDF, SVG and PNG](https://openfile-studio.vercel.app/cad-converter) for clean vector output you can print.
-- 📊 **Data**: [SQLite Browser](https://openfile-studio.vercel.app/sqlite-viewer), [Parquet / Arrow / Avro Viewer](https://openfile-studio.vercel.app/parquet-viewer), [CSV & Spreadsheet Editor](https://openfile-studio.vercel.app/csv-editor) and [GPS / GIS Converter](https://openfile-studio.vercel.app/geo-converter) for GPX, KML, GeoJSON and Shapefile.
-- 🤖 **On-device AI**: [Chat with PDF](https://openfile-studio.vercel.app/chat-pdf), [Colorize Black and White Photo](https://openfile-studio.vercel.app/colorize-photo), [Magic Eraser (Remove Objects)](https://openfile-studio.vercel.app/object-remover), [Photo Enhancer](https://openfile-studio.vercel.app/photo-enhancer) and [AI Summarizer](https://openfile-studio.vercel.app/pdf-summarizer). Models download once and then run on your device.
-- 🧲 **Drop anything**: drag a file onto any page. OpenFile reads its bytes to work out the type and suggests the right tools.
-- ⚖️ **Compare tools**: on the [tools page](https://openfile-studio.vercel.app/tools), pick up to three tools and see formats, engines, offline support and batch support side by side.
-- 📲 **Share target**: install the app, then share files from other apps straight into OpenFile.
-- 🎞️ **Per-tool preview videos**: short previews on tool pages and cards (329 so far).
-- ✨ **New hero**: a gold ring in motion, with file chips that turn into their converted format. It pauses off screen and respects reduced motion.
+**Apps and updates (v1.2.0)**
+
+- 🔄 **Auto updates everywhere**: desktop apps update from signed GitHub Releases with *Install now*, *Later*, *What's new* and one-click rollback. Android checks the newest release, verifies the APK and opens the installer. The web app checks every 30 minutes and on focus.
+- 🖥️ **Desktop and mobile apps**: Windows, macOS, Linux (Tauri) and Android (Capacitor), plus the installable web app for iPhone, iPad and ChromeOS. See [Install](#-install).
+- 📱 **Install page with a device showcase**: [/install](https://aniruddhaadak80.github.io/OpenFile/install) shows the live OpenFile UI on Mac, Windows, Linux, iPad, Android tablet, iPhone and Android, and picks the right guide for your device.
+
+**Five new studios and 51 tools (v2.2.0)**
+
+- 🤖 **Local AI in Web Workers**: [AI Image Captioner](https://openfile-studio.vercel.app/image-captioner), [AI Object Detector](https://openfile-studio.vercel.app/object-detector), [AI Depth Map](https://openfile-studio.vercel.app/depth-map), [AI Image Segmenter](https://openfile-studio.vercel.app/image-segmenter), [AI Image Tagger](https://openfile-studio.vercel.app/image-tagger), [Similar Photo Finder](https://openfile-studio.vercel.app/similar-photo-finder), [Sentiment Analyzer](https://openfile-studio.vercel.app/sentiment-analyzer), [Zero-shot Text Classifier](https://openfile-studio.vercel.app/text-classifier), [Name & Entity Extractor](https://openfile-studio.vercel.app/entity-extractor) and [Semantic File Search](https://openfile-studio.vercel.app/semantic-file-search). Models run in a background worker, so the page never freezes, with download progress, Cancel and a CPU path when there is no WebGPU.
+- 🔐 [Security & Privacy](https://openfile-studio.vercel.app/category/privacy) (8 tools): [Metadata Scrubber](https://openfile-studio.vercel.app/metadata-scrubber), [Steganography](https://openfile-studio.vercel.app/steganography), [PII Redactor](https://openfile-studio.vercel.app/pii-redactor), [Password ZIP](https://openfile-studio.vercel.app/zip-encrypt), [Locked HTML File](https://openfile-studio.vercel.app/self-decrypting-file) and more.
+- 🗺️ [Maps & GPS](https://openfile-studio.vercel.app/category/geo) (9 tools): [GPX Elevation Profile](https://openfile-studio.vercel.app/gpx-elevation-profile), [GPX Pace & Splits](https://openfile-studio.vercel.app/gpx-splits), [GPX Privacy Zones](https://openfile-studio.vercel.app/gpx-privacy-zone), [Photo Location Map](https://openfile-studio.vercel.app/photo-location-map), [Route Heatmap](https://openfile-studio.vercel.app/route-heatmap) and more.
+- 🗂️ [Office & Sheets](https://openfile-studio.vercel.app/category/office) (9 tools): [Merge Excel Files](https://openfile-studio.vercel.app/xlsx-merger), [Compare Spreadsheets](https://openfile-studio.vercel.app/spreadsheet-compare), [Pivot Table](https://openfile-studio.vercel.app/pivot-table), [Word Find & Replace](https://openfile-studio.vercel.app/docx-find-replace), [Calendar File Viewer (ICS)](https://openfile-studio.vercel.app/ics-viewer) and more.
+- 🧪 [Science & Education](https://openfile-studio.vercel.app/category/science) (8 tools): [LaTeX Equation Renderer](https://openfile-studio.vercel.app/latex-equation), [Function Plotter](https://openfile-studio.vercel.app/function-plotter), [Periodic Table](https://openfile-studio.vercel.app/periodic-table), [Chemical Equation Balancer](https://openfile-studio.vercel.app/chemical-equation-balancer), [Matrix Calculator](https://openfile-studio.vercel.app/matrix-calculator) and more.
+- 🎙️ [Creator Studio](https://openfile-studio.vercel.app/category/creator) (7 tools): [Audiogram Maker](https://openfile-studio.vercel.app/audiogram-maker), [Video Reframe (9:16, 1:1, 4:5)](https://openfile-studio.vercel.app/video-reframe), [Carousel Maker](https://openfile-studio.vercel.app/carousel-maker), [Word Cloud Generator](https://openfile-studio.vercel.app/word-cloud), [Video Chapter Maker](https://openfile-studio.vercel.app/chapter-maker) and more.
+
+**Docs, blog and packages**
+
+- 📚 **Docs site** at [/docs](https://openfile-studio.vercel.app/docs) with search, scroll-spy, tabs, and tool, format and shortcut references generated from the code on every build.
+- 📰 **Blog** at [/blog](https://openfile-studio.vercel.app/blog): every post has an explainer film, a cover loop, illustrations, a quiz and a read-aloud player with natural voices that remembers where you stopped.
+- 📦 **Packages**: a signed multi-arch container on `ghcr.io` and an npm CLI on GitHub Packages. See [Packages](#-packages).
+
+**Safety and quality**
+
+- 🛡️ **CodeQL and Dependabot**: code scanning on every push and weekly grouped dependency updates.
+- 🔒 **Security fixes**: attribute escaping in the ODT viewer, CAD to SVG and PDF reader print, and safe addresses only in the PDF embed preview.
+- ✅ **Parity and README checks**: every tool, studio and post must ship its preview video, icon, docs and catalog row, and the build fails if the README counts drift from the registry.
+
+<details>
+<summary><b>Earlier: v2.0 and v2.1</b></summary>
+
+- 🧊 **3D, fonts, archives, eBooks, subtitles and CAD studios**: [3D Model Viewer](https://openfile-studio.vercel.app/3d-viewer), [Font Converter](https://openfile-studio.vercel.app/font-converter), [Open Any Archive](https://openfile-studio.vercel.app/archive-extractor), [E-book Converter](https://openfile-studio.vercel.app/ebook-converter), [Subtitle Converter](https://openfile-studio.vercel.app/subtitle-converter), [DXF Viewer](https://openfile-studio.vercel.app/dxf-viewer) and more.
+- 📊 **Data**: [SQLite Browser](https://openfile-studio.vercel.app/sqlite-viewer), [Parquet / Arrow / Avro Viewer](https://openfile-studio.vercel.app/parquet-viewer), [CSV & Spreadsheet Editor](https://openfile-studio.vercel.app/csv-editor) and [GPS / GIS Converter](https://openfile-studio.vercel.app/geo-converter).
+- 🤖 **On-device AI**: [Chat with PDF](https://openfile-studio.vercel.app/chat-pdf), [Colorize Black and White Photo](https://openfile-studio.vercel.app/colorize-photo), [Magic Eraser (Remove Objects)](https://openfile-studio.vercel.app/object-remover), [Photo Enhancer](https://openfile-studio.vercel.app/photo-enhancer) and [AI Summarizer](https://openfile-studio.vercel.app/pdf-summarizer).
+- 🧑‍💻 **Text and developer tools**: [Readability Checker](https://openfile-studio.vercel.app/readability-score), [Secret Scanner](https://openfile-studio.vercel.app/secret-scanner), [JSON Repair & JSON5](https://openfile-studio.vercel.app/json-repair), [HAR File Viewer](https://openfile-studio.vercel.app/har-viewer) and more.
+- 🧲 **Drop anything**, ⚖️ **compare tools**, 📲 **share target** and 🎞️ **per-tool preview videos** (411 so far).
+
+</details>
 
 Full list of changes: **[CHANGELOG.md](CHANGELOG.md)**
 <!-- whatsnew:end -->
@@ -83,11 +129,11 @@ Full list of changes: **[CHANGELOG.md](CHANGELOG.md)**
 ## 🎬 Launch film
 
 <p align="center">
-  <a href="public/media/launch.mp4" title="Play the OpenFile launch film">
-    <img src="docs/assets/launch-card.svg" width="88%" alt="OpenFile launch film, click to play"/>
+  <a href="https://aniruddhaadak80.github.io/OpenFile/media/launch.mp4" title="Play the full OpenFile launch film">
+    <img src="docs/assets/readme/launch-teaser.gif" width="88%" alt="OpenFile launch film teaser: your files are personal, the studios, 0 bytes uploaded"/>
   </a>
   <br/>
-  <sub>▶ <a href="public/media/launch.mp4"><b>Play the launch film</b></a> (<code>public/media/launch.mp4</code>) · or watch it on the <a href="https://openfile-studio.vercel.app">homepage</a></sub>
+  <sub>▶ <a href="https://aniruddhaadak80.github.io/OpenFile/media/launch.mp4"><b>Play the full launch film</b></a> (57 s, 1920x1080, opens in your browser) · <a href="https://github.com/aniruddhaadak80/OpenFile/raw/main/public/media/launch.mp4">Download the mp4</a> · or watch it on the <a href="https://openfile-studio.vercel.app">homepage</a></sub>
 </p>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
@@ -113,11 +159,11 @@ OpenFile is a website and an app. Install it on any device: it works offline, op
 </p>
 
 <p align="center">
-  <a href="public/media/apps.mp4" title="Play: OpenFile on every device">
-    <img src="docs/assets/apps-poster.jpg" width="88%" alt="OpenFile on every device, 44 second video, click to play"/>
+  <a href="https://aniruddhaadak80.github.io/OpenFile/media/apps.mp4" title="Play: OpenFile on every device">
+    <img src="docs/assets/readme/apps-teaser.gif" width="88%" alt="OpenFile on every device teaser: one app on every screen, install in three clicks, works offline"/>
   </a>
   <br/>
-  <sub>▶ <a href="public/media/apps.mp4"><b>Watch: OpenFile on every device</b></a> (44 s, 1920x1080) · <a href="public/media/apps-vertical.mp4">vertical cut for phones</a></sub>
+  <sub>▶ <a href="https://aniruddhaadak80.github.io/OpenFile/media/apps.mp4"><b>Watch: OpenFile on every device</b></a> (44 s, 1920x1080) · <a href="https://aniruddhaadak80.github.io/OpenFile/media/apps-vertical.mp4">vertical cut for phones</a> · <a href="https://github.com/aniruddhaadak80/OpenFile/raw/main/public/media/apps.mp4">Download the mp4</a></sub>
 </p>
 
 | Platform | Get it | First run |
@@ -195,7 +241,7 @@ No upload queue, no download wait. Most jobs finish in **milliseconds** on your 
 <td width="33%" valign="top">
 
 ### 🤖 On-device AI
-[OCR PDF](https://openfile-studio.vercel.app/ocr-pdf) · [Background Remover](https://openfile-studio.vercel.app/background-remover) · [Image Upscaler](https://openfile-studio.vercel.app/image-upscaler) · [Blur & Redact Image](https://openfile-studio.vercel.app/blur-faces) · [Audio Transcriber](https://openfile-studio.vercel.app/audio-transcriber), all run locally via WASM / WebGPU.
+[OCR PDF](https://openfile-studio.vercel.app/ocr-pdf) · [Background Remover](https://openfile-studio.vercel.app/background-remover) · [Image Upscaler](https://openfile-studio.vercel.app/image-upscaler) · [Blur & Redact Image](https://openfile-studio.vercel.app/blur-faces) · [Audio Transcriber](https://openfile-studio.vercel.app/audio-transcriber), plus captioning, object detection, depth maps and semantic search. All run locally via WASM / WebGPU in background Web Workers, so the page never freezes.
 
 </td>
 </tr>
@@ -1263,6 +1309,14 @@ Full documentation lives inside the app at **[/docs](https://openfile-studio.ver
 | [Offline and PWA](https://openfile-studio.vercel.app/docs/offline) | [Privacy and security](https://openfile-studio.vercel.app/docs/privacy-security) | [Privacy](docs/PRIVACY.md) |
 | [Troubleshooting](https://openfile-studio.vercel.app/docs/troubleshooting) | [Developer guide](https://openfile-studio.vercel.app/docs/developer) | [Troubleshooting](docs/TROUBLESHOOTING.md) · [Install](docs/INSTALL.md) |
 
+## 📰 Blog
+
+The **[blog](https://openfile-studio.vercel.app/blog)** has plain guides with live demos you can try on the page: installing OpenFile, AI models in your browser, shrinking a PDF for email, photo formats, making GIFs, signing PDFs, eBooks, CAD, DICOM, MIDI, data formats and subtitles.
+
+- 🎬 **Explainer film** and a **cover loop** for every post
+- 🔊 **Read aloud** with natural voices and word highlighting, and it picks up where you stopped after a reload
+- 🧠 **Quiz** at the end of each post, plus illustrations and captions
+
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
 ## 🚀 Quick start
@@ -1283,6 +1337,10 @@ npm run dev          # → http://localhost:5173
 | `npm run build:pages` | Build with base `/OpenFile/` for GitHub Pages |
 | `npm run typecheck` | Strict TypeScript check |
 | `npm run preview` | Preview the production build locally |
+| `npm run docs:catalog` | Regenerate the README catalog, counts, charts and docs tables from the registry |
+| `npm run readme:check` | Fail if the README tool or category counts differ from the registry |
+| `node scripts/check-parity.mjs` | Check every tool, studio and post ships its video, icon, docs and catalog row |
+| `npm run app:desktop` · `npm run app:android` | Build the desktop installer or the Android APK |
 
 > Requires **Node.js 20+** (CI uses Node 22).
 
@@ -1429,6 +1487,21 @@ Upload `dist/` and make unknown routes serve `index.html`. For a sub-path, build
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
+## 🛡️ Security and quality
+
+| Check | What it does |
+| --- | --- |
+| [CodeQL](https://github.com/aniruddhaadak80/OpenFile/actions/workflows/codeql.yml) | Static analysis of the TypeScript app and the workflows on every push. Results show under *Security, Code scanning*. |
+| [Dependabot](.github/dependabot.yml) | Weekly grouped updates for npm and GitHub Actions, with licence-safe pins. |
+| Security fixes | Attribute escaping in the ODT viewer, CAD to SVG and PDF reader print. The PDF embed preview only loads web addresses, paths and local files. |
+| Signed releases | Desktop updates are verified against the OpenFile signing key, Android APKs against the release certificate, and the container image is signed with cosign. |
+| [`scripts/check-parity.mjs`](scripts/check-parity.mjs) | Every tool, studio and blog post must ship the same assets as the older ones: preview video, poster, icon, docs page and README row. |
+| [`scripts/readme/check-readme.mjs`](scripts/readme/check-readme.mjs) | Runs before every build and fails if this README's tool or category counts drift from `src/tools/registry.ts`. |
+
+Found a security issue? Please open a [private security advisory](https://github.com/aniruddhaadak80/OpenFile/security/advisories/new) instead of a public issue.
+
+<p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
+
 ## 🗂️ Project structure
 
 <!-- tree:start -->
@@ -1438,17 +1511,24 @@ OpenFile/
 │  ├─ health.ts              #   GET /api/health
 │  ├─ fetch-page.ts          #   GET /api/fetch-page?url=   (HTML → PDF)
 │  └─ meta.ts                #   GET /api/meta?url=         (link previews)
+├─ desktop/                  # Tauri v2 desktop app (Windows, macOS, Linux)
+├─ mobile/                   # Capacitor 8 apps (Android, iOS)
+├─ packages/                 # cli/ (npm CLI) and container/ (ghcr.io image)
 ├─ docs/
 │  ├─ assets/                # animated SVG artwork for this README
+│  ├─ assets/readme/         # GIF teasers of the launch and apps films
 │  ├─ ARCHITECTURE.md        # deep dive: engines, routing, pipelines
-│  └─ TOOL_GUIDE.md          # how to write a new tool
+│  ├─ TOOL_GUIDE.md          # how to write a new tool
+│  └─ INSTALL.md · AI.md · PRIVACY.md · SELF_HOSTING.md · more
 ├─ public/
-│  ├─ media/                 # launch.mp4, poster.jpg, tools/ preview videos + index.json
+│  ├─ media/                 # launch.mp4, apps.mp4, blog/ films, tools/ preview videos + index.json
 │  ├─ og.png · icons         # social card, favicons, PWA icons
 │  ├─ manifest.webmanifest   # installable PWA + share target
 │  └─ sw.js                  # offline service worker
-├─ scripts/                  # postbuild, icons, launch film and preview video tooling
-│  └─ gen-readme-catalog.mjs # regenerates the catalog parts of README and docs
+├─ scripts/                  # postbuild, icons, docs, versions, launch film and preview video tooling
+│  ├─ gen-readme-catalog.mjs # regenerates the catalog parts of README and docs
+│  ├─ check-parity.mjs       # every tool, studio and post ships the same assets
+│  └─ readme/                # README checks and GIF teaser builder
 ├─ src/
 │  ├─ blog/                  # blog posts with live demos
 │  ├─ components/            # UI kit, layout, command palette, drop anything, compare, previews
@@ -1462,7 +1542,7 @@ OpenFile/
 │     ├─ engines.ts · guides.ts  # "How it works" content for every tool page
 │     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/ data/ ai/ 3d/
 │        archive/ ebook/ font/ cad/ subtitle/ privacy/ geo/ office/ science/ creator/
-├─ .github/workflows/        # GitHub Pages deploy
+├─ .github/                  # Pages deploy, app releases, packages, CodeQL, Dependabot
 ├─ CHANGELOG.md              # release notes
 └─ vercel.json               # SPA rewrites + security headers
 ```
@@ -1490,6 +1570,7 @@ flowchart LR
 
 - The one hard rule: **keep everything client-side**, PRs that upload user files will not be merged.
 - Heavy libraries must be **dynamically imported** inside handlers so each tool chunk stays small.
+- After adding a tool, run `npm run docs:catalog` to refresh this README, then `npm run readme:check` and `node scripts/check-parity.mjs`.
 - Add a screenshot or GIF for UI changes. Full conventions: **[docs/TOOL_GUIDE.md](docs/TOOL_GUIDE.md)** · **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 - Found a bug or want a tool? **[Open an issue](https://github.com/aniruddhaadak80/OpenFile/issues/new)**.
 
@@ -1507,8 +1588,10 @@ timeline
         Everywhere : Installable PWA : Offline mode : Vercel and GitHub Pages
         v2.0 catalog : 411 in-browser tools : 21 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
         v2.0 polish : Per-tool preview videos : Drop anything and share target : Compare tools and new hero
+        v1.2 apps : Desktop and Android apps : Signed auto updates : Rollback
+        v2.2 studios : Privacy · Maps · Office · Science · Creator : Local AI in Web Workers
     section Next
-        Desktop : Tauri app : Native file system access
+        Desktop : Native file system access
         Sharing : Pipeline recipes via link
         Global : UI translations i18n
 ```
@@ -1520,7 +1603,11 @@ timeline
 - [x] New studios: 3D, archives, fonts, eBooks, CAD and subtitles
 - [x] More on-device AI: chat with PDF, colorize, object remover, photo enhancer, summarizer
 - [x] Drop anything, share target, compare tools and per-tool preview videos
-- [ ] Desktop app (Tauri) with native file-system access
+- [x] Desktop (Tauri) and Android (Capacitor) apps with signed auto updates (v1.2.0)
+- [x] New studios: Security & Privacy, Maps & GPS, Office & Sheets, Science & Education, Creator Studio
+- [x] Docs site at /docs and a blog with films, read aloud and quizzes
+- [x] Container image and npm CLI on GitHub Packages
+- [ ] Native file-system access in the desktop app
 - [ ] Shareable pipeline recipes via link
 - [ ] UI translations (i18n)
 
