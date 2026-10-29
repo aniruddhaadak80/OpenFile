@@ -9,6 +9,7 @@ const THEMES: Record<Theme, { bg: string; fg: string; link: string }> = { light:
 const NATIVE = /\.(epub|mobi|azw3?|kf8|prc|fb2|fbz|cbz)$/i
 const ACCEPT = '.epub,.mobi,.azw,.azw3,.kf8,.prc,.fb2,.fbz,.cbz,.txt,.html,.htm,.md,.docx,.rtf,.odt'
 const css = (t: Theme, size: number, spacing: number, font: string) => `
+  @namespace epub "http://www.idpf.org/2007/ops";
   html { color-scheme: ${t === 'dark' ? 'dark' : 'light'}; }
   html, body { background: ${THEMES[t].bg} !important; color: ${THEMES[t].fg} !important; }
   body { font-size: ${size}% !important; ${font !== 'publisher' ? `font-family: ${font === 'serif' ? "Georgia, 'Times New Roman', serif" : "system-ui, -apple-system, 'Segoe UI', Arial, sans-serif"} !important;` : ''} }
@@ -16,14 +17,38 @@ const css = (t: Theme, size: number, spacing: number, font: string) => `
   a:link { color: ${THEMES[t].link} !important; }
   pre { white-space: pre-wrap !important; }
   img, svg { max-width: 100%; }
-  aside[epub|type~="footnote"], aside[epub|type~="endnote"] { display: none; }
-  @namespace epub "http://www.idpf.org/2007/ops";`
+  aside[epub|type~="footnote"], aside[epub|type~="endnote"] { display: none; }`
 
 interface TocItem { label: string; href: string; subitems?: TocItem[] }
+
+const MAX_BYTES = 500 * 1024 * 1024 // bigger files are refused instead of exhausting memory
+const PART_CHARS = 120_000 // converted documents are cut into sections of about this size so no page lays out a whole book
+const OPEN_SLOW_MS = 20_000
+const CANCELLED = 'cancelled'
+const tick = () => new Promise<void>((r) => setTimeout(r, 0))
+
+/** Cut very long chapters (a TXT or DOCX without headings becomes one chapter) at top-level block boundaries. */
+async function splitLong(chapters: { title: string; html: string }[]) {
+  const out: { title: string; html: string }[] = []
+  for (const c of chapters) {
+    if (c.html.length <= PART_CHARS * 1.5) { out.push(c); continue }
+    const body = new DOMParser().parseFromString(`<!DOCTYPE html><html><body>${c.html}</body></html>`, 'text/html').body
+    let buf = '', part = 1
+    const push = () => { if (buf.trim()) out.push({ title: part === 1 ? c.title : `${c.title} (${part})`, html: buf }); part++; buf = '' }
+    for (const n of Array.from(body.childNodes)) {
+      buf += n.nodeType === 1 ? (n as Element).outerHTML : (n.textContent ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      if (buf.length >= PART_CHARS) { push(); await tick() }
+    }
+    push()
+  }
+  return out
+}
 
 export default function EbookReader() {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
+  const [stage, setStage] = useState('')
+  const [slow, setSlow] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [meta, setMeta] = useState<{ title: string; author: string } | null>(null)
   const [toc, setToc] = useState<TocItem[]>([])
@@ -39,6 +64,7 @@ export default function EbookReader() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<{ cfi: string; excerpt: string; label: string }[]>([])
   const [searching, setSearching] = useState(false)
+  const searchTok = useRef(0)
   const host = useRef<HTMLDivElement>(null)
   const wrap = useRef<HTMLDivElement>(null)
   const view = useRef<any>(null)
@@ -47,57 +73,108 @@ export default function EbookReader() {
   useEffect(() => {
     if (!file || !host.current) return
     let dead = false
+    let raf = 0
+    let slowTimer = 0
     const el = host.current
+    const inert = new Map<string, string>()
+    // every await is followed by a yield and a cancel check, so the page keeps painting and Cancel always works
+    const step = async (label: string) => { if (dead) throw new Error(CANCELLED); setStage(label); await tick(); if (dead) throw new Error(CANCELLED) }
     ;(async () => {
-      setLoading(true); setError(null)
+      setLoading(true); setError(null); setSlow(false); setFrac(0); setWhere('')
+      slowTimer = window.setTimeout(() => { if (!dead) setSlow(true) }, OPEN_SLOW_MS)
       try {
+        if (file.size > MAX_BYTES) throw new Error(`This file is ${Math.round(file.size / 1048576)} MB. The reader opens books up to ${MAX_BYTES / 1048576} MB.`)
+        await step('Loading the reader')
         const { makeBook } = await import('foliate-js/view.js')
         let src: File = file
         if (!NATIVE.test(file.name)) {
+          await step('Converting the document')
           const { loadBook, writeEpub } = await import('@/lib/b4/book')
-          const b = await loadBook(file)
+          const b = await loadBook(file, (p, label) => { if (!dead) setStage(`${label || 'Converting the document'} ${Math.round(p * 100)}%`) })
+          await step('Splitting long chapters')
+          b.chapters = await splitLong(b.chapters)
+          await step('Building the book')
           src = new File([await writeEpub(b)], file.name.replace(/\.[^.]+$/, '') + '.epub', { type: 'application/epub+zip' })
         }
-        if (dead) return
+        await step('Reading the book')
         // foliate-js renders book pages in same-origin frames that allow scripts (a WebKit requirement), so
         // every page (EPUB, MOBI, KF8, FB2, comics) is made inert before it is shown: no scripts, event handlers or script URLs.
+        // Only the section on screen is loaded; its sanitized copy is released again when foliate unloads it.
         const book = await makeBook(src)
-        const inert = new Map<string, string>()
+        await step('Preparing pages')
         for (const s of book.sections ?? []) {
           if (typeof s.load !== 'function') continue
           const load = s.load.bind(s)
+          const unload = typeof s.unload === 'function' ? s.unload.bind(s) : null
+          let last = ''
           s.load = async () => {
             const u = await load()
             if (typeof u !== 'string' || !u.startsWith('blob:')) return u
             const hit = inert.get(u); if (hit) return hit
             const b = await (await fetch(u)).blob()
             const type: DOMParserSupportedType = /svg/i.test(b.type) ? 'image/svg+xml' : /xml/i.test(b.type) ? 'application/xhtml+xml' : 'text/html'
-            const out = URL.createObjectURL(new Blob([sanitizeMarkup(await b.text(), type)], { type: b.type || type }))
-            inert.set(u, out); return out
+            const mime = (b.type || type).split(';')[0]
+            const out = URL.createObjectURL(new Blob([sanitizeMarkup(await b.text(), type)], { type: `${mime};charset=utf-8` }))
+            inert.set(u, out); last = u
+            return out
+          }
+          s.unload = () => {
+            const o = last && inert.get(last)
+            if (o) { URL.revokeObjectURL(o); inert.delete(last) }
+            last = ''
+            unload?.()
           }
         }
-        if (dead) return
+        await step('Opening the book')
         const v: any = document.createElement('foliate-view')
         v.style.cssText = 'display:block;width:100%;height:100%'
         el.replaceChildren(v)
         await v.open(book)
-        if (dead) return
+        if (dead) throw new Error(CANCELLED)
         view.current = v
         const m = v.book.metadata ?? {}
         const txt = (x: any): string => (!x ? '' : typeof x === 'string' ? x : Array.isArray(x) ? x.map(txt).join(', ') : txt(x.name ?? Object.values(x)[0]))
         setMeta({ title: txt(m.title) || file.name, author: txt(m.author) })
         setToc(v.book.toc ?? [])
-        v.addEventListener('relocate', (e: any) => { setFrac(e.detail.fraction ?? 0); setWhere(e.detail.tocItem?.label ?? ''); if (e.detail.cfi) localStorage.setItem(key, e.detail.cfi) })
+        // relocate can fire many times while a page settles; update React and storage at most once per frame
+        let pending: any = null
+        v.addEventListener('relocate', (e: any) => {
+          pending = e.detail
+          if (raf) return
+          raf = requestAnimationFrame(() => {
+            raf = 0
+            if (dead || !pending) return
+            setFrac(pending.fraction ?? 0); setWhere(pending.tocItem?.label ?? '')
+            if (pending.cfi) try { localStorage.setItem(key, pending.cfi) } catch { /* storage full or blocked */ }
+          })
+        })
         v.renderer.setAttribute('flow', flow)
         v.renderer.setStyles?.(css(theme, size, spacing, font))
-        const last = localStorage.getItem(key)
-        await v.init({ lastLocation: last || undefined, showTextStart: !last })
+        await step('Laying out the first page')
+        let saved: string | null = null
+        try { saved = localStorage.getItem(key) } catch { /* blocked */ }
+        try { await v.init({ lastLocation: saved || undefined, showTextStart: !saved }) } catch (e) {
+          if (!saved || dead) throw e
+          // a saved place that no longer resolves: forget it and start at the beginning
+          try { localStorage.removeItem(key) } catch { /* ignore */ }
+          await v.init({ showTextStart: true })
+        }
       } catch (e: any) {
+        if (e?.message === CANCELLED || dead) return
         console.error(e)
         setError(/not supported/i.test(e?.message) ? 'This file type is not supported, or it is protected with DRM.' : e?.message || 'Could not open this book.')
-      } finally { if (!dead) setLoading(false) }
+      } finally { clearTimeout(slowTimer); if (!dead) { setLoading(false); setSlow(false); setStage('') } }
     })()
-    return () => { dead = true; try { view.current?.close?.() } catch { /* ignore */ } view.current = null; el.replaceChildren() }
+    return () => {
+      dead = true
+      clearTimeout(slowTimer)
+      if (raf) cancelAnimationFrame(raf)
+      try { view.current?.close?.() } catch { /* ignore */ }
+      view.current = null
+      el.replaceChildren()
+      for (const u of inert.values()) URL.revokeObjectURL(u)
+      inert.clear()
+    }
   }, [file]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { view.current?.renderer?.setStyles?.(css(theme, size, spacing, font)) }, [theme, size, spacing, font])
@@ -114,16 +191,24 @@ export default function EbookReader() {
 
   const runSearch = async () => {
     if (!view.current || !query.trim()) return
+    const tok = ++searchTok.current
     setSearching(true); setResults([])
     const found: { cfi: string; excerpt: string; label: string }[] = []
+    let shown = 0
     try {
       for await (const r of view.current.search({ query: query.trim() })) {
+        if (tok !== searchTok.current) break
         if (r === 'done') break
-        if (r.subitems) { for (const s of r.subitems) found.push({ cfi: s.cfi, excerpt: `${s.excerpt.pre}[[${s.excerpt.match}]]${s.excerpt.post}`, label: r.label }); setResults([...found]) }
-        if (found.length > 300) break
+        if (r.subitems) for (const s of r.subitems) found.push({ cfi: s.cfi, excerpt: `${s.excerpt.pre}[[${s.excerpt.match}]]${s.excerpt.post}`, label: r.label })
+        if (found.length - shown >= 25 || (r.subitems && !shown)) { shown = found.length; setResults(found.slice(0, 300)) }
+        if (found.length >= 300) break
+        await tick()
       }
-    } finally { setSearching(false) }
+      if (tok === searchTok.current) setResults(found.slice(0, 300))
+    } finally { if (tok === searchTok.current) setSearching(false) }
   }
+  const stopSearch = () => { searchTok.current++; setSearching(false); try { view.current?.clearSearch?.() } catch { /* ignore */ } }
+  const reset = () => { searchTok.current++; setFile(null); setMeta(null); setToc([]); setResults([]); setError(null); setLoading(false) }
   const tocTree = (items: TocItem[], depth = 0): React.ReactNode => items.map((t, i) => (
     <div key={depth + '-' + i}>
       <button onClick={() => { view.current?.goTo(t.href); if (window.innerWidth < 1024) setPanel('') }} className={cn('block w-full cursor-pointer truncate rounded-lg px-2 py-1.5 text-left text-sm hover:bg-surface-2', where === t.label && 'bg-accent/10 text-accent')} style={{ paddingLeft: 8 + depth * 14 }}>{t.label}</button>
@@ -135,7 +220,7 @@ export default function EbookReader() {
 
   return (
     <div className="space-y-3">
-      <TopBar file={file} onReset={() => { setFile(null); setMeta(null); setToc([]); setResults([]) }} label="Open another" />
+      <TopBar file={file} onReset={reset} label="Open another" />
       <ErrorNote error={error} />
       <div ref={wrap} className={cn('overflow-hidden rounded-2xl border border-border', full && 'rounded-none border-0')} style={{ background: THEMES[theme].bg }}>
         <div className="flex flex-wrap items-center gap-1 border-b border-border bg-surface px-2 py-1.5">
@@ -152,7 +237,8 @@ export default function EbookReader() {
               {panel === 'toc' && (toc.length ? tocTree(toc) : <p className="text-sm text-muted">This book has no table of contents.</p>)}
               {panel === 'search' && <div className="space-y-2">
                 <form onSubmit={(e) => { e.preventDefault(); runSearch() }} className="flex gap-1.5"><Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Find in book" aria-label="Find in book" /><Button type="submit" size="md" loading={searching} icon={<Search className="size-4" />} aria-label="Search" /></form>
-                {results.length > 0 && <p className="text-xs text-muted">{results.length} match{results.length > 1 ? 'es' : ''}</p>}
+                {searching && <button className="cursor-pointer text-xs text-muted underline" onClick={stopSearch}>Stop searching</button>}
+                {results.length > 0 && <p className="text-xs text-muted">{results.length}{results.length >= 300 ? '+' : ''} match{results.length > 1 ? 'es' : ''}</p>}
                 {results.map((r, i) => {
                   const [pre, rest] = r.excerpt.split('[['); const [m, post] = (rest ?? '').split(']]')
                   return <button key={i} onClick={() => view.current?.goTo(r.cfi)} className="block w-full cursor-pointer rounded-lg px-2 py-1.5 text-left text-xs hover:bg-surface-2"><div className="truncate text-[10px] uppercase text-muted">{r.label}</div>{pre}<mark className="rounded bg-accent/30 px-0.5 text-fg">{m}</mark>{post}</button>
@@ -169,7 +255,15 @@ export default function EbookReader() {
           )}
           <div className="relative min-w-0 flex-1">
             <div ref={host} className="h-full w-full" />
-            {loading && <div className="absolute inset-0 grid place-items-center bg-surface/70"><Spinner label="Opening book" /></div>}
+            {loading && (
+              <div className="absolute inset-0 grid place-items-center bg-surface/80" role="status" aria-live="polite">
+                <div className="flex flex-col items-center gap-3 px-4 text-center">
+                  <Spinner label={stage || 'Opening book'} />
+                  {slow && <p className="max-w-xs text-xs text-muted">This book is taking a while. Very long chapters take longer to lay out.</p>}
+                  <Button size="sm" variant="secondary" icon={<X className="size-4" />} onClick={reset}>Cancel</Button>
+                </div>
+              </div>
+            )}
             {!loading && !error && <>
               <button aria-label="Previous page" onClick={() => view.current?.goLeft()} className="absolute inset-y-0 left-0 hidden w-12 cursor-pointer items-center justify-center text-muted opacity-0 transition hover:opacity-100 sm:flex"><ChevronLeft className="size-7" /></button>
               <button aria-label="Next page" onClick={() => view.current?.goRight()} className="absolute inset-y-0 right-0 hidden w-12 cursor-pointer items-center justify-center text-muted opacity-0 transition hover:opacity-100 sm:flex"><ChevronRight className="size-7" /></button>

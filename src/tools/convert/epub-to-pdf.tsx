@@ -1,16 +1,51 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, FileDown, ListTree, Check, Loader2, User } from 'lucide-react'
+import { BookOpen, FileDown, ListTree, Check, Loader2, User, X } from 'lucide-react'
 import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Badge, useJob, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
-import { baseName, loadImage } from '@/lib/files'
+import { baseName, loadImage, canvasToBlob } from '@/lib/files'
+import regUrl from 'pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url'
+import boldUrl from 'pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf?url'
+import italicUrl from 'pdfjs-dist/standard_fonts/LiberationSans-Italic.ttf?url'
+import boldItalicUrl from 'pdfjs-dist/standard_fonts/LiberationSans-BoldItalic.ttf?url'
 import { FileBar, PdfPreview, Reveal, Stat, mm } from './_conv/shared'
 import { renderHtmlToPdf, createPdf, addPageNumbers, pdfToBlob } from './_conv/htmlPdf'
 import { openEpub, chapterHtml, dataUrl, CLEAN_CSS, BOOK_FIX_CSS, type Book } from './_conv/epub'
+import { buildVectorPdf, type VectorImage } from './_conv/epubVector'
 
 const SIZES = { book: { label: 'Book (6 × 9 in)', w: 432, h: 648 }, a5: { label: 'A5', w: 419.53, h: 595.28 }, a4: { label: 'A4', w: 595.28, h: 841.89 }, letter: { label: 'US Letter', w: 612, h: 792 } }
 type SizeKey = keyof typeof SIZES
 const FONTS = { serif: "Georgia,'Times New Roman',Tinos,serif", sans: "'Helvetica Neue',Arial,Arimo,sans-serif" }
+
+// Unicode TrueType family (Liberation Sans) for sans text and for letters the standard PDF fonts cannot show.
+// Only the glyphs actually used are written into the PDF. Offline, the standard fonts are used alone.
+let uniFonts: Promise<Record<string, string> | null> | null = null
+const toB64 = (buf: ArrayBuffer) => {
+  const bytes = new Uint8Array(buf); let s = ''
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000))
+  return btoa(s)
+}
+function loadUniFonts() {
+  uniFonts ??= Promise.all(([['normal', regUrl], ['bold', boldUrl], ['italic', italicUrl], ['bolditalic', boldItalicUrl]] as const).map(async ([k, u]) => {
+    const r = await fetch(u); if (!r.ok) throw new Error('font'); return [k, toB64(await r.arrayBuffer())] as const
+  })).then((e) => Object.fromEntries(e)).catch(() => { uniFonts = null; return null })
+  return uniFonts
+}
+// GIF, WebP, SVG and other images are drawn once onto a canvas and embedded as PNG
+async function convertImage(bytes: Uint8Array, mime: string): Promise<VectorImage | null> {
+  const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: mime }))
+  try {
+    const img = await loadImage(url)
+    const nw = img.naturalWidth || 800, nh = img.naturalHeight || 600
+    const k = Math.min(1, 2000 / Math.max(nw, nh))
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(nw * k)); c.height = Math.max(1, Math.round(nh * k))
+    c.getContext('2d')!.drawImage(img, 0, 0, c.width, c.height)
+    const data = new Uint8Array(await (await canvasToBlob(c, 'image/png')).arrayBuffer())
+    c.width = c.height = 0
+    return { data, format: 'PNG', w: nw, h: nh }
+  } catch { return null } finally { URL.revokeObjectURL(url) }
+}
+const pause = () => new Promise<void>((r) => setTimeout(r, 0))
 
 export default function EpubToPdf() {
   const [file, setFile] = useState<File | null>(null)
@@ -24,6 +59,9 @@ export default function EpubToPdf() {
   const [withCover, setWithCover] = useState(true)
   const [withToc, setWithToc] = useState(true)
   const [numbers, setNumbers] = useState(true)
+  const [mode, setMode] = useState<'text' | 'image'>('text')
+  const [justify, setJustify] = useState(true)
+  const abort = useRef<AbortController | null>(null)
   const [current, setCurrent] = useState(-1)
   const [result, setResult] = useState<{ blob: Blob; pages: number } | null>(null)
   const load = useJob()
@@ -38,12 +76,33 @@ export default function EpubToPdf() {
       if (b.coverHref) setCover(await dataUrl(b.zip, b.coverHref))
     })
   }, [file]) // eslint-disable-line
-  useEffect(() => setResult(null), [size, marginMm, styles, fontSize, font, withCover, withToc, numbers])
+  useEffect(() => setResult(null), [size, marginMm, styles, fontSize, font, withCover, withToc, numbers, mode, justify])
+  useEffect(() => () => abort.current?.abort(), [])
 
   const tocList = useMemo(() => (book ? (book.toc.length ? book.toc : book.chapters.map((c, i) => ({ title: c.title || `Section ${i + 1}`, href: c.href, level: 0 }))) : []), [book])
 
   const convert = () => conv.run(async (setP) => {
     if (!book) return
+    if (mode === 'text') {
+      const ac = new AbortController(); abort.current = ac
+      try {
+        const r = await buildVectorPdf(book, {
+          pageWidth: SIZES[size].w, pageHeight: SIZES[size].h, margin: mm(marginMm), fontSize, font, justify,
+          cover: withCover, toc: withToc, pageNumbers: numbers, unicodeFonts: await loadUniFonts(), convertImage,
+          onProgress: (p, ch) => { setP(Math.min(0.99, p)); setCurrent(ch < book.chapters.length ? ch : -1) },
+          yieldFn: pause, signal: ac.signal,
+        })
+        setCurrent(-1)
+        setP(1)
+        setResult({ blob: pdfToBlob(r.pdf), pages: r.pages })
+        toast('Your PDF book is ready', 'success')
+      } catch (e: any) {
+        setCurrent(-1)
+        if (e?.name === 'AbortError') { toast('Conversion cancelled', 'info'); return }
+        throw e
+      } finally { if (abort.current === ac) abort.current = null }
+      return
+    }
     const { w, h } = SIZES[size]
     const m = mm(marginMm)
     const bottom = numbers ? Math.max(m, 30) : m
@@ -172,23 +231,30 @@ export default function EpubToPdf() {
         </>}
         side={<>
           {book && <div className="grid grid-cols-2 gap-2"><Stat label="Chapters" value={book.chapters.length} /><Stat label="Pages" value={result?.pages ?? '-'} /></div>}
-          <div><Label>Page size</Label><Select value={size} onChange={setSize} options={(Object.keys(SIZES) as SizeKey[]).map((k) => ({ value: k, label: SIZES[k].label }))} /></div>
           <div>
+            <Label>Output</Label>
+            <Segmented value={mode} onChange={setMode} options={[{ value: 'text', label: 'Real text' }, { value: 'image', label: 'Exact look (images)' }]} />
+            <p className="mt-1.5 text-[11px] text-muted">{mode === 'text' ? 'Selectable, searchable text with small files. Pictures are kept where the book has them.' : "Each page is a picture of the book's own layout. Large files and no selectable text."}</p>
+          </div>
+          <div><Label>Page size</Label><Select value={size} onChange={setSize} options={(Object.keys(SIZES) as SizeKey[]).map((k) => ({ value: k, label: SIZES[k].label }))} /></div>
+          {mode === 'image' && <div>
             <Label>Styling</Label>
             <Segmented value={styles} onChange={setStyles} options={[{ value: 'clean', label: 'Clean reading' }, { value: 'book', label: "Book's own CSS" }]} />
-          </div>
-          {styles === 'clean' && <div><Label>Typeface</Label><Segmented value={font} onChange={setFont} options={[{ value: 'serif', label: 'Serif' }, { value: 'sans', label: 'Sans' }]} /></div>}
+          </div>}
+          {(mode === 'text' || styles === 'clean') && <div><Label>Typeface</Label><Segmented value={font} onChange={setFont} options={[{ value: 'serif', label: 'Serif' }, { value: 'sans', label: 'Sans' }]} /></div>}
           <Slider label="Font size" value={fontSize} onChange={setFontSize} min={8} max={16} step={0.5} suffix=" pt" />
           <Slider label="Margins" value={marginMm} onChange={setMarginMm} min={6} max={30} suffix=" mm" />
           <div className="space-y-2.5">
             <Switch checked={withCover} onChange={setWithCover} label={`Cover page${cover ? '' : ' (none found)'}`} />
             <Switch checked={withToc} onChange={setWithToc} label="Printed table of contents" />
             <Switch checked={numbers} onChange={setNumbers} label="Page numbers" />
+            {mode === 'text' && <Switch checked={justify} onChange={setJustify} label="Justified paragraphs" />}
           </div>
           {conv.busy && <Progress value={conv.progress} label={current >= 0 && book ? `Chapter ${current + 1} of ${book.chapters.length}` : 'Finishing…'} />}
           <ErrorNote error={conv.error} />
           <Button size="lg" className="w-full" loading={conv.busy} disabled={!book} icon={<FileDown className="size-5" />} onClick={convert}>Convert to PDF</Button>
-          <p className="text-[11px] text-muted">Every chapter starts on a new page; the PDF gets clickable bookmarks for each TOC entry. DRM-protected books can't be opened.</p>
+          {conv.busy && mode === 'text' && <Button variant="ghost" className="w-full" icon={<X className="size-4" />} onClick={() => abort.current?.abort()}>Cancel</Button>}
+          <p className="text-[11px] text-muted">Every chapter starts on a new page and the PDF gets clickable bookmarks for each TOC entry. DRM-protected books cannot be opened.</p>
         </>}
       />
     </div>
