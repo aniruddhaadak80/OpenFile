@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Minimize2, Target } from 'lucide-react'
 import { Button, Input, Label, ResultCard, Segmented, Slider, Switch, ToolGrid, ErrorNote } from '@/components/ui'
 import { baseName, formatBytes } from '@/lib/files'
+import { KEPT_ORIGINAL, notSmaller } from '@/lib/compress-guard'
 import { type Anim, dedupeFrames, dropFrames, encodeAnim, encodeGif, resizeAnim, totalDuration } from '@/lib/b3/anim'
 import { useMediaJob, useObjectUrl } from '@/tools/video/_media/media'
 import { JobPanel, Note, Reveal } from '@/tools/video/_media/ui'
@@ -29,7 +30,7 @@ export default function GifOptimizer() {
   const [scale, setScale] = useState(100)
   const [quality, setQuality] = useState(70)
   const [targetKb, setTargetKb] = useState(1024)
-  const [result, setResult] = useState<{ blob: Blob; note: string } | null>(null)
+  const [result, setResult] = useState<{ blob: Blob; note: string; kept?: boolean } | null>(null)
   const url = useObjectUrl(result?.blob)
   const job = useMediaJob()
   const start = () => { if (job.busy) job.cancel(); reset(); setResult(null); job.reset() }
@@ -47,6 +48,7 @@ export default function GifOptimizer() {
       const blob = out === 'gif'
         ? new Blob([encodeGif(a, { colors, lossy, dither: dither ? 0.8 : 0, onProgress: setProgress }) as BlobPart], { type: 'image/gif' })
         : await encodeAnim(a, 'webp', { webpQuality: quality, onProgress: setProgress, onLabel: setLabel })
+      if (notSmaller(file.size, blob.size)) { setResult({ blob: file, note: KEPT_ORIGINAL, kept: true }); return }
       setResult({ blob, note: `${a.width}×${a.height}, ${a.frames.length} frames` })
       return
     }
@@ -70,6 +72,7 @@ export default function GifOptimizer() {
       best = blob; note = `${a.width}×${a.height}, ${a.frames.length} frames${out === 'gif' ? `, ${s.colors} colours` : `, quality ${s.q}`}`
       if (blob.size <= target) break
     }
+    if (best && notSmaller(file.size, best.size)) { setResult({ blob: file, note: KEPT_ORIGINAL, kept: true }); return }
     if (best && best.size > target) note += '. Could not reach the target without destroying the image; this is the smallest version.'
     if (best) setResult({ blob: best, note })
   })
@@ -123,11 +126,12 @@ export default function GifOptimizer() {
       />
       {result && url && (
         <Reveal k={url}>
-          <ResultCard blob={result.blob} filename={`${baseName(file.name)}-optimized.${ext}`} originalSize={file.size} title="Compressed" onReset={start}>
+          <ResultCard blob={result.blob} filename={result.kept ? file.name : `${baseName(file.name)}-optimized.${ext}`} originalSize={file.size} title={result.kept ? 'Here is your original file' : 'Compressed'} onReset={start}>
+            {result.kept && <Note tone="warn" className="mb-3">{KEPT_ORIGINAL} Try the Strong preset, fewer colours, a smaller size or dropping frames.</Note>}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="checker grid place-items-center rounded-xl p-2"><img src={url} alt="Compressed result" className="max-h-72 max-w-full" /></div>
               <div className="space-y-2 text-sm">
-                <div className="text-muted">{result.note}</div>
+                {!result.kept && <div className="text-muted">{result.note}</div>}
                 <div className="font-mono">{formatBytes(file.size)} → <span className="text-success">{formatBytes(result.blob.size)}</span></div>
               </div>
             </div>

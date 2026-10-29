@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, X, Sparkles } from 'lucide-react'
 import { Button, Field, Input, Label, Progress, Segmented, Slider, Switch, ToolGrid, cn } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
+import { notSmaller } from '@/lib/compress-guard'
 import { BatchResults, BeforeAfter, ImageDrop, ThumbGrid, decode, exportCanvas, fmtFromMime, fmtSupported, hqResize, outName, quantizeCanvas, toCanvas, useImageList, type Fmt, type Item, type Result } from './_img/kit'
 
 type OutFmt = 'keep' | 'jpg' | 'webp' | 'avif' | 'jxl'
@@ -24,8 +25,8 @@ async function compressOne(it: Item, o: { quality: number; maxW: number; fmt: Ou
     blob = await exportCanvas(c, fmt as Fmt, o.quality / 100)
   }
   let kept = false
-  const sameFmt = fmtFromMime(it.file.type, it.file.name) === fmt
-  if (o.neverLarger && sameFmt && c.width === it.w && blob.size >= it.file.size) { blob = it.file; kept = true }
+  // never hand back a bigger file: whatever the format or size, a result that did not shrink gives the original back
+  if (o.neverLarger && notSmaller(it.file.size, blob.size)) { blob = it.file; kept = true; fmt = fmtFromMime(it.file.type, it.file.name) }
   return { blob, fmt, kept, w: c.width, h: c.height }
 }
 
@@ -74,7 +75,7 @@ export default function ImageCompressor() {
   const done = items.filter((i) => res[i.id]?.state === 'done')
   const progress = items.length ? done.length / items.length : 0
   const working = items.some((i) => res[i.id]?.state === 'run')
-  const results: Result[] = done.map((i) => ({ id: i.id, name: outName(i.file.name, (res[i.id].fmt ?? 'png') as Fmt, res[i.id].kept ? '' : '-min'), blob: res[i.id].blob, originalSize: i.file.size, url: res[i.id].url, note: res[i.id].kept ? 'already optimal, kept original' : `${res[i.id].w}×${res[i.id].h}` }))
+  const results: Result[] = done.map((i) => ({ id: i.id, name: outName(i.file.name, (res[i.id].fmt ?? 'png') as Fmt, res[i.id].kept ? '' : '-min'), blob: res[i.id].blob, originalSize: i.file.size, url: res[i.id].url, note: res[i.id].kept ? 'already as small as it gets, original kept' : `${res[i.id].w}×${res[i.id].h}` }))
   const cmp = compare ? items.find((i) => i.id === compare) : null
   const avifOk = fmtSupported('avif')
 

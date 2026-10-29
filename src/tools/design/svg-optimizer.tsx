@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { KEPT_ORIGINAL, notSmaller } from '@/lib/compress-guard'
 import { motion } from 'framer-motion'
 import { Download, FileCode2, Upload, RotateCcw, Image as ImageIcon, Eye, Code2 } from 'lucide-react'
 import { Button, Card, Dropzone, Label, Segmented, Slider, Switch, Tabs, Textarea, CopyButton, Input, ErrorNote, Badge, cn } from '@/components/ui'
@@ -79,6 +80,8 @@ export default function SvgOptimizer() {
 
   const inSize = new Blob([input]).size, outSize = new Blob([output]).size
   const saved = inSize ? 1 - outSize / inSize : 0
+  // never hand back a bigger file unless the user asked for prettified (readable) output
+  const keepIn = !!output && !pretty && notSmaller(inSize, outSize)
   const dataUriEnc = useMemo(() => 'data:image/svg+xml,' + output.replace(/"/g, "'").replace(/[\r\n%#()<>?[\\\]^`{|}]/g, encodeURIComponent), [output])
   const dataUri64 = useMemo(() => { try { return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(output))) } catch { return '' } }, [output])
   const jsxCode = useMemo(() => { if (!output || out !== 'jsx') return ''; try { return svgToJsx(output, jsx) } catch (e: any) { return `// ${e.message}` } }, [output, jsx, out])
@@ -145,7 +148,8 @@ export default function SvgOptimizer() {
 
         <Card className="space-y-3">
           <Tabs value={out} onChange={setOut} tabs={[{ value: 'svg', label: 'SVG' }, { value: 'jsx', label: 'React JSX' }, { value: 'datauri', label: 'Data URI' }, { value: 'png', label: 'PNG' }]} />
-          {out === 'svg' && <div className="flex flex-wrap gap-2"><CopyButton text={output} label="Copy SVG" /><Button size="sm" icon={<Download className="size-4" />} onClick={() => downloadBlob(output, name.replace(/\.svg$/i, '') + '.min.svg', 'image/svg+xml')} disabled={!output}>Download optimised SVG</Button></div>}
+          {out === 'svg' && <div className="flex flex-wrap gap-2"><CopyButton text={keepIn ? input : output} label="Copy SVG" /><Button size="sm" icon={<Download className="size-4" />} onClick={() => downloadBlob(keepIn ? input : output, name.replace(/\.svg$/i, '') + (keepIn ? '.svg' : '.min.svg'), 'image/svg+xml')} disabled={!output}>{keepIn ? 'Download original SVG' : 'Download optimised SVG'}</Button></div>}
+          {out === 'svg' && keepIn && <p className="text-xs text-muted">{KEPT_ORIGINAL} Try a lower number precision or turn on more plugins to go smaller.</p>}
           {out === 'jsx' && <>
             <div className="flex flex-wrap items-center gap-4">
               <div className="w-40"><Input value={jsx.name} onChange={(e) => setJsx({ ...jsx, name: e.target.value })} placeholder="Component name" /></div>

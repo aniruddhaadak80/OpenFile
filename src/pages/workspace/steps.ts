@@ -1,5 +1,6 @@
 // Pipeline step definitions for the OpenFile Workspace (batch automation).
 import { loadImage, createCanvas, canvasToBlob, baseName } from '@/lib/files'
+import { notSmaller } from '@/lib/compress-guard'
 
 export type Mode = 'image' | 'pdf'
 export type ParamDef = { key: string; label: string; type: 'number' | 'text' | 'select' | 'color' | 'bool'; options?: string[]; min?: number; max?: number; step?: number; default: any }
@@ -30,7 +31,8 @@ export const STEPS: StepDef[] = [
   { id: 'img-convert', mode: 'image', name: 'Convert format', desc: 'JPG, PNG, WEBP or AVIF', params: [{ key: 'format', label: 'Format', type: 'select', options: ['webp', 'jpeg', 'png', 'avif'], default: 'webp' }, { key: 'quality', label: 'Quality', type: 'number', min: 1, max: 100, default: 82 }],
     run: (items, p, onP) => mapImages(items, onP, async (img) => { const { canvas, ctx } = draw(img); if (p.format === 'jpeg') { ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height) } return { canvas, type: 'image/' + p.format, quality: p.quality / 100 } }) },
   { id: 'img-compress', mode: 'image', name: 'Compress', desc: 'Re-encode with a quality level (keeps format, PNG→WEBP)', params: [{ key: 'quality', label: 'Quality', type: 'number', min: 1, max: 100, default: 75 }],
-    run: (items, p, onP) => mapImages(items, onP, async (img, it) => ({ ...draw(img), type: it.blob.type === 'image/png' ? 'image/webp' : it.blob.type === 'image/webp' ? 'image/webp' : 'image/jpeg', quality: p.quality / 100 })) },
+    // never hand back a bigger file: an image that did not shrink passes through unchanged
+    run: async (items, p, onP) => (await mapImages(items, onP, async (img, it) => ({ ...draw(img), type: it.blob.type === 'image/png' ? 'image/webp' : it.blob.type === 'image/webp' ? 'image/webp' : 'image/jpeg', quality: p.quality / 100 }))).map((o, i) => (notSmaller(items[i].blob.size, o.blob.size) ? items[i] : o)) },
   { id: 'img-rotate', mode: 'image', name: 'Rotate / flip', desc: 'Rotate 90° steps and mirror', params: [{ key: 'angle', label: 'Angle', type: 'select', options: ['0', '90', '180', '270'], default: '90' }, { key: 'flipH', label: 'Flip horizontal', type: 'bool', default: false }],
     run: (items, p, onP) => mapImages(items, onP, async (img) => { const [w, h] = dims(img); const a = Number(p.angle); const sw = a % 180 ? h : w, sh = a % 180 ? w : h; const { canvas, ctx } = createCanvas(sw, sh); ctx.translate(sw / 2, sh / 2); ctx.rotate((a * Math.PI) / 180); if (p.flipH) ctx.scale(-1, 1); ctx.drawImage(img, -w / 2, -h / 2); return { canvas } }) },
   { id: 'img-grayscale', mode: 'image', name: 'Filter', desc: 'Grayscale, sepia or boost', params: [{ key: 'filter', label: 'Filter', type: 'select', options: ['grayscale(1)', 'sepia(1)', 'contrast(1.2) saturate(1.3)', 'brightness(1.15)', 'invert(1)'], default: 'grayscale(1)' }],

@@ -2,7 +2,8 @@ import { useCallback, useState } from 'react'
 import { Target } from 'lucide-react'
 import { Button, Field, Input, Label, Progress, Segmented, Switch, ToolGrid, ErrorNote, useJob } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
-import { BatchResults, ImageDrop, StatusPill, ThumbGrid, hqResize, outName, useImageList, type Result } from './_img/kit'
+import { BatchResults, ImageDrop, StatusPill, ThumbGrid, fmtFromMime, hqResize, outName, useImageList, type Result } from './_img/kit'
+import { notSmaller } from '@/lib/compress-guard'
 import { decodeAny, encodeCanvas, type OutFmt } from '@/lib/b2/codecs'
 
 const PRESETS = [10, 20, 30, 50, 100, 200, 500, 1000]
@@ -65,6 +66,11 @@ export default function CompressToSize() {
       try {
         const { canvas } = await decodeAny(it.file)
         const r = await fitToSize(canvas, fmt, target, allowResize, setStep)
+        // never hand back a bigger file: an original that already fits, in the same format, is returned as is
+        if (it.file.size <= target && fmtFromMime(it.file.type, it.file.name) === fmt && notSmaller(it.file.size, r.blob.size)) {
+          out.push({ id: it.id, name: it.file.name, blob: it.file, originalSize: it.file.size, url: URL.createObjectURL(it.file), note: 'already under the target, original kept' })
+          setStatus((s) => ({ ...s, [it.id]: 'done' })); setP((i + 1) / items.length); continue
+        }
         out.push({ id: it.id, name: outName(it.file.name, fmt), blob: r.blob, originalSize: it.file.size, url: URL.createObjectURL(r.blob), note: `quality ${r.q}${r.scale < 1 ? `, ${Math.round(canvas.width * r.scale)}×${Math.round(canvas.height * r.scale)}` : ''}` })
         setStatus((s) => ({ ...s, [it.id]: 'done' }))
       } catch (e) { setStatus((s) => ({ ...s, [it.id]: 'err' })); if (items.length === 1) throw e }

@@ -5,6 +5,7 @@
 import type { FFmpeg } from '@ffmpeg/ffmpeg'
 
 import { coreURLs } from '@/lib/ffmpeg-core'
+import { parseBitrates } from '@/lib/compress-guard'
 const WASM_EST = 32_232_419
 
 export type EngineStatus = 'idle' | 'loading' | 'ready' | 'error'
@@ -167,7 +168,7 @@ export async function ffRunMany(opts: RunOpts & { pattern: RegExp }): Promise<{ 
   return out.map((o) => ({ name: o.name, blob: new Blob([o.data as BlobPart], { type: mimeOf(o.name) }) }))
 }
 
-export interface ProbeInfo { duration: number; hasVideo: boolean; hasAudio: boolean; width?: number; height?: number; fps?: number; sampleRate?: number; channels?: number; vcodec?: string; acodec?: string }
+export interface ProbeInfo { duration: number; hasVideo: boolean; hasAudio: boolean; width?: number; height?: number; fps?: number; sampleRate?: number; channels?: number; vcodec?: string; acodec?: string; totalKbps?: number; videoKbps?: number; audioKbps?: number }
 
 /** Read stream info from ffmpeg's banner (`ffmpeg -i file`). */
 export async function ffProbe(file: Blob, name = 'probe' + extFromBlob(file)): Promise<ProbeInfo> {
@@ -195,6 +196,7 @@ export async function ffProbe(file: Blob, name = 'probe' + extFromBlob(file)): P
 
 export function parseProbe(text: string): ProbeInfo {
   const info: ProbeInfo = { duration: 0, hasVideo: false, hasAudio: false }
+  const b = parseBitrates(text); info.totalKbps = b.totalKbps; info.videoKbps = b.videoKbps; info.audioKbps = b.audioKbps
   const d = text.match(/Duration:\s*(\d+:\d+:\d+(?:\.\d+)?)/); if (d) info.duration = parseTime(d[1])
   const v = text.match(/Stream #\d+:\d+[^\n]*?: Video: ([^\n]+)/)
   if (v) {

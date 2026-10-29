@@ -3,12 +3,13 @@ import { RefreshCw, Download, X, Check, AlertCircle, Archive, Plus, Music, Play,
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Dropzone, Label, Segmented, Select, ToolGrid, Progress, cn } from '@/components/ui'
 import { baseName, downloadBlob, formatBytes, zipFiles } from '@/lib/files'
+import { notSmaller } from '@/lib/compress-guard'
 import { ffRun, extFromBlob, isCancel } from '@/tools/video/_media/engine'
 import { convertArgs, type Fmt } from './convert-args'
 import { useMediaJob } from '@/tools/video/_media/media'
 import { JobPanel, Note } from '@/tools/video/_media/ui'
 
-type Item = { id: string; file: File; status: 'queued' | 'working' | 'done' | 'error'; progress: number; out?: Blob; error?: string }
+type Item = { id: string; file: File; status: 'queued' | 'working' | 'done' | 'error'; progress: number; out?: Blob; error?: string; kept?: boolean }
 const FORMATS: Record<Fmt, { label: string; sub: string; lossless: boolean; more?: boolean }> = {
   mp3: { label: 'MP3', sub: 'Universal', lossless: false },
   m4a: { label: 'M4A', sub: 'AAC in MP4 · Apple', lossless: false },
@@ -53,7 +54,7 @@ export default function AudioConverter() {
   const add = (files: File[]) => setItems((l) => [...l, ...files.map((file) => ({ id: Math.random().toString(36).slice(2), file, status: 'queued' as const, progress: 0 }))])
   const patch = (id: string, p: Partial<Item>) => setItems((l) => l.map((x) => (x.id === id ? { ...x, ...p } : x)))
   const [more, setMore] = useState(false)
-  const outName = (f: File) => `${baseName(f.name)}.${convertArgs(fmt, +br).ext}`
+  const outName = (f: File, kept?: boolean) => (kept ? f.name : `${baseName(f.name)}.${convertArgs(fmt, +br).ext}`)
 
   const convert = () => job.run(async ({ setProgress, setLabel, signal }) => {
     const todo = items.map((x) => ({ ...x, status: 'queued' as const, progress: 0, out: undefined, error: undefined }))
@@ -73,7 +74,11 @@ export default function AudioConverter() {
           output: out,
           onProgress: (p) => { patch(it.id, { progress: p }); setProgress((i + p) / todo.length) },
         })
-        patch(it.id, { status: 'done', out: blob, progress: 1 }); ok++
+        // re-encoding into the same lossy format is compression: never hand back a bigger file
+        const same = !FORMATS[fmt].lossless && extFromBlob(it.file) === '.' + conv.ext
+        if (same && notSmaller(it.file.size, blob.size)) patch(it.id, { status: 'done', out: it.file, kept: true, progress: 1 })
+        else patch(it.id, { status: 'done', out: blob, kept: false, progress: 1 })
+        ok++
       } catch (e: any) {
         if (isCancel(e)) throw e
         patch(it.id, { status: 'error', error: e?.message || 'Failed' })
@@ -83,7 +88,7 @@ export default function AudioConverter() {
   })
 
   const done = items.filter((x) => x.out)
-  const zip = async () => downloadBlob(await zipFiles(done.map((x) => ({ name: outName(x.file), data: x.out! }))), `converted-${fmt}.zip`)
+  const zip = async () => downloadBlob(await zipFiles(done.map((x) => ({ name: outName(x.file, x.kept), data: x.out! }))), `converted-${fmt}.zip`)
   const reset = () => { if (job.busy) job.cancel(); setItems([]); job.reset() }
 
   if (!items.length) return <Dropzone multiple accept={ACCEPT} onFiles={add} label="Drop audio files to convert" sub="Batch-convert MP3, WAV, OGG, AAC, FLAC, M4A, OPUS, AIFF, ALAC, WMA, AC3 and more. Also opens AMR, APE, TTA and WavPack, or pulls audio out of videos. Offline." />
@@ -102,9 +107,9 @@ export default function AudioConverter() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium">{it.file.name}</div>
-                    <div className="text-xs text-muted">{formatBytes(it.file.size)}{it.out && <> → <span className="text-fg">{formatBytes(it.out.size)}</span> {fmt.toUpperCase()}</>}{it.error && <span className="text-danger"> · {it.error}</span>}</div>
+                    <div className="text-xs text-muted">{formatBytes(it.file.size)}{it.out && <> → <span className="text-fg">{formatBytes(it.out.size)}</span> {it.kept ? 'already as small as it gets at this bitrate, original kept' : fmt.toUpperCase()}</>}{it.error && <span className="text-danger"> · {it.error}</span>}</div>
                   </div>
-                  {it.out && <><Preview blob={it.out} /><Button size="sm" variant="outline" icon={<Download className="size-4" />} onClick={() => downloadBlob(it.out!, outName(it.file))}>Save</Button></>}
+                  {it.out && <><Preview blob={it.out} /><Button size="sm" variant="outline" icon={<Download className="size-4" />} onClick={() => downloadBlob(it.out!, outName(it.file, it.kept))}>Save</Button></>}
                   {!job.busy && <button onClick={() => setItems((l) => l.filter((x) => x.id !== it.id))} className="rounded-lg p-1.5 text-muted hover:bg-danger/10 hover:text-danger cursor-pointer" aria-label="Remove"><X className="size-4" /></button>}
                 </div>
                 {it.status === 'working' && <div className="mt-2"><Progress value={it.progress} /></div>}

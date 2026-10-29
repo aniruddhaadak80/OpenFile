@@ -49,7 +49,7 @@ export default function CompressPdf() {
       setRows((s) => s.map((x) => (x.id === r.id ? { ...x, status: 'working', error: undefined } : x)))
       try {
         const bytes = await readBytes(r.file)
-        const cands: { bytes: Uint8Array; how: string }[] = [{ bytes, how: 'Original kept (already optimal)' }]
+        const cands: { bytes: Uint8Array; how: string }[] = [{ bytes, how: 'Already as small as it gets, original kept' }]
         let detail = ''
         const ll = await c.lossless(bytes, strip); step(0.15)
         cands.push({ bytes: ll, how: 'Lossless re-save' })
