@@ -245,7 +245,11 @@ export function findRecurring(txns: Txn[]) {
     const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length
     const amts = s.map((t) => -t.amount), mean = amts.reduce((a, b) => a + b, 0) / amts.length
     const spread = Math.max(...amts.map((a) => Math.abs(a - mean))) / (mean || 1)
-    const every = avg > 25 && avg < 35 ? 'monthly' : avg > 5 && avg < 9 ? 'weekly' : avg > 350 && avg < 380 ? 'yearly' : ''
+    // One charge in each of 3+ back to back calendar months also counts as monthly, even when the day of the month
+    // moves around (rent paid on the 1st one month and the 9th the next).
+    const ym = s.map((t) => +t.date.slice(0, 4) * 12 + +t.date.slice(5, 7))
+    const monthRun = ym.every((v, i) => i === 0 || v - ym[i - 1] === 1)
+    const every = (avg > 25 && avg < 35) || monthRun ? 'monthly' : avg > 5 && avg < 9 ? 'weekly' : avg > 350 && avg < 380 ? 'yearly' : ''
     if (every && spread < 0.15) out.push({ name, amount: Math.round(mean * 100) / 100, every, count: s.length })
   }
   return out.sort((a, b) => b.amount - a.amount)
@@ -363,22 +367,60 @@ export function settle(bal: Map<string, number>) {
 /* ---------------- receipts (text from OCR) ---------------- */
 export interface Receipt { merchant: string; date: string; total: number | null; tax: number | null; subtotal: number | null; currency: string; items: { name: string; amount: number }[] }
 
+// Amounts on receipts always carry two decimals ("1,32", "22.41", "1.234,56"). Percentages (VAT rates) and unit
+// prices ("2,79/kg") are not amounts. OCR often adds a space after the decimal mark ("22, 41").
+const RC_MONEY = /(?<![\d.,])(-?\d{1,3}(?:[.,']\d{3})+[.,]\s?\d{2}|-?\d+[.,]\s?\d{2})(?!\d|\s*%|\s*\/\s*[a-z])/gi
+const rcAmounts = (l: string) => [...l.matchAll(RC_MONEY)].map((m) => ({ v: parseMoney(m[1].replace(/\s/g, '')), at: m.index ?? 0, end: (m.index ?? 0) + m[0].length })).filter((a) => isFinite(a.v))
+// Keywords in English, Hindi transliteration, German, French, Italian, Spanish and Dutch receipts.
+const RC_TOTAL = /\b(grand\s*total|total[e]?|totaal|summe|gesamt(betrag)?|zu\s*zahlen|amount\s*(due|paid|payable)|net\s*(amount|payable)|balance\s*due|montant|importe|bill\s*amount)\b/i
+const RC_PAID = /\b(importo\s*pagato|pagamento|pagato|paid|visa|mastercard|maestro|amex|rupay|card|karte|ec[\s-]*cash|eft|upi|cash|contanti|bar\s*eur|efectivo|tarjeta)\b/i
+const RC_TAX = /\b(gst|vat|tax|cgst|sgst|igst|hst|mwst|ust|iva|tva|btw|moms)\b/i
+const RC_SKIP = /total|summe|gesamt|tax|gst|vat|mwst|\bust\b|\biva\b|\btva\b|netto|subtotal|change|resto|r[uü]ckgeld|cash|contanti|card|karte|visa|mastercard|maestro|\beft\b|tender|balance|round|discount|sconto|rabatt|saving|paid|pagat|pagamento|importo|\bdue\b|artikel|items?\s*:/i
+const RC_NOT_SHOP = /\biva\b|\bmwst\b|descri|prezzo|price|qty|amount|receipt|invoice|documento|commercial|scontrino|vendita|prestazione|rechnung|quittung|beleg|ticket|facture|factura|bon\b|tax|gst|vat|tel|phone|fax|www|http|date|bill\s*no|cashier|kasse|thank|danke|grazie|merci/i
+const RC_BIZ = /\b(kg|gmbh|ag|s\.?\s?p\.?\s?a|s\.?\s?r\.?\s?l|ltd|limited|inc|llc|pvt|plc|corp|sarl|bv|nv|oy|ab|mart|store|stores|supermarket|supermercato|market|markt|bazaar|restaurant|ristorante|cafe|caf[eé]|pharmacy|apotheke|farmacia)\b\.?/i
+
+/** Pick the shop, date, total, tax and line items out of OCR text. Works on noisy phone photos in several languages:
+ *  amounts are read from anywhere on a line (not only the end), a total line without a number borrows the next line's,
+ *  and the paid-by-card or cash line is the fallback total. */
 export function parseReceipt(text: string): Receipt {
   const lines = text.split(/\r?\n/).map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean)
-  const money = /(-?\d{1,3}(?:[,\s]\d{3})*(?:[.,]\d{2})|-?\d+[.,]\d{2})\s*$/
-  const cur = /₹|rs\.?|inr/i.test(text) ? 'INR' : /€|eur/i.test(text) ? 'EUR' : /£|gbp/i.test(text) ? 'GBP' : /\$|usd/i.test(text) ? 'USD' : ''
-  const find = (re: RegExp) => { for (let i = lines.length - 1; i >= 0; i--) if (re.test(lines[i])) { const m = money.exec(lines[i]); if (m) return parseMoney(m[1]) } return null }
-  const total = find(/\b(grand\s*total|total\s*(amount|due|payable)?|amount\s*(due|paid)|net\s*payable|balance\s*due)\b/i)
-  const taxV = find(/\b(gst|vat|tax|cgst|sgst|igst|hst)\b/i)
-  const subtotal = find(/\bsub\s*-?\s*total\b/i)
+  const cur = /₹|\brs\.?\s?\d|\binr\b/i.test(text) ? 'INR' : /€|\beur\b/i.test(text) ? 'EUR' : /£|\bgbp\b/i.test(text) ? 'GBP' : /\$|\busd\b/i.test(text) ? 'USD' : /\bchf\b/i.test(text) ? 'CHF' : ''
+  // Value on a keyword line: the first amount after the keyword, else the last amount on the line.
+  const valueOn = (l: string, re: RegExp) => { const a = rcAmounts(l); if (!a.length) return null; const k = re.exec(l); const after = k ? a.find((x) => x.at >= (k.index ?? 0) + k[0].length) : undefined; return (after ?? a[a.length - 1]).v }
+  const find = (re: RegExp, look = 0) => {
+    for (let i = lines.length - 1; i >= 0; i--) {
+      if (!re.test(lines[i])) continue
+      const v = valueOn(lines[i], re); if (v != null) return v
+      for (let j = 1; j <= look && i + j < lines.length; j++) { const a = rcAmounts(lines[i + j]); if (a.length) return a[a.length - 1].v }
+    }
+    return null
+  }
+  const subtotal = find(/\b(sub\s*-?\s*total[e]?|zwischensumme|subtotale|sous[\s-]*total)\b/i)
+  let total = find(new RegExp(`(?<!sub\\s*-?\\s*)${RC_TOTAL.source}`, 'i'), 1)
+  const paid = find(RC_PAID)
+  if (total == null || (paid != null && total < (subtotal ?? 0))) total = paid
+  let taxV = find(RC_TAX)
+  if (taxV != null && total != null && taxV >= total) taxV = null
   let date = ''
   for (const l of lines) {
-    const m = /(\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}\s+[A-Za-z]{3,9}\s+\d{2,4}|[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4})/.exec(l)
-    if (m) { date = parseDate(m[1]); if (date) break }
+    for (const m of l.matchAll(/(?<!\d)(\d{1,2}[/.-]\d{1,2}[/.-](?:\d{4}|\d{2})|\d{4}-\d{2}-\d{2}|\d{1,2}\s+[A-Za-z]{3,9}\s+\d{2,4}|[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4})(?![\d/.-]\d)/g)) {
+      const d = parseDate(m[1]); const [y, mo, da] = d.split('-').map(Number)
+      if (d && mo >= 1 && mo <= 12 && da >= 1 && da <= 31 && y >= 1990 && y <= 2100) { date = d; break }
+    }
+    if (date) break
   }
-  const merchant = lines.slice(0, 5).find((l) => /[A-Za-z]{3}/.test(l) && !/receipt|invoice|tax|gst|tel|phone|www|date|bill no/i.test(l) && !money.test(l)) ?? ''
-  const skip = /total|tax|gst|vat|cgst|sgst|change|cash|card|visa|mastercard|tender|balance|round|discount|saving|paid|due/i
-  const items = lines.filter((l) => money.test(l) && !skip.test(l)).map((l) => { const m = money.exec(l)!; return { name: l.slice(0, m.index).replace(/[\s.:x×@*-]+$/, '').trim(), amount: parseMoney(m[1]) } }).filter((i) => i.name.length > 1 && /[A-Za-z]/.test(i.name) && isFinite(i.amount))
+  // Shop: a line with a company suffix (KG, GmbH, Ltd, Pvt, S.p.A...) near the top, else the first clean, mostly
+  // upper case line above the first priced line.
+  const firstPrice = lines.findIndex((l) => rcAmounts(l).length > 0)
+  const head = lines.slice(0, Math.min(14, firstPrice < 0 ? lines.length : Math.max(firstPrice, 1)))
+  const clean = (l: string) => { const letters = (l.match(/[A-Za-zÀ-ÿ]/g) ?? []).length; const up = (l.match(/[A-ZÀ-Þ]/g) ?? []).length; return l.length >= 3 && l.length <= 40 && letters / l.replace(/\s/g, '').length >= 0.7 && up / Math.max(1, letters) >= 0.6 && /[A-Za-zÀ-ÿ]{3}/.test(l) && !RC_NOT_SHOP.test(l) }
+  const merchant = (lines.slice(0, 14).find((l) => RC_BIZ.test(l) && !RC_NOT_SHOP.test(l) && /[A-Za-zÀ-ÿ]{3}/.test(l)) ?? head.find(clean) ?? '').replace(/[^A-Za-zÀ-ÿ0-9.&')]+$/, '').trim()
+  const items = lines.filter((l) => !RC_SKIP.test(l)).flatMap((l) => {
+    const a = rcAmounts(l); if (!a.length) return []
+    const last = a[a.length - 1]
+    const name = l.slice(0, last.at).replace(/\s*[-—–.:]*\s*\d[\d\s.,]*%.*$/, '').replace(/[^A-Za-zÀ-ÿ0-9)]+$/, '').replace(/(\s+[^\sA-Za-zÀ-ÿ]*\d+[.,]\d+)+$/, '').replace(/[^A-Za-zÀ-ÿ0-9)]+$/, '').trim()
+    return name.length > 1 && /[A-Za-zÀ-ÿ]{2}/.test(name) ? [{ name, amount: last.v }] : []
+  })
   return { merchant, date, total, tax: taxV, subtotal, currency: cur, items }
 }
 

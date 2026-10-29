@@ -6,11 +6,17 @@ import { useStatement, StatementDrop, CsvColumns, TxnTable } from '@/lib/r13/ui'
 import { DlButton } from '@/lib/bcat/kit'
 
 const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'SGD', 'AED', 'JPY', 'CHF', 'NZD', 'ZAR']
+const BY_REGION: Record<string, string> = { IN: 'INR', US: 'USD', GB: 'GBP', AU: 'AUD', CA: 'CAD', SG: 'SGD', AE: 'AED', JP: 'JPY', CH: 'CHF', NZ: 'NZD', ZA: 'ZAR' }
+const EURO = new Set(['AT', 'BE', 'CY', 'DE', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PT', 'SI', 'SK'])
+/** Starting currency from the browser's region (en-GB gives GBP, de-DE gives EUR), INR when unknown. */
+function localCurrency() {
+  try { const r = new Intl.Locale(navigator.language).maximize().region ?? ''; return BY_REGION[r] ?? (EURO.has(r) ? 'EUR' : 'INR') } catch { return 'INR' }
+}
 
 export default function CsvToOfx() {
   const st = useStatement()
   const [fmt, setFmt] = useState<'ofx' | 'qif'>('ofx')
-  const [currency, setCurrency] = useState('INR')
+  const [currency, setCurrency] = useState(localCurrency)
   const [account, setAccount] = useState('')
   const [type, setType] = useState<'CHECKING' | 'SAVINGS' | 'CREDITLINE'>('CHECKING')
   const [flip, setFlip] = useState(false)

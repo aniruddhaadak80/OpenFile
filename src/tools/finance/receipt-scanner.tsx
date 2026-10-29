@@ -4,6 +4,7 @@ import { Button, Dropzone, Input, Label, Progress, Segmented, ToolGrid, Textarea
 import { formatBytes } from '@/lib/files'
 import { parseReceipt, type Receipt } from '@/lib/r13/finance'
 import { useObjectUrl, toCsv, DlButton } from '@/lib/bcat/kit'
+import { safeBlobUrl } from '@/lib/safe'
 
 interface Item { file: File; text?: string; r?: Receipt; error?: string }
 
@@ -23,7 +24,7 @@ async function prepare(file: File, max: number): Promise<HTMLCanvasElement> {
   return c
 }
 
-function Thumb({ file }: { file: File }) { const u = useObjectUrl(file); return u ? <img src={u} alt="" className="h-28 w-20 shrink-0 rounded-lg object-cover" /> : <div className="h-28 w-20 rounded-lg skeleton" /> }
+function Thumb({ file }: { file: File }) { const u = safeBlobUrl(useObjectUrl(file)); return u ? <img src={u} alt="" className="h-28 w-20 shrink-0 rounded-lg object-cover" /> : <div className="h-28 w-20 rounded-lg skeleton" /> }
 
 export default function ReceiptScanner() {
   const [items, setItems] = useState<Item[]>([])
@@ -46,6 +47,9 @@ export default function ReceiptScanner() {
       const todo = items.map((it, i) => ({ it, i })).filter(({ it }) => !it.r)
       const w = await createWorker(lang.split('+'), 1, { logger: (m: any) => { if (m.status === 'recognizing text') setProg((current + m.progress) / Math.max(1, todo.length)); else if (/load|init/i.test(m.status)) setStage(`${m.status[0].toUpperCase()}${m.status.slice(1)}${m.progress ? ` ${Math.round(m.progress * 100)}%` : ''}`) } })
       worker.current = w
+      // Receipts are one column of rows: block mode keeps each price on the same line as its item (auto mode splits
+      // the price column off and loses it).
+      await w.setParameters({ tessedit_pageseg_mode: '6' as any, preserve_interword_spaces: '1' })
       for (let k = 0; k < todo.length; k++) {
         if (stop.current) break
         current = k

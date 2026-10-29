@@ -33,6 +33,16 @@ t('growth', () => { const r = F.growth({ start: 0, monthly: 1000, ratePct: 12, y
 t('tax', () => { const a = F.tax(100, 18, 'add'); assert.equal(a.gross, 118); const r = F.tax(118, 18, 'remove'); assert.ok(Math.abs(r.net - 100) < 1e-9) })
 t('settle', () => { const b = F.balances(['A', 'B', 'C'], [{ payer: 'A', amount: 90, for: [] }, { payer: 'B', amount: 30, for: ['B', 'C'] }]); const s = F.settle(b); assert.equal(s.length, 2); assert.equal(s.reduce((x, y) => x + y.amount, 0), 60) })
 t('receipt', () => { const r = F.parseReceipt(txt('receipt.txt')); assert.equal(r.total, 213.15); assert.equal(r.tax, 10.15); assert.equal(r.subtotal, 203); assert.equal(r.date, '2026-10-14'); assert.equal(r.merchant, 'FRESH MART'); assert.equal(r.items.length, 3); assert.equal(r.items[2].name, 'Eggs x12') })
+t('receipt ocr, real photos', () => {
+  // Tesseract block mode (psm 6) text from two Wikimedia Commons receipt photos (Vienna HOFER, Italian supermarket).
+  const v = F.parseReceipt(txt('receipt-ocr-vienna.txt')); assert.equal(v.merchant, 'HOFER KG'); assert.equal(v.date, '2024-03-25'); assert.equal(v.total, 22.41); assert.equal(v.tax, 2.04); assert.equal(v.currency, 'EUR')
+  const it = F.parseReceipt(txt('receipt-ocr-italy.txt')); assert.equal(it.total, 11.89); assert.equal(it.merchant, ''); assert.ok(it.items.length >= 4); assert.equal(it.items[0].name, 'ACQUA S.ANGELO NATUR'); assert.equal(it.items[0].amount, 1.32)
+  assert.ok(it.items.every((x) => !/%/.test(x.name)))
+})
+t('recurring across calendar months', () => {
+  const tx = [['2026-07-02', -1250, 'RENT'], ['2026-08-27', -1250, 'RENT'], ['2026-09-05', -1250, 'RENT'], ['2026-07-10', -40, 'SHOP'], ['2026-07-20', -55, 'SHOP'], ['2026-08-01', -12, 'SHOP']].map(([date, amount, description]) => ({ date, amount, description }))
+  const r = F.findRecurring(tx); assert.equal(r.length, 1); assert.equal(r[0].name, 'RENT'); assert.equal(r[0].every, 'monthly')
+})
 t('pdf rows', () => {
   const it = (str, x, y) => ({ str, x, y })
   const rows = F.pdfStatementRows([it('Date', 10, 700), it('Details', 80, 700), it('01/10/2026', 10, 680), it('Opening', 80, 680), it('1,000.00', 400, 680), it('1,000.00', 480, 680), it('02/10/2026', 10, 660), it('Coffee shop', 80, 660), it('120.00', 400, 660), it('880.00', 480, 660), it('03/10/2026', 10, 640), it('Refund', 80, 640), it('20.00', 400, 640), it('900.00', 480, 640)])

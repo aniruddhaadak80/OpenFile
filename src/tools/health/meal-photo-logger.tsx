@@ -4,6 +4,7 @@ import { Button, Dropzone, Input, Label, Select, ToolGrid } from '@/components/u
 import { VMODELS } from '@/lib/bcat/vision'
 import { useVision, EnginePanel, VisionProgress } from '@/lib/bcat/aiui'
 import { useObjectUrl, toCsv, DlButton } from '@/lib/bcat/kit'
+import { safeBlobUrl } from '@/lib/safe'
 
 /** Common dishes with rough energy for one typical serving (kcal). Values are averages from public nutrition tables. */
 export const FOODS: [string, number][] = [
@@ -15,7 +16,7 @@ export const FOODS: [string, number][] = [
 ]
 
 interface Item { file: File; guesses?: { label: string; score: number }[]; food?: string; portion: number }
-function Thumb({ file }: { file: File }) { const u = useObjectUrl(file); return u ? <img src={u} alt="" className="size-24 shrink-0 rounded-xl object-cover" /> : <div className="size-24 rounded-xl skeleton" /> }
+function Thumb({ file }: { file: File }) { const u = safeBlobUrl(useObjectUrl(file)); return u ? <img src={u} alt="" className="size-24 shrink-0 rounded-xl object-cover" /> : <div className="size-24 rounded-xl skeleton" /> }
 const kcalOf = (food?: string) => FOODS.find((f) => f[0] === food)?.[1] ?? 0
 
 export default function MealPhotoLogger() {
