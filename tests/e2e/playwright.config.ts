@@ -24,9 +24,13 @@ export default defineConfig({
     acceptDownloads: true,
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    { name: 'chromium', testMatch: /smoke\.spec\.ts$/, use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', testMatch: /smoke\.spec\.ts$/, use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', testMatch: /smoke\.spec\.ts$/, use: { ...devices['Desktop Safari'] } },
+    // Phone, tablet and desktop layouts (responsive.spec.ts) run once on Linux, not in every OS and browser job.
+    { name: 'responsive', testMatch: /responsive\.spec\.ts$/, use: { ...devices['Desktop Chrome'] } },
+    // Safari engine on a phone-sized screen: the phone layout and blog navigation checks only.
+    { name: 'responsive-webkit', testMatch: /responsive\.spec\.ts$/, grep: /phone-390|blog navigation/, use: { ...devices['Desktop Safari'] } },
   ],
   webServer: {
     command: `npx vite preview --host 127.0.0.1 --port ${PORT} --strictPort`,

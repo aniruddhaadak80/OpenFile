@@ -58,5 +58,14 @@ export function pageByPath(path: string): DocPage | undefined {
   if (p === '/docs/getting-started') return DOC_PAGES[0]
   return ALL_PAGES.find((d) => d.path === p)
 }
+// Plural or longer names people guess for a category guide (/docs/tools/images) point at the real page.
+export function docAlias(path: string): string | undefined {
+  const m = norm(path).match(/^\/docs\/tools\/([a-z0-9-]+)$/)
+  if (!m) return undefined
+  const key = m[1]
+  const named: Record<string, string> = { developer: 'dev', images: 'image', videos: 'video', maps: 'geo', gps: 'geo', security: 'privacy', sheets: 'office', ebooks: 'ebook', books: 'ebook', archives: 'archive', fonts: 'font', subtitles: 'subtitle', documents: 'convert', converters: 'convert' }
+  const id = named[key] ?? (key.endsWith('s') ? key.slice(0, -1) : '')
+  return id && CATEGORY_PAGES.some((c) => c.path === `/docs/tools/${id}`) ? `/docs/tools/${id}` : undefined
+}
 export const pageById = (id: string) => ALL_PAGES.find((d) => d.id === id)
 export const toolCountFor = (cat: string) => TOOLS.filter((t) => t.category === cat).length

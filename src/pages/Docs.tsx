@@ -1,7 +1,7 @@
 // OpenFile documentation site at /docs. Navigation lives in src/pages/docs/nav.ts, page sources in
 // src/pages/docs/content/*.md (plus the original pages in src/docs/pages), and every count or list is generated.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { ChevronRight, ChevronLeft, ChevronDown, Menu, X, Pencil, ListTree, CalendarClock, Clock, ArrowUp, FileText, Rocket, Download, Cpu, MousePointerClick, Workflow, Keyboard, Palette, PencilRuler, Database, WifiOff, Share2, Sparkles, ShieldCheck, Globe, FileType, LayoutGrid, Code2, Server, LifeBuoy, HelpCircle, Terminal, GitPullRequest, History, Map as MapIcon } from 'lucide-react'
 import type { Heading } from '@/components/Markdown'
@@ -9,7 +9,7 @@ import { CATEGORIES } from '@/tools/registry'
 import { REPO_URL } from '@/components/Layout'
 import { setPageMeta } from '@/lib/seo'
 import { cn } from '@/components/ui'
-import { DOC_GROUPS, DOC_PAGES, ALL_PAGES, CATEGORY_PAGES, pageByPath, toolCountFor, type DocPage } from './docs/nav'
+import { DOC_GROUPS, DOC_PAGES, ALL_PAGES, CATEGORY_PAGES, pageByPath, docAlias, toolCountFor, type DocPage } from './docs/nav'
 import { pageMarkdown, GEN } from './docs/data'
 import { DocContent } from './docs/DocContent'
 import { SearchButton, SearchDialog } from './docs/Search'
@@ -125,7 +125,7 @@ export default function Docs() {
               </>}
             </nav>
 
-            {!page ? (
+            {!page && docAlias(loc.pathname) ? <Navigate to={`${docAlias(loc.pathname)}${loc.hash}`} replace /> : !page ? (
               <div className="py-24 text-center">
                 <div className="font-display text-6xl font-bold text-gradient">404</div>
                 <p className="mt-3 text-muted">This docs page does not exist. Search for it, or start from the beginning.</p>

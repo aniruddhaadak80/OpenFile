@@ -13,10 +13,13 @@ async function get(task: string, model: string, device: string, dtype: string | 
   // keep memory low: drop other pipelines of the same task
   for (const [k, p] of cache) if (k.startsWith(task + '|')) { try { await p.dispose?.() } catch { /* ignore */ } cache.delete(k) }
   const files = new Map<string, { loaded: number; total: number }>()
+  // Transformers.js reports every downloaded chunk (thousands for a 500 MB model). Posting each one floods the page
+  // with messages and re-renders, which can make the tab stop responding on slow CPUs, so updates go out 5 times a second.
+  let last = 0
   const p = await pipeline(task as any, model, {
     device: device as any, dtype: dtype as any,
     progress_callback: (e: any) => {
-      if (e.status === 'progress' && e.file) { files.set(e.file, { loaded: e.loaded ?? 0, total: e.total ?? 0 }); let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); post({ id, type: 'load', loaded: l, total: t, file: e.file }) }
+      if (e.status === 'progress' && e.file) { files.set(e.file, { loaded: e.loaded ?? 0, total: e.total ?? 0 }); let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); const now = Date.now(); if (now - last < 200 && l < t) return; last = now; post({ id, type: 'load', loaded: l, total: t, file: e.file }) }
       else if (e.status === 'initiate') post({ id, type: 'status', text: `Downloading ${e.file}` })
     },
   })

@@ -24,6 +24,8 @@ fi
 # Uncaught errors in the web layer (Capacitor forwards them to logcat).
 WV=$(adb shell dumpsys webviewupdate 2>/dev/null | grep -m1 -E 'Current WebView package' | tr -d '\r' || true)
 echo "WebView: ${WV:-unknown}"
+# Same minimum as the app itself (mobile/capacitor.config.json android.minWebViewVersion, 94); older WebViews get the update page.
+MIN_WEBVIEW=${MIN_WEBVIEW:-$(grep -oE '"minWebViewVersion"[[:space:]]*:[[:space:]]*[0-9]+' "$(dirname "$0")/../../mobile/capacitor.config.json" 2>/dev/null | grep -oE '[0-9]+$' || echo 94)}
 WV_MAJOR=$(echo "$WV" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 | cut -d. -f1)
 # Ignored: Capacitor 8 SystemBars logs (and catches) "Error injecting safe area CSS" when its native script runs
 # before document.documentElement exists. Framework bug, https://github.com/ionic-team/capacitor/issues/8530;
@@ -33,8 +35,8 @@ WV_MAJOR=$(echo "$WV" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 | cut -d. -
 JS_ERR=$(grep -E 'Capacitor: JavaScript Error|Capacitor/Console.*(Uncaught|SyntaxError|TypeError|ReferenceError)' "$OUT/logcat.txt" | grep -v -e 'Error injecting safe area CSS' -e "Cannot read properties of undefined (reading 'triggerEvent')" || true)
 if [ -n "$JS_ERR" ]; then
   echo "$JS_ERR" | head -n 20
-  if [ -n "$WV_MAJOR" ] && [ "$WV_MAJOR" -lt "${MIN_WEBVIEW:-100}" ]; then
-    echo "::warning::JavaScript errors on WebView $WV_MAJOR. This emulator image ships a frozen WebView older than ${MIN_WEBVIEW:-100}; real devices update it from Google Play. Not counted as a failure."
+  if [ -n "$WV_MAJOR" ] && [ "$WV_MAJOR" -lt "${MIN_WEBVIEW}" ]; then
+    echo "::warning::JavaScript errors on WebView $WV_MAJOR. This emulator image ships a frozen WebView older than ${MIN_WEBVIEW}; real devices update it from Google Play. Not counted as a failure."
   else
     echo "::error::JavaScript errors in the app web layer on WebView ${WV_MAJOR:-unknown}"; FAILED=1
   fi

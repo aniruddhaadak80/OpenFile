@@ -7,6 +7,7 @@ name: Cross-platform tests
 #      Windows MSI and NSIS setup on windows-2022 and windows-2025, macOS .dmg on macos-14 and macos-15,
 #      Linux AppImage and .deb on ubuntu-22.04 and ubuntu-24.04.
 #   3. Android: the release APK on an emulator (API 30 and 34), checks it launches without a crash.
+#   4. Web layouts: phone, tablet and desktop sizes of the main pages in one Linux job (tests/e2e/responsive.spec.ts).
 #
 # About Windows versions: GitHub no longer offers Windows 10 hosted runners. windows-2022 runs Windows Server 2022
 # (the Windows 10 21H2 code base) and windows-2025 runs Windows Server 2025 (the Windows 11 24H2 code base).
@@ -106,6 +107,43 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: e2e-${{ matrix.os }}-${{ matrix.browser }}
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # Phone (360x780, 390x844), tablet (768x1024) and desktop (1440x900) layouts of the main pages, every category,
+  # some tool pages, blog, docs, install, about and settings: nothing wider than the screen, no console errors,
+  # header menu and footer usable, blog Back keeps the search. One Linux job (Chromium, plus WebKit at phone size).
+  web-responsive:
+    name: Web layouts / phone, tablet, desktop
+    needs: build-web
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-dist
+          path: dist
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+      - name: Run layout tests
+        run: npx playwright test -c tests/e2e/playwright.config.ts --project=responsive --project=responsive-webkit
+        env:
+          CI: '1'
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-responsive
           path: |
             playwright-report
             test-results
@@ -221,7 +259,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          sparse-checkout: tests/apps
+          # the smoke test reads the app's minimum WebView (android.minWebViewVersion) from the Capacitor config
+          sparse-checkout: |
+            tests/apps/
+            mobile/capacitor.config.json
+          sparse-checkout-cone-mode: false
       - name: Download APK
         env:
           GH_TOKEN: ${{ github.token }}

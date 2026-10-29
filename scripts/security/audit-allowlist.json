@@ -1,13 +1,10 @@
 {
-  "_comment": "High advisories in production dependencies that have no non-breaking fix yet, reviewed 2026-10-29. Remove an entry as soon as its fix ships. audit-gate.mjs fails again when a safe fix becomes available.",
+  "_comment": "High advisories in production dependencies that have no safe fix yet, reviewed 2026-10-29. xlsx moved to the SheetJS CDN build 0.20.3, sharp and image-size are pinned to fixed versions through package.json overrides. Remove an entry as soon as its fix ships. audit-gate.mjs fails again when a safe fix becomes available.",
   "advisories": [
-    { "id": "GHSA-4r6h-8v6p-xvw6", "package": "xlsx", "reason": "SheetJS prototype pollution; the npm registry stops at 0.18.5, the fix (0.20.x) is only on cdn.sheetjs.com. Files are parsed in the user's own browser tab. Planned: move to the CDN tarball." },
-    { "id": "GHSA-5pgg-2g8v-p4x9", "package": "xlsx", "reason": "SheetJS ReDoS; same as above, fix only on cdn.sheetjs.com. Impact is a slow tab for the user's own file." },
-    { "id": "GHSA-mrhx-c7xc-m3w5", "package": "zod", "reason": "Memory exhaustion on oversized collections. Pulled in by @imgly/background-removal (zod ^3); the fix is zod 4.6.6, a major bump that package does not accept. zod only validates the app's own config there." },
-    { "id": "GHSA-5p2g-fcmc-qvqq", "package": "image-size", "reason": "DoS in JXL/HEIF parsing. Used only by pptxgenjs in Node (its browser build maps image-size to false), so it is not in the web bundle. Fix needs image-size 2.x, a major bump pptxgenjs does not accept." },
-    { "id": "GHSA-w3rx-r6r6-pgpr", "package": "image-size", "reason": "DoS in ICNS parsing. Same as above: Node-only path of pptxgenjs, not bundled for the browser." },
-    { "id": "GHSA-f88m-g3jw-g9cj", "package": "sharp", "reason": "libvips CVEs. sharp is a Node-only optional dependency of kokoro-js; the browser build never loads it. No fixed version that kokoro-js accepts." },
-    { "id": "GHSA-rgj7-g3m4-5g8c", "package": "sharp", "reason": "libheif CVEs. Same as above: Node-only, not shipped to the browser." },
-    { "id": "GHSA-wq5f-xc86-pv6w", "package": "sharp", "reason": "librsvg CVE. Same as above: Node-only, not shipped to the browser." }
+    {
+      "id": "GHSA-mrhx-c7xc-m3w5",
+      "package": "zod",
+      "reason": "Memory exhaustion on oversized constrained collections. @imgly/background-removal lists zod ^3 but ships its own bundled copy of zod in dist/index.mjs, so an override would not change the code that runs; it only validates the app's own small config object, never file data. The fix (zod 4.6.6) is a major bump with a different API (z.function().args is gone). Remove when @imgly moves to zod 4."
+    }
   ]
 }

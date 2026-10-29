@@ -11,9 +11,10 @@ self.onmessage = async (ev: MessageEvent) => {
   try {
     if (!tts || key !== device) {
       const files = new Map<string, { loaded: number; total: number }>()
+      let lastPost = 0
       tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
         dtype: device === 'webgpu' ? 'fp32' : 'q8', device,
-        progress_callback: (e: any) => { if (e.status === 'progress' && e.file) { files.set(e.file, { loaded: e.loaded ?? 0, total: e.total ?? 0 }); let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); post({ id, type: 'load', loaded: l, total: t }) } },
+        progress_callback: (e: any) => { if (e.status === 'progress' && e.file) { files.set(e.file, { loaded: e.loaded ?? 0, total: e.total ?? 0 }); let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); const now = Date.now(); if (now - lastPost < 200 && l < t) return; lastPost = now; post({ id, type: 'load', loaded: l, total: t }) } },
       })
       key = device
     }

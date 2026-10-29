@@ -1,5 +1,5 @@
-import { Suspense, useCallback, useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigationType } from 'react-router-dom'
 import { Search, Menu, X, ChevronDown, Settings as SettingsIcon, History as HistoryIcon } from 'lucide-react'
 import { MotionConfig, AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import { ThemeSwitcher } from './ThemeSwitcher'
@@ -19,6 +19,18 @@ import { UpdateBar, HeaderInstall } from './app/AppStatus'
 
 export const REPO_URL = 'https://github.com/aniruddhaadak80/OpenFile'
 
+// Scroll position per history entry, so Back and Forward return to where the reader was (a blog search result list,
+// a long category page) instead of the top. New navigations still start at the top.
+const scrollByKey = new Map<string, number>()
+const SCROLL_KEY = 'of:scroll'
+function savedScroll(key: string): number | undefined {
+  if (scrollByKey.has(key)) return scrollByKey.get(key)
+  try { const v = JSON.parse(sessionStorage.getItem(SCROLL_KEY) || '{}')[key]; return typeof v === 'number' ? v : undefined } catch { return undefined }
+}
+function persistScroll() {
+  try { sessionStorage.setItem(SCROLL_KEY, JSON.stringify(Object.fromEntries([...scrollByKey].slice(-50)))) } catch { /* storage may be blocked */ }
+}
+
 export function Layout() {
   const reduce = useReducedMotion()
   const [palette, setPalette] = useState(false)
@@ -30,7 +42,53 @@ export function Layout() {
   const loc = useLocation()
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 30, mass: 0.3 })
-  useEffect(() => { setMobile(false); setMega(false); if (!loc.hash) window.scrollTo({ top: 0 }) }, [loc.pathname])
+  const navType = useNavigationType()
+  const keyRef = useRef(loc.key)
+  useLayoutEffect(() => { keyRef.current = loc.key }, [loc.key])
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+    let t = 0
+    const save = () => { scrollByKey.set(keyRef.current, Math.round(window.scrollY)); clearTimeout(t); t = window.setTimeout(persistScroll, 250) }
+    window.addEventListener('scroll', save, { passive: true })
+    window.addEventListener('pagehide', persistScroll)
+    return () => { window.removeEventListener('scroll', save); window.removeEventListener('pagehide', persistScroll); clearTimeout(t) }
+  }, [])
+  useEffect(() => {
+    setMobile(false); setMega(false)
+    const y = navType === 'POP' ? savedScroll(loc.key) : undefined
+    if (y == null) { if (!loc.hash) window.scrollTo({ top: 0 }); return }
+    // The page may still be loading (lazy route, list animating in), so keep trying until it is tall enough, for up to 2 s.
+    // Any wheel, touch or key from the reader stops it.
+    let raf = 0, stop = false
+    const end = Date.now() + 2000
+    const cancel = () => { stop = true }
+    const tryScroll = () => {
+      if (stop) return
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      window.scrollTo({ top: Math.min(y, Math.max(0, max)) })
+      if (max < y && Date.now() < end) raf = requestAnimationFrame(tryScroll)
+    }
+    tryScroll()
+    const opts = { passive: true, once: true } as const
+    window.addEventListener('wheel', cancel, opts); window.addEventListener('touchstart', cancel, opts); window.addEventListener('keydown', cancel, opts)
+    return () => { stop = true; cancelAnimationFrame(raf); window.removeEventListener('wheel', cancel); window.removeEventListener('touchstart', cancel); window.removeEventListener('keydown', cancel) }
+  }, [loc.pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+  // The Tools menu opens on hover, so focus is often outside it: Escape closes it from anywhere, and so does a tap
+  // or click outside it (touch screens never send the mouse leave that closes it on desktop).
+  const megaWrap = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!mega) return
+    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setMega(false) }
+    const d = (e: PointerEvent) => { if (megaWrap.current && !megaWrap.current.contains(e.target as Node)) setMega(false) }
+    window.addEventListener('keydown', k); window.addEventListener('pointerdown', d)
+    return () => { window.removeEventListener('keydown', k); window.removeEventListener('pointerdown', d) }
+  }, [mega])
+  const megaBox = useRef<HTMLDivElement>(null)
+  // Touch screens send no hover, and a mouse click right after the hover opened the menu should not close it again.
+  const hoverAt = useRef(0)
+  const [megaEnd, setMegaEnd] = useState(true)
+  const megaScroll = useCallback(() => { const el = megaBox.current; if (el) setMegaEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 8) }, [])
+  useEffect(() => { if (mega) requestAnimationFrame(megaScroll) }, [mega, megaScroll])
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPalette((p) => !p) } }
     const s = () => setScrolled(window.scrollY > 8)
@@ -49,12 +107,13 @@ export function Layout() {
             <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline">v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
           </Link>
           <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
-            <div className="relative" onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)} onKeyDown={(e) => { if (e.key === 'Escape') setMega(false) }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMega(false) }}>
-              <button onClick={() => setMega((v) => !v)} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-3 py-2 text-muted hover:text-fg cursor-pointer">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
+            <div ref={megaWrap} className="relative" onPointerEnter={(e) => { if (e.pointerType === 'mouse') { hoverAt.current = Date.now(); setMega(true) } }} onPointerLeave={(e) => { if (e.pointerType === 'mouse') setMega(false) }} onKeyDown={(e) => { if (e.key === 'Escape') setMega(false) }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMega(false) }}>
+              <button onClick={() => { if (Date.now() - hoverAt.current < 500) setMega(true); else setMega((v) => !v) }} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-3 py-2 text-muted hover:text-fg cursor-pointer">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
               <AnimatePresence>
               {mega && (
                 <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} className="absolute left-0 top-full w-[min(860px,calc(100vw-2rem))] pt-2">
-                  <div className="grid max-h-[75vh] grid-cols-3 gap-4 overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl scrollbar-thin lg:grid-cols-4">
+                  <div className="relative">
+                  <div ref={megaBox} onScroll={megaScroll} className="grid max-h-[75vh] grid-cols-3 gap-4 overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl scrollbar-thin lg:grid-cols-4">
                     {CATEGORIES.map((c) => (
                       <div key={c.id}>
                         <Link to={`/category/${c.id}`} className="mb-2 block text-xs font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.name}</Link>
@@ -65,6 +124,13 @@ export function Layout() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                  {!megaEnd && (
+                    <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => megaBox.current?.scrollBy({ top: megaBox.current.clientHeight * 0.7, behavior: 'smooth' })}
+                      className="absolute inset-x-px bottom-px flex h-14 cursor-pointer items-end justify-center rounded-b-2xl bg-gradient-to-t from-surface via-surface/80 to-transparent pb-1.5 text-xs text-muted hover:text-fg">
+                      <span className="inline-flex items-center gap-1">More categories <ChevronDown className="size-3.5" /></span>
+                    </button>
+                  )}
                   </div>
                 </motion.div>
               )}

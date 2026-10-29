@@ -14,6 +14,7 @@ async function get(task: string, model: string, device: string, dtype: string | 
   // keep memory low: one pipeline per task
   for (const [k, p] of cache) if (k.startsWith(task + '|')) { try { await p.dispose?.() } catch { /* ignore */ } cache.delete(k) }
   const files = new Map<string, { loaded: number; total: number }>()
+  let lastPost = 0
   post({ id, type: 'status', text: 'Getting the AI model ready' })
   const p = await pipeline(task as any, model, {
     device: device as any, dtype: dtype as any,
@@ -21,6 +22,8 @@ async function get(task: string, model: string, device: string, dtype: string | 
       if (e.status === 'progress' && e.file) {
         files.set(e.file, { loaded: e.loaded ?? 0, total: e.total ?? 0 })
         let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total })
+        // one message per downloaded chunk floods the page on big models; 5 updates a second is enough for the bar
+        const now = Date.now(); if (now - lastPost < 200 && l < t) return; lastPost = now
         post({ id, type: 'load', loaded: l, total: t })
       } else if (e.status === 'initiate') post({ id, type: 'status', text: `Downloading ${String(e.file).split('/').pop()}` })
     },

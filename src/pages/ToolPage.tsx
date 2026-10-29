@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import { ChevronRight, ShieldCheck, Star, Zap, Infinity as Inf } from 'lucide-react'
 import { CATEGORIES, loadTool, toolBySlug } from '@/tools/registry'
 import { getIcon } from '@/components/icons'
@@ -16,8 +16,17 @@ import NotFound from './NotFound'
 import { MobileActionBar, QuickBar, WhatNext } from '@/components/ToolExtras'
 import { remountBus } from '@/lib/ux'
 
+// Short or older addresses people type or bookmark. Used only when no tool has that slug.
+const SLUG_ALIASES: Record<string, string> = {
+  sketch: 'sketch-board', whiteboard: 'sketch-board',
+  'ppt-to-pdf': 'powerpoint-to-pdf', 'pptx-to-pdf': 'powerpoint-to-pdf',
+  'jpg-to-pdf': 'image-to-pdf', 'png-to-pdf': 'image-to-pdf', 'pdf-to-jpg': 'pdf-to-image', 'pdf-to-png': 'pdf-to-image',
+  'compress-image': 'image-compressor', 'resize-image': 'image-resizer',
+}
+
 export default function ToolPage() {
   const { slug = '' } = useParams()
+  const loc = useLocation()
   const tool = toolBySlug(slug)
   const loader = loadTool(slug)
   const Comp = useMemo(() => (loader ? lazy(loader) : null), [slug])
@@ -51,6 +60,7 @@ export default function ToolPage() {
     })
     return () => setJsonLd('tool', null)
   }, [slug])
+  if (!tool && SLUG_ALIASES[slug] && toolBySlug(SLUG_ALIASES[slug])) return <Navigate to={`/${SLUG_ALIASES[slug]}${loc.search}${loc.hash}`} replace />
   if (!tool || !guide) return <NotFound />
   const cat = CATEGORIES.find((c) => c.id === tool.category)!
   const Icon = getIcon(tool.icon)

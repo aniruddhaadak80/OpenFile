@@ -213,7 +213,7 @@ function CategoryExplorer() {
                   </Link>
                 </motion.div>) })}
               {list.length > top.length && (
-                <Link to={`/category/${c.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm @lg:col-span-2 @4xl:col-span-3 text-muted transition hover:border-accent hover:text-fg">+{list.length - top.length} more {c.name.toLowerCase()} tools <ArrowRight className="size-3.5" /></Link>
+                <Link to={`/category/${c.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm @lg:col-span-2 @4xl:col-span-3 text-muted transition hover:border-accent hover:text-fg">+{list.length - top.length} more {c.name.toLowerCase().replace(/ tools$/, '')} tools <ArrowRight className="size-3.5" /></Link>
               )}
             </div>
             {pipe && (
