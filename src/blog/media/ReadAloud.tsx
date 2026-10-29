@@ -66,6 +66,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     try { const s = JSON.parse(localStorage.getItem(`of-read:${slug}`) || '{}'); localStorage.setItem(`of-read:${slug}`, JSON.stringify({ ...s, voice: prefs.voice, rate: prefs.rate })) } catch { /* quota */ }
   }, [prefs, slug])
   const savePos = useCallback((t: number) => { try { const s = JSON.parse(localStorage.getItem(`of-read:${slug}`) || '{}'); localStorage.setItem(`of-read:${slug}`, JSON.stringify({ ...s, pos: Math.round(t * 10) / 10 })) } catch { /* quota */ } }, [slug])
+  const restorePos = useRef<number | null>(null)
   const savedPos = () => { try { return JSON.parse(localStorage.getItem(`of-read:${slug}`) || '{}').pos || 0 } catch { return 0 } }
 
   // ---------- system voices
@@ -170,7 +171,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
         if (i >= 0 && t <= words.current[i].t1 + 0.8) highlight(i)
         if (stopAt.current !== null && t >= stopAt.current) { stopAt.current = null; a.pause() }
         const now = performance.now()
-        if (now - last > 200) { last = now; setTime(t); if (playingRef.current) savePos(t) }
+        if (now - last > 200) { last = now; setTime(t); if (playingRef.current && restorePos.current === null) savePos(t) }
       }
       raf = requestAnimationFrame(tick)
     }
@@ -336,7 +337,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       setOpen(true)
       ensureBlocks()
       const pos = savedPos()
-      if (pos > 2) setTime(pos)
+      restorePos.current = pos > 2 ? pos : null
+      if (pos > 2) { setTime(pos); pendingTime.current = pos }
       if (andPlay) setTimeout(() => playRef.current(), 120)
     } else if (andPlay) play()
   }, [open, ensureBlocks, play])
@@ -359,7 +361,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       clearInterval(id)
       const p = pendingSeek.current
       if (p) { pendingSeek.current = null; seekWordRef.current(p.b, p.w, p.play) }
-      else { const pos = savedPos(); if (pos > 2) seekTime(pos) }
+      else { const pos = restorePos.current ?? 0; restorePos.current = null; if (pos > 2) seekTime(pos) }
     }, 150)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
