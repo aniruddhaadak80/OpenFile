@@ -42,9 +42,10 @@ on:
 permissions:
   contents: read
 
+# Pushes to main come often; a newer push replaces an older push run, but never a manual or scheduled run.
 concurrency:
-  group: cross-platform-${{ github.ref }}
-  cancel-in-progress: true
+  group: cross-platform-${{ github.event_name }}-${{ github.ref }}-${{ github.event_name != 'push' && github.run_id || 'push' }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
   RELEASE_TAG: ${{ github.event.inputs.tag || 'latest' }}
