@@ -30,7 +30,7 @@ const out = join(cache, 'posts.bundle.mjs')
 const coverOut = join(cache, 'cover.bundle.mjs')
 const stubPlugin = {
     name: 'stub', setup(b) {
-      b.onResolve({ filter: /(^\.\.?\/(demos|demos-more|media\/.*))$|^@\/|^framer-motion$|^lucide-react$/ }, (a) => ({ path: a.path, namespace: 'stub' }))
+      b.onResolve({ filter: /(^\.\.?\/(demos|demos-more|demos-r13|media\/.*))$|^@\/|^framer-motion$|^lucide-react$/ }, (a) => ({ path: a.path, namespace: 'stub' }))
       b.onLoad({ filter: /.*/, namespace: 'stub' }, (a) => {
         const lines = [`import { createElement } from 'react'`, `const C = () => createElement('figure', { className: 'not-prose' }, 'demo')`]
         for (const n of importedNames(a.path)) lines.push(`export const ${n} = C`)

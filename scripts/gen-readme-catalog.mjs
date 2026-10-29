@@ -117,10 +117,10 @@ async function loadCatalog() {
 const EMOJI = {
   pdf: '📄', convert: '🔄', image: '🖼️', video: '🎬', audio: '🎧', dev: '🧑‍💻', text: '📝', design: '🖌️',
   data: '📊', ai: '🤖', '3d': '🧊', archive: '🗜️', ebook: '📚', font: '🔤', cad: '📐', subtitle: '💬',
-  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️',
+  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️', finance: '💰', health: '❤️',
 }
 // Short labels for the orbit and mindmap where the full name is too long.
-const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator' }
+const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator', finance: 'Money', health: 'Health' }
 
 // Colors that must never appear (brand rule). Anything in this range is swapped for gold.
 function safeColor(hex) {
@@ -197,6 +197,12 @@ function whatsNew() {
   }
   const L = []
   L.push(`OpenFile now has **${TOTAL} tools in ${NCAT} studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.`)
+  L.push('')
+  L.push('**Money & Finance and Health & Fitness (v2.3.0)**')
+  L.push('')
+  L.push(`- 💰 ${catLine('finance')}: ${tl('bank-statement-converter')}, ${tl('receipt-scanner')}, ${tl('transaction-categorizer')}, ${tl('loan-calculator')}, ${tl('expense-splitter')} and more.`)
+  L.push(`- ❤️ ${catLine('health')}: ${tl('fit-file-converter')}, ${tl('heart-rate-zones')}, ${tl('apple-health-export')}, ${tl('pace-calculator')}, ${tl('meal-photo-logger')} and more.`)
+  L.push(`- 🛟 **AI tools never stall the tab**: ${tl('image-captioner')}, ${tl('pdf-summarizer')} and ${tl('chat-pdf')} start in an instant mode with no download when the device has no WebGPU, and still offer the full model.`)
   L.push('')
   L.push('**Apps and updates (v1.2.0)**')
   L.push('')

@@ -1,0 +1,10 @@
+FRESH MART
+12 Park Street
+Date: 14/10/2026
+Milk 1L        62.00
+Bread           45.00
+Eggs x12       96.00
+Subtotal       203.00
+GST 5%          10.15
+TOTAL          213.15
+CARD           213.15

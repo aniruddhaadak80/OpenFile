@@ -2,7 +2,7 @@
 // with a regex to pre-render /blog/<slug>, add the posts to sitemap.xml and write /blog/rss.xml.
 // Post bodies: the first nine live in src/blog/posts.tsx, newer ones in src/blog/posts/<slug>.tsx, all registered in POST_BODIES.
 export type CoverKind = 'privacy' | 'pdf' | 'image' | 'video' | 'pipeline' | 'sketch' | 'formats' | 'dev' | 'voice'
-  | 'install' | 'ai' | 'mail' | 'photo' | 'gif' | 'signature' | 'ebook' | 'cad' | 'medical' | 'midi' | 'data' | 'subtitle'
+  | 'install' | 'ai' | 'mail' | 'photo' | 'gif' | 'signature' | 'ebook' | 'cad' | 'medical' | 'midi' | 'data' | 'subtitle' | 'money' | 'fitness'
 
 export interface PostMeta {
   slug: string
@@ -17,6 +17,9 @@ export interface PostMeta {
 }
 
 export const POSTS: PostMeta[] = [
+  { slug: 'what-is-inside-a-fit-file', title: 'What is inside a FIT file from your watch', description: 'The binary format behind every Garmin, Wahoo and Coros workout, how to turn it into CSV or GPX, and how heart rate zones and training load are worked out.', date: '2026-10-29', tags: ['fitness', 'formats', 'privacy'], minutes: 7, cover: 'fitness', tools: ['fit-file-converter', 'heart-rate-zones', 'apple-health-export', 'pace-calculator'] },
+  { slug: 'bank-statement-files-explained', title: 'OFX, QIF, CSV, CAMT and MT940: bank statement files explained', description: 'What each bank download format holds, which one to pick for a money app or a spreadsheet, and how to convert them without uploading your statement.', date: '2026-10-29', tags: ['finance', 'formats', 'privacy'], minutes: 7, cover: 'money', tools: ['bank-statement-converter', 'csv-to-ofx', 'statement-analyzer', 'transaction-categorizer', 'pdf-statement-to-csv'] },
+  { slug: 'scan-receipts-privately', title: 'Scan receipts into a spreadsheet without uploading them', description: 'How on-device OCR reads a receipt photo, how the shop, date, tax and total are picked out, and tips for scans that come out right the first time.', date: '2026-10-29', tags: ['finance', 'ai', 'privacy'], minutes: 6, cover: 'money', tools: ['receipt-scanner', 'expense-splitter', 'ocr-pdf', 'gst-vat-calculator'] },
   { slug: 'install-openfile-on-any-device', title: 'Install OpenFile on any device, from a phone to a Linux box', description: 'Web app, Windows, macOS, Linux, Android and iPhone: what each option gives you, how to install it, and which one I would pick for your device.', date: '2026-10-28', tags: ['install', 'apps', 'offline'], minutes: 7, cover: 'install', tools: ['pdf-reader', 'merge-pdf', 'image-converter', 'archive-extractor'] },
   { slug: 'how-openfile-keeps-files-private', title: 'How OpenFile keeps your files private', description: 'What really happens when you drop a file into OpenFile, why nothing gets uploaded, and how you can check it yourself in two minutes.', date: '2026-10-27', tags: ['privacy', 'architecture'], minutes: 6, cover: 'privacy', tools: ['merge-pdf', 'hash-generator', 'background-remover'] },
   { slug: 'ai-models-in-your-browser', title: 'How AI models run inside your browser tab', description: 'What happens when you press the button in the background remover, upscaler or transcriber: model downloads, workers, WebGPU and the WebAssembly safety net.', date: '2026-10-26', tags: ['ai', 'webgpu', 'privacy'], minutes: 7, cover: 'ai', tools: ['background-remover', 'image-upscaler', 'audio-transcriber', 'object-remover', 'photo-enhancer', 'subtitle-translator'] },

@@ -5,7 +5,7 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 
 ## Categories
 <!-- categories:start -->
-21 categories, 411 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
+23 categories, 427 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
 
 | Id | Studio | Tools | What it covers |
 |---|---|--:|---|
@@ -30,6 +30,8 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 | `office` | 🗂️ Office & Sheets | 9 | Merge, split, compare and pivot spreadsheets, clean Word files |
 | `science` | 🧪 Science & Education | 8 | Equations, graphs, chemistry, matrices, logic and primes |
 | `creator` | 🎙️ Creator Studio | 7 | Audiograms, vertical video, carousels, word clouds and chapters |
+| `finance` | 💰 Money & Finance | 10 | Bank statements, receipts, loans, tax and shared expenses |
+| `health` | ❤️ Health & Fitness | 6 | FIT workouts, heart rate zones, Apple Health data, pace and body measures |
 <!-- categories:end -->
 
 New entries can go in `src/tools/registry.ts` or in one of the batch files (`src/tools/batches/bN.ts`, each exporting `BATCH_N`), which the registry spreads into `TOOLS`. Shared logic for a batch goes in `src/lib/bN/` and its tests in `scripts/tests/bN/`. After adding or renaming a tool, run `node scripts/gen-readme-catalog.mjs` to refresh the README catalog, the stats artwork and this list.

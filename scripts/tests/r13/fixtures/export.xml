@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HealthData locale="en_IN">
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Phone" unit="count" creationDate="2026-10-01 09:00:00 +0530" startDate="2026-10-01 08:00:00 +0530" endDate="2026-10-01 08:30:00 +0530" value="1200"/>
+ <Record type="HKQuantityTypeIdentifierStepCount" sourceName="Phone" unit="count" creationDate="2026-10-02 09:00:00 +0530" startDate="2026-10-02 08:00:00 +0530" endDate="2026-10-02 08:30:00 +0530" value="3400"/>
+ <Record type="HKQuantityTypeIdentifierHeartRate" sourceName="Watch" unit="count/min" creationDate="2026-10-01 09:00:00 +0530" startDate="2026-10-01 09:00:00 +0530" endDate="2026-10-01 09:00:00 +0530" value="72">
+  <MetadataEntry key="HKMetadataKeyHeartRateMotionContext" value="0"/>
+ </Record>
+ <Record type="HKQuantityTypeIdentifierBodyMass" sourceName="Scale" unit="kg" creationDate="2026-10-01 07:00:00 +0530" startDate="2026-10-01 07:00:00 +0530" endDate="2026-10-01 07:00:00 +0530" value="68.4"/>
+ <Workout workoutActivityType="HKWorkoutActivityTypeRunning" duration="31.5" durationUnit="min" sourceName="Watch" startDate="2026-10-03 06:30:00 +0530" endDate="2026-10-03 07:01:30 +0530"/>
+</HealthData>

@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Clock, Film, Headphones, ArrowRight } from 'lucide-react'
-import { Cover } from '../Cover'
+import { CoverMedia } from '../media/CoverMedia'
 import { formatDate, type PostMeta } from '../meta'
 import { fmtTime, mediaFor } from '../media/media'
 import { cn } from '@/components/ui'
@@ -15,7 +15,7 @@ export function ResultCard({ meta, hit, i, activeTags }: { meta: PostMeta; hit: 
     <motion.li layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.28, delay: Math.min(i, 8) * 0.035 }} className="list-none">
       <Link to={`/blog/${meta.slug}`} className="spotlight group flex h-full gap-4 overflow-hidden rounded-2xl border border-border bg-surface p-3 transition hover:border-accent/50 focus-visible:border-accent sm:flex-col sm:gap-0 sm:p-0">
         <div className="relative h-24 w-28 shrink-0 overflow-hidden rounded-xl sm:aspect-[16/9] sm:h-auto sm:w-full sm:rounded-none">
-          <Cover kind={meta.cover} title={meta.title} className="h-full w-full transition duration-700 group-hover:scale-[1.04]" />
+          <CoverMedia slug={meta.slug} kind={meta.cover} title={meta.title} mode="hover" className="h-full w-full transition duration-700 group-hover:scale-[1.04]" />
           {v && <span className="absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur"><Film className="size-3 text-sky-300" /><span className="hidden sm:inline">Video {fmtTime(v.dur)}</span></span>}
         </div>
         <div className="flex min-w-0 flex-1 flex-col sm:p-5">

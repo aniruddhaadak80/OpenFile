@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tools-411-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
-  <img src="https://img.shields.io/badge/categories-21-14B8A6?style=flat-square&labelColor=0B0D10" alt="21 categories"/>
+  <img src="https://img.shields.io/badge/tools-427-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
+  <img src="https://img.shields.io/badge/categories-23-14B8A6?style=flat-square&labelColor=0B0D10" alt="23 categories"/>
   <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest"><img src="https://img.shields.io/github/v/release/aniruddhaadak80/OpenFile?style=flat-square&label=release&color=F5A524&labelColor=0B0D10" alt="latest release"/></a>
   <img src="https://img.shields.io/badge/uploads-0_bytes-10B981?style=flat-square&labelColor=0B0D10" alt="0 uploads"/>
   <img src="https://img.shields.io/badge/runs-in_your_browser-14B8A6?style=flat-square&logo=googlechrome&logoColor=14B8A6&labelColor=0B0D10" alt="runs in your browser"/>
@@ -36,7 +36,7 @@
 </p>
 
 <p align="center">
-  <b>411 free, open-source tools</b> in <b>21 studios</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data, code, <br/>
+  <b>427 free, open-source tools</b> in <b>23 studios</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data, code, <br/>
   maps, office files, science, privacy and creators, processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
 </p>
 
@@ -74,14 +74,20 @@
 
 </details>
 
-<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="411 tools · 21 categories · 0 uploads · 100% open source"/></p>
+<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="427 tools · 23 categories · 0 uploads · 100% open source"/></p>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
 ## 🆕 What's new
 
 <!-- whatsnew:start -->
-OpenFile now has **411 tools in 21 studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.
+OpenFile now has **427 tools in 23 studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.
+
+**Money & Finance and Health & Fitness (v2.3.0)**
+
+- 💰 [Money & Finance](https://openfile-studio.vercel.app/category/finance) (10 tools): [Bank Statement Converter](https://openfile-studio.vercel.app/bank-statement-converter), [AI Receipt Scanner](https://openfile-studio.vercel.app/receipt-scanner), [AI Transaction Categorizer](https://openfile-studio.vercel.app/transaction-categorizer), [Loan & EMI Calculator](https://openfile-studio.vercel.app/loan-calculator), [Expense Splitter](https://openfile-studio.vercel.app/expense-splitter) and more.
+- ❤️ [Health & Fitness](https://openfile-studio.vercel.app/category/health) (6 tools): [FIT File Converter & Viewer](https://openfile-studio.vercel.app/fit-file-converter), [Heart Rate Zones](https://openfile-studio.vercel.app/heart-rate-zones), [Apple Health Export to CSV](https://openfile-studio.vercel.app/apple-health-export), [Running Pace Calculator](https://openfile-studio.vercel.app/pace-calculator), [AI Meal Photo Logger](https://openfile-studio.vercel.app/meal-photo-logger) and more.
+- 🛟 **AI tools never stall the tab**: [AI Image Captioner](https://openfile-studio.vercel.app/image-captioner), [AI Summarizer](https://openfile-studio.vercel.app/pdf-summarizer) and [Chat with PDF](https://openfile-studio.vercel.app/chat-pdf) start in an instant mode with no download when the device has no WebGPU, and still offer the full model.
 
 **Apps and updates (v1.2.0)**
 
@@ -117,7 +123,7 @@ OpenFile now has **411 tools in 21 studios**, apps for every device that update 
 - 📊 **Data**: [SQLite Browser](https://openfile-studio.vercel.app/sqlite-viewer), [Parquet / Arrow / Avro Viewer](https://openfile-studio.vercel.app/parquet-viewer), [CSV & Spreadsheet Editor](https://openfile-studio.vercel.app/csv-editor) and [GPS / GIS Converter](https://openfile-studio.vercel.app/geo-converter).
 - 🤖 **On-device AI**: [Chat with PDF](https://openfile-studio.vercel.app/chat-pdf), [Colorize Black and White Photo](https://openfile-studio.vercel.app/colorize-photo), [Magic Eraser (Remove Objects)](https://openfile-studio.vercel.app/object-remover), [Photo Enhancer](https://openfile-studio.vercel.app/photo-enhancer) and [AI Summarizer](https://openfile-studio.vercel.app/pdf-summarizer).
 - 🧑‍💻 **Text and developer tools**: [Readability Checker](https://openfile-studio.vercel.app/readability-score), [Secret Scanner](https://openfile-studio.vercel.app/secret-scanner), [JSON Repair & JSON5](https://openfile-studio.vercel.app/json-repair), [HAR File Viewer](https://openfile-studio.vercel.app/har-viewer) and more.
-- 🧲 **Drop anything**, ⚖️ **compare tools**, 📲 **share target** and 🎞️ **per-tool preview videos** (411 so far).
+- 🧲 **Drop anything**, ⚖️ **compare tools**, 📲 **share target** and 🎞️ **per-tool preview videos** (427 so far).
 
 </details>
 
@@ -298,7 +304,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 
 ## 🧰 The toolbox
 
-<p align="center"><img src="docs/assets/category-orbit.svg" width="82%" alt="21 studios orbiting the OpenFile core"/></p>
+<p align="center"><img src="docs/assets/category-orbit.svg" width="82%" alt="23 studios orbiting the OpenFile core"/></p>
 
 <!-- toolbox:start -->
 <table>
@@ -460,6 +466,20 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 <a href="https://openfile-studio.vercel.app/audiogram-maker">Audiogram Maker</a><br/><a href="https://openfile-studio.vercel.app/video-reframe">Video Reframe (9:16, 1:1, 4:5)</a><br/><a href="https://openfile-studio.vercel.app/carousel-maker">Carousel Maker</a><br/>
 <a href="https://openfile-studio.vercel.app/category/creator"><b>Browse all →</b></a>
 </td>
+<td width="25%" valign="top" align="center">
+<h3>💰<br/>Money &amp; Finance</h3>
+<img src="https://img.shields.io/badge/10-tools-BEF264?style=flat-square&labelColor=0B0D10" alt="10 tools"/><br/>
+<sub>Bank statements, receipts, loans, tax and shared expenses</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/bank-statement-converter">Bank Statement Converter</a><br/><a href="https://openfile-studio.vercel.app/receipt-scanner">AI Receipt Scanner</a><br/><a href="https://openfile-studio.vercel.app/csv-to-ofx">CSV to OFX / QIF</a><br/>
+<a href="https://openfile-studio.vercel.app/category/finance"><b>Browse all →</b></a>
+</td>
+<td width="25%" valign="top" align="center">
+<h3>❤️<br/>Health &amp; Fitness</h3>
+<img src="https://img.shields.io/badge/6-tools-5EEAD4?style=flat-square&labelColor=0B0D10" alt="6 tools"/><br/>
+<sub>FIT workouts, heart rate zones, Apple Health data, pace and body measures</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/fit-file-converter">FIT File Converter &amp; Viewer</a><br/><a href="https://openfile-studio.vercel.app/heart-rate-zones">Heart Rate Zones</a><br/><a href="https://openfile-studio.vercel.app/apple-health-export">Apple Health Export to CSV</a><br/>
+<a href="https://openfile-studio.vercel.app/category/health"><b>Browse all →</b></a>
+</td>
 </tr>
 </table>
 <!-- toolbox:end -->
@@ -467,7 +487,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ### 📚 Every tool, one click away
 
 <!-- catalog:start -->
-> **411 tools across 21 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
+> **427 tools across 23 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
 > Legend: 🔥 Hot · ✨ New · 🤖 AI · ⭐ Popular · 🔁 Usable as a Workspace pipeline step
 
 <details open>
@@ -1069,6 +1089,40 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </table>
 <p align="right"><a href="https://openfile-studio.vercel.app/category/creator">Open the Creator Studio studio ↗</a></p>
 </details>
+
+<details>
+<summary><b>💰 Money &amp; Finance</b>, 10 tools · <i>Bank statements, receipts, loans, tax and shared expenses</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/bank-statement-converter"><b>Bank Statement Converter</b></a></td><td>Convert OFX, QFX, QIF, CAMT.053 XML, MT940 and CSV bank files to CSV, Excel, JSON, OFX or QIF.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/csv-to-ofx"><b>CSV to OFX / QIF</b></a></td><td>Turn a bank CSV export into an OFX or QIF file that money apps can import.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/statement-analyzer"><b>Statement Analyzer</b></a></td><td>See money in and out by month, spending by category, top payees and repeating subscriptions from any bank statement.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/transaction-categorizer"><b>AI Transaction Categorizer</b></a></td><td>Label every payment in a bank statement (groceries, transport, bills and more) with a small AI model on your device.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/receipt-scanner"><b>AI Receipt Scanner</b></a></td><td>Photograph receipts and get the shop, date, tax, total and line items as CSV or JSON, read by on-device OCR.</td><td><sub>🤖 AI · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/pdf-statement-to-csv"><b>PDF Statement to CSV</b></a></td><td>Pull transactions out of a PDF bank or card statement into CSV, Excel, OFX or QIF.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/loan-calculator"><b>Loan &amp; EMI Calculator</b></a></td><td>Monthly payment, total interest and a full schedule for home, car or personal loans, with extra payments.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/compound-interest"><b>Compound Interest &amp; SIP Calculator</b></a></td><td>See how savings, deposits and monthly SIP investments grow, with step ups and inflation.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/gst-vat-calculator"><b>GST &amp; VAT Calculator</b></a></td><td>Add or remove GST or VAT from one price or a whole list, with CGST, SGST and IGST split for India.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/expense-splitter"><b>Expense Splitter</b></a></td><td>Split trip or flat expenses between friends and settle up with the fewest payments.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/finance">Open the Money &amp; Finance studio ↗</a></p>
+</details>
+
+<details>
+<summary><b>❤️ Health &amp; Fitness</b>, 6 tools · <i>FIT workouts, heart rate zones, Apple Health data, pace and body measures</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/fit-file-converter"><b>FIT File Converter &amp; Viewer</b></a></td><td>Open Garmin, Wahoo, Coros and Zwift FIT files, see the stats, route and charts, and convert to CSV, GPX, Excel or JSON.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/heart-rate-zones"><b>Heart Rate Zones</b></a></td><td>See time in each heart rate zone and the training load (TRIMP) of a workout from FIT, TCX or GPX.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/apple-health-export"><b>Apple Health Export to CSV</b></a></td><td>Turn the huge Apple Health export.zip into tidy CSV files per type, with daily totals and averages.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/pace-calculator"><b>Running Pace Calculator</b></a></td><td>Work out pace, time or distance, see splits, and predict 5K, 10K, half and full marathon times.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/bmi-bmr-calculator"><b>BMI, BMR &amp; Calorie Calculator</b></a></td><td>Body mass index, resting and daily energy needs, body fat from a tape measure, and a healthy weight range.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/meal-photo-logger"><b>AI Meal Photo Logger</b></a></td><td>Snap your meals and get a rough calorie log: a small AI model guesses each dish on your device.</td><td><sub>🤖 AI</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/health">Open the Health &amp; Fitness studio ↗</a></p>
+</details>
 <!-- catalog:end -->
 
 <!-- charts:start -->
@@ -1077,7 +1131,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'pie1':'#F5A524','pie2':'#F97316','pie3':'#10B981','pie4':'#38BDF8','pie5':'#14B8A6','pie6':'#22D3EE','pie7':'#84CC16','pie8':'#60A5FA','pie9':'#0EA5E9','pie10':'#FBBF24','pie11':'#2DD4BF','pie12':'#A3A3A3','pieTitleTextSize':'20px','pieTitleTextColor':'#F5A524','pieSectionTextColor':'#050505','pieLegendTextColor':'#A8A29E','pieStrokeColor':'#050505','pieStrokeWidth':'2px','pieOuterStrokeColor':'#F5A524','pieOuterStrokeWidth':'2px','pieOpacity':'1'}}}%%
 pie showData
-    title 411 tools across 21 studios
+    title 427 tools across 23 studios
     "PDF Tools" : 58
     "Convert" : 31
     "Image" : 55
@@ -1099,6 +1153,8 @@ pie showData
     "Office and Sheets" : 9
     "Science and Education" : 8
     "Creator Studio" : 7
+    "Money and Finance" : 10
+    "Health and Fitness" : 6
 ```
 
 ### 🧭 Category map
@@ -1106,7 +1162,7 @@ pie showData
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#F5A524','primaryTextColor':'#050505','primaryBorderColor':'#FFB224','lineColor':'#F5A524','fontFamily':'system-ui, sans-serif','cScale0':'#F5A524','cScaleLabel0':'#050505','cScaleInv0':'#050505','cScale1':'#F97316','cScaleLabel1':'#050505','cScaleInv1':'#050505','cScale2':'#10B981','cScaleLabel2':'#050505','cScaleInv2':'#050505','cScale3':'#38BDF8','cScaleLabel3':'#050505','cScaleInv3':'#050505','cScale4':'#14B8A6','cScaleLabel4':'#050505','cScaleInv4':'#050505','cScale5':'#22D3EE','cScaleLabel5':'#050505','cScaleInv5':'#050505','cScale6':'#84CC16','cScaleLabel6':'#050505','cScaleInv6':'#050505','cScale7':'#60A5FA','cScaleLabel7':'#050505','cScaleInv7':'#050505','cScale8':'#0EA5E9','cScaleLabel8':'#050505','cScaleInv8':'#050505','cScale9':'#FBBF24','cScaleLabel9':'#050505','cScaleInv9':'#050505','cScale10':'#2DD4BF','cScaleLabel10':'#050505','cScaleInv10':'#050505','cScale11':'#A3A3A3','cScaleLabel11':'#050505','cScaleInv11':'#050505'}}}%%
 mindmap
-  root(("OpenFile · 411 tools"))
+  root(("OpenFile · 427 tools"))
     PDF
       Merge PDF · Split PDF · Compress PDF
       Sign PDF · Invoice Generator · Create Fillable PDF Form
@@ -1168,6 +1224,12 @@ mindmap
     Creator
       Audiogram Maker · Video Reframe 916, 11, 45 · Carousel Maker
       Post Length Checker · Link in Bio Page Builder · Word Cloud Generator
+    Money
+      Bank Statement Converter · AI Receipt Scanner · CSV to OFX / QIF
+      Statement Analyzer · AI Transaction Categorizer · PDF Statement to CSV
+    Health
+      FIT File Converter and Viewer · Heart Rate Zones · Apple Health Export to CSV
+      Running Pace Calculator · BMI, BMR and Calorie Calculator · AI Meal Photo Logger
 ```
 <!-- charts:end -->
 
@@ -1226,7 +1288,7 @@ flowchart LR
     U["👤 You<br/>drop or pick files"]:::user --> BR
     subgraph BR["🌐 Your browser tab, nothing leaves it"]
         direction LR
-        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>411 tools · import.meta.glob"]:::ui
+        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>427 tools · import.meta.glob"]:::ui
         REG --> E1["📄 pdf-lib · PDF.js<br/>@cantoo/pdf-lib"]:::pdf
         REG --> E2["🎬 ffmpeg.wasm<br/>MediaRecorder · Web Audio"]:::media
         REG --> E3["🔤 Tesseract.js OCR"]:::ai
@@ -1277,7 +1339,7 @@ sequenceDiagram
     Note over U,B: The file never crosses the network. Closing the tab frees all memory.
 ```
 
-- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 411 tools.
+- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 427 tools.
 - **Heavy engines load on demand** (ffmpeg core, OCR language data, AI weights) and are cached by the browser and the service worker.
 - **Zero-upload guarantee:** the optional Vercel functions (`/api/health`, `/api/fetch-page`, `/api/meta`) only ever receive a **URL you type**, never a file.
 
@@ -1537,11 +1599,11 @@ OpenFile/
 │  ├─ pages/                 # Home, Tools, ToolPage, Workspace, Docs, Blog, History, Settings
 │  │  └─ workspace/steps.ts  # pipeline steps + presets
 │  └─ tools/
-│     ├─ registry.ts         # the catalog, 411 tools, 21 categories
-│     ├─ batches/            # more catalog entries: b-cat1, b-cat2, b-cat3, b1, b10, b11, b12, b2, b3, b4, b5
+│     ├─ registry.ts         # the catalog, 427 tools, 23 categories
+│     ├─ batches/            # more catalog entries: b-cat1, b-cat2, b-cat3, b1, b10, b11, b12, b13, b2, b3, b4, b5
 │     ├─ engines.ts · guides.ts  # "How it works" content for every tool page
-│     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/ data/ ai/ 3d/
-│        archive/ ebook/ font/ cad/ subtitle/ privacy/ geo/ office/ science/ creator/
+│     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/ data/ ai/ 3d/ archive/
+│        ebook/ font/ cad/ subtitle/ privacy/ geo/ office/ science/ creator/ finance/ health/
 ├─ .github/                  # Pages deploy, app releases, packages, CodeQL, Dependabot
 ├─ CHANGELOG.md              # release notes
 └─ vercel.json               # SPA rewrites + security headers
@@ -1586,7 +1648,7 @@ timeline
         v1.0 core : First in-browser studios : Command palette and smart drop
         Power features : Batch Workspace : Presets and saved recipes : On-device AI
         Everywhere : Installable PWA : Offline mode : Vercel and GitHub Pages
-        v2.0 catalog : 411 in-browser tools : 21 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
+        v2.0 catalog : 427 in-browser tools : 23 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
         v2.0 polish : Per-tool preview videos : Drop anything and share target : Compare tools and new hero
         v1.2 apps : Desktop and Android apps : Signed auto updates : Rollback
         v2.2 studios : Privacy · Maps · Office · Science · Creator : Local AI in Web Workers
@@ -1596,7 +1658,7 @@ timeline
         Global : UI translations i18n
 ```
 
-- [x] 411 in-browser tools across 21 studios
+- [x] 427 in-browser tools across 23 studios
 - [x] Batch Workspace with presets and saved recipes
 - [x] On-device AI, background removal, OCR, upscaling, transcription
 - [x] Installable PWA + offline mode

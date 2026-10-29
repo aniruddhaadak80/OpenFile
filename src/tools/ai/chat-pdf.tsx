@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { MessageSquareText, Send, BookMarked, Trash2 } from 'lucide-react'
-import { Button, Input, Label, ToolGrid, Empty, cn } from '@/components/ui'
+import { MessageSquareText, Send, BookMarked, Trash2, Gauge, Sparkles } from 'lucide-react'
+import { Button, Input, Label, ToolGrid, Empty, Segmented, cn } from '@/components/ui'
 import { aiRun, chunkText, cosine, MODELS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress, useDocInput, DocInput } from '@/lib/b4/aiui'
+import { answer as quickAnswer, bm25 } from '@/lib/r13/extractive'
 
 interface Chunk { page: number; text: string; vec?: number[] }
 interface Msg { role: 'user' | 'assistant'; content: string; sources?: Chunk[] }
@@ -17,6 +18,10 @@ export default function ChatPdf() {
   const [q, setQ] = useState('')
   const [open, setOpen] = useState<number | null>(null)
   const ai = useAiState(MODELS.chat)
+  const [engine, setEngine] = useState<'quick' | 'ai'>('ai')
+  const picked = useRef(false)
+  // No WebGPU: start with Instant answers (keyword search, no download) so the tab never has to load a 500 MB model on the CPU.
+  useEffect(() => { const id = setTimeout(() => { if (!picked.current && !ai.gpuOk) setEngine('quick') }, 400); return () => clearTimeout(id) }, [ai.gpuOk])
   const end = useRef<HTMLDivElement>(null)
   const pdf = !!doc.file?.name.toLowerCase().endsWith('.pdf')
 
@@ -33,9 +38,20 @@ export default function ChatPdf() {
     return idx
   }
 
+  const passages = (): Chunk[] => { const out: Chunk[] = []; for (const p of doc.pages) for (const t of chunkText(p.text, 900, 120)) out.push({ page: p.page, text: t }); return out }
+  const askQuick = (question: string) => {
+    const all = passages()
+    const lines = quickAnswer(all, question, 3)
+    const hits = bm25(all, question, 4).map((h) => h.p)
+    const label = pdf ? 'page' : 'part'
+    const content = lines.length ? lines.map((l) => `${l.text} [${label} ${l.page}]`).join('\n\n') : 'I could not find words from your question in the document. Try other words, or switch to the AI model for a written answer.'
+    setMsgs((m) => [...m, { role: 'user', content: question }, { role: 'assistant', content, sources: hits.length ? hits : undefined }])
+  }
+
   const ask = (question = q) => {
     if (!question.trim()) return
     setQ('')
+    if (engine === 'quick') { askQuick(question); return }
     const history = msgs
     setMsgs((m) => [...m, { role: 'user', content: question }, { role: 'assistant', content: '' }])
     ai.run(async () => {
@@ -86,10 +102,12 @@ export default function ChatPdf() {
         )}
       </>}
       side={<>
-        <ModelPanel ai={ai} models={MODELS.chat} title="Answer model" />
-        <p className="-mt-2 text-xs text-muted">A small search model (about 25 MB) also downloads to find the right passages.</p>
+        <div><Label>Engine</Label><Segmented value={engine} onChange={(v) => { picked.current = true; setEngine(v) }} options={[{ value: 'quick', label: <span className="inline-flex items-center gap-1.5"><Gauge className="size-3.5" />Instant answers</span> }, { value: 'ai', label: <span className="inline-flex items-center gap-1.5"><Sparkles className="size-3.5" />AI model</span> }]} />
+          <p className="mt-1 text-xs text-muted">{engine === 'quick' ? 'Finds the sentences that best match your question with keyword search. Instant, no download, works on any device.' : 'A small chat model writes the answer from the best passages.'}</p></div>
+        {engine === 'ai' && <><ModelPanel ai={ai} models={MODELS.chat} title="Answer model" />
+        <p className="-mt-2 text-xs text-muted">A small search model (about 25 MB) also downloads to find the right passages.</p></>}
         {index && <div className="rounded-xl bg-surface-2/60 px-3 py-2 text-xs text-muted"><Label className="mb-0">Index ready</Label>{index.length} passages from {doc.pages.length} {pdf ? 'pages' : 'parts'}</div>}
-        {!index && doc.ready && <Button variant="secondary" className="w-full" icon={<MessageSquareText className="size-4" />} onClick={() => ai.run(build)} loading={ai.busy}>Prepare document</Button>}
+        {engine === 'ai' && !index && doc.ready && <Button variant="secondary" className="w-full" icon={<MessageSquareText className="size-4" />} onClick={() => ai.run(build)} loading={ai.busy}>Prepare document</Button>}
         <AiProgress ai={ai} />
         {msgs.length > 0 && !ai.busy && <Button variant="ghost" size="sm" className="w-full" icon={<Trash2 className="size-4" />} onClick={() => setMsgs([])}>Clear chat</Button>}
         <p className="text-xs text-muted">Small local models can be wrong. Use the page numbers to check answers that matter.</p>

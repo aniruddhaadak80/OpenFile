@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Layout } from '@/components/Layout'
 import Home from '@/pages/Home'
 
@@ -41,6 +41,8 @@ export default function App() {
             <Route path="install" element={<Install />} />
             <Route path="download" element={<Install />} />
             <Route path="open" element={<Open />} />
+            <Route path="sketch" element={<Navigate to="/sketch-board" replace />} />
+            <Route path="whiteboard" element={<Navigate to="/sketch-board" replace />} />
             <Route path=":slug" element={<ToolPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>

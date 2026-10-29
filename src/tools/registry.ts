@@ -1,6 +1,6 @@
 // Central catalog of every OpenFile tool.
 // Each tool's UI lives at src/tools/<category>/<slug>.tsx (default export) and is lazy-loaded.
-export type Category = 'pdf' | 'convert' | 'image' | 'video' | 'audio' | 'dev' | 'text' | 'design' | 'data' | 'ai' | '3d' | 'archive' | 'ebook' | 'font' | 'cad' | 'subtitle' | 'privacy' | 'geo' | 'office' | 'science' | 'creator'
+export type Category = 'pdf' | 'convert' | 'image' | 'video' | 'audio' | 'dev' | 'text' | 'design' | 'data' | 'ai' | '3d' | 'archive' | 'ebook' | 'font' | 'cad' | 'subtitle' | 'privacy' | 'geo' | 'office' | 'science' | 'creator' | 'finance' | 'health'
 import { BATCH_1 } from './batches/b1'
 import { BATCH_2 } from './batches/b2'
 import { BATCH_3 } from './batches/b3'
@@ -12,6 +12,7 @@ import { BATCH_12 } from './batches/b12'
 import { BATCH_CAT1 } from './batches/b-cat1'
 import { BATCH_CAT2 } from './batches/b-cat2'
 import { BATCH_CAT3 } from './batches/b-cat3'
+import { BATCH_13 } from './batches/b13'
 
 export interface ToolMeta {
   slug: string
@@ -64,6 +65,8 @@ const ALL_CATEGORIES: { id: Category; name: string; blurb: string; color: string
   { id: 'office', name: 'Office & Sheets', blurb: 'Merge, split, compare and pivot spreadsheets, clean Word files', color: '#F59E0B' },
   { id: 'science', name: 'Science & Education', blurb: 'Equations, graphs, chemistry, matrices, logic and primes', color: '#A3E635' },
   { id: 'creator', name: 'Creator Studio', blurb: 'Audiograms, vertical video, carousels, word clouds and chapters', color: '#FDBA74' },
+  { id: 'finance', name: 'Money & Finance', blurb: 'Bank statements, receipts, loans, tax and shared expenses', color: '#BEF264' },
+  { id: 'health', name: 'Health & Fitness', blurb: 'FIT workouts, heart rate zones, Apple Health data, pace and body measures', color: '#5EEAD4' },
 ]
 
 const CORE_TOOLS: ToolMeta[] = [
@@ -201,7 +204,7 @@ const CORE_TOOLS: ToolMeta[] = [
   { slug: 'placeholder-image', name: 'Placeholder Image', desc: 'Generate placeholder images in any size, color and text.', category: 'design', icon: 'ImageIcon' },
 ]
 
-export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5, ...BATCH_10, ...BATCH_11, ...BATCH_12, ...BATCH_CAT1, ...BATCH_CAT2, ...BATCH_CAT3]
+export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5, ...BATCH_10, ...BATCH_11, ...BATCH_12, ...BATCH_CAT1, ...BATCH_CAT2, ...BATCH_CAT3, ...BATCH_13]
 
 /** Only categories that have at least one tool are shown in the UI. */
 export const CATEGORIES = ALL_CATEGORIES.filter((c) => TOOLS.some((t) => t.category === c.id))

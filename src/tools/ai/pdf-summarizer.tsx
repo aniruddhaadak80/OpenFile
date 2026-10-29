@@ -1,24 +1,34 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Sparkles, Download, FileText } from 'lucide-react'
 import { Button, Label, Segmented, ToolGrid, CopyButton, Empty } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
 import { aiRun, chunkText, MODELS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress, useDocInput, DocInput } from '@/lib/b4/aiui'
+import { summarize as extractive, keywords } from '@/lib/r13/extractive'
 
-type Engine = 'quick' | 'smart'
+type Engine = 'instant' | 'quick' | 'smart'
 type Len = 'short' | 'medium' | 'long'
 const LEN = { short: { max: 80, min: 20, bullets: 4 }, medium: { max: 140, min: 40, bullets: 7 }, long: { max: 220, min: 80, bullets: 12 } }
 
 export default function PdfSummarizer() {
   const doc = useDocInput()
   const [engine, setEngine] = useState<Engine>('quick')
+  const picked = useRef(false)
   const [len, setLen] = useState<Len>('medium')
   const [summary, setSummary] = useState('')
-  const models = engine === 'quick' ? MODELS.summarize : MODELS.chat
+  const models = engine === 'smart' ? MODELS.chat : MODELS.summarize
   const ai = useAiState(models)
   const live = ai.busy
+  // Without WebGPU a 300 MB model on the CPU is slow and heavy, so start in Instant mode (no download). The user can still switch.
+  useEffect(() => { const id = setTimeout(() => { if (!picked.current && !ai.gpuOk) setEngine('instant') }, 400); return () => clearTimeout(id) }, [ai.gpuOk])
+  const instant = () => {
+    const n = LEN[len].bullets
+    const picks = extractive(doc.text, n)
+    const kw = keywords(doc.text, 8)
+    setSummary((kw.length ? `Key words: ${kw.join(', ')}\n\n` : '') + picks.map((p) => `- ${p.text}`).join('\n'))
+  }
 
-  const go = () => ai.run(async () => {
+  const go = () => engine === 'instant' ? instant() : ai.run(async () => {
     setSummary('')
     const L = LEN[len]
     if (engine === 'quick') {
@@ -65,9 +75,9 @@ export default function PdfSummarizer() {
         ) : doc.ready && !live ? <Empty><FileText className="mx-auto mb-2 size-6" />Pick the summary style on the right, then press Summarize.</Empty> : null}
       </>}
       side={<>
-        <div><Label>Style</Label><Segmented value={engine} onChange={(v) => { setEngine(v); ai.setModel((v === 'quick' ? MODELS.summarize : MODELS.chat)[0].id) }} options={[{ value: 'quick', label: 'Quick summary' }, { value: 'smart', label: 'Key points' }]} /><p className="mt-1 text-xs text-muted">{engine === 'quick' ? 'A trained summarizer. Fast, writes flowing paragraphs. Best for English.' : 'A small chat model writes an overview and bullet points. Slower, more flexible, handles many languages.'}</p></div>
+        <div><Label>Style</Label><Segmented value={engine} onChange={(v) => { picked.current = true; setEngine(v); ai.setModel((v === 'smart' ? MODELS.chat : MODELS.summarize)[0].id) }} options={[{ value: 'instant', label: 'Instant' }, { value: 'quick', label: 'AI summary' }, { value: 'smart', label: 'Key points' }]} /><p className="mt-1 text-xs text-muted">{engine === 'instant' ? 'Picks the most important sentences from the document itself. Instant, no download, works on any device.' : engine === 'quick' ? 'A trained summarizer writes flowing paragraphs. Best for English.' : 'A small chat model writes an overview and bullet points. Slower, more flexible, handles many languages.'}</p></div>
         <div><Label>Length</Label><Segmented value={len} onChange={setLen} options={[{ value: 'short', label: 'Short' }, { value: 'medium', label: 'Medium' }, { value: 'long', label: 'Detailed' }]} /></div>
-        <ModelPanel ai={ai} models={models} />
+        {engine !== 'instant' && <ModelPanel ai={ai} models={models} />}
         <Button size="lg" className="w-full" icon={<Sparkles className="size-5" />} onClick={go} loading={live} disabled={!doc.ready}>Summarize</Button>
         <AiProgress ai={ai} />
         <p className="text-xs text-muted">AI summaries can miss or mix up details. Check important facts against the original.</p>

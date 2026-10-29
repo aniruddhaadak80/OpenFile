@@ -7,11 +7,13 @@ const PAL: Record<CoverKind, [string, string]> = {
   pipeline: ['#F5A524', '#14B8A6'], sketch: ['#60A5FA', '#22D3EE'], formats: ['#F97316', '#F5A524'], dev: ['#22D3EE', '#14B8A6'], voice: ['#14B8A6', '#F5A524'],
   install: ['#F5A524', '#38BDF8'], ai: ['#10B981', '#22D3EE'], mail: ['#F97316', '#F5A524'], photo: ['#84CC16', '#F5A524'], gif: ['#F5A524', '#84CC16'],
   signature: ['#14B8A6', '#F5A524'], ebook: ['#F5A524', '#10B981'], cad: ['#38BDF8', '#F5A524'], medical: ['#22D3EE', '#10B981'], midi: ['#F97316', '#14B8A6'],
-  data: ['#10B981', '#38BDF8'], subtitle: ['#F5A524', '#22D3EE'],
+  data: ['#10B981', '#38BDF8'], subtitle: ['#F5A524', '#22D3EE'], money: ['#BEF264', '#F5A524'], fitness: ['#5EEAD4', '#F97316'],
 }
 
 function Motif({ kind, a, b }: { kind: CoverKind; a: string; b: string }) {
   switch (kind) {
+    case 'money': return <g fill="none" strokeWidth="3" fontFamily="ui-monospace, monospace" fontSize="13" fontWeight="700"><rect x="110" y="78" width="120" height="96" rx="10" stroke={a} />{[0, 1, 2, 3].map((i) => <g key={i}><path d={`M122 ${100 + i * 18} h60`} stroke={a} strokeOpacity=".45" /><text x="218" y={`${104 + i * 18}`} textAnchor="end" fill={i === 3 ? b : a} stroke="none">{['-649', '-340', '+52k', '=51k'][i]}</text></g>)}{[0, 1, 2, 3].map((i) => <rect key={i} x={250 + i * 18} y={170 - [40, 62, 30, 78][i]} width="12" height={[40, 62, 30, 78][i]} rx="3" fill={i % 2 ? b : a} stroke="none" />)}</g>
+    case 'fitness': return <g fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="118" y="82" width="74" height="90" rx="22" stroke={a} /><path d="M140 82 v-14 h30 v14 M140 172 v14 h30 v-14" stroke={a} strokeOpacity=".6" /><path d="M128 128 h14 l8 -16 10 30 8 -14 h14" stroke={b} /><path d="M214 160 C 240 110, 262 150, 290 96" stroke={b} strokeDasharray="6 6" /><circle cx="290" cy="96" r="6" fill={a} stroke="none" /></g>
     case 'privacy': return <g fill="none" strokeWidth="3"><path d="M200 70 L260 92 V140 C260 178 232 200 200 212 C168 200 140 178 140 140 V92 Z" stroke={a} /><rect x="182" y="128" width="36" height="30" rx="6" stroke={b} /><path d="M188 128 v-10 a12 12 0 0 1 24 0 v10" stroke={b} /></g>
     case 'pdf': return <g fill="none" strokeWidth="3">{[0, 1, 2].map((i) => <g key={i} transform={`translate(${150 + i * 26} ${80 - i * 8})`}><path d="M0 0h48l18 18v86H0Z" stroke={i === 2 ? a : b} strokeOpacity={0.4 + i * 0.3} fill="#000" /><path d="M10 40h44M10 54h44M10 68h30" stroke={i === 2 ? a : b} strokeOpacity={0.5 + i * 0.25} /></g>)}</g>
     case 'image': return <g fill="none" strokeWidth="3"><rect x="130" y="70" width="140" height="110" rx="10" stroke={a} /><circle cx="170" cy="105" r="12" stroke={b} /><path d="M130 165 l45-40 30 25 25-20 40 35" stroke={a} />{Array.from({ length: 6 }).map((_, i) => <rect key={i} x={200 + (i % 3) * 23} y={70 + Math.floor(i / 3) * 23} width="23" height="23" fill={b} fillOpacity={0.08 + i * 0.03} stroke="none" />)}</g>
@@ -50,7 +52,7 @@ export function Cover({ kind, className, title }: { kind: CoverKind; className?:
       <rect width="400" height="250" fill={`url(#${id}-g)`} />
       <circle cx="330" cy="40" r="70" fill="none" stroke={a} strokeOpacity=".25" strokeWidth="1.5" />
       <circle cx="330" cy="40" r="46" fill="none" stroke={a} strokeOpacity=".5" strokeWidth="2" />
-      <Motif kind={kind} a={a} b={b} />
+      <g aria-hidden="true"><Motif kind={kind} a={a} b={b} /></g>
     </svg>
   )
 }

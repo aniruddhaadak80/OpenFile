@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MessageSquareText, Trash2 } from 'lucide-react'
 import { Button, Dropzone, Label, Segmented, ToolGrid, Textarea, CopyButton } from '@/components/ui'
 import { formatBytes, baseName } from '@/lib/files'
 import { VMODELS } from '@/lib/bcat/vision'
 import { useVision, EnginePanel, VisionProgress } from '@/lib/bcat/aiui'
 import { useObjectUrl, toCsv, DlButton } from '@/lib/bcat/kit'
+import { captionFromObjects, toneOf } from '@/lib/r13/caption'
 
 interface Item { file: File; caption?: string }
 
@@ -15,9 +16,24 @@ const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1).replace(/\
 export default function ImageCaptioner() {
   const [items, setItems] = useState<Item[]>([])
   const [detail, setDetail] = useState<'fast' | 'careful'>('fast')
-  const ai = useVision(VMODELS.caption)
+  const ai = useVision(VMODELS.caption, { quick: true })
+  const picked = useRef(false)
+  // Without WebGPU the 240 MB captioner is heavy on the CPU, so start with the light 10 MB object model. The user can switch back.
+  useEffect(() => { const id = setTimeout(() => { if (!picked.current && !ai.gpuOk) ai.setEngine('quick') }, 400); return () => clearTimeout(id) }, [ai.gpuOk]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const go = () => ai.run(async () => {
+  const goLight = () => ai.run(async () => {
+    const list = items.map((it, i) => ({ it, i }))
+    for (let k = 0; k < list.length; k++) {
+      const { it, i } = list[k]
+      const boxes = await ai.infer<{ label: string; score: number; box: any }[]>(it.file, { threshold: 0.55, maxSide: 512 }, {}, VMODELS.detect)
+      const tone = await toneOf(it.file)
+      const caption = captionFromObjects(boxes.map((b) => b.label), tone)
+      ai.setProgress((k + 1) / list.length); ai.setStatus(`Described ${k + 1} of ${list.length}`)
+      setItems((p) => p.map((x, j) => (j === i ? { ...x, caption } : x)))
+    }
+  })
+
+  const go = () => ai.engine === 'quick' ? goLight() : ai.run(async () => {
     const todo = items.map((it, i) => ({ it, i })).filter(({ it }) => !it.caption)
     const list = todo.length ? todo : items.map((it, i) => ({ it, i }))
     const out = await ai.infer<string[]>(list.map((x) => x.it.file), { beams: detail === 'careful' ? 3 : 1, max: detail === 'careful' ? 40 : 28, maxSide: 512 }, {
@@ -48,8 +64,8 @@ export default function ImageCaptioner() {
       }
       side={
         <>
-          <EnginePanel ai={ai} />
-          <div><Label>Detail</Label><Segmented value={detail} onChange={setDetail} options={[{ value: 'fast', label: 'Fast' }, { value: 'careful', label: 'Careful' }]} /></div>
+          <div onClickCapture={() => { picked.current = true }}><EnginePanel ai={ai} quickLabel="Light model" quickNote="Light mode finds everyday objects with a 10 MB model (YOLOS tiny) and adds the light and colour of the photo. Fast on any computer, simpler captions." /></div>
+          {ai.engine === 'ai' && <div><Label>Detail</Label><Segmented value={detail} onChange={setDetail} options={[{ value: 'fast', label: 'Fast' }, { value: 'careful', label: 'Careful' }]} /></div>}
           <VisionProgress ai={ai} />
           <Button className="w-full" icon={<MessageSquareText className="size-4" />} loading={ai.busy} onClick={go}>Write {items.length > 1 ? `${items.length} captions` : 'caption'}</Button>
           {done.length > 0 && (

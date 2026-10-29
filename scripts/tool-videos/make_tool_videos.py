@@ -1901,6 +1901,232 @@ def d_new(c, g, t, d, P):
 
 
 # ----------------------------------------------------------------------------- per-tool plan
+LIME_F = hexrgb('#BEF264')
+TEAL_H = hexrgb('#5EEAD4')
+
+
+def _money_rows(c, x, y, t, t0, rows, w=380, lh=34, cat=None):
+    for i, (d_, desc, amt) in enumerate(rows):
+        k = ease_out((t - t0 - i * 0.18) / 0.4)
+        yy = y + i * lh
+        rrect(c, x, yy - lh / 2 + 3, w, lh - 6, 6, fill=SURF, stroke=LINE, alpha=k)
+        text(c, d_, font(MONO, 12, 'Medium'), x + 12, yy, color=MUTED, anchor='lm', alpha=k)
+        text(c, desc, font(SANS, 14, 'SemiBold'), x + 92, yy, anchor='lm', alpha=k)
+        text(c, amt, font(MONO, 14, 'Bold'), x + w - 12, yy, color=EMERALD if not amt.startswith('-') else TEXT, anchor='rm', alpha=k)
+        if cat:
+            kc = ease_out_back((t - cat[1] - i * 0.22) / 0.4)
+            if kc > 0:
+                badge(c, x + w + 70, yy, cat[0][i][0], cat[0][i][1], clamp(kc), 12)
+
+
+ROWS = [('03 Oct', 'Netflix', '-649.00'), ('05 Oct', 'Big Basket', '-1,830.50'), ('10 Oct', 'Uber trip', '-340.00'), ('01 Oct', 'Salary', '52,000.00'), ('13 Oct', 'ATM cash', '-2,000.00')]
+
+
+def d_r13(c, g, t, d, P):
+    """Templates for the Money & Finance and Health & Fitness tools (round 13)."""
+    slug, s = P['slug'], P['seed']
+    if slug == 'bank-statement-converter':
+        fmts = ['OFX', 'QIF', 'CAMT', 'MT940']
+        i = int(t / 1.1) % 4
+        fmt_card(c, CX - 260, CY, fmts[i], LIME_F, 1, kind='doc', seed=s + i)
+        arrow(c, CX - 160, CY, CX - 40, GOLD, 1, t)
+        _sheet(c, CX - 20, CY - 110, 4, 7, 72, 32, LIME_F, 0.4, t, title='transactions.xlsx')
+        badge(c, CX + 140, CY + 150, ['CSV', 'Excel', 'JSON', 'OFX'][i], GOLD, ease_out((t - 0.8) / 0.4), 14)
+        return
+    if slug == 'csv-to-ofx':
+        _sheet(c, CX - 330, CY - 100, 3, 6, 70, 32, SKY, 0.2, t, title='bank.csv')
+        k = ease_in_out((t - 1.0) / 1.2)
+        arrow(c, CX - 90, CY, CX + 20, GOLD, 1, t)
+        lines_ = ['<STMTTRN>', '  <TRNAMT>-649.00', '  <NAME>Netflix', '</STMTTRN>', '<STMTTRN>', '  <TRNAMT>52000.00']
+        rrect(c, CX + 40, CY - 120, 290, 240, 12, fill=SURF, stroke=LIME_F, lw=2, alpha=k)
+        for j, ln in enumerate(lines_):
+            text(c, ln, font(MONO, 14, 'Medium'), CX + 60, CY - 95 + j * 34, color=LIME_F if '<' in ln[:3] else TEXT, anchor='lm', alpha=ease_out((t - 1.4 - j * 0.15) / 0.3))
+        badge(c, CX + 185, CY + 150, 'OFX 2.2', LIME_F, ease_out((t - 2.4) / 0.4), 14)
+        return
+    if slug == 'statement-analyzer':
+        vals = [(0.9, 0.55), (0.85, 0.7), (0.92, 0.6), (0.88, 0.8), (0.95, 0.5)]
+        for i, (a, b) in enumerate(vals):
+            k = ease_out((t - 0.3 - i * 0.15) / 0.6)
+            x = CX - 330 + i * 70
+            rrect(c, x, CY + 110 - 200 * a * k, 24, 200 * a * k, 4, fill=TEAL)
+            rrect(c, x + 28, CY + 110 - 200 * b * k, 24, 200 * b * k, 4, fill=GOLD)
+        cats = [('Groceries', 0.8, EMERALD), ('Bills', 0.6, SKY), ('Eating out', 0.45, GOLD), ('Transport', 0.3, ORANGE_)]
+        for i, (lab, v, col) in enumerate(cats):
+            y = CY - 80 + i * 50
+            k = ease_out((t - 1.4 - i * 0.2) / 0.5)
+            text(c, lab, font(SANS, 15, 'SemiBold'), CX + 60, y, anchor='lm', alpha=k)
+            rrect(c, CX + 180, y - 8, 160, 16, 8, fill=SURF2, alpha=k)
+            rrect(c, CX + 180, y - 8, 160 * v * k, 16, 8, fill=col)
+        badge(c, CX + 200, CY + 140, '3 subscriptions found', GOLD, ease_out((t - 2.8) / 0.4), 13)
+        return
+    if slug == 'transaction-categorizer':
+        cats = [('Subscriptions', SKY), ('Groceries', EMERALD), ('Transport', ORANGE_), ('Income', LIME_F), ('Cash', GOLD)]
+        _money_rows(c, CX - 330, CY - 120, t, 0.2, ROWS, w=360, lh=58, cat=(cats, 1.2))
+        circle(g, CX + 20, CY - 150, 18, fill=GOLD, alpha=0.4 * (0.5 + 0.5 * math.sin(t * 4)))
+        draw_sprite(c, icon_sprite('Sparkles', 26, GOLD), CX + 20, CY - 150, 1)
+        return
+    if slug == 'receipt-scanner':
+        page(c, CX - 170, CY, 200, 300, 1, LIME_F, lines=0, seed=s)
+        items = ['FRESH MART', 'Milk      62.00', 'Bread     45.00', 'Eggs      96.00', 'GST       10.15', 'TOTAL    213.15']
+        for i, it in enumerate(items):
+            text(c, it, font(MONO, 13, 'Bold' if i in (0, 5) else 'Medium'), CX - 250, CY - 110 + i * 40, color=INK, anchor='lm')
+        sy = CY - 140 + ((t * 120) % 290)
+        line(c, CX - 275, sy, CX - 65, sy, CYAN, 3, 0.9 if t < 3.2 else 0)
+        rrect(g, CX - 275, sy - 6, 210, 12, 6, fill=CYAN, alpha=0.35 if t < 3.2 else 0)
+        fields = [('Shop', 'Fresh Mart'), ('Date', '2026-10-14'), ('Tax', '10.15'), ('Total', '213.15')]
+        for i, (k_, v) in enumerate(fields):
+            k = ease_out((t - 1.0 - i * 0.4) / 0.4)
+            y = CY - 90 + i * 60
+            rrect(c, CX + 20, y - 22, 300, 44, 10, fill=SURF, stroke=LINE, alpha=k)
+            text(c, k_, font(SANS, 13, 'SemiBold'), CX + 36, y, color=MUTED, anchor='lm', alpha=k)
+            text(c, v, font(MONO, 16, 'Bold'), CX + 304, y, color=GOLD if k_ == 'Total' else TEXT, anchor='rm', alpha=k)
+        return
+    if slug == 'pdf-statement-to-csv':
+        page(c, CX - 240, CY, 220, 290, 1, GOLD, lines=0, seed=s)
+        for i in range(6):
+            y = CY - 100 + i * 36
+            line(c, CX - 330, y, CX - 150, y, INK, 2, 0.5)
+            k = ease_out((t - 0.6 - i * 0.25) / 0.3)
+            rrect(g, CX - 340, y - 12, 200, 24, 4, fill=LIME_F, alpha=0.35 * k * (1 - ease_out((t - 2.8) / 0.5)))
+        arrow(c, CX - 100, CY, CX, GOLD, 1, t)
+        _sheet(c, CX + 20, CY - 110, 4, 7, 72, 32, LIME_F, 1.0, t, title='statement.csv')
+        return
+    if slug == 'loan-calculator':
+        pts = [(CX - 300 + i * 12, CY + 110 - 220 * (1 - (i / 50) ** 1.6)) for i in range(51)]
+        _grid(c, CX - 310, CY - 120, 620, 240, 40, LIME_F, 0.08)
+        _poly(c, pts, GOLD, 4, 1, ease_in_out(t / 3.0))
+        pts2 = [(CX - 300 + i * 12, CY + 110 - 220 * (1 - min(1, (i / 38)) ** 1.5)) for i in range(51)]
+        _poly(c, pts2, TEAL, 3, ease_out((t - 2.0) / 0.5), ease_in_out((t - 2.0) / 1.5))
+        badge(c, CX + 200, CY - 110, 'EMI 21,696', GOLD, ease_out((t - 0.6) / 0.4), 15)
+        badge(c, CX + 200, CY - 60, 'saves 4.1 lakh', TEAL, ease_out((t - 3.0) / 0.4), 13)
+        return
+    if slug == 'compound-interest':
+        for i in range(12):
+            v = (1.12 ** i - 1) / (1.12 ** 11 - 1)
+            k = ease_out((t - 0.2 - i * 0.12) / 0.5)
+            x = CX - 320 + i * 54
+            inv = 30 + i * 12
+            rrect(c, x, CY + 120 - inv * k, 38, inv * k, 4, fill=TEAL)
+            h2 = 230 * v * k
+            rrect(c, x, CY + 120 - inv * k - h2, 38, h2, 4, fill=GOLD)
+        text(c, 'growth', font(SANS, 14, 'Bold'), CX - 300, CY - 120, color=GOLD, anchor='lm', alpha=ease_out((t - 1.5) / 0.4))
+        text(c, 'invested', font(SANS, 14, 'Bold'), CX - 200, CY - 120, color=TEAL, anchor='lm', alpha=ease_out((t - 1.5) / 0.4))
+        return
+    if slug == 'gst-vat-calculator':
+        n = int(clamp(t / 1.2) * 4)
+        text(c, '1,000'[:max(1, n + 1)], font(DISPLAY, 54, 'Bold'), CX - 200, CY - 40)
+        k = ease_out_back((t - 1.2) / 0.5)
+        badge(c, CX - 20, CY - 40, '+ 18%', GOLD, clamp(k), 20)
+        k2 = ease_out((t - 1.8) / 0.5)
+        text(c, '= 1,180', font(DISPLAY, 54, 'Bold'), CX + 180, CY - 40, color=LIME_F, alpha=k2)
+        for i, (lab, v) in enumerate((('CGST 9%', '90'), ('SGST 9%', '90'), ('IGST 18%', '180'))):
+            kk = ease_out((t - 2.4 - i * 0.2) / 0.4)
+            x = CX - 220 + i * 220
+            rrect(c, x - 90, CY + 50, 180, 70, 12, fill=SURF, stroke=LINE, alpha=kk)
+            text(c, lab, font(SANS, 14, 'SemiBold'), x, CY + 72, color=MUTED, alpha=kk)
+            text(c, v, font(MONO, 22, 'Bold'), x, CY + 100, alpha=kk)
+        return
+    if slug == 'expense-splitter':
+        ppl = [('Asha', GOLD, -200), ('Ravi', TEAL, 0), ('Meera', SKY, 200)]
+        for i, (nm, col, dx) in enumerate(ppl):
+            k = ease_out_back((t - 0.2 - i * 0.2) / 0.5)
+            circle(c, CX + dx, CY - 60, 44, fill=mix(SURF2, col, 0.35), stroke=col, lw=3, alpha=clamp(k))
+            text(c, nm[0], font(DISPLAY, 34, 'Bold'), CX + dx, CY - 60, alpha=clamp(k))
+            text(c, nm, font(SANS, 14, 'SemiBold'), CX + dx, CY, color=MUTED, alpha=clamp(k))
+        k = ease_in_out((t - 1.4) / 1.0)
+        if k > 0:
+            for dx0 in (0, 200):
+                x = lerp(CX + dx0 - 30, CX - 170, k)
+                circle(c, x, CY - 60 + math.sin(k * math.pi) * -50, 14, fill=LIME_F)
+                text(c, '₹', font(SANS, 14, 'Bold'), x, CY - 60 + math.sin(k * math.pi) * -50, color=BLACK)
+        badge(c, CX, CY + 80, '2 payments settle everyone', LIME_F, ease_out((t - 2.6) / 0.4), 14)
+        return
+    if slug == 'fit-file-converter':
+        rrect(c, CX - 330, CY - 70, 130, 150, 34, fill=SURF, stroke=TEAL_H, lw=3)
+        text(c, '5.0', font(DISPLAY, 34, 'Bold'), CX - 265, CY - 10)
+        text(c, 'km', font(SANS, 14, 'Bold'), CX - 265, CY + 25, color=MUTED)
+        badge(c, CX - 265, CY + 105, '.FIT', TEAL_H, 1, 14)
+        arrow(c, CX - 180, CY, CX - 90, GOLD, 1, t)
+        pts = [(CX + 10 + x * 0.55, CY - 20 + y * 0.55) for x, y in _track(s, 50, 420, 200)]
+        _grid(c, CX - 80, CY - 120, 400, 200, 32, TEAL_H, 0.07)
+        head = _poly(c, pts, GOLD, 4, 1, ease_in_out((t - 0.4) / 2.4))
+        circle(g, head[0], head[1], 12, fill=GOLD, alpha=0.6)
+        for i, lab in enumerate(('CSV', 'GPX', 'Excel')):
+            badge(c, CX - 20 + i * 110, CY + 130, lab, [GOLD, TEAL_H, SKY][i], ease_out((t - 2.6 - i * 0.2) / 0.4), 13)
+        return
+    if slug == 'heart-rate-zones':
+        cols_ = [SKY, TEAL, LIME_, GOLD, ORANGE_]
+        share = [0.1, 0.35, 0.3, 0.18, 0.07]
+        x = CX - 320
+        k = ease_in_out((t - 0.3) / 1.6)
+        for i, v in enumerate(share):
+            w_ = 640 * v * k
+            rrect(c, x, CY + 60, max(1, w_), 34, 6, fill=cols_[i])
+            x += w_
+        pts = [(CX - 320 + i * 8, CY - 20 - 90 * (0.4 + 0.6 * (i / 80) + 0.08 * math.sin(i / 3))) for i in range(81)]
+        _poly(c, pts, ORANGE_, 3, 1, ease_in_out(t / 2.2))
+        beat = 1 + 0.12 * max(0, math.sin(t * 7))
+        draw_sprite(c, icon_sprite('HeartPulse', 40, ORANGE_), CX + 280, CY - 120, 1, scale=beat)
+        badge(c, CX + 220, CY + 130, 'load 86', GOLD, ease_out((t - 2.4) / 0.4), 14)
+        return
+    if slug == 'apple-health-export':
+        rrect(c, CX - 330, CY - 90, 140, 180, 18, fill=SURF, stroke=TEAL_H, lw=2)
+        draw_sprite(c, icon_sprite('Apple', 54, TEAL_H), CX - 260, CY - 20, 1)
+        text(c, 'export.zip', font(MONO, 13, 'Bold'), CX - 260, CY + 55, color=MUTED)
+        arrow(c, CX - 170, CY, CX - 80, GOLD, 1, t)
+        for i, (lab, col) in enumerate((('steps.csv', GOLD), ('heart-rate.csv', ORANGE_), ('weight.csv', TEAL_H), ('workouts.csv', SKY))):
+            k = ease_out_back((t - 0.8 - i * 0.35) / 0.5)
+            y = CY - 105 + i * 70
+            rrect(c, CX - 50, y - 26, 250, 52, 10, fill=SURF, stroke=col, lw=2, alpha=clamp(k))
+            text(c, lab, font(MONO, 15, 'Bold'), CX - 30, y, anchor='lm', alpha=clamp(k))
+            vals = wave_vals(s + i, 8)
+            for j, v in enumerate(vals):
+                rrect(c, CX + 130 + j * 7, y + 14 - 26 * v * clamp(k), 4, 26 * v * clamp(k), 2, fill=col)
+        return
+    if slug == 'pace-calculator':
+        k = clamp(t / 3.2)
+        rrect(c, CX - 320, CY + 40, 640, 14, 7, fill=SURF2)
+        rrect(c, CX - 320, CY + 40, 640 * k, 14, 7, fill=GOLD)
+        for i in range(6):
+            x = CX - 320 + i * 128
+            line(c, x, CY + 30, x, CY + 64, MUTED, 2, 0.6)
+            text(c, f'{i * 2} km', font(MONO, 12, 'Medium'), x, CY + 80, color=MUTED)
+        draw_sprite(c, icon_sprite('Footprints', 34, GOLD), CX - 320 + 640 * k, CY + 10, 1)
+        text(c, '5:30 /km', font(DISPLAY, 44, 'Bold'), CX - 120, CY - 80)
+        badge(c, CX + 170, CY - 100, '10K  55:00', TEAL, ease_out((t - 0.8) / 0.4), 14)
+        badge(c, CX + 170, CY - 55, 'Half  2:01:39', SKY, ease_out((t - 1.6) / 0.4), 14)
+        return
+    if slug == 'bmi-bmr-calculator':
+        cols_ = [SKY, EMERALD, GOLD, ORANGE_]
+        for i, col in enumerate(cols_):
+            rrect(c, CX - 300 + i * 150, CY + 20, 148, 20, 4, fill=col, alpha=0.85)
+        k = ease_out_back((t - 0.4) / 1.4)
+        x = lerp(CX - 300, CX - 300 + 600 * 0.33, k)
+        circle(c, x, CY + 30, 16, fill=TEXT, stroke=BLACK, lw=3)
+        text(c, f'BMI {lerp(15, 23.7, clamp(k)):.1f}', font(DISPLAY, 40, 'Bold'), CX, CY - 60)
+        badge(c, CX - 150, CY + 100, 'BMR 1,649 kcal', TEAL, ease_out((t - 1.8) / 0.4), 14)
+        badge(c, CX + 150, CY + 100, 'Daily 2,267 kcal', GOLD, ease_out((t - 2.4) / 0.4), 14)
+        return
+    if slug == 'meal-photo-logger':
+        photo(c, CX - 180, CY, 260, 220, s, stroke=TEAL_H)
+        k = ease_out((t - 0.8) / 0.4)
+        if k > 0:
+            for b_ in range(3):
+                rr = 40 + ((t * 60 + b_ * 30) % 90)
+                circle(c, CX - 180, CY, rr, stroke=GOLD, lw=2, alpha=0.5 * (1 - rr / 130) * k)
+        guesses = [('biryani', 0.82), ('fried rice', 0.11), ('curry', 0.04)]
+        for i, (lab, v) in enumerate(guesses):
+            kk = ease_out((t - 1.4 - i * 0.25) / 0.4)
+            y = CY - 70 + i * 50
+            text(c, lab, font(SANS, 16, 'SemiBold'), CX + 20, y, anchor='lm', alpha=kk)
+            rrect(c, CX + 140, y - 8, 160, 16, 8, fill=SURF2, alpha=kk)
+            rrect(c, CX + 140, y - 8, 160 * v * kk, 16, 8, fill=[GOLD, TEAL, SKY][i])
+        badge(c, CX + 160, CY + 110, 'about 600 kcal', GOLD, ease_out((t - 2.6) / 0.4), 15)
+        return
+    # any other tool in these categories
+    page(c, CX, CY, 260, 300, 1, LIME_F if P['cat'] == 'finance' else TEAL_H, seed=s)
+
+
 def plan(tool):
     slug, cat, name = tool['slug'], tool['category'], tool['name']
     seed = seed_of(slug)
@@ -2014,6 +2240,8 @@ def plan(tool):
             fn = d_text
         elif cat == 'design':
             fn = d_design
+        elif cat in ('finance', 'health'):
+            fn = d_r13
         elif cat in ('privacy', 'geo', 'office', 'science', 'creator') or slug in NEW_AI_VISION or slug in NEW_AI_TEXT:
             fn = d_new
         elif cat in ('data', 'ai', '3d', 'archive', 'ebook', 'font', 'cad', 'subtitle'):

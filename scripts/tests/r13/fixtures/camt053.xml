@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02"><BkToCstmrStmt><Stmt><Acct><Id><IBAN>DE89370400440532013000</IBAN></Id><Ccy>EUR</Ccy></Acct>
+<Ntry><Amt Ccy="EUR">120.50</Amt><CdtDbtInd>DBIT</CdtDbtInd><BookgDt><Dt>2026-10-01</Dt></BookgDt><NtryDtls><TxDtls><RltdPties><Cdtr><Nm>Stadtwerke Berlin</Nm></Cdtr></RltdPties><RmtInf><Ustrd>Strom Oktober</Ustrd></RmtInf></TxDtls></NtryDtls></Ntry>
+<Ntry><Amt Ccy="EUR">3000.00</Amt><CdtDbtInd>CRDT</CdtDbtInd><BookgDt><Dt>2026-10-02</Dt></BookgDt><NtryDtls><TxDtls><RltdPties><Dbtr><Nm>Example GmbH</Nm></Dbtr></RltdPties><RmtInf><Ustrd>Gehalt</Ustrd></RmtInf></TxDtls></NtryDtls></Ntry>
+</Stmt></BkToCstmrStmt></Document>

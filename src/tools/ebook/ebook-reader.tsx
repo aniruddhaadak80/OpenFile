@@ -24,6 +24,7 @@ interface TocItem { label: string; href: string; subitems?: TocItem[] }
 const MAX_BYTES = 500 * 1024 * 1024 // bigger files are refused instead of exhausting memory
 const PART_CHARS = 120_000 // converted documents are cut into sections of about this size so no page lays out a whole book
 const OPEN_SLOW_MS = 20_000
+const BIG_SECTION = 600_000 // bytes of one EPUB content file above which it is split before display
 const CANCELLED = 'cancelled'
 const tick = () => new Promise<void>((r) => setTimeout(r, 0))
 
@@ -100,7 +101,19 @@ export default function EbookReader() {
         // foliate-js renders book pages in same-origin frames that allow scripts (a WebKit requirement), so
         // every page (EPUB, MOBI, KF8, FB2, comics) is made inert before it is shown: no scripts, event handlers or script URLs.
         // Only the section on screen is loaded; its sanitized copy is released again when foliate unloads it.
-        const book = await makeBook(src)
+        let book = await makeBook(src)
+        // A native EPUB that keeps the whole book in one or two huge files would be laid out in one go and can stall
+        // the tab, so it is rebuilt with its long chapters cut into sections first, the same way converted documents are.
+        const biggest = Math.max(0, ...((book.sections ?? []) as { size?: number }[]).map((x) => x.size ?? 0))
+        if (src === file && biggest > BIG_SECTION && /\.epub$/i.test(file.name)) {
+          await step('Splitting a very long chapter')
+          const { loadBook, writeEpub } = await import('@/lib/b4/book')
+          const b = await loadBook(file, (p, label) => { if (!dead) setStage(`${label || 'Reading the book'} ${Math.round(p * 100)}%`) })
+          b.chapters = await splitLong(b.chapters)
+          await step('Building the book')
+          src = new File([await writeEpub(b)], file.name, { type: 'application/epub+zip' })
+          book = await makeBook(src)
+        }
         await step('Preparing pages')
         for (const s of book.sections ?? []) {
           if (typeof s.load !== 'function') continue

@@ -1,5 +1,5 @@
 // Cover art with a short muted loop on top: SVG cover first (instant), the loop video loads lazily when the card is in
-// view (or hovered on devices with a mouse) and fades in once it can play. Respects prefers-reduced-motion and data saver.
+// view (or hovered on devices with a mouse) and fades in once it can play. With reduced motion it only plays on hover.
 import { useEffect, useRef, useState } from 'react'
 import { Cover } from '../Cover'
 import type { CoverKind } from '../meta'
@@ -15,9 +15,12 @@ export function CoverMedia({ slug, kind, title, className, mode = 'inview', acti
   const [ready, setReady] = useState(false)
   const [visible, setVisible] = useState(false)
   const [hover, setHover] = useState(false)
-  const still = typeof window !== 'undefined' && (prefersReducedMotion() || (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData)
+  // Data saver keeps the still cover. Reduced motion only stops loops that start on their own: hovering a card is a
+  // deliberate choice, so the loop still plays on hover, the same as the tool card and hero ring previews.
+  const reduce = typeof window !== 'undefined' && prefersReducedMotion()
   const coarse = typeof window !== 'undefined' && matchMedia('(hover: none)').matches
-  const effMode: Mode = coarse ? 'inview' : mode
+  const still = typeof window !== 'undefined' && (!!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData || (reduce && coarse))
+  const effMode: Mode = reduce ? 'hover' : coarse ? 'inview' : mode
 
   useEffect(() => {
     if (!has || still || !box.current) return

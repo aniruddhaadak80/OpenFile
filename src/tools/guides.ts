@@ -77,6 +77,14 @@ const CAT_DEFAULTS: Partial<Record<Category, { steps: (t: ToolMeta) => string[];
     steps: (t) => [`Open ${t.name} and add your media or text.`, 'Pick a size, style and colours.', 'Preview the result.', 'Download it and post it.'],
     tips: ['Video tools encode on your device, so short clips finish much faster.', 'Square and 4:5 sizes take the most space in feeds. 9:16 is for stories, reels and shorts.'],
   },
+  finance: {
+    steps: (t) => [`Open ${t.name} and drop your bank file, receipt or numbers.`, 'Check what was read and fix any column or value.', 'Pick the output you want.', 'Download it. Nothing was uploaded.'],
+    tips: ['Bank files hold account numbers, so tools that run on your device are the safe choice.', 'Always compare totals with the original statement before you file anything.', 'OFX and QIF files import into most money apps.'],
+  },
+  health: {
+    steps: (t) => [`Open ${t.name} and drop your workout or health file, or type your numbers.`, 'Set your age, max heart rate or units in the side panel.', 'Read the results and charts.', 'Download CSV, GPX or Excel.'],
+    tips: ['Most watches can export FIT files from their app or website.', 'Health files reveal a lot about you. Here they never leave your device.', 'These tools give training information, not medical advice.'],
+  },
   pdf: {
     steps: (t) => [`Drop your PDF onto the ${t.name} area, or click to choose it.`, 'Wait a moment while page thumbnails render locally.', 'Choose the pages and options you need. Previews update as you go.', 'Press the main action button and download the finished PDF.'],
     tips: ['Encrypted PDFs must be unlocked first with Unlock PDF.', 'Large scanned PDFs are mostly images. Compress PDF shrinks them the most.', 'Your original file is never modified; you always download a new copy.'],

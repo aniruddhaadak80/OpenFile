@@ -16,6 +16,9 @@ import Dicom from './posts/view-dicom-images-privately'
 import Midi from './posts/midi-files-explained'
 import DataFormats from './posts/csv-json-parquet-excel'
 import Subtitles from './posts/subtitles-srt-vtt-ass-guide'
+import BankStatementFiles from './posts/bank-statement-files-explained'
+import InsideFitFile from './posts/what-is-inside-a-fit-file'
+import ScanReceipts from './posts/scan-receipts-privately'
 
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 const H2 = ({ children }: { children: string }) => <h2 id={slugify(children)}>{children}</h2>
@@ -253,4 +256,7 @@ export const POST_BODIES: Record<string, () => ReactNode> = {
   'midi-files-explained': Midi,
   'csv-json-parquet-excel': DataFormats,
   'subtitles-srt-vtt-ass-guide': Subtitles,
+  'bank-statement-files-explained': BankStatementFiles,
+  'what-is-inside-a-fit-file': InsideFitFile,
+  'scan-receipts-privately': ScanReceipts,
 }

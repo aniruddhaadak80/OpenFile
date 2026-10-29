@@ -1,6 +1,273 @@
 {
  "release": "https://github.com/aniruddhaadak80/OpenFile/releases/download/media-v1/",
  "posts": {
+  "what-is-inside-a-fit-file": {
+   "hash": "da9a3912a9b0",
+   "loop": true,
+   "video": {
+    "dur": 72.53,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.22,
+      "label": "In this post"
+     },
+     {
+      "t": 18.65,
+      "label": "What a FIT file is"
+     },
+     {
+      "t": 25.84,
+      "label": "Heart rate zones in plain words"
+     },
+     {
+      "t": 33.52,
+      "label": "Time in zone and training load"
+     },
+     {
+      "t": 42.97,
+      "label": "Why read it locally"
+     },
+     {
+      "t": 50.63,
+      "label": "Try the tool"
+     },
+     {
+      "t": 64.94,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2728973,
+    "webm": 2000271
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: What a FIT file is; Converting a FIT file; Heart rate zones in plain words; Time in zone and training load; Apple Health and other data; Why read it locally.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through FIT File Converter & Viewer, Heart Rate Zones, Apple Health Export to CSV, Running Pace Calculator, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Heart rate zones in plain words\". Zones are bands of heart rate that match different kinds of effort.",
+     "caption": "From the explainer film: Heart rate zones in plain words.",
+     "heading": "heart-rate-zones-in-plain-words"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Why read it locally\". Workout files show where you live, the routes you take, and when you leave home.",
+     "caption": "From the explainer film: Why read it locally.",
+     "heading": "why-read-it-locally"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 307.16,
+     "words": 884,
+     "mp3": 1843739
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 285.99,
+     "words": 884,
+     "mp3": 1716729
+    }
+   ]
+  },
+  "bank-statement-files-explained": {
+   "hash": "664d966b1810",
+   "loop": true,
+   "video": {
+    "dur": 74.6,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 8.63,
+      "label": "In this post"
+     },
+     {
+      "t": 19.25,
+      "label": "Why the format matters"
+     },
+     {
+      "t": 31.39,
+      "label": "The formats you will meet"
+     },
+     {
+      "t": 37.53,
+      "label": "What to do once it is converted"
+     },
+     {
+      "t": 44.4,
+      "label": "Why I keep this on my own device"
+     },
+     {
+      "t": 53.87,
+      "label": "Try the tool"
+     },
+     {
+      "t": 67.01,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3016535,
+    "webm": 2153519
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: Why the format matters; The formats you will meet; Try it: paste a bank file; Which one should I download; What to do once it is converted; Why I keep this on my own device.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Bank Statement Converter, CSV to OFX / QIF, Statement Analyzer, AI Transaction Categorizer, PDF Statement to CSV, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"The formats you will meet\". OFX stands for Open Financial Exchange.",
+     "caption": "From the explainer film: The formats you will meet.",
+     "heading": "the-formats-you-will-meet"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Why I keep this on my own device\". A statement shows where you live, where you shop, what you earn and who you send money to.",
+     "caption": "From the explainer film: Why I keep this on my own device.",
+     "heading": "why-i-keep-this-on-my-own-device"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 359.61,
+     "words": 994,
+     "mp3": 2158399
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 336.34,
+     "words": 994,
+     "mp3": 2018861
+    }
+   ]
+  },
+  "scan-receipts-privately": {
+   "hash": "ad64747f525a",
+   "loop": true,
+   "video": {
+    "dur": 78.45,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.65,
+      "label": "In this post"
+     },
+     {
+      "t": 17.25,
+      "label": "Step 1: clean up the photo"
+     },
+     {
+      "t": 26.42,
+      "label": "Step 2: read the text with OCR"
+     },
+     {
+      "t": 40.94,
+      "label": "Using the results"
+     },
+     {
+      "t": 49.56,
+      "label": "Privacy"
+     },
+     {
+      "t": 57.71,
+      "label": "Try the tool"
+     },
+     {
+      "t": 70.71,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2989704,
+    "webm": 2210171
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: Step 1: clean up the photo; Step 2: read the text with OCR; Step 3: find the parts that matter; Using the results; Tips for better scans; Privacy.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through AI Receipt Scanner, Expense Splitter, OCR PDF, GST & VAT Calculator, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"Step 2: read the text with OCR\". The reading is done by Tesseract, an open source OCR engine that uses a small LSTM neural network trained to recognise lines of text.",
+     "caption": "From the explainer film: Step 2: read the text with OCR.",
+     "heading": "step-2-read-the-text-with-ocr"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Privacy\". Receipts can show your card's last digits, your address for deliveries, and where you were at what time.",
+     "caption": "From the explainer film: Privacy.",
+     "heading": "privacy"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 261.41,
+     "words": 745,
+     "mp3": 1569289
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 242.73,
+     "words": 745,
+     "mp3": 1457111
+    }
+   ]
+  },
   "install-openfile-on-any-device": {
    "hash": "f5c9a85f1eca",
    "loop": true,

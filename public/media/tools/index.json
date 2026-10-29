@@ -3286,5 +3286,133 @@
     "voice": "af_nicole 60% + af_bella 40%",
     "bytes": 331659,
     "music": "G# 87 bpm glass"
+  },
+  "bank-statement-converter": {
+    "video": "media/tools/bank-statement-converter.mp4",
+    "poster": "media/tools/bank-statement-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_nicole 80% + af_aoede 20%",
+    "bytes": 276228,
+    "music": "F 103 bpm bell"
+  },
+  "csv-to-ofx": {
+    "video": "media/tools/csv-to-ofx.mp4",
+    "poster": "media/tools/csv-to-ofx.jpg",
+    "duration": 10.63,
+    "voice": "am_puck 80% + am_echo 20%",
+    "bytes": 247602,
+    "music": "A 90 bpm kalimba"
+  },
+  "statement-analyzer": {
+    "video": "media/tools/statement-analyzer.mp4",
+    "poster": "media/tools/statement-analyzer.jpg",
+    "duration": 8.0,
+    "voice": "bf_isabella 80% + bf_lily 20%",
+    "bytes": 198288,
+    "music": "E 72 bpm harp"
+  },
+  "transaction-categorizer": {
+    "video": "media/tools/transaction-categorizer.mp4",
+    "poster": "media/tools/transaction-categorizer.jpg",
+    "duration": 9.8,
+    "voice": "bm_fable 80% + bm_daniel 20%",
+    "bytes": 246634,
+    "music": "C 88 bpm piano"
+  },
+  "receipt-scanner": {
+    "video": "media/tools/receipt-scanner.mp4",
+    "poster": "media/tools/receipt-scanner.jpg",
+    "duration": 10.6,
+    "voice": "af_aoede 80% + af_nicole 20%",
+    "bytes": 267305,
+    "music": "F# 99 bpm kalimba"
+  },
+  "pdf-statement-to-csv": {
+    "video": "media/tools/pdf-statement-to-csv.mp4",
+    "poster": "media/tools/pdf-statement-to-csv.jpg",
+    "duration": 10.67,
+    "voice": "am_echo 80% + am_puck 20%",
+    "bytes": 244239,
+    "music": "A# 74 bpm bell"
+  },
+  "loan-calculator": {
+    "video": "media/tools/loan-calculator.mp4",
+    "poster": "media/tools/loan-calculator.jpg",
+    "duration": 11.37,
+    "voice": "af_kore 80% + af_nicole 20%",
+    "bytes": 273286,
+    "music": "G 90 bpm kalimba"
+  },
+  "compound-interest": {
+    "video": "media/tools/compound-interest.mp4",
+    "poster": "media/tools/compound-interest.jpg",
+    "duration": 10.6,
+    "voice": "am_eric 80% + am_puck 20%",
+    "bytes": 256615,
+    "music": "B 100 bpm bell"
+  },
+  "gst-vat-calculator": {
+    "video": "media/tools/gst-vat-calculator.mp4",
+    "poster": "media/tools/gst-vat-calculator.jpg",
+    "duration": 11.87,
+    "voice": "bf_alice 80% + bf_lily 20%",
+    "bytes": 264744,
+    "music": "G# 88 bpm piano"
+  },
+  "expense-splitter": {
+    "video": "media/tools/expense-splitter.mp4",
+    "poster": "media/tools/expense-splitter.jpg",
+    "duration": 8.97,
+    "voice": "bm_lewis 80% + bm_daniel 20%",
+    "bytes": 216787,
+    "music": "G# 98 bpm harp"
+  },
+  "fit-file-converter": {
+    "video": "media/tools/fit-file-converter.mp4",
+    "poster": "media/tools/fit-file-converter.jpg",
+    "duration": 11.0,
+    "voice": "am_liam 60% + am_fenrir 40%",
+    "bytes": 270997,
+    "music": "A 105 bpm harp"
+  },
+  "heart-rate-zones": {
+    "video": "media/tools/heart-rate-zones.mp4",
+    "poster": "media/tools/heart-rate-zones.jpg",
+    "duration": 10.7,
+    "voice": "af_sarah 80% + af_nicole 20%",
+    "bytes": 247845,
+    "music": "A 86 bpm harp"
+  },
+  "apple-health-export": {
+    "video": "media/tools/apple-health-export.mp4",
+    "poster": "media/tools/apple-health-export.jpg",
+    "duration": 10.8,
+    "voice": "am_liam 80% + am_puck 20%",
+    "bytes": 280266,
+    "music": "A 95 bpm piano"
+  },
+  "pace-calculator": {
+    "video": "media/tools/pace-calculator.mp4",
+    "poster": "media/tools/pace-calculator.jpg",
+    "duration": 10.63,
+    "voice": "af_nova 80% + af_nicole 20%",
+    "bytes": 253576,
+    "music": "G 101 bpm bell"
+  },
+  "bmi-bmr-calculator": {
+    "video": "media/tools/bmi-bmr-calculator.mp4",
+    "poster": "media/tools/bmi-bmr-calculator.jpg",
+    "duration": 10.73,
+    "voice": "am_onyx 80% + am_puck 20%",
+    "bytes": 253811,
+    "music": "F 105 bpm glass"
+  },
+  "meal-photo-logger": {
+    "video": "media/tools/meal-photo-logger.mp4",
+    "poster": "media/tools/meal-photo-logger.jpg",
+    "duration": 9.8,
+    "voice": "bf_lily 80% + bf_alice 20%",
+    "bytes": 253740,
+    "music": "A# 96 bpm kalimba"
   }
 }

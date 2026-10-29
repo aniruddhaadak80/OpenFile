@@ -2,7 +2,7 @@
 
 <p align="center"><img src="assets/privacy.svg" width="100%" alt="Files never leave your device"/></p>
 
-OpenFile is a static single-page app. Every one of its 411 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
+OpenFile is a static single-page app. Every one of its 427 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
 
 ## 1. The big picture
 
@@ -61,7 +61,9 @@ flowchart TB
 | 🗂️ Office & Sheets | 9 |
 | 🧪 Science & Education | 8 |
 | 🎙️ Creator Studio | 7 |
-| **Total** | **411** |
+| 💰 Money & Finance | 10 |
+| ❤️ Health & Fitness | 6 |
+| **Total** | **427** |
 <!-- arch-counts:end -->
 
 ## 3. Engines
@@ -186,7 +188,7 @@ flowchart LR
 Nothing that counts or lists things in the docs is typed by hand. The docs site reads the registry, `src/lib/formats.ts`, the Workspace steps and the preferences at runtime, and reads everything else from `generated.json`, which `scripts/gen-docs.mjs` rebuilds before every build.
 
 <!-- gen:counts:start -->
-OpenFile has **360 tools in 16 categories**. PDF Tools 58, Convert 31, Image 55, Video 36, Audio 21, Developer 60, Text & Data 42, Design 16, Data 11, AI 7, 3D 5, Archives 4, eBooks 4, Fonts 3, CAD 2, Subtitles 5.
+OpenFile has **427 tools in 23 categories**. PDF Tools 58, Convert 31, Image 55, Video 36, Audio 21, Developer 60, Text & Data 42, Design 16, Data 11, AI 17, 3D 5, Archives 4, eBooks 4, Fonts 3, CAD 2, Subtitles 5, Security & Privacy 8, Maps & GPS 9, Office & Sheets 9, Science & Education 8, Creator Studio 7, Money & Finance 10, Health & Fitness 6.
 <!-- gen:counts:end -->
 
 Back to the [README](../README.md) · Writing a tool: [TOOL_GUIDE.md](TOOL_GUIDE.md) · [AI.md](AI.md) · [PRIVACY.md](PRIVACY.md) · [TROUBLESHOOTING.md](TROUBLESHOOTING.md) · [SHORTCUTS.md](SHORTCUTS.md)

@@ -87,4 +87,16 @@ export const QUIZZES: Record<string, QuizQ[]> = {
     { q: 'What usually causes strange characters in old subtitle files?', options: ['A regional encoding instead of UTF-8', 'Wrong frame rate', 'Too many lines'], a: 0, why: 'Older files were often saved in a regional encoding. Convert them to UTF-8.' },
     { q: 'Where are subtitles often hidden inside MKV files?', options: ['As text tracks you can extract', 'In the file name', 'In the thumbnail'], a: 0, why: 'Extract Subtitles pulls the text tracks out as SRT, VTT or ASS.' },
   ],
+  'what-is-inside-a-fit-file': [
+    { q: 'How does a FIT file store GPS positions?', options: ['As semicircles, a 32 bit number where 2 to the 31 means 180 degrees', 'As plain decimal degrees in text', 'As street addresses'], a: 0, why: 'Semicircles save space. A reader converts them back to degrees.' },
+    { q: 'Why can 30 minutes of intervals score more training load than an hour of easy jogging?', options: ['TRIMP weights each minute more heavily the closer you are to your max', 'Intervals use more GPS points', 'Short workouts are counted twice'], a: 0, why: 'The Banister TRIMP curve grows quickly at high heart rates.' },
+  ],
+  'bank-statement-files-explained': [
+    { q: 'Why is OFX a good choice for importing into a money app?', options: ['Each transaction has a unique id, so importing twice does not double it', 'It is the smallest format', 'It always has categories'], a: 0, why: 'The FITID lets the app skip rows it has already imported.' },
+    { q: 'What can you do when your bank only gives a PDF statement?', options: ['Convert it with PDF Statement to CSV, then check the totals', 'Nothing', 'Rename it to .csv'], a: 0, why: 'The tool rebuilds rows from the text positions on each page.' },
+  ],
+  'scan-receipts-privately': [
+    { q: 'Why does the scanner turn the photo grey and stretch the contrast first?', options: ['OCR reads dark text on a light background more accurately', 'To make the file prettier', 'To hide the shop name'], a: 0, why: 'Faded thermal paper reads much better after a contrast stretch.' },
+    { q: 'Where does the OCR model run?', options: ['In a Web Worker on your device, no GPU needed', 'On a cloud server', 'Only on phones with a GPU'], a: 0, why: 'Tesseract runs as WebAssembly in a background worker on the CPU.' },
+  ],
 }

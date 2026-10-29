@@ -6,6 +6,25 @@
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).
 
+## v2.3.0 (2026-10-29)
+
+Two new studios, **Money & Finance** and **Health & Fitness**, with 16 new tools, three of them on-device AI. AI tools on devices without WebGPU now start in an instant mode, so the tab never stalls.
+
+### Added
+
+- **Money & Finance**: Bank Statement Converter (OFX, QFX, QIF, CAMT.053, MT940 and CSV to CSV, Excel, JSON, OFX or QIF), CSV to OFX / QIF, Statement Analyzer (monthly in and out, categories, top payees, repeating payments), PDF Statement to CSV, Loan & EMI Calculator, Compound Interest & SIP Calculator, GST & VAT Calculator and Expense Splitter.
+- **Health & Fitness**: FIT File Converter & Viewer (a new FIT decoder: Garmin, Wahoo, Coros, Zwift; to CSV, GPX, Excel, JSON), Heart Rate Zones with TRIMP training load, Apple Health Export to CSV (reads multi GB exports in pieces), Running Pace Calculator with race predictions, and BMI, BMR & Calorie Calculator.
+- **ai**: AI Transaction Categorizer (MiniLM embeddings in a Web Worker, keyword rules as the quick mode), AI Receipt Scanner (Tesseract OCR in a worker, CPU only, with Cancel) and AI Meal Photo Logger (CLIP zero-shot, pick by hand mode).
+- **blog**: three posts with films, cover loops, read aloud and quizzes: bank statement files explained, what is inside a FIT file, and scanning receipts privately.
+- **routes**: /sketch and /whiteboard open the Sketch board.
+
+### Fixed
+
+- **ai**: Image Captioner, PDF Summarizer and Chat with PDF no longer load a 240 to 500 MB model on CPU-only devices by default. They start in Light model, Instant summary and Instant answers modes, and the full model is one tap away.
+- **ebook**: EPUBs that keep the whole book in one huge file are split into sections before display, so the reader stays responsive.
+- **blog**: cover loops play on hover with reduced motion on, and search results now show the moving cover too. Decorative cover text is hidden from screen readers.
+- **privacy**: Checksum Verifier accepts a checksum list on its own first, then asks for the files.
+
 ## v1.2.0 (2026-10-29)
 
 Apps that keep themselves up to date. This is the app release line (desktop, Android, iOS); the web catalog versions below (v2.x) ship to the website continuously.
