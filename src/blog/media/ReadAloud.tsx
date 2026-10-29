@@ -262,7 +262,9 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const pendingTime = useRef<number | null>(null) // a seek asked for before the audio knew its length
   const seekTime = useCallback((t: number) => {
     userSeek.current = true
-    t = Math.max(0, Math.min(t, dur || 0))
+    // only clamp once the length is known: the saved-position restore runs before the timings set dur,
+    // and clamping to 0 there sent every resume back to the start
+    t = Math.max(0, dur > 0 ? Math.min(t, dur) : t)
     if (isNeural) { if (audio.current) { if (audio.current.readyState < 1) pendingTime.current = t; audio.current.currentTime = t } setTime(t); const i = wordAtTime(t); if (i >= 0) { lostRef.current = false; setLost(false); highlight(i) } }
     else { const i = Math.min(words.current.length - 1, Math.round(t * WPS)); sysIdx.current = i; setTime(t); highlight(i); if (playingRef.current) speakFrom(i) }
   }, [dur, isNeural, highlight, speakFrom])
