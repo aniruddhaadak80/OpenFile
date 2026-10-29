@@ -15,13 +15,18 @@ XVFB=$!
 sleep 2
 
 if [ "$KIND" = deb ]; then
+  DEB_NAME=$(dpkg-deb -f "$PKG" Package)
+  echo "Package name: $DEB_NAME"
   sudo apt-get install -y "$PKG"
-  BIN=$(dpkg -L openfile 2>/dev/null | grep -E '/bin/[^/]+$' | head -n1 || true)
+  BIN=$(dpkg -L "$DEB_NAME" 2>/dev/null | grep -E '/bin/[^/]+$' | head -n1 || true)
   [ -n "$BIN" ] || BIN=$(command -v openfile)
   echo "Installed binary: $BIN"
   CMD=("$BIN")
 else
   chmod +x "$PKG"
+  # Like other Tauri/WebKitGTK AppImages, this one uses the host's Mesa EGL/GL drivers (they are on the AppImage
+  # exclude list on purpose). Every Ubuntu desktop has them; the minimal runner image does not, so add them here.
+  sudo apt-get install -y -qq libegl1 libgl1 libgles2 libgbm1 >/dev/null
   # Runs without FUSE (ubuntu-24.04 ships no libfuse2 by default).
   export APPIMAGE_EXTRACT_AND_RUN=1
   CMD=("$PKG")
@@ -44,6 +49,6 @@ kill "$PID" 2>/dev/null || true
 pkill -x openfile 2>/dev/null || true
 sleep 1
 kill "$XVFB" 2>/dev/null || true
-if [ "$KIND" = deb ]; then sudo apt-get remove -y openfile || { echo "::error::apt remove failed"; FAILED=1; }; fi
+if [ "$KIND" = deb ]; then sudo apt-get remove -y "$DEB_NAME" || { echo "::error::apt remove failed"; FAILED=1; }; fi
 [ "$FAILED" = 0 ] && echo "PASS: $KIND launch (${WAIT}s alive, no crash)"
 exit "$FAILED"

@@ -79,14 +79,21 @@ test('tool page shows the preview video player', async ({ page, guard }) => {
   await expect(page.getByRole('heading', { level: 1, name: /Merge PDF/ })).toBeVisible()
   const play = page.getByRole('button', { name: 'Play the Merge PDF preview' })
   await expect(play).toBeVisible()
-  const mp4 = page.waitForResponse((r) => r.url().includes('/media/tools/merge-pdf.mp4'))
   await play.click()
-  const res = await mp4
-  expect(res.status(), 'preview video is served').toBeLessThan(400)
-  // The <video> element replaces the play button. Where a browser build cannot decode H.264 the app hides it on error,
-  // so only check its source when it is still on the page.
+  // The play button is replaced by a <video> pointing at the preview. Some engine builds cannot play H.264 at all
+  // (Playwright WebKit on Windows has no media backend, open-source Chromium has no H.264); there the app hides the
+  // player on its error event, which is the intended fallback. So: the player must appear, or the section must be
+  // gone, and the video file itself must be served.
   const video = page.locator('video[src*="merge-pdf.mp4"]')
+  const section = page.getByRole('region', { name: 'Merge PDF preview video' })
+  await expect(async () => {
+    expect((await video.count()) > 0 || (await section.count()) === 0, 'video player shown, or hidden after a decode error').toBe(true)
+  }).toPass({ timeout: 15_000 })
   if (await video.count()) await expect(video).toHaveAttribute('src', /merge-pdf\.mp4$/)
+  const res = await page.request.get('/media/tools/merge-pdf.mp4')
+  expect(res.status(), 'preview video is served').toBe(200)
+  expect(res.headers()['content-type'] ?? '').toMatch(/video\/mp4/)
+  expect((await res.body()).subarray(4, 8).toString(), 'MP4 ftyp box').toBe('ftyp')
   await settle(page)
 })
 
