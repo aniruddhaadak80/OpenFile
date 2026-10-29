@@ -19,6 +19,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const rd = (p) => readFileSync(join(root, p), 'utf8')
 const has = (p) => existsSync(join(root, p)) && statSync(join(root, p)).size > 0
 const asJson = process.argv.includes('--json')
+/** Escape every RegExp metacharacter, backslash included, so a slug is matched literally. */
+const escapeRegExp = (str) => String(str).replace(/[\\^$.*+?()[\]{}|/-]/g, '\\$&')
 
 const { runnerImport } = await import('vite')
 const cfg = { configFile: false, logLevel: 'silent', resolve: { alias: { '@': join(root, 'src') } } }
@@ -114,7 +116,7 @@ for (const s of slugs) {
     else { try { const j = JSON.parse(rd(`${dir}/read-${v.id}.json`)); if (!Array.isArray(j.b) || !j.b.length || !j.b.some((x) => Array.isArray(x[2]) && x[2].length)) add('posts', s, `read-${v.id}.json has no timings`) } catch { add('posts', s, `read-${v.id}.json is not valid JSON`) } }
     if (!v.mp3 || !v.dur) add('posts', s, `narration ${v.id} has no audio`)
   }
-  const qm = quizSrc.match(new RegExp(`'${s.replace(/[-]/g, '\\-')}':\\s*\\[([\\s\\S]*?)\\n\\s*\\],`))
+  const qm = quizSrc.match(new RegExp(`'${escapeRegExp(s)}':\\s*\\[([\\s\\S]*?)\\n\\s*\\],`))
   const nq = qm ? (qm[1].match(/\{\s*q:/g) ?? []).length : 0
   if (nq < 2) add('posts', s, `quiz has ${nq} questions, needs 2`)
 }
