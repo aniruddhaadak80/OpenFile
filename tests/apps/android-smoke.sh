@@ -28,7 +28,9 @@ WV_MAJOR=$(echo "$WV" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 | cut -d. -
 # Ignored: Capacitor 8 SystemBars logs (and catches) "Error injecting safe area CSS" when its native script runs
 # before document.documentElement exists. Framework bug, https://github.com/ionic-team/capacitor/issues/8530;
 # the app reads env(safe-area-inset-*) and does not depend on the injected variables.
-JS_ERR=$(grep -E 'Capacitor: JavaScript Error|Capacitor/Console.*(Uncaught|SyntaxError|TypeError|ReferenceError)' "$OUT/logcat.txt" | grep -v 'Error injecting safe area CSS' || true)
+# Ignored: "reading 'triggerEvent'" when Android pauses/resumes the activity before Capacitor's bridge script is in the
+# page (start page still loading). Framework bug, https://github.com/ionic-team/capacitor/issues/8637.
+JS_ERR=$(grep -E 'Capacitor: JavaScript Error|Capacitor/Console.*(Uncaught|SyntaxError|TypeError|ReferenceError)' "$OUT/logcat.txt" | grep -v -e 'Error injecting safe area CSS' -e "Cannot read properties of undefined (reading 'triggerEvent')" || true)
 if [ -n "$JS_ERR" ]; then
   echo "$JS_ERR" | head -n 20
   if [ -n "$WV_MAJOR" ] && [ "$WV_MAJOR" -lt "${MIN_WEBVIEW:-100}" ]; then
