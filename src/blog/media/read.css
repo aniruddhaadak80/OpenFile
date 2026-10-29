@@ -1,0 +1,13 @@
+/* Read-aloud highlight and player styles (blog only). */
+.rw { border-radius: 4px; transition: background-color .12s ease, box-shadow .12s ease, color .12s ease; }
+.rb-on { background: color-mix(in oklab, var(--accent) 6%, transparent); border-radius: 8px; box-shadow: 0 0 0 6px color-mix(in oklab, var(--accent) 6%, transparent); }
+.rw-on { background: color-mix(in oklab, var(--accent) 38%, transparent); box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 38%, transparent); color: var(--fg); }
+.read-mode .rw { cursor: pointer; }
+.read-mode .rw:hover { background: color-mix(in oklab, var(--accent-2) 22%, transparent); }
+.of-range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px; background: linear-gradient(to right, var(--accent) var(--pct, 0%), color-mix(in oklab, var(--fg) 14%, transparent) var(--pct, 0%)); cursor: pointer; }
+.of-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px var(--accent); }
+.of-range::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 3px var(--accent); }
+.of-lightbox-img { max-height: calc(100vh - 140px); }
+@media (prefers-reduced-motion: reduce) {
+  .rw, .rb-on { transition: none; }
+}

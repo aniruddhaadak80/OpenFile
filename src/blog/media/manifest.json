@@ -1,0 +1,1854 @@
+{
+ "release": "https://github.com/aniruddhaadak80/OpenFile/releases/download/media-v1/",
+ "posts": {
+  "install-openfile-on-any-device": {
+   "hash": "f5c9a85f1eca",
+   "loop": true,
+   "video": {
+    "dur": 66.86,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 6.07,
+      "label": "In this post"
+     },
+     {
+      "t": 15.28,
+      "label": "Start with the check"
+     },
+     {
+      "t": 23.17,
+      "label": "Option two: the desktop apps"
+     },
+     {
+      "t": 32.39,
+      "label": "What stays the same everywhere"
+     },
+     {
+      "t": 39.04,
+      "label": "Which one I use"
+     },
+     {
+      "t": 47.09,
+      "label": "Try the tool"
+     },
+     {
+      "t": 60.09,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2720118,
+    "webm": 1924806
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 7 chapters: Start with the check; Option one: the web app; Option two: the desktop apps; Option three: no install at all; What stays the same everywhere; Updating and uninstalling; Which one I use.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your PDF file goes through PDF Reader, Merge PDF, Image Converter, Open Any Archive, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"Option two: the desktop apps\". Some people want a classic installer, or need the app on machines where browser installs are blocked by policy.",
+     "caption": "From the explainer film: Option two: the desktop apps.",
+     "heading": "option-two-the-desktop-apps"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Which one I use\". On my laptop I use the installed web app from Chrome, because it updates the moment I push a fix.",
+     "caption": "From the explainer film: Which one I use.",
+     "heading": "which-one-i-use"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 371.8,
+     "words": 1083,
+     "mp3": 2231549
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 344.22,
+     "words": 1083,
+     "mp3": 2066091
+    }
+   ]
+  },
+  "how-openfile-keeps-files-private": {
+   "hash": "57ba7835fc09",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.99,
+      "label": "In this post"
+     },
+     {
+      "t": 15.71,
+      "label": "What does get downloaded"
+     },
+     {
+      "t": 23.06,
+      "label": "The few things that are not local"
+     },
+     {
+      "t": 29.39,
+      "label": "Why I built it this way"
+     },
+     {
+      "t": 41.76,
+      "label": "Try the tool"
+     },
+     {
+      "t": 54.76,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2449227,
+    "webm": 1807882
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: The short version; What actually happens to a file; Try it yourself; What does get downloaded; The few things that are not local; Why I built it this way.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your PDF file goes through Merge PDF, Hash Generator, Background Remover, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"The few things that are not local\". I want to be precise here.",
+     "caption": "From the explainer film: The few things that are not local.",
+     "heading": "the-few-things-that-are-not-local"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"Why I built it this way\". Most free file tools on the web upload your document to a server, process it there, and ask you to trust that it gets deleted.",
+     "caption": "From the explainer film: Why I built it this way.",
+     "heading": "why-i-built-it-this-way"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 181.09,
+     "words": 533,
+     "mp3": 1087303
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 168.26,
+     "words": 533,
+     "mp3": 1010261
+    }
+   ]
+  },
+  "ai-models-in-your-browser": {
+   "hash": "4fc45413e832",
+   "loop": true,
+   "video": {
+    "dur": 83.17,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.94,
+      "label": "In this post"
+     },
+     {
+      "t": 17.44,
+      "label": "A model is just a big file"
+     },
+     {
+      "t": 28.53,
+      "label": "The models behind each tool"
+     },
+     {
+      "t": 37.19,
+      "label": "WebGPU first, WebAssembly as the safety net"
+     },
+     {
+      "t": 52.36,
+      "label": "Why bother doing it this way"
+     },
+     {
+      "t": 62.55,
+      "label": "Try the tool"
+     },
+     {
+      "t": 75.59,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3218576,
+    "webm": 2321260
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 8 chapters: A model is just a big file; Check your device; The models behind each tool; Why the first run is slow and the second is fast; Workers keep the page responsive; WebGPU first, WebAssembly as the safety net; What speed to expect; Why bother doing it this way.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your PNG file goes through Background Remover, Image Upscaler, Audio Transcriber, Magic Eraser (Remove Objects), Photo Enhancer, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"The models behind each tool\". Sizes are approximate and depend on the exact variant, but they give you a feel.",
+     "caption": "From the explainer film: The models behind each tool.",
+     "heading": "the-models-behind-each-tool"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Key terms diagram for the chapter \"Why bother doing it this way\". Cloud AI tools are fast because they run on expensive servers, and someone pays for those servers.",
+     "caption": "From the explainer film: Why bother doing it this way.",
+     "heading": "why-bother-doing-it-this-way"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 335.28,
+     "words": 969,
+     "mp3": 2012363
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 312.04,
+     "words": 969,
+     "mp3": 1872969
+    }
+   ]
+  },
+  "pdf-tips-that-save-time": {
+   "hash": "6c14686ef8d5",
+   "loop": true,
+   "video": {
+    "dur": 75.2,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.39,
+      "label": "In this post"
+     },
+     {
+      "t": 16.75,
+      "label": "1. Learn the page range syntax"
+     },
+     {
+      "t": 27.8,
+      "label": "4. Scans are images, treat them that way"
+     },
+     {
+      "t": 35.97,
+      "label": "7. Redact properly"
+     },
+     {
+      "t": 44.78,
+      "label": "10. Chain it in the Workspace"
+     },
+     {
+      "t": 54.47,
+      "label": "Try the tool"
+     },
+     {
+      "t": 67.61,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2924404,
+    "webm": 2221558
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 10 chapters: 1. Learn the page range syntax; 2. Organize before you merge; 3. Compress last; 4. Scans are images, treat them that way; 5. Run OCR to make scans searchable; 6. Sign without printing; 7. Redact properly; 8. Split big files by size for email; 9. Keep the original; 10. Chain it in the Workspace.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your PDF file goes through Merge PDF, Split PDF, Compress PDF, Organize PDF, Sign PDF, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"4. Scans are images, treat them that way\". A scanned PDF is mostly pictures of pages.",
+     "caption": "From the explainer film: 4. Scans are images, treat them that way.",
+     "heading": "4-scans-are-images-treat-them-that-way"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"10. Chain it in the Workspace\". If you do the same steps every week, the Workspace can run them as one recipe on a whole batch.",
+     "caption": "From the explainer film: 10. Chain it in the Workspace.",
+     "heading": "10-chain-it-in-the-workspace"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 152.14,
+     "words": 394,
+     "mp3": 913499
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 142.75,
+     "words": 394,
+     "mp3": 857337
+    }
+   ]
+  },
+  "shrink-a-pdf-for-email": {
+   "hash": "2aa061c19ba5",
+   "loop": true,
+   "video": {
+    "dur": 62.45,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.3,
+      "label": "In this post"
+     },
+     {
+      "t": 16.14,
+      "label": "Know your limit, then leave headroom"
+     },
+     {
+      "t": 22.04,
+      "label": "Step 2: compress with the right preset"
+     },
+     {
+      "t": 28.49,
+      "label": "Step 4: split when you must"
+     },
+     {
+      "t": 34.16,
+      "label": "A word on cloud links"
+     },
+     {
+      "t": 42.2,
+      "label": "Try the tool"
+     },
+     {
+      "t": 55.2,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2477638,
+    "webm": 1790934
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 7 chapters: Know your limit, then leave headroom; Step 1: find out what is making it big; Step 2: compress with the right preset; Step 3: more tricks that help; Step 4: split when you must; The order I use; A word on cloud links.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your PDF file goes through Compress PDF, Split PDF, PDF to Grayscale, Remove Blank Pages, Compress Image to Size, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"Step 2: compress with the right preset\". Compress PDF has four presets.",
+     "caption": "From the explainer film: Step 2: compress with the right preset.",
+     "heading": "step-2-compress-with-the-right-preset"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"A word on cloud links\". For really large files, the honest answer is often a link instead of an attachment.",
+     "caption": "From the explainer film: A word on cloud links.",
+     "heading": "a-word-on-cloud-links"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 340.85,
+     "words": 935,
+     "mp3": 2045908
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 318.65,
+     "words": 935,
+     "mp3": 1912706
+    }
+   ]
+  },
+  "image-compression-explained": {
+   "hash": "d85f044b9a6f",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.5,
+      "label": "In this post"
+     },
+     {
+      "t": 17.33,
+      "label": "Lossless and lossy"
+     },
+     {
+      "t": 23.89,
+      "label": "Drag the slider"
+     },
+     {
+      "t": 34.62,
+      "label": "Resize before you compress"
+     },
+     {
+      "t": 42.25,
+      "label": "Try the tool"
+     },
+     {
+      "t": 55.25,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2361045,
+    "webm": 1738100
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: Lossless and lossy; Drag the slider; What gets thrown away first; Which format should I use; Resize before you compress.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your JPG file goes through Image Compressor, Image Converter, Image Resizer, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Drag the slider\". The image below is drawn in your browser and encoded with your browser's own JPG and WebP encoders.",
+     "caption": "From the explainer film: Drag the slider.",
+     "heading": "drag-the-slider"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Resize before you compress\". The biggest saving is often not the quality setting at all.",
+     "caption": "From the explainer film: Resize before you compress.",
+     "heading": "resize-before-you-compress"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 123.43,
+     "words": 319,
+     "mp3": 741289
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 115.78,
+     "words": 319,
+     "mp3": 695351
+    }
+   ]
+  },
+  "heic-jpg-avif-jpeg-xl": {
+   "hash": "f5256b77d4e0",
+   "loop": true,
+   "video": {
+    "dur": 65.18,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.48,
+      "label": "In this post"
+     },
+     {
+      "t": 16.01,
+      "label": "What each format is"
+     },
+     {
+      "t": 21.51,
+      "label": "Side by side"
+     },
+     {
+      "t": 25.73,
+      "label": "How OpenFile handles each one"
+     },
+     {
+      "t": 33.92,
+      "label": "Mistakes I see a lot"
+     },
+     {
+      "t": 45.27,
+      "label": "Try the tool"
+     },
+     {
+      "t": 58.27,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2685172,
+    "webm": 1902530
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: The short answer; What each format is; Test your browser; Side by side; How OpenFile handles each one; Mistakes I see a lot.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your HEIC file goes through HEIC Converter, Image Converter, JPEG XL Converter, Pro Image Converter, EXIF Viewer & Remover, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Side by side\". The size column is a rough guide.",
+     "caption": "From the explainer film: Side by side.",
+     "heading": "side-by-side"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Key terms diagram for the chapter \"Mistakes I see a lot\". On an iPhone you can switch the camera to Most Compatible in Settings, Camera, Formats, and it will shoot JPG instead of HEIC.",
+     "caption": "From the explainer film: Mistakes I see a lot.",
+     "heading": "mistakes-i-see-a-lot"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 330.79,
+     "words": 883,
+     "mp3": 1985430
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 296.97,
+     "words": 883,
+     "mp3": 1782532
+    }
+   ]
+  },
+  "video-in-the-browser-with-webassembly": {
+   "hash": "70dd3a6f9f4d",
+   "loop": true,
+   "video": {
+    "dur": 65.45,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.41,
+      "label": "In this post"
+     },
+     {
+      "t": 15.2,
+      "label": "ffmpeg, compiled for the browser"
+     },
+     {
+      "t": 25.31,
+      "label": "Why the first run is slower"
+     },
+     {
+      "t": 32.13,
+      "label": "Check your browser"
+     },
+     {
+      "t": 37.44,
+      "label": "Where it falls short"
+     },
+     {
+      "t": 44.87,
+      "label": "Try the tool"
+     },
+     {
+      "t": 57.87,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2596452,
+    "webm": 1895066
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: ffmpeg, compiled for the browser; Why the first run is slower; Check your browser; Tips for faster jobs; Where it falls short.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your MP4 file goes through Video Trimmer, Video Compressor, Video to GIF, Video Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Why the first run is slower\". The ffmpeg engine is about 30 MB.",
+     "caption": "From the explainer film: Why the first run is slower.",
+     "heading": "why-the-first-run-is-slower"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"Where it falls short\". Very long 4K videos are still better handled by a desktop app.",
+     "caption": "From the explainer film: Where it falls short.",
+     "heading": "where-it-falls-short"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 120.7,
+     "words": 328,
+     "mp3": 725009
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 111.41,
+     "words": 328,
+     "mp3": 669279
+    }
+   ]
+  },
+  "make-a-gif-from-a-video": {
+   "hash": "c4c46d109289",
+   "loop": true,
+   "video": {
+    "dur": 72.75,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 3.9,
+      "label": "In this post"
+     },
+     {
+      "t": 13.9,
+      "label": "Why GIFs get so big"
+     },
+     {
+      "t": 25.14,
+      "label": "Step 2: pick sensible settings"
+     },
+     {
+      "t": 32.01,
+      "label": "Step 3: make it smaller after the fact"
+     },
+     {
+      "t": 43.27,
+      "label": "My recipe for a bug report GIF"
+     },
+     {
+      "t": 52.97,
+      "label": "Try the tool"
+     },
+     {
+      "t": 65.97,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2860103,
+    "webm": 2163423
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: Why GIFs get so big; Step 1: trim the clip first; Step 2: pick sensible settings; Step 3: make it smaller after the fact; When a GIF is the wrong choice; My recipe for a bug report GIF.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your MP4 file goes through Video to GIF, Video Trimmer, GIF Compressor, Animated Image Converter, Animated WebP Maker, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"Step 2: pick sensible settings\". This matters most because pixels grow with the square of the width.",
+     "caption": "From the explainer film: Step 2: pick sensible settings.",
+     "heading": "step-2-pick-sensible-settings"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Step by step diagram for the chapter \"My recipe for a bug report GIF\". It usually lands between 1 and 4 MB, the text stays readable, and it plays right inside the issue.",
+     "caption": "From the explainer film: My recipe for a bug report GIF.",
+     "heading": "my-recipe-for-a-bug-report-gif"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 316.36,
+     "words": 908,
+     "mp3": 1898883
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 300.22,
+     "words": 908,
+     "mp3": 1801969
+    }
+   ]
+  },
+  "building-a-batch-pipeline": {
+   "hash": "d10cc0e826cf",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.18,
+      "label": "In this post"
+     },
+     {
+      "t": 16.29,
+      "label": "Plan the steps"
+     },
+     {
+      "t": 21.84,
+      "label": "Build it in the Workspace"
+     },
+     {
+      "t": 31.21,
+      "label": "Save it as a recipe"
+     },
+     {
+      "t": 38.22,
+      "label": "Why it is fast"
+     },
+     {
+      "t": 42.59,
+      "label": "Try the tool"
+     },
+     {
+      "t": 55.59,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2450993,
+    "webm": 1843267
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: Plan the steps; Try the flow; Build it in the Workspace; Save it as a recipe; Why it is fast.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your JPG file goes through Image Resizer, Image Converter, Image Compressor, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Build it in the Workspace\". Open the Workspace, drop the folder of photos, and add the steps from the list on the left.",
+     "caption": "From the explainer film: Build it in the Workspace.",
+     "heading": "build-it-in-the-workspace"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"Why it is fast\". There is no upload.",
+     "caption": "From the explainer film: Why it is fast.",
+     "heading": "why-it-is-fast"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 112.96,
+     "words": 310,
+     "mp3": 678498
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 103.69,
+     "words": 310,
+     "mp3": 622912
+    }
+   ]
+  },
+  "sign-and-fill-pdfs-privately": {
+   "hash": "2e48e9e928d4",
+   "loop": true,
+   "video": {
+    "dur": 89.55,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.52,
+      "label": "In this post"
+     },
+     {
+      "t": 17.86,
+      "label": "Two very different things called signing"
+     },
+     {
+      "t": 25.95,
+      "label": "Filling in a form"
+     },
+     {
+      "t": 39.47,
+      "label": "Signing the page"
+     },
+     {
+      "t": 53.44,
+      "label": "Certificate signatures without uploading your key"
+     },
+     {
+      "t": 68.87,
+      "label": "Try the tool"
+     },
+     {
+      "t": 81.97,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3312333,
+    "webm": 2379907
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: Two very different things called signing; Try drawing one; Filling in a form; Signing the page; The order that works; Certificate signatures without uploading your key.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your PDF file goes through Sign PDF, Fill PDF Form, Create Fillable PDF Form, Flatten PDF, Digital Signature (Certificate), all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"Filling in a form\". Many PDFs from banks, schools and government offices have real form fields: text boxes, checkboxes, dropdowns and radio buttons.",
+     "caption": "From the explainer film: Filling in a form.",
+     "heading": "filling-in-a-form"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Certificate signatures without uploading your key\". If you have a personal or company certificate, Digital Signature (Certificate) opens your .p12 or .pfx file locally, asks for its password.",
+     "caption": "From the explainer film: Certificate signatures without uploading your key.",
+     "heading": "certificate-signatures-without-uploading-your-key"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 285.68,
+     "words": 831,
+     "mp3": 1714859
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 259.49,
+     "words": 831,
+     "mp3": 1557753
+    }
+   ]
+  },
+  "sketch-board-tips": {
+   "hash": "893980993d16",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.56,
+      "label": "In this post"
+     },
+     {
+      "t": 14.09,
+      "label": "Use the number keys"
+     },
+     {
+      "t": 20.01,
+      "label": "Connect shapes with arrows"
+     },
+     {
+      "t": 27.33,
+      "label": "Snap to the grid"
+     },
+     {
+      "t": 32.91,
+      "label": "Export what you need"
+     },
+     {
+      "t": 42.59,
+      "label": "Try the tool"
+     },
+     {
+      "t": 55.59,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2486799,
+    "webm": 1781603
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: Use the number keys; Lock a tool with Q; Connect shapes with arrows; Snap to the grid; Use frames for slides; Export what you need.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your SVG file goes through Sketch Whiteboard, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Connect shapes with arrows\". Start an arrow on one shape and end it on another.",
+     "caption": "From the explainer film: Connect shapes with arrows.",
+     "heading": "connect-shapes-with-arrows"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"Export what you need\". Export the whole board or only the selection as PNG or SVG.",
+     "caption": "From the explainer film: Export what you need.",
+     "heading": "export-what-you-need"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 99.39,
+     "words": 272,
+     "mp3": 597129
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 90.6,
+     "words": 272,
+     "mp3": 544423
+    }
+   ]
+  },
+  "ebook-formats-and-conversion": {
+   "hash": "99afa5e17be3",
+   "loop": true,
+   "video": {
+    "dur": 80.26,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 6.35,
+      "label": "In this post"
+     },
+     {
+      "t": 16.5,
+      "label": "The one idea: reflowable or fixed"
+     },
+     {
+      "t": 23.49,
+      "label": "Converting books"
+     },
+     {
+      "t": 42.54,
+      "label": "Fixing a book without converting it"
+     },
+     {
+      "t": 55.09,
+      "label": "Just reading"
+     },
+     {
+      "t": 60.27,
+      "label": "Try the tool"
+     },
+     {
+      "t": 73.27,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3141110,
+    "webm": 2339931
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 7 chapters: The one idea: reflowable or fixed; The formats you will meet; Converting books; Going from PDF to EPUB; Fixing a book without converting it; Comics; Just reading.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your EPUB file goes through E-book Converter, E-book Reader, EPUB Editor, PDF to EPUB, EPUB to PDF, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Key terms diagram for the chapter \"Converting books\". E-book Converter reads EPUB, MOBI, AZW, AZW3, FB2, CBZ, DOCX, RTF, ODT, TXT, HTML, Markdown and PDF, and writes EPUB, PDF, Word, HTML, plain text, Markdown or FB2.",
+     "caption": "From the explainer film: Converting books.",
+     "heading": "converting-books"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Just reading\". You do not have to convert at all if you only want to read.",
+     "caption": "From the explainer film: Just reading.",
+     "heading": "just-reading"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 336.46,
+     "words": 908,
+     "mp3": 2019431
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 307.4,
+     "words": 908,
+     "mp3": 1845189
+    }
+   ]
+  },
+  "file-formats-guide": {
+   "hash": "23838effef09",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.28,
+      "label": "In this post"
+     },
+     {
+      "t": 18.98,
+      "label": "Container and codec"
+     },
+     {
+      "t": 30.87,
+      "label": "When to convert"
+     },
+     {
+      "t": 41.91,
+      "label": "Try the tool"
+     },
+     {
+      "t": 54.91,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2263382,
+    "webm": 1689935
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 4 chapters: Container and codec; Explore the formats; Quick rules of thumb; When to convert.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your JPG file goes through Image Converter, HEIC Converter, Video Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Container and codec\". For video and audio it helps to know two words.",
+     "caption": "From the explainer film: Container and codec.",
+     "heading": "container-and-codec"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"When to convert\". Convert at the end of your work, not in the middle.",
+     "caption": "From the explainer film: When to convert.",
+     "heading": "when-to-convert"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 109.47,
+     "words": 246,
+     "mp3": 657602
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 102.75,
+     "words": 246,
+     "mp3": 617280
+    }
+   ]
+  },
+  "open-dxf-cad-files-in-a-browser": {
+   "hash": "ceae5e4a1f89",
+   "loop": true,
+   "video": {
+    "dur": 62.89,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.01,
+      "label": "In this post"
+     },
+     {
+      "t": 15.13,
+      "label": "DWG and DXF"
+     },
+     {
+      "t": 20.85,
+      "label": "A DXF file is just text"
+     },
+     {
+      "t": 28.14,
+      "label": "Converting for people without CAD"
+     },
+     {
+      "t": 35.25,
+      "label": "What it does not do"
+     },
+     {
+      "t": 43.12,
+      "label": "Try the tool"
+     },
+     {
+      "t": 56.12,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2465073,
+    "webm": 1752891
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: DWG and DXF; A DXF file is just text; Viewing a drawing; Converting for people without CAD; What it does not do.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your DXF file goes through DXF Viewer, CAD to PDF, SVG and PNG, 3D Model Viewer, SVG to PDF, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"A DXF file is just text\". The most common form of DXF is plain text made of pairs of lines.",
+     "caption": "From the explainer film: A DXF file is just text.",
+     "heading": "a-dxf-file-is-just-text"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Step by step diagram for the chapter \"What it does not do\". Drawings are often confidential: unreleased buildings, product designs, the layout of someone's home.",
+     "caption": "From the explainer film: What it does not do.",
+     "heading": "what-it-does-not-do"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 311.84,
+     "words": 850,
+     "mp3": 1871819
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 298.97,
+     "words": 850,
+     "mp3": 1794633
+    }
+   ]
+  },
+  "developer-tools-roundup": {
+   "hash": "34fc96dcb177",
+   "loop": true,
+   "video": {
+    "dur": 72.54,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.6,
+      "label": "In this post"
+     },
+     {
+      "t": 16.39,
+      "label": "JSON formatter"
+     },
+     {
+      "t": 20.21,
+      "label": "Regex builder"
+     },
+     {
+      "t": 29.38,
+      "label": "Hashes"
+     },
+     {
+      "t": 39.96,
+      "label": "Cron parser"
+     },
+     {
+      "t": 52.29,
+      "label": "Try the tool"
+     },
+     {
+      "t": 65.29,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2672741,
+    "webm": 1931684
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 6 chapters: JSON formatter; JWT decoder; Regex builder; Hashes; cURL to code; Cron parser.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your JSON file goes through JSON Formatter, JWT Decoder, Regex Builder, Hash Generator, cURL to Code, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Regex builder\". Regex Builder highlights matches as you type, explains each part of the pattern, and lists capture groups.",
+     "caption": "From the explainer film: Regex builder.",
+     "heading": "regex-builder"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Cron parser\". Cron Parser turns */15 9-17 * * 1-5 into plain words and lists the next run times.",
+     "caption": "From the explainer film: Cron parser.",
+     "heading": "cron-parser"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 107.65,
+     "words": 264,
+     "mp3": 646667
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 100.91,
+     "words": 264,
+     "mp3": 606201
+    }
+   ]
+  },
+  "view-dicom-images-privately": {
+   "hash": "835393178c62",
+   "loop": true,
+   "video": {
+    "dur": 63.66,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.16,
+      "label": "In this post"
+     },
+     {
+      "t": 14.34,
+      "label": "What DICOM is"
+     },
+     {
+      "t": 20.47,
+      "label": "Numbers, not colours"
+     },
+     {
+      "t": 25.31,
+      "label": "Patient data and sharing"
+     },
+     {
+      "t": 35.55,
+      "label": "Why do this locally"
+     },
+     {
+      "t": 43.89,
+      "label": "Try the tool"
+     },
+     {
+      "t": 56.89,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2506998,
+    "webm": 1725365
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: What DICOM is; Numbers, not colours; Opening your own scans; Patient data and sharing; Why do this locally.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your DCM file goes through DICOM Viewer, Blur & Redact Image, Image to PDF, EXIF Viewer & Remover, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Numbers, not colours\". Here is the part that surprised me most.",
+     "caption": "From the explainer film: Numbers, not colours.",
+     "heading": "numbers-not-colours"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Why do this locally\". Search for an online DICOM viewer and many of the results upload your files to a server to process them.",
+     "caption": "From the explainer film: Why do this locally.",
+     "heading": "why-do-this-locally"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 315.4,
+     "words": 892,
+     "mp3": 1893137
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 298.26,
+     "words": 892,
+     "mp3": 1790319
+    }
+   ]
+  },
+  "private-text-to-speech": {
+   "hash": "a8438c61b5dc",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.62,
+      "label": "In this post"
+     },
+     {
+      "t": 14.06,
+      "label": "System voices first"
+     },
+     {
+      "t": 24.26,
+      "label": "When there are no voices"
+     },
+     {
+      "t": 29.35,
+      "label": "Pick an engine"
+     },
+     {
+      "t": 34.27,
+      "label": "Going the other way"
+     },
+     {
+      "t": 42.51,
+      "label": "Try the tool"
+     },
+     {
+      "t": 55.51,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2428334,
+    "webm": 1761261
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 4 chapters: System voices first; When there are no voices; Pick an engine; Going the other way.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your TXT file goes through Text to Speech, Audio Transcriber, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"When there are no voices\". Some setups have no voices at all.",
+     "caption": "From the explainer film: When there are no voices.",
+     "heading": "when-there-are-no-voices"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"Going the other way\". If you need speech turned into text, Audio Transcriber runs the Whisper model locally.",
+     "caption": "From the explainer film: Going the other way.",
+     "heading": "going-the-other-way"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 92.39,
+     "words": 247,
+     "mp3": 555086
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 85.48,
+     "words": 247,
+     "mp3": 513612
+    }
+   ]
+  },
+  "midi-files-explained": {
+   "hash": "1cfc826b47b4",
+   "loop": true,
+   "video": {
+    "dur": 75.14,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.18,
+      "label": "In this post"
+     },
+     {
+      "t": 16.29,
+      "label": "Sheet music for machines"
+     },
+     {
+      "t": 31.17,
+      "label": "Why the same file sounds different everywhere"
+     },
+     {
+      "t": 41.41,
+      "label": "Playing and converting in OpenFile"
+     },
+     {
+      "t": 49.92,
+      "label": "Going the other way"
+     },
+     {
+      "t": 55.23,
+      "label": "Try the tool"
+     },
+     {
+      "t": 68.23,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2937895,
+    "webm": 2085221
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 7 chapters: Sheet music for machines; Play with it; What is inside a note; Why the same file sounds different everywhere; Playing and converting in OpenFile; Things people do with MIDI files; Going the other way.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your MID file goes through MIDI Player and Converter, Audio Editor & Trimmer, Audio to Video Visualizer, Audio Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Why the same file sounds different everywhere\". Since the file only says play a violin, the quality depends on the violin sound available.",
+     "caption": "From the explainer film: Why the same file sounds different everywhere.",
+     "heading": "why-the-same-file-sounds-different-everywhere"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Going the other way\". People sometimes ask for MP3 to MIDI.",
+     "caption": "From the explainer film: Going the other way.",
+     "heading": "going-the-other-way"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 327.25,
+     "words": 920,
+     "mp3": 1964278
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 302.82,
+     "words": 920,
+     "mp3": 1817684
+    }
+   ]
+  },
+  "csv-json-parquet-excel": {
+   "hash": "ff447a470109",
+   "loop": true,
+   "video": {
+    "dur": 62.5,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 6.95,
+      "label": "In this post"
+     },
+     {
+      "t": 17.54,
+      "label": "Four formats, four ideas"
+     },
+     {
+      "t": 28.33,
+      "label": "Try a conversion"
+     },
+     {
+      "t": 33.49,
+      "label": "Where conversions go wrong"
+     },
+     {
+      "t": 42.25,
+      "label": "Try the tool"
+     },
+     {
+      "t": 55.25,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2280604,
+    "webm": 1677922
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 4 chapters: Four formats, four ideas; Try a conversion; The tools and when I use them; Where conversions go wrong.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your CSV file goes through Data Format Converter, CSV & Spreadsheet Editor, CSV & Excel Converter, Parquet / Arrow / Avro Viewer, SQLite Browser, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Try a conversion\". Edit the CSV on the left.",
+     "caption": "From the explainer film: Try a conversion.",
+     "heading": "try-a-conversion"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Step by step diagram for the chapter \"Where conversions go wrong\". JSON to CSV only works cleanly when every record has the same shape.",
+     "caption": "From the explainer film: Where conversions go wrong.",
+     "heading": "where-conversions-go-wrong"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 342.1,
+     "words": 890,
+     "mp3": 2053425
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 319.01,
+     "words": 890,
+     "mp3": 1914895
+    }
+   ]
+  },
+  "subtitles-srt-vtt-ass-guide": {
+   "hash": "6ea464c2cbb9",
+   "loop": true,
+   "video": {
+    "dur": 69.91,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 6.22,
+      "label": "In this post"
+     },
+     {
+      "t": 15.73,
+      "label": "The three main formats"
+     },
+     {
+      "t": 21.7,
+      "label": "Problem 1: the player will not load the file"
+     },
+     {
+      "t": 27.29,
+      "label": "Problem 4: no subtitles at all"
+     },
+     {
+      "t": 40.96,
+      "label": "My usual flow for a talk recording"
+     },
+     {
+      "t": 50.14,
+      "label": "Try the tool"
+     },
+     {
+      "t": 63.14,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2835253,
+    "webm": 1979346
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 8 chapters: The three main formats; Convert and shift, live; Problem 1: the player will not load the file; Problem 2: strange characters; Problem 3: out of sync; Problem 4: no subtitles at all; Hard subs or soft subs; My usual flow for a talk recording.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your SRT file goes through Subtitle Converter, Subtitle Shift and Sync, Subtitle Editor, Extract Subtitles, Add Subtitles to Video, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Problem 1: the player will not load the file\". Usually a format mismatch.",
+     "caption": "From the explainer film: Problem 1: the player will not load the file.",
+     "heading": "problem-1-the-player-will-not-load-the-file"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Step by step diagram for the chapter \"My usual flow for a talk recording\". All four steps run in the browser, so an unreleased recording stays on my laptop the whole time.",
+     "caption": "From the explainer film: My usual flow for a talk recording.",
+     "heading": "my-usual-flow-for-a-talk-recording"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 354.51,
+     "words": 952,
+     "mp3": 2127858
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 332.18,
+     "words": 952,
+     "mp3": 1993792
+    }
+   ]
+  }
+ }
+}

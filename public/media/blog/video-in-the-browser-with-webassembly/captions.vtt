@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.313
+Editing video in a browser tab with WebAssembly.
+
+2
+00:00:05.813 --> 00:00:11.281
+How ffmpeg runs inside your browser, why the first run downloads an engine,
+
+3
+00:00:11.281 --> 00:00:14.197
+and how to get the best speed out of it.
+
+4
+00:00:15.597 --> 00:00:18.170
+ffmpeg, compiled for the browser.
+
+5
+00:00:18.170 --> 00:00:23.706
+ffmpeg is the open-source tool behind a huge share of the world's video
+
+6
+00:00:23.706 --> 00:00:24.408
+software.
+
+7
+00:00:25.708 --> 00:00:31.233
+Why the first run is slower. The ffmpeg engine is about 30 MB.
+
+8
+00:00:32.533 --> 00:00:36.544
+Check your browser. Speed depends on a few browser features.
+
+9
+00:00:37.844 --> 00:00:43.081
+Where it falls short. Very long 4K videos are still better handled by a
+
+10
+00:00:43.081 --> 00:00:43.967
+desktop app.
+
+11
+00:00:45.267 --> 00:00:48.301
+To try it, open Video Trimmer in OpenFile.
+
+12
+00:00:48.301 --> 00:00:52.419
+Drop in a file, adjust the settings and press the button.
+
+13
+00:00:52.419 --> 00:00:56.104
+It all runs on your device, so nothing is uploaded.
+
+14
+00:00:58.367 --> 00:01:02.655
+Read the full post, with live demos, on the OpenFile blog.
