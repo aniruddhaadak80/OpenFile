@@ -1,0 +1,248 @@
+name: Cross-platform tests
+
+# Real tests on GitHub-hosted runners:
+#   1. Web app E2E (Playwright: Chromium, Firefox, WebKit) against the built site served by `vite preview`,
+#      on Linux, Windows Server 2022, Windows Server 2025 and macOS 14 / 15.
+#   2. Desktop app smoke tests of the published release: install, launch, stay alive 20 s, screenshot, uninstall.
+#      Windows MSI and NSIS setup on windows-2022 and windows-2025, macOS .dmg on macos-14 and macos-15,
+#      Linux AppImage and .deb on ubuntu-22.04 and ubuntu-24.04.
+#   3. Android: the release APK on an emulator (API 30 and 34), checks it launches without a crash.
+#
+# About Windows versions: GitHub no longer offers Windows 10 hosted runners. windows-2022 runs Windows Server 2022
+# (the Windows 10 21H2 code base) and windows-2025 runs Windows Server 2025 (the Windows 11 24H2 code base).
+# Those two images are the closest hosted stand-ins for Windows 10 and Windows 11 desktops.
+#
+# The desktop and Android jobs test release assets, which only change when a release is built, so they run on
+# workflow_dispatch and the weekly schedule, not on every push.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag whose app assets to test (for example v1.2.0), or latest'
+        required: true
+        default: 'latest'
+      android:
+        description: 'Run the Android emulator jobs'
+        type: boolean
+        default: true
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'mobile/**'
+      - 'src/**'
+      - 'package.json'
+      - 'tests/e2e/**'
+      - 'tests/apps/**'
+      - '.github/workflows/cross-platform-test.yml'
+  schedule:
+    - cron: '17 3 * * 1' # Mondays 03:17 UTC
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cross-platform-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RELEASE_TAG: ${{ github.event.inputs.tag || 'latest' }}
+
+jobs:
+  build-web:
+    name: Build web app
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: web-dist
+          path: dist
+          retention-days: 3
+
+  web-e2e:
+    name: Web E2E / ${{ matrix.os }} / ${{ matrix.browser }}
+    needs: build-web
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2022, windows-2025, macos-14, macos-15]
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-dist
+          path: dist
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Run smoke tests
+        run: npx playwright test -c tests/e2e/playwright.config.ts --project=${{ matrix.browser }}
+        env:
+          CI: '1'
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-${{ matrix.os }}-${{ matrix.browser }}
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
+          if-no-files-found: ignore
+
+  desktop-windows:
+    name: Desktop / ${{ matrix.os }} / ${{ matrix.kind }}
+    if: github.event_name != 'push'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2025]
+        kind: [msi, nsis]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - name: Download installer
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ matrix.kind }}" = msi ]; then F=OpenFile-windows-x64.msi; else F=OpenFile-windows-x64-setup.exe; fi
+          T=""; [ "$RELEASE_TAG" = latest ] || T="$RELEASE_TAG"
+          gh release download $T -R "${{ github.repository }}" -p "$F" -D dl --clobber
+          ls -la dl
+          echo "INSTALLER=dl/$F" >> "$GITHUB_ENV"
+      - name: Install, launch, uninstall
+        shell: pwsh
+        run: ./tests/apps/windows-smoke.ps1 -Kind ${{ matrix.kind }} -Installer $env:INSTALLER -OutDir app-smoke -WaitSeconds 20
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: desktop-${{ matrix.os }}-${{ matrix.kind }}
+          path: app-smoke
+          if-no-files-found: ignore
+
+  desktop-macos:
+    name: Desktop / ${{ matrix.os }} / dmg
+    if: github.event_name != 'push'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - name: Download dmg
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T=""; [ "$RELEASE_TAG" = latest ] || T="$RELEASE_TAG"
+          gh release download $T -R "${{ github.repository }}" -p OpenFile-macos-universal.dmg -D dl --clobber
+          ls -la dl
+      - name: Mount, launch, remove
+        run: bash tests/apps/macos-smoke.sh dl/OpenFile-macos-universal.dmg app-smoke 20
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: desktop-${{ matrix.os }}-dmg
+          path: app-smoke
+          if-no-files-found: ignore
+
+  desktop-linux:
+    name: Desktop / ${{ matrix.os }} / ${{ matrix.kind }}
+    if: github.event_name != 'push'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+        kind: [appimage, deb]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - name: Download package and X tools
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ matrix.kind }}" = deb ]; then F=OpenFile-linux-amd64.deb; else F=OpenFile-linux-x86_64.AppImage; fi
+          T=""; [ "$RELEASE_TAG" = latest ] || T="$RELEASE_TAG"
+          gh release download $T -R "${{ github.repository }}" -p "$F" -D dl --clobber
+          ls -la dl
+          echo "PKG=dl/$F" >> "$GITHUB_ENV"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb imagemagick >/dev/null
+      - name: Launch
+        run: bash tests/apps/linux-smoke.sh ${{ matrix.kind }} "$PKG" app-smoke 20
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: desktop-${{ matrix.os }}-${{ matrix.kind }}
+          path: app-smoke
+          if-no-files-found: ignore
+
+  android:
+    name: Android / API ${{ matrix.api }}
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.android == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [30, 34]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - name: Download APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          T=""; [ "$RELEASE_TAG" = latest ] || T="$RELEASE_TAG"
+          gh release download $T -R "${{ github.repository }}" -p OpenFile-android.apk -D dl --clobber
+          ls -la dl
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Boot emulator, install and launch
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          target: google_apis
+          ram-size: 4096M
+          disk-size: 6000M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          script: bash tests/apps/android-smoke.sh dl/OpenFile-android.apk app-smoke 30
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: android-api${{ matrix.api }}
+          path: app-smoke
+          if-no-files-found: ignore
