@@ -133,7 +133,7 @@ export default function VideoCompressor() {
                 <span className="text-muted">Estimated output</span>
                 <span className="flex items-center gap-1.5 font-mono">{formatBytes(file.size)}<ArrowRight className="size-3.5 text-muted" /><span className="font-semibold text-accent">about {formatBytes(Math.min(plan.estimateBytes, file.size))}</span></span>
               </div>
-              <div className="text-[11px] text-muted">{plan.outWidth ? `${plan.outWidth}×${plan.outHeight}, ` : ''}video {plan.videoKbps} kb/s{plan.audioKbps ? `, audio ${plan.audioKbps} kb/s` : ', no audio'}</div>
+              <div className="text-[11px] text-muted">{plan.outWidth ? `${plan.outWidth}×${plan.outHeight}, ` : ''}video {plan.videoKbps} kb/s{plan.audioKbps ? `, audio ${plan.audioKbps} kb/s if the clip has sound` : ', no audio'}</div>
               {plan.tooSmall && <div className="text-[11px] text-danger">This size is too small for a video this long.</div>}
               {!plan.tooSmall && plan.estimateBytes >= file.size * 0.97 && <div className="text-[11px] text-muted">This video is already very compact. If the result is not smaller, you get your original file back.</div>}
             </div>

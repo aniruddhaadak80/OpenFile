@@ -1,6 +1,6 @@
 /* Draggable rectangle over a picture or video, in the media's own pixel coordinates.
  * Used for cropping, logo removal, blurring, and watermark placement. */
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { cn } from '@/components/ui'
 
 export interface Rect { x: number; y: number; w: number; h: number }
@@ -91,10 +91,25 @@ export const RATIOS: { value: string; label: string; r: number | null }[] = [
 ]
 
 /** Rect input row for exact numbers. */
+/** Typing an offset keeps the typed value and shrinks the size to fit (the full-frame default used to snap x and y
+ * back to 0). Fields keep what is being typed (even empty) and apply it as soon as it is a number. */
 export function RectInputs({ rect, onChange, W, H }: { rect: Rect; onChange: (r: Rect) => void; W: number; H: number }) {
+  const [draft, setDraft] = useState<Partial<Record<keyof Rect, string>>>({})
+  useEffect(() => { setDraft({}) }, [rect.x, rect.y, rect.w, rect.h])
+  const apply = (k: keyof Rect, raw: string) => {
+    setDraft((d) => ({ ...d, [k]: raw }))
+    const v = Math.round(Number(raw))
+    if (raw.trim() === '' || !Number.isFinite(v)) return
+    const n = { ...rect, [k]: Math.max(0, v) }
+    if (k === 'x') { n.x = Math.min(n.x, W - 4); n.w = Math.min(n.w, W - n.x) }
+    if (k === 'y') { n.y = Math.min(n.y, H - 4); n.h = Math.min(n.h, H - n.y) }
+    if (k === 'w') n.x = Math.min(n.x, Math.max(0, W - Math.min(W, n.w)))
+    if (k === 'h') n.y = Math.min(n.y, Math.max(0, H - Math.min(H, n.h)))
+    onChange(clampRect(n, W, H))
+  }
   const f = (k: keyof Rect) => (
     <label key={k} className="block text-[10px] font-medium uppercase tracking-wide text-muted">{k}
-      <input type="number" value={rect[k]} onChange={(e) => onChange(clampRect({ ...rect, [k]: +e.target.value || 0 }, W, H))} className="mt-1 h-9 w-full rounded-lg border border-border bg-surface-2/60 px-2 font-mono text-xs text-fg outline-none focus:border-accent" />
+      <input type="number" inputMode="numeric" min={0} max={k === 'x' || k === 'w' ? W : H} value={draft[k] ?? rect[k]} onChange={(e) => apply(k, e.target.value)} onBlur={() => setDraft({})} className="mt-1 h-9 w-full rounded-lg border border-border bg-surface-2/60 px-2 font-mono text-xs text-fg outline-none focus:border-accent" />
     </label>
   )
   return <div className="grid grid-cols-4 gap-2">{(['x', 'y', 'w', 'h'] as const).map(f)}</div>

@@ -4,11 +4,27 @@ import { useEffect, useMemo, useState } from 'react'
 import { Film, Images, Video } from 'lucide-react'
 import { Button, Dropzone, Label, Segmented, Slider, Switch, Tabs, ToolGrid } from '@/components/ui'
 import { toast } from '@/components/toast'
-import { type Anim, type OutFmt, blobToRGBA, boomerang, cropRGBA, resizeRGBA, videoToAnim } from '@/lib/b3/anim'
+import { type Anim, type OutFmt, blobToRGBA, boomerang, cropRGBA, resizeRGBA, videoToAnim, sniff, decodeGif, decodePng, isApng, decodeWebp, parseWebp } from '@/lib/b3/anim'
 import { ThumbGrid, useImageList, ColorInput, hexToRgbaSafe } from './maker-kit'
 import { fmtTime, useVideoMeta } from '@/tools/video/_media/media'
 import { TimeInput, VideoStage } from '@/tools/video/_media/ui'
 import { AnimPlayer, AnimStats, ExportPanel, Loading } from './anim-ui'
+
+/** All frames of a dropped file: every frame (with its own timing) for an animated GIF, APNG or WebP, else one still. */
+async function framesOf(file: File): Promise<{ rgba: Uint8ClampedArray; width: number; height: number; delay?: number }[]> {
+  if (file.size < 64 * 1024 * 1024) {
+    const b = new Uint8Array(await file.arrayBuffer())
+    const k = sniff(b, file.name)
+    let a: Anim | null = null
+    try {
+      if (k === 'gif') a = decodeGif(b)
+      else if (k === 'png' && isApng(b)) a = decodePng(b)
+      else if (k === 'webp' && parseWebp(b).animated) a = await decodeWebp(b)
+    } catch { a = null }
+    if (a && a.frames.length > 1) return a.frames.map((f) => ({ rgba: f.rgba, width: a!.width, height: a!.height, delay: f.delay }))
+  }
+  return [await blobToRGBA(file, 2048)]
+}
 
 export function MakerTool({ fmt, title }: { fmt: OutFmt; title: string }) {
   const [tab, setTab] = useState<'images' | 'video'>('images')
@@ -41,11 +57,14 @@ export function MakerTool({ fmt, title }: { fmt: OutFmt; title: string }) {
         const fill: [number, number, number, number] = transparent ? [0, 0, 0, 0] : hexToRgbaSafe(bg)
         const frames = []
         for (const it of items) {
-          const { rgba, width: w, height: h } = await blobToRGBA(it.file, 2048)
-          const s = fit === 'contain' ? Math.min(width / w, height / h) : Math.max(width / w, height / h)
-          const rw = Math.max(1, Math.round(w * s)), rh = Math.max(1, Math.round(h * s))
-          const scaled = resizeRGBA(rgba, w, h, rw, rh)
-          frames.push({ rgba: cropRGBA(scaled, rw, rh, Math.round((rw - width) / 2), Math.round((rh - height) / 2), width, height, fill), delay })
+          // an animated GIF, APNG or WebP adds all of its frames with their own timing, not just the first one
+          const many = await framesOf(it.file)
+          for (const { rgba, width: w, height: h, delay: own } of many) {
+            const s = fit === 'contain' ? Math.min(width / w, height / h) : Math.max(width / w, height / h)
+            const rw = Math.max(1, Math.round(w * s)), rh = Math.max(1, Math.round(h * s))
+            const scaled = resizeRGBA(rgba, w, h, rw, rh)
+            frames.push({ rgba: cropRGBA(scaled, rw, rh, Math.round((rw - width) / 2), Math.round((rh - height) / 2), width, height, fill), delay: many.length > 1 && own ? own : delay })
+          }
         }
         let a: Anim = { width, height, frames, loop: loop === 'forever' ? 0 : 1, source: 'Images' }
         if (bounce) a = boomerang(a)

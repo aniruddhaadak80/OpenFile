@@ -7,6 +7,7 @@ import { baseName } from '@/lib/files'
 import { ffRun, ffProbe, extFromBlob, isCancel, X264, VP8 } from './_media/engine'
 import { fmtTime, useMediaJob, useObjectUrl, useVideoMeta } from './_media/media'
 import { FileBar, JobPanel, Note, Reveal, ToolLink, VideoStage } from './_media/ui'
+import { capToSource, sourceRate } from './_media/bitrate'
 
 type Fmt = 'mp4' | 'webm' | 'mov' | 'mkv' | 'avi' | 'm4v' | '3gp' | 'flv' | 'wmv' | 'asf' | 'mpg' | 'ts' | 'vob' | 'ogv' | 'divx' | 'prores'
 type Q = 'high' | 'medium' | 'low'
@@ -53,6 +54,8 @@ export default function VideoConverter() {
   const { url, meta } = useVideoMeta(file)
   const [fmt, setFmt] = useState<Fmt>('mp4')
   const [q, setQ] = useState<Q>('high')
+  // Until the user picks a quality, re-encodes are capped near the source bitrate so a converted copy does not balloon.
+  const [qPicked, setQPicked] = useState(false)
   const [tryCopy, setTryCopy] = useState(true)
   const [device, setDevice] = useState('')
   const [showMore, setShowMore] = useState(false)
@@ -71,9 +74,10 @@ export default function VideoConverter() {
     const input = 'in' + extFromBlob(file), out = `out.${extFor(fmt)}`
     const dur = meta?.duration || undefined
     let blob: Blob | null = null, copied = false
+    let info: Awaited<ReturnType<typeof ffProbe>> | null = null
     if (tryCopy && copyable) {
       setLabel('Checking codecs…')
-      const info = await ffProbe(file, input)
+      info = await ffProbe(file, input)
       const vOk = fmt === 'mkv' || /^(h264|hevc|mpeg4)$/.test(info.vcodec ?? '')
       const aOk = fmt === 'mkv' || !info.hasAudio || /^(aac|mp3)$/.test(info.acodec ?? '')
       if (vOk && aOk && info.hasVideo) try {
@@ -84,7 +88,11 @@ export default function VideoConverter() {
     }
     if (!blob) {
       setLabel(`Converting to ${FORMATS[fmt].label}…`); setProgress(0)
-      const base = FORMATS[fmt].args(CRF[q])
+      let base = FORMATS[fmt].args(CRF[q])
+      if (!qPicked && fmt !== 'prores') {
+        if (!info) { setLabel('Reading the source…'); info = await ffProbe(file, input).catch(() => null); setLabel(`Converting to ${FORMATS[fmt].label}…`) }
+        base = capToSource(base, sourceRate(info, file.size, dur ?? 0))
+      }
       // a device preset adds its own size and profile on top of the format recipe
       const vfAt = base.indexOf('-vf')
       const args = dev?.scale ? (vfAt >= 0 ? base.map((a, i) => (i === vfAt + 1 ? `${a},${dev.scale}` : a)) : ['-vf', dev.scale, ...base]) : base
@@ -132,7 +140,8 @@ export default function VideoConverter() {
             <div className="mb-1 font-medium text-fg">{FORMATS[fmt].label} · {FORMATS[fmt].codecs}</div>
             <div className="text-muted">{FORMATS[fmt].note}</div>
           </div>
-          <div><Label>Quality</Label><Segmented value={q} onChange={setQ} options={[{ value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Small' }]} /></div>
+          <div><Label>Quality</Label><Segmented value={q} onChange={(v) => { setQ(v); setQPicked(true) }} options={[{ value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Small' }]} /></div>
+          <p className="-mt-3 text-xs text-muted">{qPicked ? 'Encodes at the quality you picked, even if the file grows.' : 'Kept close to the size of the original. Pick a quality to override.'}</p>
           {copyable && (
             <div>
               <Switch checked={tryCopy} onChange={setTryCopy} label="Fast remux when possible" />
@@ -147,6 +156,7 @@ export default function VideoConverter() {
       {result && resultUrl && (
         <Reveal k={resultUrl}>
           <ResultCard blob={result.blob} filename={result.name} originalSize={file.size} title={result.copied ? 'Converted (lossless remux)' : 'Converted'} onReset={reset}>
+            {result.blob.size > file.size * 1.05 && <Note>This copy is {Math.round((result.blob.size / file.size - 1) * 100)}% bigger than the original ({FORMATS[fmt].label} {fmt === 'prores' || fmt === 'avi' || fmt === 'divx' || fmt === 'mpg' || fmt === 'vob' || fmt === 'wmv' || fmt === 'asf' ? 'uses an older or editing codec that needs more space' : 'needed more data at this quality'}). Pick Small for a lighter file, or use Video Compressor.</Note>}
             {PLAYABLE.includes(fmt) ? <video src={resultUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" /> : <Note>Browsers can't play {FORMATS[fmt].label} inline, but the file opens in VLC, your OS player and editors.</Note>}
           </ResultCard>
         </Reveal>

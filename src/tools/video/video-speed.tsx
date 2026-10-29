@@ -3,6 +3,7 @@ import { Gauge } from 'lucide-react'
 import { Button, Dropzone, Label, ResultCard, Switch, ToolGrid, cn } from '@/components/ui'
 import { baseName } from '@/lib/files'
 import { ffRun, ffProbe, extFromBlob, atempoChain, X264 } from './_media/engine'
+import { capToSource, sourceRate } from './_media/bitrate'
 import { fmtTime, useMediaJob, useObjectUrl, useVideoMeta } from './_media/media'
 import { FileBar, JobPanel, Note, Reveal, VideoStage } from './_media/ui'
 
@@ -38,7 +39,8 @@ export default function VideoSpeed() {
     const info = await ffProbe(file, input)
     const af = keepPitch ? atempoChain(speed) : `asetrate=${Math.round((info.sampleRate || 44100) * speed)},aresample=${info.sampleRate || 44100}`
     setLabel(`Re-timing to ${speed}×…`)
-    const args = ['-i', input, '-filter:v', `setpts=PTS/${speed}`, ...(info.hasAudio ? ['-filter:a', af, '-c:a', 'aac', '-b:a', '160k'] : ['-an']), ...X264, '-crf', '21', '-movflags', '+faststart', 'out.mp4']
+    // capped at the source bitrate so the sped up (or slowed down) copy is not bigger per second than the original
+    const args = ['-i', input, '-filter:v', `setpts=PTS/${speed}`, ...capToSource([...(info.hasAudio ? ['-filter:a', af, '-c:a', 'aac', '-b:a', '160k'] : ['-an']), ...X264, '-crf', '21'], sourceRate(info, file.size, dur || 0)), '-movflags', '+faststart', 'out.mp4']
     const blob = await ffRun({ inputs: [{ name: input, file }], args, output: 'out.mp4', duration: (info.duration || dur) / speed || undefined, onProgress: setProgress })
     setResult(blob)
   })

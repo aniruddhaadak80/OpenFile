@@ -52,9 +52,10 @@ export default function HdrExrViewer() {
     else { const { HDRLoader } = await import('three/examples/jsm/loaders/HDRLoader.js'); const l = new HDRLoader(); l.setDataType(THREE.FloatType); r = l.parse(buf) }
     if (!r?.data) throw new Error('Could not decode this file. Supported: OpenEXR (.exr) and Radiance HDR (.hdr, .pic).')
     const data = r.data as Float32Array, n = r.width * r.height, ch = Math.round(data.length / n)
-    let max = 0, sum = 0
-    for (let i = 0; i < n; i += Math.max(1, Math.floor(n / 50000))) { const l = 0.2126 * data[i * ch] + 0.7152 * data[i * ch + Math.min(1, ch - 1)] + 0.0722 * data[i * ch + Math.min(2, ch - 1)]; if (l > max) max = l; sum += Math.log(1e-4 + l) }
-    const avg = Math.exp(sum / Math.min(n, 50000))
+    // NaN, infinite and negative samples (common in renders) are skipped so peak and average stay real numbers
+    let max = 0, sum = 0, count = 0
+    for (let i = 0; i < n; i += Math.max(1, Math.floor(n / 50000))) { const l = 0.2126 * data[i * ch] + 0.7152 * data[i * ch + Math.min(1, ch - 1)] + 0.0722 * data[i * ch + Math.min(2, ch - 1)]; if (!Number.isFinite(l)) continue; const v = Math.max(0, l); if (v > max) max = v; sum += Math.log(1e-4 + v); count++ }
+    const avg = count ? Math.exp(sum / count) : 0.18
     setImg({ data, width: r.width, height: r.height, channels: ch, flip: isExr, maxLum: max, avgLum: avg })
     setFlip(isExr); setFile(f)
     setExposure(Math.round(Math.log2(0.18 / Math.max(1e-4, avg)) * 4) / 4)

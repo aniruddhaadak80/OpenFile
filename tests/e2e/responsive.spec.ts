@@ -146,7 +146,8 @@ test.describe('blog navigation', () => {
   test('Back from a post returns to the same search, results and scroll position', async ({ page, errors }) => {
     void errors
     await open(page, '/blog')
-    const box = page.getByRole('combobox', { name: 'Search the blog' }).or(page.getByRole('searchbox', { name: 'Search the blog' })).or(page.getByLabel('Search the blog')).first()
+    // the search section and its input share the label; target the input itself
+    const box = page.locator('input[aria-label="Search the blog"]')
     await box.fill('pdf')
     await expect(page).toHaveURL(/[?&]q=pdf/)
     await page.keyboard.press('Escape')

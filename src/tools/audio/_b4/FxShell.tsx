@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { Wand2, Headphones } from 'lucide-react'
 import { Button, Dropzone, Label, Select, Segmented, ResultCard, ToolGrid } from '@/components/ui'
 import { baseName } from '@/lib/files'
-import { ffRun, extFromBlob } from '@/tools/video/_media/engine'
+import { ffRun, ffProbe, extFromBlob } from '@/tools/video/_media/engine'
+import { matchAudioKbps, sourceRate } from '@/tools/video/_media/bitrate'
 import { audioCodecArgs } from '@/tools/video/_media/audio'
 import { useMediaJob, useObjectUrl } from '@/tools/video/_media/media'
 import { JobPanel, FileBar, Note } from '@/tools/video/_media/ui'
@@ -68,7 +69,8 @@ export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, 
   const setFile = (f: File | null) => { onFile ? onFile(f) : setOwn(f); setResult(null); job.reset() }
   const [duration, setDuration] = useState(0)
   const [fmt, setFmt] = useState<OutFmt>(defaultFmt)
-  const [bitrate, setBitrate] = useState('192')
+  // 'same' matches the source bitrate, so an effect on a 128 kb/s MP3 does not come back 50% bigger at 192 kb/s
+  const [bitrate, setBitrate] = useState('same')
   const [result, setResult] = useState<{ blob: Blob; name: string } | null>(null)
   const job = useMediaJob()
   const isVideo = !!file && allowVideo && isVideoFile(file)
@@ -83,8 +85,15 @@ export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, 
     setResult(null); setLabel('Processing audio')
     const inName = 'in.' + (inExt || 'bin')
     const outName = 'out.' + outExt
+    let kbps = +bitrate
+    if (bitrate === 'same') {
+      const info = await ffProbe(file, inName).catch(() => null)
+      const lossless = !isVideo && ['wav', 'flac', 'aif', 'aiff'].includes(inExt)
+      kbps = lossless ? 192 : matchAudioKbps(isVideo ? info?.audioKbps ?? 0 : sourceRate(info, file.size, duration).total)
+      setLabel('Processing audio')
+    }
     const blob = await process({
-      file, inName, isVideo, duration, outName, outExt, acodec: codecFor(outExt, +bitrate),
+      file, inName, isVideo, duration, outName, outExt, acodec: codecFor(outExt, kbps),
       vcodec: (re) => (re ? (outExt === 'webm' ? ['-c:v', 'libvpx', '-deadline', 'realtime', '-cpu-used', '8', '-b:v', '2M'] : ['-c:v', 'libx264', '-preset', 'veryfast', '-crf', '22', '-pix_fmt', 'yuv420p']) : ['-c:v', 'copy']),
       setLabel, setProgress,
     })
@@ -115,7 +124,7 @@ export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, 
         {!isVideo && (
           <div className="space-y-3">
             <div><Label>Output format</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'same', label: `Same as input (${(AUDIO_EXTS.includes(inExt) ? inExt : 'mp3').toUpperCase()})` }, { value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A (AAC)' }, { value: 'ogg', label: 'OGG Vorbis' }, { value: 'wav', label: 'WAV (lossless)' }, { value: 'flac', label: 'FLAC (lossless)' }]} /></div>
-            {lossy && <div><Label>Bitrate (kbps)</Label><Segmented value={bitrate} onChange={setBitrate} options={['128', '192', '256', '320']} /></div>}
+            {lossy && <div><Label>Bitrate (kbps)</Label><Segmented value={bitrate} onChange={setBitrate} options={[{ value: 'same', label: 'Same' }, '128', '192', '256', '320']} /><p className="mt-1 text-xs text-muted">{bitrate === 'same' ? 'Matches the original bitrate, so the file stays about the same size.' : `Encodes at ${bitrate} kb/s.`}</p></div>}
           </div>
         )}
         {isVideo && <Note>Video input: the picture is kept and only the sound is changed, so the result is ready to share.</Note>}

@@ -84,7 +84,12 @@ export async function readDicom(files: { name: string; data: ArrayBuffer }[]): P
   const st = stats(same.map((s) => s.pixels))
   const wc = Number((ds.string('x00281050') ?? '').split('\\')[0]), ww = Number((ds.string('x00281051') ?? '').split('\\')[0])
   const meta: [string, string][] = []
-  for (const [tag, label] of Object.entries(TAGS)) { const v = ds.string(tag); if (v) meta.push([label, label === 'Patient name' ? v.replace(/\^/g, ' ') : v]) }
+  // Rows, Columns and Bits allocated are binary numbers (US), not text; reading them as strings showed garbage glyphs
+  const US = new Set(['x00280010', 'x00280011', 'x00280100', 'x00280101', 'x00280102', 'x00280002', 'x00280103'])
+  for (const [tag, label] of Object.entries(TAGS)) {
+    if (US.has(tag)) { const n = ds.uint16(tag); if (n != null) meta.push([label, String(n)]); continue }
+    const v = ds.string(tag); if (v) meta.push([label, label === 'Patient name' ? v.replace(/\^/g, ' ') : v])
+  }
   meta.push(['Images', String(same.length)])
   if (errors.length) meta.push(['Skipped files', String(errors.length)])
   const ps = (ds.string('x00280030') ?? '').split('\\').map(Number)

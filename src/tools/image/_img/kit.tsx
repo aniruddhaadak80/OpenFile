@@ -447,14 +447,23 @@ export function BatchResults({ results, zipName = 'openfile-images.zip', onReset
   const orig = results.reduce((a, r) => a + (r.originalSize ?? 0), 0)
   const saved = orig ? 1 - total / orig : 0
   const [zipping, setZipping] = useState(false)
+  // Results appear below the options; on a short screen they used to land out of sight, so bring them into view once.
+  const box = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    if (r.top > window.innerHeight - 96 || r.bottom < 64) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' })
+  }, [])
   const zipAll = async () => { setZipping(true); try { downloadBlob(await zipFiles(results.map((r) => ({ name: r.name, data: r.blob }))), zipName) } finally { setZipping(false) } }
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-success/30 bg-success/5 p-5">
+    <motion.div ref={box} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="scroll-mt-24 rounded-2xl border border-success/30 bg-success/5 p-5">
       <div className="flex flex-wrap items-center gap-4">
         <div className="grid size-12 place-items-center rounded-xl bg-success/15 text-success"><Check className="size-6" /></div>
         <div className="min-w-0 flex-1">
           <div className="font-semibold">{title ?? (results.length === 1 ? 'Your image is ready' : `${results.length} images ready`)}</div>
-          <div className="text-sm text-muted">{formatBytes(total)}{orig ? <> · <span className={saved > 0 ? 'font-medium text-success' : 'text-warn'}>{saved > 0 ? `−${(saved * 100).toFixed(1)}%` : `+${(-saved * 100).toFixed(1)}%`}</span> from {formatBytes(orig)}</> : null}</div>
+          <div className="text-sm text-muted">{formatBytes(total)}{orig ? (total === orig ? <> · same size as the original</> : <> · <span className={saved > 0 ? 'font-medium text-success' : 'text-warn'}>{saved > 0 ? `−${(saved * 100).toFixed(1)}%` : `+${(-saved * 100).toFixed(1)}%`}</span> from {formatBytes(orig)}</>) : null}</div>
+          {results.length === 1 && results[0].note && <div className="mt-0.5 text-xs text-muted">{results[0].note.charAt(0).toUpperCase() + results[0].note.slice(1)}{/original kept/.test(results[0].note) ? '. Making it smaller would only lose quality, so you get the same file back.' : ''}</div>}
         </div>
         <div className="flex flex-wrap gap-2">
           {onReset && <Button variant="ghost" onClick={onReset}>Start over</Button>}
@@ -469,7 +478,7 @@ export function BatchResults({ results, zipName = 'openfile-images.zip', onReset
             <div key={r.id} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2 text-sm">
               {r.url ? <img src={r.url} alt="" className="checker size-9 rounded-md object-cover" /> : <ImageIcon className="size-4 text-accent" />}
               <div className="min-w-0 flex-1"><div className="truncate font-medium">{r.name}</div><div className="text-xs text-muted">{r.originalSize ? `${formatBytes(r.originalSize)} → ` : ''}{formatBytes(r.blob.size)}{r.note ? ` · ${r.note}` : ''}</div></div>
-              {s !== null && <span className={cn('font-mono text-xs', s > 0 ? 'text-success' : 'text-warn')}>{s > 0 ? '−' : '+'}{Math.abs(s * 100).toFixed(1)}%</span>}
+              {s !== null && (s === 0 ? <span className="text-xs text-muted">Unchanged</span> : <span className={cn('font-mono text-xs', s > 0 ? 'text-success' : 'text-warn')}>{s > 0 ? '−' : '+'}{Math.abs(s * 100).toFixed(1)}%</span>)}
               <button onClick={() => downloadBlob(r.blob, r.name)} className="rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-fg cursor-pointer" aria-label={`Download ${r.name}`}><Download className="size-4" /></button>
             </div>) })}
         </div>
