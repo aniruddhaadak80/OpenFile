@@ -278,7 +278,7 @@ export default function PdfReader() {
       f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
       document.body.appendChild(f)
       const d = f.contentDocument!
-      d.open(); d.write(`<!doctype html><html><head><title>${file?.name ?? 'Print'}</title><style>@page{margin:0}html,body{margin:0}img{display:block;width:100%;height:auto;break-after:page;page-break-after:always}img:last-child{break-after:auto;page-break-after:auto}</style></head><body>${urls.map((u) => `<img src="${u}">`).join('')}</body></html>`); d.close()
+      d.open(); d.write(`<!doctype html><html><head><title>${(file?.name ?? 'Print').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)}</title><style>@page{margin:0}html,body{margin:0}img{display:block;width:100%;height:auto;break-after:page;page-break-after:always}img:last-child{break-after:auto;page-break-after:auto}</style></head><body>${urls.map((u) => `<img src="${u}">`).join('')}</body></html>`); d.close()
       await Promise.all([...d.images].map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = r; im.onerror = r }))))
       f.contentWindow?.focus(); f.contentWindow?.print()
       setTimeout(() => { f.remove(); urls.forEach((u) => URL.revokeObjectURL(u)) }, 60000)

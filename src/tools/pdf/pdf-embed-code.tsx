@@ -37,7 +37,7 @@ export default function PdfEmbedCode() {
   import * as pdfjs from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.min.mjs';
   pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.min.mjs';
   const box = document.getElementById('${id}');
-  const doc = await pdfjs.getDocument('${url.replace(/'/g, "\\'")}').promise;
+  const doc = await pdfjs.getDocument(${JSON.stringify(url).replace(/</g, '\\u003c')}).promise;
   const render = async () => {
     box.replaceChildren();
     const width = box.clientWidth - 24;

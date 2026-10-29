@@ -16,7 +16,9 @@ export async function odtToHtml(file: Blob): Promise<string> {
     if (tp.getAttribute('fo:font-style') === 'italic') italic.add(name)
     if ((tp.getAttribute('style:text-underline-style') || 'none') !== 'none') under.add(name)
   }
-  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+  // Links from the document keep relative, web, mail and phone targets; javascript:, data: and other schemes are dropped.
+  const linkHref = (h: string) => { const t = h.replace(/[\u0000-\u0020]/g, ''); return /^[a-z][a-z0-9+.-]*:/i.test(t) && !/^(https?|mailto|tel|ftp):/i.test(t) ? '' : h.trim() }
   const imgUrl = async (href: string) => { const f = zip.file(href); if (!f) return ''; const b = await f.async('base64'); const ext = href.split('.').pop()?.toLowerCase(); return `data:image/${ext === 'jpg' ? 'jpeg' : ext === 'svg' ? 'svg+xml' : ext};base64,${b}` }
   const inline = async (el: Element): Promise<string> => {
     let s = ''
@@ -27,7 +29,7 @@ export async function odtToHtml(file: Blob): Promise<string> {
       if (ln === 's') s += ' '.repeat(+(e.getAttribute('text:c') || 1))
       else if (ln === 'tab') s += '\t'
       else if (ln === 'line-break') s += '<br/>'
-      else if (ln === 'a') s += `<a href="${esc(e.getAttribute('xlink:href') || '')}">${await inline(e)}</a>`
+      else if (ln === 'a') s += `<a href="${esc(linkHref(e.getAttribute('xlink:href') || ''))}">${await inline(e)}</a>`
       else if (ln === 'frame') { const im = e.getElementsByTagNameNS('*', 'image')[0]; if (im) { const u = await imgUrl(im.getAttribute('xlink:href') || ''); if (u) s += `<img src="${u}" alt=""/>` } }
       else if (ln === 'span') {
         const st = e.getAttribute('text:style-name') || ''

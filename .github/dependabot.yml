@@ -10,6 +10,12 @@ updates:
     groups:
       npm-minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Pinned to the exact peer version @imgly/background-removal requires. Bump both together.
+      - dependency-name: onnxruntime-web
+      # 2.x is AGPL-3.0; OpenFile is MIT. Stay on 1.x.
+      - dependency-name: ua-parser-js
+        versions: ['>=2.0.0']
     commit-message:
       prefix: deps
 

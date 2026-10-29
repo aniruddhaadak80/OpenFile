@@ -234,7 +234,7 @@ export function fitView(doc: CadDoc, w: number, h: number, pad = 0.05) {
   return { scale, ox: doc.bbox.minX - (w / scale - bw) / 2, oy: doc.bbox.minY - (h / scale - bh) / 2 }
 }
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 /** Write an SVG in drawing units (Y flipped), grouped by layer. */
 export function cadToSvg(doc: CadDoc, o: DrawOpts & { strokeWidth?: number; widthPx?: number }): string {
   const { minX, minY, maxX, maxY } = doc.bbox
