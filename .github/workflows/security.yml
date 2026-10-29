@@ -1,0 +1,59 @@
+name: Security checks
+
+# Runs on every push and pull request to main, next to CodeQL (codeql.yml).
+# Independent of the deploy workflows: a finding here never stops a deploy, it shows up as a failed check.
+#   audit    npm audit --omit=dev --audit-level=high, gated by scripts/security/audit-gate.mjs so that
+#            reviewed advisories with no safe fix (scripts/security/audit-allowlist.json) do not fail every run
+#   secrets  gitleaks over the pushed commits (rules and allowlist in .gitleaks.toml)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: npm audit (production dependencies)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Full audit report
+        run: npm audit --omit=dev --audit-level=high || true
+      - name: Fail on unreviewed high or critical advisories
+        run: node scripts/security/audit-gate.mjs
+
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_VERSION: 8.28.0
+          GITLEAKS_ENABLE_COMMENTS: false
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false

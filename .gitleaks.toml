@@ -1,0 +1,18 @@
+# Secret scanning rules for gitleaks (used by .github/workflows/security.yml).
+# Default rules, plus an allowlist for files that hold fake example secrets on purpose:
+# test fixtures for the Secret Scanner and JWT tools, sample commands in the curl converter,
+# the PEM header pattern in the JWT key parser, and built bundles on the gh-pages branch.
+title = "OpenFile gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Fake example secrets used by tests, tool samples and built bundles"
+paths = [
+  '''^scripts/tests/''',
+  '''^src/lib/b5/jwt\.ts$''',
+  '''^src/tools/dev/curl-to-code\.tsx$''',
+  '''^src/tools/dev/jwt-decoder\.tsx$''',
+  '''^assets/[^/]+\.js$''',
+]
