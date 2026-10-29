@@ -1,12 +1,18 @@
 /* Client for the on-device AI worker plus model catalogue and text helpers. */
 export type AiTask = 'translation' | 'summarization' | 'text-generation' | 'feature-extraction'
-export interface ModelInfo { id: string; label: string; size: string; dtype?: Partial<Record<'wasm' | 'webgpu', string>>; note?: string }
+export interface ModelInfo {
+  id: string; label: string; size: string; dtype?: Partial<Record<'wasm' | 'webgpu', string>>; note?: string
+  /** Picked by default when there is no WebGPU: small enough that download plus load stays well inside a tab's memory on the CPU. */
+  cpuDefault?: boolean
+}
 
 export const MODELS = {
   translate: [{ id: 'Xenova/nllb-200-distilled-600M', label: 'NLLB-200 (200 languages)', size: 'about 900 MB', dtype: { wasm: 'q8', webgpu: 'q8' }, note: 'Meta NLLB, CC-BY-NC 4.0 weights: free for personal, non-commercial use.' }],
   summarize: [{ id: 'Xenova/distilbart-cnn-6-6', label: 'DistilBART (fast summary)', size: 'about 300 MB', dtype: { wasm: 'q8', webgpu: 'fp32' } }],
   chat: [
-    { id: 'onnx-community/Qwen2.5-0.5B-Instruct', label: 'Qwen2.5 0.5B (small, works everywhere)', size: 'about 500 MB', dtype: { wasm: 'q4', webgpu: 'q4f16' } },
+    // wasm uses q8 (488 MB): Qwen's q4 file keeps the embeddings in fp32 and is 749 MB, which crashed CPU-only tabs while loading
+    { id: 'onnx-community/Qwen2.5-0.5B-Instruct', label: 'Qwen2.5 0.5B (better answers)', size: 'about 500 MB', dtype: { wasm: 'q8', webgpu: 'q4f16' } },
+    { id: 'HuggingFaceTB/SmolLM2-135M-Instruct', label: 'SmolLM2 135M (lightest, best without a GPU)', size: 'about 130 MB', dtype: { wasm: 'q8', webgpu: 'fp16' }, cpuDefault: true, note: 'Short, simple answers. Pick Qwen2.5 for better ones if your device has the memory.' },
     { id: 'onnx-community/Qwen2.5-1.5B-Instruct', label: 'Qwen2.5 1.5B (smarter, needs WebGPU)', size: 'about 1.3 GB', dtype: { wasm: 'q4', webgpu: 'q4f16' } },
   ],
   embed: [{ id: 'Xenova/all-MiniLM-L6-v2', label: 'MiniLM embeddings', size: 'about 25 MB', dtype: { wasm: 'q8', webgpu: 'fp32' } }],

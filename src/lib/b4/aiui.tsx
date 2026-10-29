@@ -1,5 +1,5 @@
 /* Shared UI for the on-device AI tools: model picker with size, GPU switch, download progress, and document input. */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Cpu, Zap, FileText, ClipboardPaste, X } from 'lucide-react'
 import { Button, Dropzone, Label, Progress, Select, Switch, Tabs, Textarea, ErrorNote } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
@@ -8,15 +8,19 @@ import { docPages, DOCTEXT_ACCEPT, type DocPage } from './doctext'
 import { TopBar, StatusLine } from './ui'
 
 export function useAiState(models: ModelInfo[]) {
-  const [model, setModel] = useState(models[0].id)
+  const [model, setModelRaw] = useState(models[0].id)
   const [gpuOk, setGpuOk] = useState(false)
   const [gpu, setGpu] = useState(false)
+  // Without WebGPU the lightest model in the list is picked until the user chooses one, so the first run on a CPU
+  // downloads and loads a small model instead of one that can run the tab out of memory.
+  const picked = useRef(false)
+  const setModel = (id: string) => { picked.current = true; setModelRaw(id) }
   const [phase, setPhase] = useState<'idle' | 'loading' | 'running'>('idle')
   const [load, setLoad] = useState<{ loaded: number; total: number } | null>(null)
   const [status, setStatus] = useState('')
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
-  useEffect(() => { hasWebGPU().then((ok) => { setGpuOk(ok); setGpu(ok) }) }, [])
+  useEffect(() => { hasWebGPU().then((ok) => { setGpuOk(ok); setGpu(ok); const light = models.find((m) => m.cpuDefault); if (!ok && light && !picked.current) setModelRaw(light.id) }) }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const info = models.find((m) => m.id === model) ?? models[0]
   const device: 'wasm' | 'webgpu' = gpu && gpuOk ? 'webgpu' : 'wasm'
   const callbacks = (extra: AiCallbacks = {}): AiCallbacks => ({
@@ -30,7 +34,9 @@ export function useAiState(models: ModelInfo[]) {
     try { return await fn() } catch (e: any) { if (e?.name !== 'CancelledError') setError(e?.message || String(e)); return undefined } finally { setPhase('idle'); setLoad(null) }
   }
   const cancel = () => { cancelAi(); setPhase('idle'); setLoad(null) }
-  return { model, setModel, info, gpu, setGpu, gpuOk, device, phase, load, status, setStatus, progress, setProgress, error, setError, callbacks, run, cancel, busy: phase !== 'idle' }
+  /** The model to start with for a list: the light CPU one when there is no WebGPU. */
+  const defaultFor = (list: ModelInfo[]) => (!gpuOk && list.find((m) => m.cpuDefault)) || list[0]
+  return { model, setModel, defaultFor, info, gpu, setGpu, gpuOk, device, phase, load, status, setStatus, progress, setProgress, error, setError, callbacks, run, cancel, busy: phase !== 'idle' }
 }
 export type AiState = ReturnType<typeof useAiState>
 
