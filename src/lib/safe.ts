@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify'
+
 /* Shared output-safety helpers. Use these wherever text or a URL that came from a file, a pasted value,
  * a URL parameter, fetched data or storage is written into HTML, an attribute, an href/src, or generated markup.
  * escapeHtml/escapeAttr/safeUrl are pure (unit tested in scripts/tests/safe.test.mjs); stripActive and
@@ -60,19 +62,43 @@ export function stripActive(root: ParentNode): void {
   all.forEach(one)
 }
 
+// Default DOMPurify URI rule plus blob: (e-book pages and converted documents point at blob: images).
+const PURIFY_URI = /^(?:(?:https?|mailto|tel|blob|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i
+const PURIFY_BASE = {
+  ADD_TAGS: ['style', 'link'],
+  ADD_ATTR: ['target', 'rel', 'epub:type', 'xml:lang', 'xlink:href'],
+  FORBID_TAGS: ['base', 'meta'],
+  ALLOW_DATA_ATTR: true,
+  ALLOWED_URI_REGEXP: PURIFY_URI,
+  RETURN_DOM: true as const,
+}
+
 /**
- * Parses markup in an inert DOMParser document, strips active content with stripActive, and serializes it back.
- * For text/html it returns the whole document when the input had <html>/<body>, otherwise the body's inner HTML.
+ * Cleans markup with DOMPurify (the standard, audited sanitizer), then runs stripActive over the result as a second
+ * pass, and serializes it. Untrusted text is never handed to an HTML parser before DOMPurify has cleaned it.
+ * - text/html: returns a whole document when the input had <html>/<body>, otherwise the body's inner HTML.
+ * - application/xhtml+xml (and other XML): parsed as XHTML, returned as well-formed XML with its namespaces.
+ * - image/svg+xml: returns the cleaned <svg> element as XML.
  */
 export function sanitizeMarkup(markup: string, type: DOMParserSupportedType = 'text/html'): string {
-  const doc = new DOMParser().parseFromString(markup, type)
-  if (type !== 'text/html' && doc.getElementsByTagName('parsererror').length) {
-    // not well-formed XML: fall back to the forgiving HTML parser so nothing active slips through unparsed
-    const h = new DOMParser().parseFromString(markup, 'text/html')
-    stripActive(h)
-    return new XMLSerializer().serializeToString(h)
+  const input = String(markup ?? '')
+  if (type === 'image/svg+xml') {
+    const body = DOMPurify.sanitize(input, { ...PURIFY_BASE, USE_PROFILES: { svg: true, svgFilters: true, html: true } }) as HTMLElement
+    stripActive(body)
+    const svg = body.querySelector('svg')
+    return svg ? new XMLSerializer().serializeToString(svg) : ''
   }
-  stripActive(doc)
-  if (type === 'text/html') return /<(html|body)[\s>]/i.test(markup) ? '<!DOCTYPE html>\n' + doc.documentElement.outerHTML : doc.body.innerHTML
-  return new XMLSerializer().serializeToString(doc)
+  if (type !== 'text/html') {
+    const root = DOMPurify.sanitize(input.replace(/^\s*<\?xml[^>]*\?>/i, '').replace(/<!DOCTYPE[^>]*>/i, ''), {
+      ...PURIFY_BASE, PARSER_MEDIA_TYPE: 'application/xhtml+xml', WHOLE_DOCUMENT: true,
+    }) as HTMLElement
+    // DOMPurify wraps XHTML input in its own <html><body>; a full input document ends up nested inside, so keep that one.
+    const doc = (root.querySelector('body > html') as HTMLElement | null) ?? root
+    stripActive(doc)
+    return '<?xml version="1.0" encoding="utf-8"?>\n' + new XMLSerializer().serializeToString(doc)
+  }
+  const whole = /<(html|body)[\s>]/i.test(input)
+  const node = DOMPurify.sanitize(input, { ...PURIFY_BASE, WHOLE_DOCUMENT: whole, FORCE_BODY: !whole }) as HTMLElement
+  stripActive(node)
+  return whole ? '<!DOCTYPE html>\n' + node.outerHTML : node.innerHTML
 }
