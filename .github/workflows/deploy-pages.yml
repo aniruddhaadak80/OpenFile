@@ -23,6 +23,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:pages
+      # Every tool, category and blog post must ship its preview media, docs entry and blog media (see scripts/check-parity.mjs)
+      - name: Parity check
+        run: node scripts/check-parity.mjs --dist
       # Publishes dist/ to the gh-pages branch (Settings → Pages → Deploy from branch: gh-pages / root)
       - uses: peaceiris/actions-gh-pages@v4
         with:

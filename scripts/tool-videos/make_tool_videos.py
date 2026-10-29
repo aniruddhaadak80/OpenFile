@@ -1411,6 +1411,495 @@ def d_extra(c, g, t, d, P):
             rrect(c, CX + 96 + cc * 74, SY + 70 + r_ * 34, 64, 22, 4, fill=mix(SURF2, cols[cc], 0.35 if r_ == 0 else 0.12), alpha=k)
 
 
+# ----------------------------------------------------------------------------- newer categories (2026-10)
+ORANGE_ = hexrgb('#FB923C')
+LIME_ = hexrgb('#A3E635')
+NEW_AI_VISION = ('image-captioner', 'object-detector', 'depth-map', 'image-segmenter', 'image-tagger', 'similar-photo-finder')
+NEW_AI_TEXT = ('sentiment-analyzer', 'text-classifier', 'entity-extractor', 'semantic-file-search')
+
+
+def _track(seed, n=40, w=520, h=200):
+    """A smooth pseudo GPS track inside a w x h box, seeded by the slug."""
+    rng = np.random.default_rng(seed)
+    ang = rng.uniform(0, math.pi * 2)
+    x, y, pts = 0.0, 0.0, []
+    for i in range(n):
+        ang += rng.normal(0, 0.35)
+        x += math.cos(ang); y += math.sin(ang)
+        pts.append((x, y))
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    sx = w / max(1e-6, max(xs) - min(xs)); sy = h / max(1e-6, max(ys) - min(ys))
+    return [((p[0] - min(xs)) * sx - w / 2, (p[1] - min(ys)) * sy - h / 2) for p in pts]
+
+
+def _poly(c, pts, color, lw, alpha=1.0, upto=1.0):
+    n = max(2, int(len(pts) * clamp(upto)))
+    c.move_to(*pts[0])
+    for p in pts[1:n]:
+        c.line_to(*p)
+    c.set_source_rgba(*rgbf(color, alpha)); c.set_line_width(lw); c.set_line_cap(cairo.LINE_CAP_ROUND); c.set_line_join(cairo.LINE_JOIN_ROUND); c.stroke()
+    return pts[n - 1]
+
+
+def _grid(c, x, y, w, h, step=28, color=SKY, a=0.10):
+    for i in range(0, int(w) + 1, step):
+        line(c, x + i, y, x + i, y + h, color, 1, a)
+    for j in range(0, int(h) + 1, step):
+        line(c, x, y + j, x + w, y + j, color, 1, a)
+
+
+def _sheet(c, x, y, cols, rows, cw, rh, tint, t0, t, hl=None, title=None):
+    if title:
+        text(c, title, font(MONO, 13, 'Bold'), x, y - 16, color=MUTED, anchor='lm', alpha=ease_out((t - t0) / 0.4))
+    for r_ in range(rows):
+        for cc in range(cols):
+            k = ease_out((t - t0 - r_ * 0.06 - cc * 0.03) / 0.35)
+            fill = mix(SURF2, tint, 0.45 if r_ == 0 else 0.12)
+            if hl and (r_, cc) in hl:
+                fill = mix(SURF2, hl[(r_, cc)], 0.75)
+            rrect(c, x + cc * cw, y + r_ * rh, cw - 4, rh - 4, 3, fill=fill, alpha=k)
+
+
+def d_new(c, g, t, d, P):
+    """Templates for privacy, geo, office, science, creator and the newer on-device AI tools."""
+    cat, slug, s, cols = P['cat'], P['slug'], P['seed'], P['cols']
+    mono, sans = font(MONO, 15, 'Medium'), font(SANS, 18, 'SemiBold')
+    # ------------------------------------------------------------ privacy
+    if cat == 'privacy':
+        if slug in ('pii-redactor', 'hidden-character-detector'):
+            page(c, CX - 120, CY, 260, 300, 1, GOLD, lines=0, seed=s)
+            rows = ['Name  Jane Rivera', 'Email jane@mail.com', 'Phone 555 0142', 'Card  4111 ... 1111', 'Notes all good']
+            for i, r_ in enumerate(rows):
+                y = CY - 105 + i * 46
+                text(c, r_, font(MONO, 15, 'Medium'), CX - 225, y, color=INK, anchor='lm')
+                k = ease_in_out((t - 0.8 - i * 0.35) / 0.4)
+                if i in (1, 2, 3) and k > 0:
+                    w_ = 150 * k
+                    rrect(c, CX - 165, y - 12, w_, 24, 4, fill=(0, 0, 0)) if slug == 'pii-redactor' else rrect(c, CX - 165, y - 12, w_, 24, 4, fill=GOLD, alpha=0.45)
+            lab = ['3 found', 'redacted'] if slug == 'pii-redactor' else ['3 hidden', 'cleaned']
+            badge(c, CX + 200, CY - 30, lab[0], GOLD, ease_out((t - 2.2) / 0.4))
+            badge(c, CX + 200, CY + 30, lab[1], EMERALD, ease_out((t - 2.8) / 0.4))
+            return
+        if slug in ('checksum-verifier', 'entropy-analyzer'):
+            fmt_card(c, CX - 260, CY, 'FILE', GOLD, 1, seed=s)
+            if slug == 'checksum-verifier':
+                hx = '9f2c 41e7 b06a 3d58 c1f0 77a2'
+                n = int(len(hx) * clamp((t - 0.6) / 1.6))
+                rrect(c, CX - 130, CY - 60, 420, 50, 10, fill=SURF, stroke=LINE)
+                text(c, 'SHA-256  ' + hx[:n], font(MONO, 17, 'Bold'), CX - 112, CY - 35, color=CYAN, anchor='lm')
+                rrect(c, CX - 130, CY + 10, 420, 50, 10, fill=SURF, stroke=LINE, alpha=ease_out((t - 2.2) / 0.4))
+                text(c, 'expected ' + hx, font(MONO, 17, 'Medium'), CX - 112, CY + 35, color=MUTED, anchor='lm', alpha=ease_out((t - 2.2) / 0.4))
+                badge(c, CX + 80, CY + 110, 'match', EMERALD, ease_out((t - 3.0) / 0.4))
+            else:
+                vals = wave_vals(s, 24)
+                for i, v in enumerate(vals):
+                    k = ease_out((t - 0.4 - i * 0.04) / 0.5)
+                    hh = 170 * v * k
+                    col = EMERALD if v < 0.5 else GOLD if v < 0.8 else ORANGE_
+                    rrect(c, CX - 140 + i * 17, CY + 90 - hh, 12, hh, 3, fill=col)
+                text(c, 'entropy per block', font(MONO, 14, 'Bold'), CX + 60, CY + 120, color=MUTED, alpha=ease_out((t - 1) / 0.4))
+            return
+        # metadata-scrubber, steganography, zip-encrypt, self-decrypting-file
+        lock = slug in ('zip-encrypt', 'self-decrypting-file')
+        if slug == 'steganography':
+            photo(c, CX - 140, CY, 300, 210, s, stroke=LINE)
+            msg = 'meet at noon'
+            n = int(len(msg) * clamp((t - 0.8) / 1.4))
+            for i in range(n):
+                k = ease_in_out(clamp((t - 0.8 - i * 0.12) / 0.6))
+                x = lerp(CX + 210, CX - 140 + (i - 6) * 18, k); y = lerp(CY - 60, CY + (i % 3 - 1) * 30, k)
+                text(c, msg[i], font(MONO, 22, 'Bold'), x, y, color=GOLD, alpha=1 - 0.7 * k)
+            badge(c, CX + 220, CY + 90, 'hidden in pixels', TEAL, ease_out((t - 2.6) / 0.4), 14, dark=True)
+            return
+        fmt_card(c, CX - 230, CY, 'JPG' if not lock else 'FILE', GOLD, 1, seed=s)
+        if lock:
+            k = ease_out_back((t - 0.6) / 0.6)
+            circle(c, CX + 40, CY, 70, fill=SURF, stroke=GOLD, lw=3, alpha=clamp(k))
+            circle(g, CX + 40, CY, 76, fill=GOLD, alpha=0.4 * clamp(k))
+            draw_sprite(c, icon_sprite('Lock', 52, GOLD), CX + 40, CY, clamp(k), scale=max(0.01, k))
+            dots = int(clamp((t - 1.4) / 1.2) * 8)
+            rrect(c, CX + 140, CY - 22, 200, 44, 10, fill=SURF, stroke=LINE, alpha=ease_out((t - 1.2) / 0.4))
+            text(c, '•' * dots, font(MONO, 22, 'Bold'), CX + 158, CY, color=TEXT, anchor='lm')
+            badge(c, CX + 240, CY + 80, 'AES-256', EMERALD, ease_out((t - 2.8) / 0.4))
+        else:
+            rows = ['GPS 48.8566, 2.3522', 'Camera model', 'Owner name', 'Date taken']
+            for i, r_ in enumerate(rows):
+                y = CY - 90 + i * 56
+                a_ = ease_out((t - 0.4 - i * 0.15) / 0.4)
+                rrect(c, CX - 120, y - 20, 320, 40, 8, fill=SURF, stroke=LINE, alpha=a_)
+                text(c, r_, font(MONO, 15, 'Medium'), CX - 100, y, color=TEXT, anchor='lm', alpha=a_)
+                k = ease_in_out((t - 1.6 - i * 0.3) / 0.4)
+                if k > 0:
+                    line(c, CX - 105, y, CX - 105 + 290 * k, y, ORANGE_, 3)
+            badge(c, CX + 290, CY, 'clean copy', EMERALD, ease_out((t - 3.0) / 0.4))
+        return
+    # ------------------------------------------------------------ geo
+    if cat == 'geo':
+        mx, my, mw, mh = CX - 330, SY + 15, 660, 300
+        c.set_source_rgba(*rgbf(hexrgb('#0A1A26'))); rrect_path(c, mx, my, mw, mh, 12); c.fill()
+        _grid(c, mx, my, mw, mh, 30, SKY, 0.10)
+        prof = slug in ('gpx-elevation-profile', 'gpx-splits')
+        th = 150 if prof else 220
+        tcy = my + (95 if prof else mh / 2)
+        pts = [(CX + x, tcy + y) for x, y in _track(s, 48, 480, th)]
+        k = ease_in_out((t - 0.3) / 2.2)
+        if slug == 'route-heatmap':
+            for j in range(4):
+                pj = [(CX + x, tcy + y) for x, y in _track(s + j * 7, 48, 480, th)]
+                _poly(g, pj, ORANGE_, 10, 0.5, k)
+                _poly(c, pj, [GOLD, ORANGE_, LIME_, GOLD][j], 3, 0.8, k)
+            badge(c, mx + mw - 90, my + 30, '4 routes', GOLD, ease_out((t - 2.4) / 0.4), 13)
+            return
+        _poly(g, pts, CYAN, 10, 0.6, k)
+        end = _poly(c, pts, CYAN if slug != 'gpx-simplifier' else SKY, 3.5, 1, k)
+        circle(c, *end, 7, fill=GOLD); circle(g, *end, 12, fill=GOLD, alpha=0.6)
+        circle(c, *pts[0], 6, fill=EMERALD)
+        if slug == 'gpx-simplifier':
+            sp = pts[::6] + [pts[-1]]
+            ks = ease_in_out((t - 2.6) / 0.8)
+            if ks > 0:
+                _poly(c, sp, GOLD, 2.5, ks)
+                for p in sp:
+                    circle(c, *p, 4, fill=GOLD, alpha=ks)
+                badge(c, mx + mw - 110, my + 30, '48 to 9 points', GOLD, ks, 13)
+        elif slug == 'gpx-privacy-zone':
+            kz = ease_out_back((t - 2.4) / 0.6)
+            for p in (pts[0], pts[-1]):
+                circle(c, *p, 46 * max(0.01, kz), fill=ORANGE_, stroke=ORANGE_, alpha=0.25 * clamp(kz))
+            badge(c, mx + mw - 110, my + 30, 'home hidden', ORANGE_, clamp(kz), 13)
+        elif slug == 'photo-location-map':
+            for i in range(4):
+                p = pts[(i + 1) * 10]
+                kp = ease_out_back((t - 1.0 - i * 0.35) / 0.5)
+                draw_sprite(c, icon_sprite('MapPin', 30, GOLD), p[0], p[1] - 16 * clamp(kp), clamp(kp))
+            badge(c, mx + mw - 90, my + 30, '4 photos', GOLD, ease_out((t - 2.6) / 0.4), 13)
+        elif slug == 'geojson-measure':
+            badge(c, mx + mw - 120, my + 30, '12.4 km  ·  3.1 km²', GOLD, ease_out((t - 2.4) / 0.4), 13)
+        elif slug == 'location-code-converter':
+            rrect(c, mx + 20, my + mh - 70, 400, 50, 10, fill=SURF, stroke=LINE, alpha=ease_out((t - 1.6) / 0.4))
+            codes = ['51.5007, -0.1246', '9C3XGV3C+8R', 'IO91wm Maidenhead', 'MGRS 30U XC 99']
+            text(c, codes[min(3, int(max(0, t - 1.6) / 0.9))], font(MONO, 17, 'Bold'), mx + 40, my + mh - 45, color=CYAN, anchor='lm', alpha=ease_out((t - 1.6) / 0.4))
+        elif slug == 'gpx-merge-split':
+            for i, f_ in enumerate(['ride-1.gpx', 'ride-2.gpx']):
+                badge(c, mx + 90 + i * 140, my + mh - 30, f_, [CYAN, GOLD][i], ease_out((t - 0.4 - i * 0.3) / 0.4), 13)
+            badge(c, mx + mw - 100, my + mh - 30, 'one track', EMERALD, ease_out((t - 2.6) / 0.4), 13)
+        if prof:
+            px0, py0, pw, ph_ = mx + 30, my + mh - 20, mw - 60, 80
+            vals = wave_vals(s, 60)
+            ep = [(px0 + i * pw / 59, py0 - v * ph_) for i, v in enumerate(vals)]
+            kp = ease_in_out((t - 1.0) / 2.0)
+            _poly(c, ep, GOLD, 2.5, 1, kp)
+            if slug == 'gpx-splits':
+                for i in range(1, 5):
+                    xk = px0 + i * pw / 5
+                    line(c, xk, py0 - ph_ - 6, xk, py0, MUTED, 1, 0.6 * kp)
+                    text(c, f'km {i}', font(MONO, 12, 'Bold'), xk, py0 - ph_ - 14, color=MUTED, alpha=kp)
+            else:
+                text(c, '+412 m', font(MONO, 14, 'Bold'), px0 + pw - 30, py0 - ph_ - 10, color=GOLD, alpha=kp)
+        return
+    # ------------------------------------------------------------ office
+    if cat == 'office':
+        if slug in ('xlsx-merger', 'xlsx-splitter'):
+            merge = slug == 'xlsx-merger'
+            k = ease_in_out((t - 1.0) / 1.4)
+            for i in range(3):
+                xs_ = CX - 330 + i * 120
+                x = lerp(xs_, CX + 40, k) if merge else lerp(CX - 250, CX - 50 + i * 120, k)
+                y = lerp(SY + 70 + i * 40, SY + 30 + i * 88, k) if merge else lerp(SY + 90, SY + 60 + i * 50, k)
+                _sheet(c, x, y, 3, 4, 34, 22, cols[i % 3], 0.2 + i * 0.15, t)
+            badge(c, CX + 250 if merge else CX, CY + 130, '1 workbook' if merge else '3 files', GOLD, ease_out((t - 2.6) / 0.4))
+            return
+        if slug in ('spreadsheet-compare', 'pivot-table'):
+            if slug == 'spreadsheet-compare':
+                hl = {(2, 1): GOLD, (4, 2): ORANGE_, (3, 0): EMERALD} if t > 2 else None
+                _sheet(c, CX - 330, SY + 50, 4, 7, 70, 36, SKY, 0.2, t, hl, 'before.xlsx')
+                _sheet(c, CX + 40, SY + 50, 4, 7, 70, 36, TEAL, 0.5, t, hl, 'after.xlsx')
+                badge(c, CX, SY + 330, '3 cells changed', GOLD, ease_out((t - 2.4) / 0.4), 14)
+            else:
+                _sheet(c, CX - 330, SY + 50, 4, 7, 60, 34, SKY, 0.2, t, None, 'sales.csv')
+                arrow(c, CX - 70, CY, CX + 10, GOLD, ease_out((t - 1.2) / 0.4), t)
+                vals = wave_vals(s, 5)
+                for i, v in enumerate(vals):
+                    kk = ease_out((t - 1.6 - i * 0.12) / 0.5)
+                    rrect(c, CX + 40, SY + 70 + i * 50, 260 * (0.3 + 0.7 * v) * kk, 34, 6, fill=cols[i % 3])
+                    text(c, ['North', 'South', 'East', 'West', 'Online'][i], font(SANS, 14, 'SemiBold'), CX + 50, SY + 87 + i * 50, color=BLACK, anchor='lm', alpha=kk)
+            return
+        if slug == 'ics-viewer':
+            window(c, CX - 250, SY + 10, 500, 310, 'calendar.ics')
+            for r_ in range(4):
+                for cc in range(7):
+                    k = ease_out((t - 0.4 - (r_ * 7 + cc) * 0.03) / 0.3)
+                    busy = (seed_of(f'{slug}{r_}{cc}') % 5) == 0
+                    rrect(c, CX - 230 + cc * 66, SY + 60 + r_ * 62, 58, 54, 6, fill=mix(SURF2, [GOLD, TEAL, CYAN][cc % 3], 0.6 if busy else 0.08), alpha=k)
+                    text(c, str(r_ * 7 + cc + 1), font(MONO, 12, 'Bold'), CX - 222 + cc * 66, SY + 72 + r_ * 62, color=MUTED, anchor='lm', alpha=k)
+            return
+        if slug == 'vcard-converter':
+            k = ease_out((t - 0.3) / 0.5)
+            rrect(c, CX - 300, CY - 90, 280, 180, 14, fill=SURF, stroke=GOLD, lw=2, alpha=k)
+            circle(c, CX - 245, CY - 35, 30, fill=mix(SURF2, GOLD, 0.4), alpha=k)
+            for i, w_ in enumerate((150, 120, 170)):
+                rrect(c, CX - 195, CY - 55 + i * 26, w_, 12, 6, fill=LINE, alpha=k)
+            text(c, 'VCF', font(MONO, 14, 'Bold'), CX - 270, CY + 60, color=GOLD, alpha=k)
+            arrow(c, CX - 5, CY, CX + 70, GOLD, ease_out((t - 1.2) / 0.4), t)
+            _sheet(c, CX + 90, CY - 80, 3, 5, 70, 32, TEAL, 1.6, t, None, 'contacts.csv')
+            return
+        # docx-find-replace, docx-cleaner, office-media-extractor
+        page(c, CX - 160, CY, 250, 310, 1, GOLD, lines=0, seed=s)
+        words = ['Q3 report', 'draft', 'client', 'budget', 'draft', 'notes']
+        for i, w_ in enumerate(words):
+            y = CY - 110 + i * 42
+            rrect(c, CX - 260, y - 6, 70 + (i * 37) % 60, 12, 6, fill=PAPER_LINE)
+            if slug == 'docx-find-replace' and w_ == 'draft':
+                k = ease_in_out((t - 1.2 - i * 0.2) / 0.5)
+                rrect(c, CX - 180, y - 14, 90, 28, 5, fill=GOLD, alpha=0.5)
+                text(c, 'final' if k > 0.5 else 'draft', font(SANS, 16, 'Bold'), CX - 135, y, color=INK)
+            else:
+                text(c, w_, font(SANS, 15, 'Medium'), CX - 180, y, color=INK, anchor='lm')
+        if slug == 'office-media-extractor':
+            for i in range(4):
+                k = ease_in_out(clamp((t - 1.0 - i * 0.3) / 0.9))
+                photo(c, lerp(CX - 160, CX + 120 + (i % 2) * 150, k), lerp(CY, CY - 70 + (i // 2) * 140, k), 130 * (0.4 + 0.6 * k), 90 * (0.4 + 0.6 * k), s + i, stroke=LINE)
+        elif slug == 'docx-cleaner':
+            for i, r_ in enumerate(['tracked changes', 'comments', 'author name', 'hidden text']):
+                y = CY - 80 + i * 54
+                a_ = ease_out((t - 0.6 - i * 0.2) / 0.4)
+                rrect(c, CX + 60, y - 18, 240, 36, 8, fill=SURF, stroke=LINE, alpha=a_)
+                text(c, r_, font(SANS, 15, 'Medium'), CX + 78, y, anchor='lm', alpha=a_)
+                kk = ease_in_out((t - 1.8 - i * 0.3) / 0.4)
+                if kk > 0:
+                    line(c, CX + 75, y, CX + 75 + 210 * kk, y, ORANGE_, 3)
+        else:
+            badge(c, CX + 160, CY, '2 replaced', GOLD, ease_out((t - 2.6) / 0.4))
+        return
+    # ------------------------------------------------------------ science
+    if cat == 'science':
+        if slug == 'function-plotter':
+            ox, oy, w_, h_ = CX - 300, CY, 600, 280
+            line(c, ox, oy, ox + w_, oy, MUTED, 1.5); line(c, CX, oy - h_ / 2, CX, oy + h_ / 2, MUTED, 1.5)
+            _grid(c, ox, oy - h_ / 2, w_, h_, 40, SKY, 0.08)
+            for j, (f_, col) in enumerate(((lambda x: math.sin(x), GOLD), (lambda x: 0.25 * x * x - 1.5, CYAN))):
+                pts = [(ox + i * w_ / 120, oy - f_((i / 120 - 0.5) * 8) * 60) for i in range(121)]
+                pts = [(x, clamp(y, oy - h_ / 2, oy + h_ / 2)) for x, y in pts]
+                _poly(c, pts, col, 3, 1, ease_in_out((t - 0.5 - j * 0.9) / 1.6))
+            text(c, 'y = sin(x)', font(MONO, 16, 'Bold'), ox + 20, oy - h_ / 2 + 20, color=GOLD, anchor='lm', alpha=ease_out((t - 0.5) / 0.4))
+            text(c, 'y = x²/4 - 1.5', font(MONO, 16, 'Bold'), ox + 20, oy - h_ / 2 + 46, color=CYAN, anchor='lm', alpha=ease_out((t - 1.4) / 0.4))
+            return
+        if slug == 'periodic-table':
+            for r_ in range(5):
+                for cc in range(14):
+                    if r_ == 0 and 0 < cc < 13:
+                        continue
+                    k = ease_out((t - 0.2 - (r_ + cc) * 0.03) / 0.3)
+                    hot = (r_, cc) == (1, 4 + int(t) % 6)
+                    rrect(c, CX - 330 + cc * 47, SY + 30 + r_ * 50, 42, 44, 5, fill=mix(SURF2, [TEAL, SKY, EMERALD, GOLD, LIME_][(cc // 3) % 5], 0.8 if hot else 0.22), alpha=k)
+            text(c, 'C  Carbon  12.011', font(MONO, 18, 'Bold'), CX, SY + 300, color=GOLD, alpha=ease_out((t - 1.2) / 0.4))
+            return
+        if slug == 'truth-table-generator':
+            text(c, 'A AND (B OR C)', font(MONO, 20, 'Bold'), CX, SY + 30, color=GOLD, alpha=ease_out(t / 0.4))
+            for r_ in range(8):
+                k = ease_out((t - 0.6 - r_ * 0.15) / 0.3)
+                a_, b_, c_ = (r_ >> 2) & 1, (r_ >> 1) & 1, r_ & 1
+                out = a_ and (b_ or c_)
+                for cc, v in enumerate((a_, b_, c_, out)):
+                    rrect(c, CX - 140 + cc * 72, SY + 60 + r_ * 33, 64, 28, 5, fill=mix(SURF2, EMERALD if (cc == 3 and v) else SKY, 0.5 if cc == 3 else 0.12), alpha=k)
+                    text(c, str(int(v)), font(MONO, 15, 'Bold'), CX - 108 + cc * 72, SY + 74 + r_ * 33, alpha=k)
+            return
+        if slug == 'prime-factorizer':
+            nodes = [((CX, SY + 40), '360'), ((CX - 90, SY + 120), '2'), ((CX + 90, SY + 120), '180'), ((CX + 10, SY + 200), '2'), ((CX + 170, SY + 200), '90'),
+                     ((CX + 100, SY + 280), '2'), ((CX + 240, SY + 280), '45')]
+            edges = [(0, 1), (0, 2), (2, 3), (2, 4), (4, 5), (4, 6)]
+            for i, (a_, b_) in enumerate(edges):
+                k = ease_in_out((t - 0.4 - i * 0.3) / 0.4)
+                if k > 0:
+                    line(c, *nodes[a_][0], lerp(nodes[a_][0][0], nodes[b_][0][0], k), lerp(nodes[a_][0][1], nodes[b_][0][1], k), LINE, 2)
+            for i, (p, lab) in enumerate(nodes):
+                k = ease_out_back((t - 0.2 - max(0, i - 0) * 0.15) / 0.4)
+                circle(c, *p, 24, fill=SURF, stroke=GOLD if lab == '2' else CYAN, lw=2.5, alpha=clamp(k))
+                text(c, lab, font(MONO, 15, 'Bold'), *p, alpha=clamp(k))
+            text(c, '360 = 2³ × 3² × 5', font(MONO, 20, 'Bold'), CX - 230, CY + 120, color=GOLD, alpha=ease_out((t - 2.6) / 0.4))
+            return
+        if slug == 'matrix-calculator':
+            def mat(x, vals, col, k):
+                line(c, x, CY - 70, x, CY + 70, col, 3, k); line(c, x + 150, CY - 70, x + 150, CY + 70, col, 3, k)
+                for i, v in enumerate(vals):
+                    text(c, str(v), font(MONO, 22, 'Bold'), x + 40 + (i % 2) * 70, CY - 35 + (i // 2) * 70, alpha=k)
+            mat(CX - 330, [2, 1, 0, 3], CYAN, ease_out((t - 0.2) / 0.4))
+            text(c, '×', font(SANS, 30, 'Bold'), CX - 150, CY, alpha=ease_out((t - 0.5) / 0.4))
+            mat(CX - 120, [1, 4, 2, 1], CYAN, ease_out((t - 0.6) / 0.4))
+            text(c, '=', font(SANS, 30, 'Bold'), CX + 60, CY, alpha=ease_out((t - 1.4) / 0.4))
+            mat(CX + 90, [4, 9, 6, 3], GOLD, ease_out((t - 1.8) / 0.5))
+            return
+        # latex-equation, molar-mass-calculator, chemical-equation-balancer
+        if slug == 'latex-equation':
+            src = r'\frac{-b \pm \sqrt{b^2-4ac}}{2a}'
+            n = int(len(src) * clamp((t - 0.3) / 1.6))
+            rrect(c, CX - 300, SY + 20, 600, 50, 10, fill=SURF, stroke=LINE)
+            text(c, src[:n], font(MONO, 17, 'Medium'), CX - 280, SY + 45, color=CYAN, anchor='lm')
+            k = ease_out((t - 2.0) / 0.6)
+            text(c, 'x = (-b ± √(b² - 4ac)) / 2a', font(DISPLAY, 34, 'Bold'), CX, CY + 40, gradient=GOLD_GRAD, alpha=k)
+            badge(c, CX, CY + 130, 'PNG  SVG  JPG', GOLD, ease_out((t - 2.8) / 0.4), 13)
+        elif slug == 'molar-mass-calculator':
+            text(c, 'C6H12O6', font(DISPLAY, 54, 'Bold'), CX, CY - 60, gradient=GOLD_GRAD, alpha=ease_out(t / 0.5))
+            v = 180.156 * ease_out((t - 0.8) / 1.6)
+            text(c, f'{v:7.3f} g/mol', font(MONO, 30, 'Bold'), CX, CY + 30, color=CYAN, alpha=ease_out((t - 0.8) / 0.4))
+            for i, (e, p_) in enumerate((('C', 0.40), ('H', 0.07), ('O', 0.53))):
+                kk = ease_out((t - 2.0 - i * 0.2) / 0.5)
+                rrect(c, CX - 200, CY + 80 + i * 26, 400 * p_ * kk, 18, 5, fill=[GOLD, TEAL, SKY][i])
+                text(c, e, font(MONO, 13, 'Bold'), CX - 215, CY + 89 + i * 26, color=MUTED, alpha=kk)
+        else:
+            k = ease_out((t - 1.6) / 0.5)
+            parts = [('2' if k > 0.5 else '', 'H₂'), ('', '+'), ('', 'O₂'), ('', '→'), ('2' if k > 0.5 else '', 'H₂O')]
+            x = CX - 230
+            for co, sym in parts:
+                if co:
+                    text(c, co, font(DISPLAY, 46, 'Bold'), x, CY - 20, color=GOLD, alpha=k); x += 30
+                text(c, sym, font(DISPLAY, 46, 'Bold'), x + 30, CY - 20, color=TEXT); x += 100
+            badge(c, CX, CY + 80, 'balanced', EMERALD, ease_out((t - 2.4) / 0.4))
+        return
+    # ------------------------------------------------------------ creator
+    if cat == 'creator':
+        if slug == 'audiogram-maker':
+            rrect(c, CX - 150, SY + 10, 300, 300, 18, fill=SURF, stroke=GOLD, lw=2)
+            circle(c, CX, SY + 100, 46, fill=mix(SURF2, GOLD, 0.35))
+            draw_sprite(c, icon_sprite('Mic', 40, GOLD), CX, SY + 100, 1)
+            waveform(c, CX - 120, SY + 170, 240, 70, s, TEAL, 1, n=36, t=t, live=True)
+            text(c, 'Episode 12', font(SANS, 18, 'Bold'), CX, SY + 275, alpha=ease_out((t - 0.8) / 0.4))
+            badge(c, CX + 260, CY, '1:1  9:16', GOLD, ease_out((t - 2.0) / 0.4), 14)
+            return
+        if slug == 'video-reframe':
+            k = ease_in_out((t - 1.2) / 1.2)
+            fw, fh = lerp(480, 160, k), 270
+            filmstrip(c, CX - 240, CY - 135, 480, 270, s, t * 0.15, 0.35, n=4)
+            photo(c, CX, CY, fw, fh, s, stroke=GOLD)
+            badge(c, CX, CY + 170, '16:9 to 9:16' if k > 0.5 else '16:9', GOLD, 1, 14)
+            return
+        if slug == 'carousel-maker':
+            off = ease_in_out((t % 1.6) / 1.6) if t > 1.0 else 0
+            for i in range(5):
+                x = CX - 220 + (i - off) * 230
+                if -400 < x - CX < 400:
+                    rrect(c, x - 100, CY - 120, 200, 240, 14, fill=mix(SURF, cols[i % 3], 0.25), stroke=cols[i % 3], lw=2)
+                    text(c, f'{i + 1}/5', font(MONO, 14, 'Bold'), x, CY + 95, color=MUTED)
+                    text(c, ['Tip', 'Why', 'How', 'Try', 'Save'][i], font(DISPLAY, 34, 'Bold'), x, CY - 10)
+            return
+        if slug == 'post-length-checker':
+            msg = 'Shipped a new feature today. Everything runs on your device.'
+            n = int(len(msg) * clamp((t - 0.2) / 2.2))
+            rrect(c, CX - 300, SY + 30, 600, 120, 12, fill=SURF, stroke=LINE)
+            text(c, msg[:n], font(SANS, 18, 'Medium'), CX - 280, SY + 70, anchor='lm')
+            for i, (lab, lim) in enumerate((('X', 280), ('Threads', 500), ('LinkedIn', 3000))):
+                y = SY + 190 + i * 44
+                text(c, lab, font(SANS, 15, 'SemiBold'), CX - 300, y, anchor='lm', color=MUTED)
+                rrect(c, CX - 180, y - 8, 380, 16, 8, fill=SURF2)
+                rrect(c, CX - 180, y - 8, 380 * min(1, n / lim * 3), 16, 8, fill=[GOLD, TEAL, SKY][i])
+                text(c, f'{n}/{lim}', font(MONO, 14, 'Bold'), CX + 220, y, anchor='lm')
+            return
+        if slug == 'link-in-bio-builder':
+            rrect(c, CX - 110, SY + 5, 220, 330, 26, fill=SURF, stroke=LINE, lw=3)
+            circle(c, CX, SY + 60, 28, fill=mix(SURF2, GOLD, 0.5))
+            for i in range(4):
+                k = ease_out_back((t - 0.6 - i * 0.3) / 0.4)
+                rrect(c, CX - 85, SY + 110 + i * 52, 170, 40, 20, fill=cols[i % 3], alpha=clamp(k))
+                text(c, ['Portfolio', 'Newsletter', 'Shop', 'Contact'][i], font(SANS, 15, 'Bold'), CX, SY + 130 + i * 52, color=BLACK, alpha=clamp(k))
+            badge(c, CX + 230, CY, 'one HTML file', GOLD, ease_out((t - 2.4) / 0.4), 14)
+            return
+        if slug == 'word-cloud':
+            words = [('private', 54, GOLD), ('fast', 40, CYAN), ('browser', 46, TEAL), ('free', 34, EMERALD), ('files', 30, SKY), ('offline', 28, LIME_),
+                     ('open', 26, ORANGE_), ('tools', 36, GOLD), ('local', 24, CYAN), ('simple', 22, TEAL)]
+            rng = np.random.default_rng(s)
+            for i, (w_, sz, col) in enumerate(words):
+                k = ease_out_back((t - 0.3 - i * 0.18) / 0.4)
+                x = CX + (rng.uniform(-260, 260) if i else 0); y = CY + (rng.uniform(-110, 110) if i else 0)
+                text(c, w_, font(DISPLAY, sz, 'Bold'), x, y, color=col, alpha=clamp(k), scale=max(0.01, k), rot=(math.pi / 2 if i % 4 == 3 else 0))
+            return
+        # chapter-maker
+        filmstrip(c, SX + 60, SY + 20, SW - 120, 140, s, t * 0.15, 1, n=6)
+        y = SY + 220
+        line(c, SX + 60, y, SX + SW - 60, y, LINE, 4)
+        line(c, SX + 60, y, SX + 60 + (SW - 120) * clamp(t / 5), y, GOLD, 4)
+        for i, lab in enumerate(['Intro', 'Setup', 'Demo', 'Wrap up']):
+            x = SX + 60 + (SW - 120) * i / 4
+            k = ease_out_back((t - 0.5 - i * 0.4) / 0.4)
+            circle(c, x, y, 8, fill=GOLD, alpha=clamp(k))
+            text(c, f'0{i}:{(i * 37) % 60:02d}  {lab}', font(MONO, 13, 'Bold'), x, y + 30, color=TEXT, alpha=clamp(k), anchor='lm' if i else 'lm')
+        return
+    # ------------------------------------------------------------ newer AI tools
+    if slug in NEW_AI_VISION:
+        if slug == 'similar-photo-finder':
+            for i in range(6):
+                k = ease_out((t - 0.2 - i * 0.12) / 0.4)
+                grp = i % 3
+                x = CX - 300 + i * 105
+                kk = ease_in_out((t - 1.8) / 1.0)
+                x = lerp(x, CX - 280 + grp * 220 + (i // 3) * 80, kk)
+                photo(c, x, CY - 20 + (i // 3) * 30 * kk, 110, 80, s + grp, stroke=[GOLD, TEAL, CYAN][grp] if kk > 0.5 else LINE, alpha=k)
+            badge(c, CX, CY + 130, '3 groups of look-alikes', GOLD, ease_out((t - 2.8) / 0.4), 14)
+            return
+        pw, ph_ = 420, 280
+        photo(c, CX - 120, CY, pw, ph_, s, stroke=LINE, gray=0.0)
+        k = ease_in_out((t - 0.8) / 1.0)
+        if slug == 'depth-map':
+            c.save(); rrect_path(c, CX - 120 - pw / 2, CY - ph_ / 2, pw * k, ph_, 8); c.clip()
+            linear_fill(c, 0, CY - ph_ / 2, 0, CY + ph_ / 2, [(0, hexrgb('#0B0D10')), (0.6, TEAL), (1, GOLD)])
+            c.restore()
+            line(c, CX - 120 - pw / 2 + pw * k, CY - ph_ / 2, CX - 120 - pw / 2 + pw * k, CY + ph_ / 2, GOLD, 2.5)
+            badge(c, CX + 230, CY, 'near to far', GOLD, ease_out((t - 2.2) / 0.4), 14)
+            return
+        boxes = [(-150, -60, 130, 150, 'person 0.97'), (40, -20, 120, 100, 'dog 0.91'), (-40, 70, 90, 50, 'ball 0.84')]
+        for i, (bx, by, bw, bh, lab) in enumerate(boxes if slug in ('object-detector', 'image-segmenter') else []):
+            kk = ease_out((t - 0.8 - i * 0.4) / 0.4)
+            col = [GOLD, CYAN, EMERALD][i]
+            if slug == 'image-segmenter':
+                rrect(c, CX - 120 + bx, CY + by, bw, bh, 30, fill=col, alpha=0.35 * kk)
+            else:
+                rrect(c, CX - 120 + bx, CY + by, bw, bh, 4, stroke=col, lw=3, alpha=kk)
+            if slug in ('object-detector', 'image-segmenter'):
+                badge(c, CX - 120 + bx + 4, CY + by - 12, lab, col, kk, 11, anchor='l')
+        if slug == 'image-captioner':
+            cap = 'A person playing with a dog in the park'
+            n = int(len(cap) * clamp((t - 1.6) / 1.6))
+            text(c, cap[:n], font(SANS, 17, 'SemiBold'), CX + 110, CY, anchor='lm', color=GOLD)
+        elif slug == 'image-tagger':
+            for i, tg in enumerate(['park', 'dog', 'outdoor', 'summer']):
+                badge(c, CX + 110, CY - 90 + i * 55, tg, cols[i % 3], ease_out((t - 1.6 - i * 0.25) / 0.4), 14, anchor='l')
+        return
+    if slug in NEW_AI_TEXT:
+        if slug == 'semantic-file-search':
+            rrect(c, CX - 300, SY + 20, 600, 46, 23, fill=SURF, stroke=GOLD, lw=2)
+            q = 'invoice from last spring'
+            text(c, q[:int(len(q) * clamp((t - 0.2) / 1.2))], font(SANS, 17, 'Medium'), CX - 270, SY + 43, anchor='lm')
+            for i, (f_, sc) in enumerate((('march-bill.pdf', 0.92), ('receipt-04.png', 0.81), ('notes.docx', 0.44))):
+                k = ease_out((t - 1.6 - i * 0.3) / 0.4)
+                y = SY + 110 + i * 64
+                rrect(c, CX - 300, y - 24, 600, 50, 10, fill=SURF, stroke=LINE, alpha=k)
+                text(c, f_, font(MONO, 15, 'Bold'), CX - 280, y, anchor='lm', alpha=k)
+                rrect(c, CX + 80, y - 6, 160 * sc * k, 12, 6, fill=[GOLD, TEAL, SKY][i])
+                text(c, f'{sc:.2f}', font(MONO, 14, 'Bold'), CX + 255, y, anchor='lm', alpha=k)
+            return
+        txt = ['Apple opened a new office', 'in Berlin on 3 May, and', 'staff loved the place.']
+        for i, ln in enumerate(txt):
+            text(c, ln, font(SANS, 22, 'Medium'), CX - 300, SY + 50 + i * 40, anchor='lm', alpha=ease_out((t - 0.2 - i * 0.2) / 0.4))
+        if slug == 'entity-extractor':
+            ents = [('Apple', 'ORG', 0, 0), ('Berlin', 'PLACE', 1, 25), ('3 May', 'DATE', 1, 120)]
+            for i, (e, lab, row, off) in enumerate(ents):
+                k = ease_out((t - 1.2 - i * 0.4) / 0.4)
+                ff = font(SANS, 22, 'Medium')
+                x0 = CX - 300 + ff.getlength(txt[row][:txt[row].find(e)])
+                w_ = ff.getlength(e)
+                rrect(c, x0 - 4, SY + 50 + row * 40 - 16, w_ + 8, 32, 6, fill=[GOLD, CYAN, EMERALD][i], alpha=0.35 * k)
+                badge(c, CX - 220 + i * 150, SY + 240, f'{lab}  {e}', [GOLD, CYAN, EMERALD][i], k, 14)
+        else:
+            labs = (['positive', 0.93], ['negative', 0.07]) if slug == 'sentiment-analyzer' else (['business', 0.71], ['travel', 0.19], ['sport', 0.10])
+            for i, (lab, v) in enumerate(labs):
+                k = ease_out((t - 1.4 - i * 0.2) / 0.6)
+                y = SY + 200 + i * 40
+                text(c, lab, font(SANS, 16, 'SemiBold'), CX - 300, y, anchor='lm', color=MUTED)
+                rrect(c, CX - 180, y - 9, 360 * v * k, 18, 9, fill=[GOLD, TEAL, SKY][i])
+                text(c, f'{v * 100:.0f}%', font(MONO, 14, 'Bold'), CX - 170 + 360 * v * k, y, anchor='lm', alpha=k)
+        return
+    d_extra(c, g, t, d, P)
+
+
 # ----------------------------------------------------------------------------- per-tool plan
 def plan(tool):
     slug, cat, name = tool['slug'], tool['category'], tool['name']
@@ -1525,6 +2014,8 @@ def plan(tool):
             fn = d_text
         elif cat == 'design':
             fn = d_design
+        elif cat in ('privacy', 'geo', 'office', 'science', 'creator') or slug in NEW_AI_VISION or slug in NEW_AI_TEXT:
+            fn = d_new
         elif cat in ('data', 'ai', '3d', 'archive', 'ebook', 'font', 'cad', 'subtitle'):
             fn = d_extra
         elif cat == 'image':
