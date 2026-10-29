@@ -6,6 +6,21 @@
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).
 
+## v1.2.0 (2026-10-29)
+
+Apps that keep themselves up to date. This is the app release line (desktop, Android, iOS); the web catalog versions below (v2.x) ship to the website continuously.
+
+### Added
+
+- **updates**: desktop apps update themselves from signed GitHub releases. A gold card shows *Update ready* with Install now, Later and What's new; release notes show before installing, the download is verified against the OpenFile signing key, and the app relaunches.
+- **updates**: Settings, Updates: current version, last checked, Check now, Stable or Beta channel, check on launch, daily, weekly or off, auto install (off by default), remind me tomorrow or next week, skip this version.
+- **updates**: desktop rollback. The previous version is recorded before an update; if the new one fails to start three times, OpenFile offers to roll back, and Settings has a one-click Roll back.
+- **android**: in-app update check against GitHub Releases. Downloads the APK (Wi-Fi only by default), verifies package, version and signing certificate, then opens the Android installer.
+- **android**: APKs are now signed with a permanent release key, so future versions install over this one. Uninstall the v1.1.0 APK once.
+- **apps**: hybrid mode. When the website has newer tools than the app, the app offers to load the hosted version inside the window, with the built-in copy as the offline fallback (Ask, Always or Never).
+- **pwa**: the web app checks for updates every 30 minutes, on focus and when it comes back to the screen (iPhone home screen apps included), and the update bar links to What's new.
+- **release**: `version.json` in every web build, `scripts/bump-version.mjs` for one version everywhere, `scripts/changelog.mjs` for release notes from conventional commits, and a release job that publishes and verifies `latest.json`.
+
 ## v2.2.0 (2026-10-29)
 
 The catalog grows to **411 tools in 21 studios**. Five new studios and 51 new tools, ten of them on-device AI. Everything still runs in your browser tab with zero uploads.

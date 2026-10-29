@@ -5,8 +5,8 @@
 import { useSyncExternalStore } from 'react'
 import { detect } from './platform'
 
-interface PwaState { supported: boolean; ready: boolean; waiting: boolean; build: string | null }
-let state: PwaState = { supported: typeof navigator !== 'undefined' && 'serviceWorker' in navigator, ready: false, waiting: false, build: null }
+interface PwaState { supported: boolean; ready: boolean; waiting: boolean; build: string | null; checkedAt: number }
+let state: PwaState = { supported: typeof navigator !== 'undefined' && 'serviceWorker' in navigator, ready: false, waiting: false, build: null, checkedAt: 0 }
 const subs = new Set<() => void>()
 const set = (p: Partial<PwaState>) => { state = { ...state, ...p }; subs.forEach((f) => f()) }
 let reg: ServiceWorkerRegistration | null = null
@@ -17,6 +17,7 @@ export function usePwa() {
 
 /** Ask the waiting worker to take over, then reload once it controls the page. */
 export function applyUpdate() {
+  try { localStorage.setItem('of-just-updated', String(Date.now())) } catch { /* private mode */ }
   const w = reg?.waiting
   if (!w) { location.reload(); return }
   let done = false
@@ -26,7 +27,14 @@ export function applyUpdate() {
 }
 
 /** Check for a newer build now (the Install page and Settings can call this). */
-export async function checkForUpdate() { try { await reg?.update() } catch { /* offline */ } return !!reg?.waiting }
+export async function checkForUpdate() {
+  try { await reg?.update() } catch { /* offline */ }
+  set({ checkedAt: Date.now() })
+  // update() resolves once the new worker starts installing; give it a moment to finish
+  if (reg?.installing) await new Promise<void>((res) => { const w = reg!.installing!; const t = setTimeout(res, 15000); w.addEventListener('statechange', () => { if (w.state !== 'installing') { clearTimeout(t); res() } }) })
+  if (reg?.waiting && navigator.serviceWorker.controller) set({ waiting: true })
+  return !!reg?.waiting
+}
 
 function readVersion(sw: ServiceWorker | null) {
   if (!sw) return
@@ -58,10 +66,21 @@ export function registerPWA() {
       set({ ready: !!navigator.serviceWorker.controller || !!reg.active })
       readVersion(navigator.serviceWorker.controller || reg.active)
       navigator.serviceWorker.addEventListener('controllerchange', () => { set({ ready: true }); readVersion(navigator.serviceWorker.controller) })
-      // look for a new build when the app comes back to the foreground, at most every 30 minutes
+      // Look for a new build every 30 minutes while open, and when the app comes back to the foreground, gets focus
+      // or reconnects (at most once a minute). iOS home screen apps are frozen in the background and never fire
+      // timers there, so visibilitychange is what catches updates on iPhone and iPad.
+      set({ checkedAt: Date.now() })
       let last = Date.now()
-      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - last > 30 * 60e3) { last = Date.now(); reg?.update().catch(() => {}) } })
+      const poke = (min: number) => { if (Date.now() - last < min) return; last = Date.now(); void checkForUpdate() }
+      setInterval(() => poke(0), 30 * 60e3)
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') poke(60e3) })
+      window.addEventListener('focus', () => poke(60e3))
+      window.addEventListener('online', () => poke(60e3))
+      window.addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) poke(60e3) })
     } catch (e) { console.warn('[openfile] service worker registration failed', e) }
   }
   if (document.readyState === 'complete') void go(); else window.addEventListener('load', () => void go(), { once: true })
 }
+
+/** Current service worker state, for code outside React. */
+export const getPwaState = () => state

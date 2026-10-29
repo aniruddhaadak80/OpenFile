@@ -1,6 +1,6 @@
 [package]
 name = "openfile"
-version = "1.1.0"
+version = "1.2.0"
 description = "OpenFile: private file tools for PDF, images, video, audio and developers"
 authors = ["Aniruddha Adak"]
 license = "MIT"
@@ -15,6 +15,14 @@ tauri-build = { version = "2", features = [] }
 # "compression" is left out on purpose: the web build is large (wasm engines), brotli-compressing it at compile
 # time is slow, and every installer format compresses the binary anyway.
 tauri = { version = "2", default-features = false, features = ["wry", "common-controls-v6", "dynamic-acl"] }
+# signed auto updates from GitHub Releases (latest.json), see src/main.rs
+tauri-plugin-updater = "2"
+# opens links outside OpenFile in the default browser
+tauri-plugin-opener = "2"
+# native prompt offering a rollback when a new version fails to start
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 [profile.release]
 codegen-units = 1

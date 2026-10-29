@@ -12,8 +12,10 @@ import { useSettings, useFavorites, useRecent, useHistory, exportData, importDat
 import { overlayBus, setFlag, useInstall, useOnline } from '@/lib/ux'
 import { Keyboard, Compass, Smartphone } from 'lucide-react'
 import { setPageMeta } from '@/lib/seo'
+import { RefreshCw } from 'lucide-react'
+import { UpdatesPanel } from '@/components/app/UpdatesPanel'
 
-const SECTIONS = [['appearance', 'Appearance'], ['output', 'Files & output'], ['app', 'App & shortcuts'], ['privacy', 'Privacy & data'], ['backup', 'Backup']] as const
+const SECTIONS = [['appearance', 'Appearance'], ['output', 'Files & output'], ['app', 'App & shortcuts'], ['updates', 'Updates'], ['privacy', 'Privacy & data'], ['backup', 'Backup']] as const
 const TOKENS: [string, string][] = [['{name}', 'original name'], ['{tool}', 'tool slug'], ['{date}', 'YYYY-MM-DD'], ['{time}', 'HHMMSS']]
 const PRESETS = ['{name}', '{name}-openfile', '{date}-{name}', '{name}-{tool}', '{name}-{date}-{time}']
 
@@ -137,6 +139,10 @@ export default function Settings() {
               <Row title="Connection" sub={online ? 'Online. Tools download their engines the first time you use them.' : 'Offline. Tools you used before keep working from the cache.'}>
                 <span className={cn('rounded-full px-3 py-1 text-xs font-medium', online ? 'bg-success/10 text-success' : 'bg-warn/10 text-warn')}>{online ? 'Online' : 'Offline'}</span>
               </Row>
+            </Section>
+
+            <Section id="updates" icon={RefreshCw} title="Updates" sub="Version, update checks and release notes. Safe by default: OpenFile asks before installing.">
+              <UpdatesPanel Row={Row} />
             </Section>
 
             <Section id="privacy" icon={ShieldCheck} title="Privacy & data" sub="Everything below lives only on this device.">

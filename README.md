@@ -139,8 +139,20 @@ OpenFile is a website and an app. Install it on any device: it works offline, op
 - **Firefox desktop**: does not install web apps. Use the desktop app, or Chrome or Edge.
 - **Android Chrome**: menu (three dots), *Install app*. **Samsung Internet**: menu, *Add page to*, *Home screen*. **Firefox Android**: menu, *Install*.
 - **iPhone and iPad** (Safari, or Chrome and Edge on iOS 16.4+): *Share*, *Add to Home Screen*, *Add*.
-- **Updates**: a bar says *New version ready, reload*. Click *Reload*.
+- **Updates**: a bar says *New version ready, reload*. Click *Reload*. See *Automatic updates* below.
 - **Open with OpenFile**: once installed in Chrome or Edge on desktop, right-click a PDF, image, video, audio, ZIP, CSV or JSON file, *Open with*, *OpenFile*. Turn on *Open straight in the best tool* on [/open](https://aniruddhaadak80.github.io/OpenFile/open) to skip the picker.
+</details>
+
+<details>
+<summary><b>Automatic updates on every device</b></summary>
+
+- **Web app and iPhone home screen**: checks every 30 minutes and whenever you come back to it, then shows *New version ready, reload* with *What's new*.
+- **Windows, macOS, Linux** (v1.2.0+): signed updates from GitHub Releases (`latest.json`). A gold card says *Update ready: vX.Y.Z* with *Install now*, *Later* and *What's new*; the release notes show before installing, the signature is verified, and the app relaunches. One-click rollback to the previous version, also offered if a new version fails to start.
+- **Android** (v1.2.0+): checks the newest release, downloads the APK (only on Wi-Fi by default), verifies it is OpenFile, newer and signed with the same key, and opens the Android installer. Users of the v1.1.0 APK uninstall once, because v1.1.0 used a temporary key.
+- **Settings, Updates**: current version, last checked, *Check now*, Stable or Beta channel, check on launch, daily, weekly or off, auto install (off by default), remind me tomorrow or next week, skip a version.
+- **New tools between releases**: the apps can load the newer hosted web version inside the app (*Ask*, *Always* or *Never*), with the built-in copy as the offline fallback.
+
+Full details, safety notes and the maintainer release steps: [docs/INSTALL.md, Updates](docs/INSTALL.md#updates).
 </details>
 
 <details>
@@ -156,7 +168,7 @@ npm run app:ios           # syncs and opens the Xcode project (macOS)
 npm run app:assets        # regenerate icons, maskable icons, screenshots and splash screens
 ```
 
-Push a tag like `v1.2.0` and [`.github/workflows/release-apps.yml`](.github/workflows/release-apps.yml) builds Windows, macOS (universal), Linux, Android and the iOS Simulator app, then attaches them to the GitHub Release. Code signing for Windows, macOS, Google Play and the App Store needs the owner's certificates; see [docs/INSTALL.md](docs/INSTALL.md#signing-owner).
+Run `node scripts/bump-version.mjs 1.3.0` and `node scripts/changelog.mjs --version v1.3.0 --write`, push a tag like `v1.3.0`, and [`.github/workflows/release-apps.yml`](.github/workflows/release-apps.yml) builds Windows, macOS (universal), Linux, Android and the iOS Simulator app, then attaches them to the GitHub Release with the signed update feed. Code signing for Windows, macOS, Google Play and the App Store needs the owner's certificates; see [docs/INSTALL.md](docs/INSTALL.md#signing-owner).
 </details>
 <!-- install:end -->
 
@@ -1388,31 +1400,17 @@ flowchart LR
 </details>
 
 <details>
-<summary><b>🐳 Docker</b> (nginx, any server)</summary>
+<summary><b>🐳 Docker</b> (prebuilt image, any server)</summary>
 <br/>
 
-Save this as `Dockerfile` in the repo root:
-
-```dockerfile
-# ---- build ----
-FROM node:22-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# ---- serve ----
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-RUN printf 'server {\n  listen 80;\n  root /usr/share/nginx/html;\n  location / { try_files $uri $uri/ /index.html; }\n}\n' > /etc/nginx/conf.d/default.conf
-EXPOSE 80
-```
+Use the published container image, `ghcr.io/aniruddhaadak80/openfile`. It is multi-arch, runs as a non-root user and listens on port 8080:
 
 ```bash
-docker build -t openfile .
-docker run -p 8080:80 openfile   # → http://localhost:8080
+docker run -d --name openfile -p 8080:8080 ghcr.io/aniruddhaadak80/openfile:latest
+# then open http://localhost:8080
 ```
+
+Pinned versions, Compose, Kubernetes, reverse proxies and signature checks are in [docs/SELF_HOSTING.md](docs/SELF_HOSTING.md).
 
 </details>
 
@@ -1591,7 +1589,7 @@ Yes, every tool has its own URL: <code>https://openfile-studio.vercel.app/&lt;sl
 <details>
 <summary><b>Can I self-host it for my team?</b></summary>
 <br/>
-Absolutely, see <a href="#%EF%B8%8F-self-hosting">Self-hosting</a>. It is a static build, so any static host, an internal nginx, or the Docker recipe above works.
+Absolutely, see <a href="#%EF%B8%8F-self-hosting">Self-hosting</a>. It is a static build, so any static host, an internal web server, or the container image above works.
 </details>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>

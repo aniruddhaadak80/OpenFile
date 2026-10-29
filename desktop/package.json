@@ -1,7 +1,7 @@
 {
   "name": "openfile-desktop",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "OpenFile desktop app for Windows, macOS and Linux (Tauri v2 wrapping the web build in ../dist)",
   "scripts": {
     "tauri": "tauri",

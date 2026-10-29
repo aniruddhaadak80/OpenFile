@@ -26,6 +26,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(SaverPlugin.class);
+        registerPlugin(UpdatePlugin.class); // in-app updates, see UpdatePlugin.java
         super.onCreate(savedInstanceState);
         getBridge().addWebViewListener(new WebViewListener() {
             @Override

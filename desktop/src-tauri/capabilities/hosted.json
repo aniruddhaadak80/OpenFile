@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "hosted",
+  "description": "The hosted web version (hybrid mode, loaded inside the window when it is newer than the bundled copy). Only OpenFile's own update and preference commands, which are app commands, are used from it.",
+  "windows": ["main"],
+  "remote": { "urls": ["https://aniruddhaadak80.github.io/OpenFile/*"] },
+  "permissions": ["core:app:allow-version"]
+}

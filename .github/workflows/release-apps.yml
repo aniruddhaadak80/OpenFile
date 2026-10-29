@@ -1,19 +1,30 @@
 name: Release apps
 
 # Builds OpenFile as installable apps and attaches them to a GitHub Release:
-#   Windows (.exe NSIS setup, .msi), macOS (universal .dmg, unsigned), Linux (.AppImage, .deb, .rpm)
-#   Android (debug-signed .apk you can sideload, unsigned release .aab), iOS (simulator .app, no signing)
+#   Windows (.exe NSIS setup, .msi), macOS (universal .dmg), Linux (.AppImage, .deb, .rpm)
+#   Android (release-signed .apk you can sideload, .aab), iOS (simulator .app, no signing)
+# Plus the desktop auto-update feed: signed update bundles (.sig next to each) and latest.json, which installed
+# desktop apps read from https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/latest.json.
 # Asset names carry no version, so https://github.com/aniruddhaadak80/OpenFile/releases/latest/download/<name>
-# always points at the newest build (the Install page links there).
+# always points at the newest build (the Install page links there). latest.json links the exact tag instead.
+#
+# Tags: vX.Y.Z is a stable release. vX.Y.Z-beta.N (any "-" suffix) is a prerelease for the Beta update channel;
+# GitHub keeps it out of releases/latest, so Stable users never get it. Prereleases skip the .msi, because MSI
+# versions cannot carry a text prerelease part. A prerelease tag can be built from main without a version commit:
+# every job sets the tag's version (scripts/bump-version.mjs) before building.
+#
+# Secrets (Settings, Secrets and variables, Actions). Without them the build still succeeds and says what is missing:
+#   TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD   desktop update signing (public key in tauri.conf.json)
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD   stable APK signing
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to create or update (for example v1.1.0)'
+        description: 'Release tag to create or update (for example v1.2.0 or v1.3.0-beta.1)'
         required: true
-        default: 'v1.1.0'
+        default: 'v1.2.0'
 
 permissions:
   contents: write
@@ -28,33 +39,45 @@ env:
 
 jobs:
   web:
-    name: Web build
+    name: Web build and release notes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # tags and history for the changelog
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+      - name: Prerelease version
+        run: case "$TAG" in *-*) node scripts/bump-version.mjs "${TAG#v}" ;; esac
+      - name: Versions match the tag
+        run: |
+          node scripts/bump-version.mjs --check
+          V="${TAG#v}"
+          P=$(node -p "require('./package.json').version")
+          if [ "$P" != "$V" ]; then echo "::error::package.json is $P but the tag is $TAG. Run node scripts/bump-version.mjs $V and commit."; exit 1; fi
+      - name: Release notes from conventional commits
+        run: node scripts/changelog.mjs --version "$TAG" --to "${GITHUB_SHA}" --out release-notes.md && cat release-notes.md
       - run: npm ci
       - run: npm run build
       - run: node scripts/prepare-app-dist.mjs dist
       - name: Pack dist
-        run: tar -czf web-dist.tgz dist && ls -lh web-dist.tgz
+        run: tar -czf web-dist.tgz dist && ls -lh web-dist.tgz && cat dist/version.json
       - uses: actions/upload-artifact@v4
         with:
           name: web-dist
           path: web-dist.tgz
           retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+          retention-days: 7
       - name: Create the release if it does not exist
         run: |
-          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            PRE=""
-            case "$TAG" in *-*) PRE="--prerelease" ;; esac
-            # on a tag push the tag already exists; passing --target there is refused for commits that touch workflows
-            TARGET=""
-            if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then TARGET="--target $GITHUB_SHA"; fi
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" $TARGET --title "OpenFile $TAG" $PRE --notes-file - <<'NOTES'
+          {
+          cat <<'NOTES'
           OpenFile as an app on every device. Same tools, same privacy: everything runs on your device and nothing is uploaded.
 
           | Platform | File |
@@ -65,10 +88,24 @@ jobs:
           | Android 7+ | `OpenFile-android.apk` |
           | iPhone and iPad | Install the web app: Safari, Share, Add to Home Screen |
 
-          The apps are not code signed yet. Windows: SmartScreen, More info, Run anyway. macOS: right-click OpenFile in Applications, Open, then Open. Android: allow installs from your browser once.
+          Installed apps update themselves from here: desktop apps through the signed `latest.json` feed, Android through the in-app update check, the web app through its service worker. If you have the v1.1.0 Android APK, uninstall it once before installing this one (it was signed with a temporary key).
+
+          The installers are not code signed by Apple or Microsoft yet. Windows: SmartScreen, More info, Run anyway. macOS: right-click OpenFile in Applications, Open, then Open. Android: allow installs from your browser once.
 
           Full guide: https://aniruddhaadak80.github.io/OpenFile/install
+
           NOTES
+          cat release-notes.md
+          } > body.md
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            PRE=""
+            case "$TAG" in *-*) PRE="--prerelease" ;; esac
+            # on a tag push the tag already exists; passing --target there is refused for commits that touch workflows
+            TARGET=""
+            if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then TARGET="--target $GITHUB_SHA"; fi
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" $TARGET --title "OpenFile $TAG" $PRE --notes-file body.md
+          else
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file body.md
           fi
 
   desktop:
@@ -94,6 +131,9 @@ jobs:
     defaults:
       run:
         shell: bash
+    env:
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -103,6 +143,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Prerelease version
+        shell: bash
+        run: case "$TAG" in *-*) node scripts/bump-version.mjs "${TAG#v}" ;; esac
       - name: Linux system libraries
         if: runner.os == 'Linux'
         run: |
@@ -119,30 +162,106 @@ jobs:
         run: npm install
       - name: Build
         working-directory: desktop
-        run: npx tauri build ${{ matrix.args }}
-      - name: Rename and upload
+        run: |
+          EXTRA=""
+          if [ -z "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+            echo "::warning::TAURI_SIGNING_PRIVATE_KEY is not set: building without update bundles, so installed apps will not see this release as an update."
+            EXTRA="--config {\"bundle\":{\"createUpdaterArtifacts\":false}}"
+          fi
+          BUNDLES=""
+          case "$TAG" in *-*) if [ "$RUNNER_OS" = "Windows" ]; then BUNDLES="--bundles nsis"; fi ;; esac
+          npx tauri build ${{ matrix.args }} $BUNDLES $EXTRA
+      - name: Rename, write the update feed fragment and upload
         run: |
           set -e
           mkdir -p out
           B="${{ matrix.out }}"
-          find "$B" -maxdepth 2 -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.dmg" -o -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) || true
+          REL="https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG"
+          find "$B" -maxdepth 2 -type f | sort
+          sig() { if [ -f "$1.sig" ]; then cp "$1.sig" "out/$2.sig"; fi; }
+          frag() { # platform-key asset-name
+            if [ -f "out/$2.sig" ]; then node -e "const fs=require('fs');const f='updater.json';const o=fs.existsSync(f)?JSON.parse(fs.readFileSync(f,'utf8')):{};o[process.argv[1]]={url:process.argv[2],signature:fs.readFileSync(process.argv[3],'utf8').trim()};fs.writeFileSync(f,JSON.stringify(o,null,2))" "$1" "$REL/$2" "out/$2.sig"; fi
+          }
           if [ "$RUNNER_OS" = "Windows" ]; then
-            cp "$(ls $B/nsis/*.exe | head -1)" out/OpenFile-windows-x64-setup.exe
-            cp "$(ls $B/msi/*.msi | head -1)" out/OpenFile-windows-x64.msi
+            EXE="$(ls $B/nsis/*.exe | head -1)"
+            cp "$EXE" out/OpenFile-windows-x64-setup.exe; sig "$EXE" OpenFile-windows-x64-setup.exe
+            if ls $B/msi/*.msi >/dev/null 2>&1; then MSI="$(ls $B/msi/*.msi | head -1)"; cp "$MSI" out/OpenFile-windows-x64.msi; sig "$MSI" OpenFile-windows-x64.msi; fi
+            frag windows-x86_64 OpenFile-windows-x64-setup.exe
+            frag windows-x86_64-nsis OpenFile-windows-x64-setup.exe
+            frag windows-x86_64-msi OpenFile-windows-x64.msi
           elif [ "$RUNNER_OS" = "macOS" ]; then
             cp "$(ls $B/dmg/*.dmg | head -1)" out/OpenFile-macos-universal.dmg
+            TGZ="$(ls $B/macos/*.app.tar.gz 2>/dev/null | head -1 || true)"
+            if [ -n "$TGZ" ]; then cp "$TGZ" out/OpenFile-macos-universal.app.tar.gz; sig "$TGZ" OpenFile-macos-universal.app.tar.gz; fi
+            frag darwin-aarch64 OpenFile-macos-universal.app.tar.gz
+            frag darwin-x86_64 OpenFile-macos-universal.app.tar.gz
+            frag darwin-universal OpenFile-macos-universal.app.tar.gz
           else
-            cp "$(ls $B/appimage/*.AppImage | head -1)" out/OpenFile-linux-x86_64.AppImage
-            cp "$(ls $B/deb/*.deb | head -1)" out/OpenFile-linux-amd64.deb
-            cp "$(ls $B/rpm/*.rpm | head -1)" out/OpenFile-linux-x86_64.rpm
+            AI="$(ls $B/appimage/*.AppImage | head -1)"; DEB="$(ls $B/deb/*.deb | head -1)"; RPM="$(ls $B/rpm/*.rpm | head -1)"
+            cp "$AI" out/OpenFile-linux-x86_64.AppImage; sig "$AI" OpenFile-linux-x86_64.AppImage
+            cp "$DEB" out/OpenFile-linux-amd64.deb; sig "$DEB" OpenFile-linux-amd64.deb
+            cp "$RPM" out/OpenFile-linux-x86_64.rpm; sig "$RPM" OpenFile-linux-x86_64.rpm
+            frag linux-x86_64 OpenFile-linux-x86_64.AppImage
+            frag linux-x86_64-appimage OpenFile-linux-x86_64.AppImage
+            frag linux-x86_64-deb OpenFile-linux-amd64.deb
+            frag linux-x86_64-rpm OpenFile-linux-x86_64.rpm
           fi
+          [ -f updater.json ] || echo '{}' > updater.json
+          cat updater.json | sed -E 's/"signature": "[^"]{24}[^"]*"/"signature": "(redacted)"/'
           ls -lh out
           gh release upload "$TAG" out/* --clobber --repo "$GITHUB_REPOSITORY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: updater-${{ runner.os }}
+          path: updater.json
+          retention-days: 7
+
+  updater:
+    name: Update feed (latest.json) and verification
+    needs: desktop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: updater-*
+          path: frags
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+      - name: Build latest.json
+        run: |
+          ls -R frags
+          if ! grep -q signature frags/*/updater.json; then
+            echo "::warning::No signed update bundles (TAURI_SIGNING_PRIVATE_KEY missing). latest.json is not published for $TAG."
+            echo "SKIP=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          node scripts/updater-latest-json.mjs "$TAG" release-notes.md latest.json frags/*/updater.json
+          gh release upload "$TAG" latest.json --clobber --repo "$GITHUB_REPOSITORY"
+      # The real update test: fetch the feed like an installed app would, download every bundle it points to and
+      # verify each signature against the public key in tauri.conf.json, and confirm a 1.1.0 install is offered it.
+      - name: Verify the published feed
+        if: env.SKIP != '1'
+        run: |
+          sleep 10
+          node scripts/verify-updater.mjs "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/latest.json" --expect "${TAG#v}" --older 1.1.0
+          case "$TAG" in *-*) echo "Prerelease: releases/latest/download/latest.json stays on the newest stable release." ;; *)
+            node scripts/verify-updater.mjs "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" --expect "${TAG#v}" --no-download ;;
+          esac
 
   android:
     name: Android
     needs: web
     runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -152,6 +271,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Prerelease version
+        shell: bash
+        run: case "$TAG" in *-*) node scripts/bump-version.mjs "${TAG#v}" ;; esac
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -160,17 +282,31 @@ jobs:
       - name: Capacitor sync
         working-directory: mobile
         run: npm install && npx cap sync android
+      - name: Release keystore
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/openfile-release.p12"
+            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/openfile-release.p12" >> "$GITHUB_ENV"
+            echo "Release keystore ready"
+          else
+            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set: shipping the debug-signed APK. It will not install over a release-signed one."
+          fi
       - name: Build APK and AAB
         working-directory: mobile/android
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug bundleRelease
-      - name: Upload
+          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then ./gradlew --no-daemon assembleRelease bundleRelease; else ./gradlew --no-daemon assembleDebug bundleRelease; fi
+      - name: Check the signature and upload
         run: |
           set -e
           mkdir -p out
-          cp mobile/android/app/build/outputs/apk/debug/app-debug.apk out/OpenFile-android.apk
+          if [ -n "$ANDROID_KEYSTORE_PATH" ]; then APK=mobile/android/app/build/outputs/apk/release/app-release.apk; else APK=mobile/android/app/build/outputs/apk/debug/app-debug.apk; fi
+          cp "$APK" out/OpenFile-android.apk
           cp mobile/android/app/build/outputs/bundle/release/app-release.aab out/OpenFile-android.aab
+          SIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$SIGNER" verify --verbose --print-certs out/OpenFile-android.apk | grep -E "Verified using|Signer #1 certificate (DN|SHA-256)" | tee apk-cert.txt
+          if [ -n "$ANDROID_KEYSTORE_PATH" ] && grep -q "CN=Android Debug" apk-cert.txt; then echo "::error::release APK is debug-signed"; exit 1; fi
+          rm -f "$ANDROID_KEYSTORE_PATH"
           ls -lh out
           gh release upload "$TAG" out/* --clobber --repo "$GITHUB_REPOSITORY"
 
@@ -187,6 +323,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Prerelease version
+        shell: bash
+        run: case "$TAG" in *-*) node scripts/bump-version.mjs "${TAG#v}" ;; esac
       - name: Capacitor sync
         working-directory: mobile
         run: npm install && npx cap sync ios

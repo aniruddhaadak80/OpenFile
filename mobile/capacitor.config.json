@@ -14,6 +14,9 @@
     "scheme": "OpenFile"
   },
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "allowNavigation": [
+      "aniruddhaadak80.github.io"
+    ]
   }
 }

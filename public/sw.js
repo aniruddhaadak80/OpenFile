@@ -3,7 +3,10 @@
 //  - Pages: network first with a short timeout, then the cached page, then the cached shell, then offline.html.
 //  - Hashed assets, wasm engines, fonts and on-device AI models: cache first at runtime, so a tool that worked
 //    once keeps working offline.
-//  - Updates wait until the page says so ("New version ready, reload"), then take over in one step.
+//  - Updates wait until the page says so ("New version ready, reload"), then take over in one step:
+//    the page posts SKIP_WAITING, the new worker activates, claims every tab (clients.claim) and the page reloads
+//    on controllerchange (src/lib/app/pwa.ts). The page checks for a new worker every 30 minutes, on focus and
+//    when it becomes visible again (iOS home screen apps resume through visibilitychange).
 // scripts/postbuild.mjs replaces the two placeholders below with the build id and the shell file list.
 const BUILD = '__OF_BUILD__'
 const PRECACHE = /*__OF_PRECACHE__*/[]
@@ -111,6 +114,7 @@ self.addEventListener('fetch', (e) => {
     if (/\/(assets|ffmpeg|fonts)\//.test(url.pathname) || /\.(wasm|onnx|data|traineddata)$/.test(url.pathname)) { e.respondWith(cacheFirst(req, ASSETS)); return }
     if (url.pathname.includes('/media/') && /\.(mp4|webm|mp3)$/.test(url.pathname)) return // large demo videos stay on the network
     if (url.pathname.endsWith('/sw.js')) return
+    if (url.pathname.endsWith('/version.json')) return // update checks always ask the network
     e.respondWith(staleWhileRevalidate(e, SHELL))
     return
   }

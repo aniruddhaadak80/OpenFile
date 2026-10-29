@@ -9,6 +9,8 @@ import { useInstall, flag, setFlag } from '@/lib/ux'
 import { detect } from '@/lib/app/platform'
 import { toast } from '../toast'
 import { cn } from '../ui'
+import { UpdateCenter } from './UpdateCenter'
+import { setState as setUpdateState } from '@/lib/app/updateCore'
 
 export function UpdateBar() {
   const { waiting, ready } = usePwa()
@@ -19,17 +21,20 @@ export function UpdateBar() {
     if (first.current) { first.current = false; setFlag('offline-ready'); toast('Ready to work offline. Tools you open are saved on this device.', 'success') }
   }, [ready])
   return (
+    <>
+    <UpdateCenter />
     <AnimatePresence>
       {waiting && !hide && (
         <motion.div role="status" aria-live="polite" initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24 }} transition={{ type: 'spring', stiffness: 320, damping: 28 }}
           className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-1/2 z-[101] flex w-[min(28rem,calc(100vw-1.5rem))] -translate-x-1/2 items-center gap-3 rounded-2xl border border-accent/50 bg-surface/95 p-3 shadow-2xl backdrop-blur">
           <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand"><RefreshCw className="size-4" /></span>
-          <span className="min-w-0 flex-1 text-sm"><span className="block font-semibold">New version ready, reload</span><span className="block text-xs text-muted">Takes a second. Your settings stay.</span></span>
+          <span className="min-w-0 flex-1 text-sm"><span className="block font-semibold">New version ready, reload</span><span className="block text-xs text-muted">Takes a second. Your settings stay. <button onClick={() => setUpdateState({ sheet: 'whatsnew' })} className="text-accent underline-offset-2 hover:underline cursor-pointer">What's new</button></span></span>
           <button onClick={applyUpdate} className="min-h-10 rounded-xl bg-accent px-4 text-sm font-semibold text-on-accent cursor-pointer">Reload</button>
           <button onClick={() => setHide(true)} aria-label="Later" className="grid size-10 shrink-0 place-items-center rounded-xl text-muted hover:text-fg cursor-pointer"><X className="size-4" /></button>
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   )
 }
 
