@@ -33,6 +33,8 @@ const cases: [string, F.Op][] = [
   ['stopmotion', F.fpsOp('in.mp4', 'stopmotion', 6, 1, true)],
   ['freeze', F.freezeOp('in.mp4', 1.2, 1.5, true)],
   ['watermark png', F.overlayPngOp('in.mp4', 'logo.png', ...F.cornerXY('br', 10), true, { opacity: 0.6, scaleW: 60 })],
+  // b.mp4 has no audio: the looped logo must not keep the encode running forever after the video ends
+  ['watermark png, silent video', F.overlayPngOp('b.mp4', 'logo.png', ...F.cornerXY('br', 10), false, { opacity: 0.6, scaleW: 60 })],
   ['timed overlay', F.overlayPngOp('in.mp4', 'logo.png', '10', '10', true, { t0: 0.5, t1: 2 })],
   ['timed overlays', F.timedOverlaysOp('in.mp4', [{ name: 'logo.png', t0: 0, t1: 1 }, { name: 'logo.png', t0: 1, t1: 3 }], true, 3)],
   ['timed overlays + bar', F.timedOverlaysOp('in.mp4', [{ name: 'logo.png', t0: 0, t1: 1 }], true, 3, { color: '#F5A524', height: 8, top: false, width: 320 })],

@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { AudioLines, Download, Square, Play, Zap } from 'lucide-react'
+import { AudioLines, Download, Square, Play } from 'lucide-react'
 import { Button, Label, Select, Segmented, Slider, Switch, ToolGrid, Progress, ErrorNote } from '@/components/ui'
 import { downloadBlob, formatBytes } from '@/lib/files'
 import { encodeWav } from '@/tools/video/_media/audio'
 import { useObjectUrl } from '@/tools/video/_media/media'
 import { useDocInput, DocInput } from '@/lib/b4/aiui'
-import { hasWebGPU } from '@/lib/b4/ai'
-import { makeTtsWorker } from '@/lib/b4/tts'
+import { loadNeural } from './_tts/neural'
 import { Note } from '@/tools/video/_media/ui'
 
 type Engine = 'neural' | 'system'
@@ -34,8 +33,6 @@ export default function PdfToSpeech() {
   const [engine, setEngine] = useState<Engine>('neural')
   const [voice, setVoice] = useState('af_heart')
   const [speed, setSpeed] = useState(1)
-  const [gpuOk, setGpuOk] = useState(false)
-  const [gpu, setGpu] = useState(false)
   const [busy, setBusy] = useState(false)
   const [load, setLoad] = useState<{ l: number; t: number } | null>(null)
   const [p, setP] = useState(0)
@@ -45,42 +42,48 @@ export default function PdfToSpeech() {
   const [sysVoices, setSysVoices] = useState<SpeechSynthesisVoice[]>([])
   const [sysVoice, setSysVoice] = useState('')
   const [speaking, setSpeaking] = useState(false)
-  const worker = useRef<Worker | null>(null)
+  const run = useRef(0)
   const url = useObjectUrl(wav)
 
-  useEffect(() => { hasWebGPU().then((ok) => { setGpuOk(ok); setGpu(ok) }) }, [])
   useEffect(() => {
     const s = window.speechSynthesis; if (!s) return
     const upd = () => { const v = s.getVoices(); setSysVoices(v); if (!sysVoice && v[0]) setSysVoice((v.find((x) => x.default) ?? v[0]).name) }
     upd(); s.addEventListener('voiceschanged', upd); return () => { s.removeEventListener('voiceschanged', upd); s.cancel() }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => () => worker.current?.terminate(), [])
+  useEffect(() => () => { run.current++ }, [])
 
-  const stop = () => { worker.current?.terminate(); worker.current = null; setBusy(false); setLoad(null); window.speechSynthesis?.cancel(); setSpeaking(false) }
-  const neural = () => {
+  const stop = () => { run.current++; setBusy(false); setLoad(null); window.speechSynthesis?.cancel(); setSpeaking(false) }
+  const neural = async () => {
     const chunks = speechChunks(doc.text)
     if (!chunks.length) return setError('There is no readable text.')
+    const my = ++run.current
     setBusy(true); setError(null); setWav(null); setP(0)
-    const w = makeTtsWorker()
-    worker.current = w
-    const parts: Float32Array[] = []; let sr = 24000
-    w.onmessage = async (e) => {
-      const m = e.data
-      if (m.type === 'load') setLoad({ l: m.loaded, t: m.total })
-      else if (m.type === 'ready') setLoad(null)
-      else if (m.type === 'chunk') { parts[m.index] = m.pcm; sr = m.sr; setP((m.index + 1) / m.total) }
-      else if (m.type === 'done') {
-        const gap = new Float32Array(Math.round(sr * 0.18))
-        const total = parts.reduce((a, x) => a + x.length + gap.length, 0)
-        const all = new Float32Array(total); let o = 0
-        for (const x of parts) { all.set(x, o); o += x.length + gap.length }
-        let blob = encodeWav([all], sr)
-        if (mp3) { const { ffRun } = await import('@/tools/video/_media/engine'); blob = await ffRun({ inputs: [{ name: 'in.wav', file: blob }], args: ['-i', 'in.wav', '-c:a', 'libmp3lame', '-b:a', '96k', 'out.mp3'], output: 'out.mp3' }) }
-        setWav(blob); setBusy(false); w.terminate(); worker.current = null
-      } else if (m.type === 'error') { setError(/memory/i.test(m.message) ? 'The browser ran out of memory. Try a shorter document or turn off the GPU.' : 'Speech failed: ' + m.message); stop() }
+    try {
+      // same on-page Kokoro engine as Text to Speech (the worker version stalled at 0% in some browsers)
+      const tts = await loadNeural((x) => { if (my === run.current) setLoad(x.total ? { l: x.loaded, t: x.total } : null) })
+      if (my !== run.current) return
+      setLoad(null)
+      const parts: Float32Array[] = []; let sr = 24000
+      for (let i = 0; i < chunks.length; i++) {
+        await new Promise((r) => setTimeout(r, 0))
+        if (my !== run.current) return
+        const a: any = await tts.generate(chunks[i], { voice: voice as any, speed })
+        parts.push(new Float32Array(Array.isArray(a.audio) ? a.audio[0] : a.audio)); sr = a.sampling_rate || sr
+        setP((i + 1) / chunks.length)
+      }
+      const gap = new Float32Array(Math.round(sr * 0.18))
+      const total = parts.reduce((t, x) => t + x.length + gap.length, 0)
+      const all = new Float32Array(total); let o = 0
+      for (const x of parts) { all.set(x, o); o += x.length + gap.length }
+      let blob = encodeWav([all], sr)
+      if (mp3) { const { ffRun } = await import('@/tools/video/_media/engine'); blob = await ffRun({ inputs: [{ name: 'in.wav', file: blob }], args: ['-i', 'in.wav', '-c:a', 'libmp3lame', '-b:a', '96k', 'out.mp3'], output: 'out.mp3' }) }
+      if (my !== run.current) return
+      setWav(blob)
+    } catch (e: any) {
+      if (my === run.current) setError(/memory/i.test(e?.message || '') ? 'The browser ran out of memory. Try a shorter document.' : 'Speech failed: ' + (e?.message || e))
+    } finally {
+      if (my === run.current) { setBusy(false); setLoad(null) }
     }
-    w.onerror = (e) => { setError(e.message || 'The speech engine crashed.'); stop() }
-    w.postMessage({ id: 1, texts: chunks, voice, speed, device: gpu && gpuOk ? 'webgpu' : 'wasm' })
   }
   const speakSystem = () => {
     const s = window.speechSynthesis; if (!s) return setError('Your browser has no built-in speech.')
@@ -108,7 +111,6 @@ export default function PdfToSpeech() {
         {engine === 'neural' ? <>
           <div><Label>Voice</Label><Select value={voice} onChange={setVoice} options={VOICES.map((v) => ({ value: v.id, label: v.label }))} /></div>
           <Slider label="Speed" value={speed} onChange={setSpeed} min={0.7} max={1.5} step={0.05} suffix="x" />
-          {gpuOk && <Switch checked={gpu} onChange={setGpu} label={<span className="inline-flex items-center gap-1.5"><Zap className="size-3.5 text-accent" />Use GPU</span>} />}
           <Switch checked={mp3} onChange={setMp3} label="Save as MP3 (smaller file)" />
           <Button size="lg" className="w-full" icon={<AudioLines className="size-5" />} onClick={neural} loading={busy} disabled={!doc.ready}>Create audio</Button>
           {busy && (load && load.t ? <Progress value={load.l / load.t} label={`Downloading voice model: ${formatBytes(load.l)} of ${formatBytes(load.t)}`} /> : <Progress value={p} label="Reading aloud" />)}

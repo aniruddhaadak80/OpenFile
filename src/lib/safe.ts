@@ -39,6 +39,18 @@ export function safeUrl(u: unknown, fallback = ''): string {
   return fallback
 }
 
+/**
+ * Returns an object URL made by URL.createObjectURL (blob:) for a media src, or '' for anything else.
+ * The result is rebuilt from a constant 'blob:' prefix, so a script URL can never reach the attribute.
+ */
+export function safeBlobUrl(u: unknown): string {
+  if (typeof u !== 'string' || !u.startsWith('blob:')) return ''
+  try {
+    const p = new URL(u)
+    return p.protocol === 'blob:' ? 'blob:' + p.pathname : ''
+  } catch { return '' }
+}
+
 const ACTIVE_TAGS = 'script,iframe,frame,frameset,object,embed,applet,meta[http-equiv],set'
 const URL_ATTRS = new Set(['href', 'src', 'action', 'formaction', 'poster', 'data', 'background', 'lowsrc', 'dynsrc', 'xlink:href', 'srcdoc'])
 

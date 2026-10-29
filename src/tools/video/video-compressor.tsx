@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Minimize2, ArrowRight } from 'lucide-react'
 import { Button, Dropzone, Input, Label, ResultCard, Segmented, Slider, Switch, ToolGrid, cn } from '@/components/ui'
 import { baseName, formatBytes } from '@/lib/files'
+import { safeBlobUrl } from '@/lib/safe'
 import { KEPT_ORIGINAL_VIDEO, RETRY_FACTOR, audioArgs, notSmaller, planVideo, videoArgs, type VideoOptions, type VideoPlan, type VideoPreset, type VideoSource } from '@/lib/compress-guard'
 import { ffProbe, ffRun, extFromBlob, isCancel } from './_media/engine'
 import { fmtTime, useMediaJob, useObjectUrl, useVideoMeta } from './_media/media'
@@ -93,7 +94,7 @@ export default function VideoCompressor() {
       <ToolGrid
         main={<>
           <FileBar file={file} onReset={reset} />
-          <VideoStage src={url} playable={meta?.playable !== false} />
+          <VideoStage src={safeBlobUrl(url) || null} playable={meta?.playable !== false} />
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Stat label="Original" value={formatBytes(file.size)} />
             <Stat label="Resolution" value={w ? `${w}×${h}` : '-'} />
@@ -152,8 +153,8 @@ export default function VideoCompressor() {
             <ResultCard blob={result.blob} filename={`${baseName(file.name)}-compressed.mp4`} originalSize={file.size} title={`Compressed, ${Math.round((1 - result.blob.size / file.size) * 100)}% smaller`} onReset={reset}>
               {result.note && <Note className="mb-3">{result.note}</Note>}
               <div className="grid gap-3 sm:grid-cols-2">
-                <div><div className="mb-1 text-xs text-muted">Before · {formatBytes(file.size)}</div>{meta?.playable ? <video src={url!} controls playsInline className="aspect-video w-full rounded-xl bg-black" /> : <div className="grid aspect-video place-items-center rounded-xl bg-black text-xs text-white/60">No preview</div>}</div>
-                <div><div className="mb-1 text-xs text-muted">After · {formatBytes(result.blob.size)}</div><video src={resultUrl} controls playsInline className="aspect-video w-full rounded-xl bg-black" /></div>
+                <div><div className="mb-1 text-xs text-muted">Before · {formatBytes(file.size)}</div>{meta?.playable ? <video src={safeBlobUrl(url)} controls playsInline className="aspect-video w-full rounded-xl bg-black" /> : <div className="grid aspect-video place-items-center rounded-xl bg-black text-xs text-white/60">No preview</div>}</div>
+                <div><div className="mb-1 text-xs text-muted">After · {formatBytes(result.blob.size)}</div><video src={safeBlobUrl(resultUrl)} controls playsInline className="aspect-video w-full rounded-xl bg-black" /></div>
               </div>
             </ResultCard>
           )}

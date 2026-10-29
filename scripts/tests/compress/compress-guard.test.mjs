@@ -98,3 +98,12 @@ assert.deepEqual(audioArgs({ ...p, audioKbps: 96, copyAudio: false }), ['-c:a', 
 assert.deepEqual(audioArgs({ ...p, audioKbps: 96, copyAudio: true }), ['-c:a', 'copy'])
 
 console.log('compress guard: all tests passed')
+
+// media src for compressor previews only ever takes object URLs
+const { safeBlobUrl } = await import('../../../src/lib/safe.ts')
+assert.equal(safeBlobUrl('blob:https://aniruddhaadak80.github.io/1b2c-3d'), 'blob:https://aniruddhaadak80.github.io/1b2c-3d')
+assert.equal(safeBlobUrl('javascript:alert(1)'), '')
+assert.equal(safeBlobUrl(' blob:x'), '')
+assert.equal(safeBlobUrl('data:video/mp4;base64,AAAA'), '')
+assert.equal(safeBlobUrl(null), '')
+console.log('safe blob url: all tests passed')

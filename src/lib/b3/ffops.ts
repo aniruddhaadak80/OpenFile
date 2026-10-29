@@ -105,7 +105,7 @@ export function overlayPngOp(input: string, png: string, x: string, y: string, h
   if (opts.opacity != null && opts.opacity < 1) pre.push(`format=rgba,colorchannelmixer=aa=${f3(opts.opacity)}`)
   if (pre.length) { parts.push(`[1:v]${pre.join(',')}[ov]`); ov = '[ov]' }
   const en = opts.t0 != null && opts.t1 != null ? `:enable='between(t,${f3(opts.t0)},${f3(opts.t1)})'` : ''
-  parts.push(`[0:v]${ov}overlay=${x}:${y}${en},${EVEN}[v]`)
+  parts.push(`[0:v]${ov}overlay=${x}:${y}:shortest=1${en},${EVEN}[v]`)
   return { output: 'out.mp4', args: ['-i', input, '-loop', '1', '-i', png, '-filter_complex', parts.join(';'), '-map', '[v]', ...(hasAudio ? ['-map', '0:a:0?', '-c:a', 'copy'] : ['-an']), '-shortest', ...H264(), ...FASTSTART, 'out.mp4'] }
 }
 
