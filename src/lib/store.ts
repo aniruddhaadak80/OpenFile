@@ -4,7 +4,7 @@
 import { useSyncExternalStore } from 'react'
 import { liveQuery } from 'dexie'
 import { db, dbReady, pruneHistory, type FavoriteRow, type HistoryRow, type RecentRow, type ActivityKind } from './db'
-import { getPrefs, subscribePrefs, writePrefsCache, resolvedTheme, resolvedMode, resolvedReduceMotion, normalizePrefs, applyNaming, DEFAULT_PREFS, currentToolSlug, type Prefs } from './prefs'
+import { getPrefs, subscribePrefs, writePrefsCache, resolvedTheme, resolvedMode, resolvedReduceMotion, normalizePrefs, applyNaming, DEFAULT_PREFS, PREFS_KEY, currentToolSlug, type Prefs } from './prefs'
 import { setDownloadHooks } from './files'
 import { toolBySlug } from '@/tools/registry'
 import { toast } from '@/components/toast'
@@ -96,8 +96,12 @@ async function loadPrefsFromDb() {
   await dbReady()
   try {
     const row = await db.settings.get('prefs')
-    if (row?.value) writePrefsCache(normalizePrefs({ ...getPrefs(), ...(row.value as object) }))
-    else await db.settings.put({ key: 'prefs', value: getPrefs() }) // first run: seed IndexedDB from localStorage
+    // localStorage is written synchronously on every change, IndexedDB a moment later, so a reload right after a
+    // change can find an older copy in IndexedDB. Use IndexedDB only when localStorage has no prefs (cleared storage).
+    let local = false
+    try { local = localStorage.getItem(PREFS_KEY) !== null } catch { /* storage may be unavailable */ }
+    if (row?.value && !local) writePrefsCache(normalizePrefs({ ...getPrefs(), ...(row.value as object) }))
+    else await db.settings.put({ key: 'prefs', value: getPrefs() }) // seed or refresh IndexedDB from localStorage
   } catch { /* ignore */ }
 }
 export async function updatePrefs(patch: Partial<Prefs>) {
