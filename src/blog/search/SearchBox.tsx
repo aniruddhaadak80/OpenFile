@@ -25,6 +25,8 @@ export interface SearchBoxProps {
   hits: Hit[]
   parsed: ParsedQuery
   closest: Hit[]
+  /** true when closest came from a loose search, false when it is just the newest posts */
+  closestRelated: boolean
   suggestion: string | null
   metaBySlug: Record<string, PostMeta>
   status: IndexStatus
@@ -65,8 +67,9 @@ export function SearchBox(p: SearchBoxProps) {
       inputRef.current?.focus()
       inputRef.current?.select()
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    // capture phase, so this runs before the site wide "/" shortcut that opens the tools palette
+    window.addEventListener('keydown', onKey, true)
+    return () => window.removeEventListener('keydown', onKey, true)
   }, [])
   // close when clicking outside
   useEffect(() => {
@@ -148,7 +151,7 @@ export function SearchBox(p: SearchBoxProps) {
             onFocus={() => { setFocused(true); setOpen(true); p.onFocusBox() }}
             onBlur={() => setFocused(false)}
             onKeyDown={onKeyDown}
-            placeholder="Search guides, tips and every word inside them"
+            placeholder="Search titles, tags and text"
             className="h-full min-w-0 flex-1 appearance-none bg-transparent text-base text-fg outline-none placeholder:text-muted/80 [&::-webkit-search-cancel-button]:hidden sm:text-lg"
           />
           <span id={`${listId}-help`} className="sr-only">Type to search post titles, tags and full text. Filters: tag:name, has:video, has:listen, has:quiz, time:&lt;5. Use arrow keys to move through results.</span>
@@ -189,7 +192,7 @@ export function SearchBox(p: SearchBoxProps) {
                   )}
                   <ul id={listId} role="listbox" aria-label="Search results" className="p-1.5">
                     {opts.map((o, i) => (
-                      <Row key={o.id} o={o} i={i} active={i === active} setActive={setActive} choose={choose} parsed={p.parsed} count={count} first={i === opts.findIndex((x) => x.kind === 'post')} empty={!count} />
+                      <Row key={o.id} o={o} i={i} active={i === active} setActive={setActive} choose={choose} parsed={p.parsed} count={count} first={i === opts.findIndex((x) => x.kind === 'post')} empty={!count} related={p.closestRelated} />
                     ))}
                   </ul>
                 </>
@@ -199,7 +202,7 @@ export function SearchBox(p: SearchBoxProps) {
                     <>
                       <div className="flex items-center justify-between px-3 pb-1 pt-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
                         <span>Recent searches</span>
-                        <button type="button" onClick={p.onClearRecent} className="flex min-h-9 items-center gap-1 rounded-lg px-2 normal-case tracking-normal text-muted hover:text-fg cursor-pointer"><Trash2 className="size-3.5" /> Clear</button>
+                        <button type="button" onClick={p.onClearRecent} className="flex min-h-11 items-center gap-1 rounded-lg px-2 normal-case sm:min-h-9 tracking-normal text-muted hover:text-fg cursor-pointer"><Trash2 className="size-3.5" /> Clear</button>
                       </div>
                     </>
                   )}
@@ -210,7 +213,7 @@ export function SearchBox(p: SearchBoxProps) {
                         <History className="size-4 shrink-0 text-muted" />
                         <span className="min-w-0 flex-1 truncate">{o.q}</span>
                         <button type="button" aria-label={`Remove ${o.q} from recent searches`} onClick={(e) => { e.stopPropagation(); p.onRemoveRecent(o.q) }}
-                          className="grid size-9 place-items-center rounded-lg text-muted opacity-70 hover:bg-bg hover:text-fg group-hover:opacity-100 cursor-pointer"><X className="size-4" /></button>
+                          className="grid size-11 place-items-center rounded-lg text-muted opacity-70 sm:size-9 hover:bg-bg hover:text-fg group-hover:opacity-100 cursor-pointer"><X className="size-4" /></button>
                       </li>
                     ))}
                   </ul>
@@ -218,7 +221,7 @@ export function SearchBox(p: SearchBoxProps) {
                   <div className="flex flex-wrap gap-1.5 px-3 pb-2">
                     {p.tags.slice(0, 14).map((t) => (
                       <button key={t} type="button" onClick={() => { p.onChange(`tag:${t} `); inputRef.current?.focus() }}
-                        className="inline-flex min-h-9 items-center gap-1 rounded-full border border-border bg-bg/40 px-3 text-xs text-muted transition hover:border-accent hover:text-fg cursor-pointer"><Hash className="size-3 text-accent" />{t}</button>
+                        className="inline-flex min-h-11 items-center gap-1 rounded-full border border-border bg-bg/40 sm:min-h-9 px-3 text-xs text-muted transition hover:border-accent hover:text-fg cursor-pointer"><Hash className="size-3 text-accent" />{t}</button>
                     ))}
                   </div>
                   <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-muted">Search tricks</div>
@@ -249,7 +252,7 @@ export function SearchBox(p: SearchBoxProps) {
 
 const Key = ({ children }: { children: ReactNode }) => <kbd className="inline-grid h-5 min-w-5 place-items-center rounded border border-border bg-surface px-1 font-mono text-[10px] text-fg/80">{children}</kbd>
 
-function Row({ o, i, active, setActive, choose, parsed, count, first, empty }: { o: Opt; i: number; active: boolean; setActive: (i: number) => void; choose: (o: Opt) => void; parsed: ParsedQuery; count: number; first: boolean; empty: boolean }) {
+function Row({ o, i, active, setActive, choose, parsed, count, first, empty, related }: { o: Opt; i: number; active: boolean; setActive: (i: number) => void; choose: (o: Opt) => void; parsed: ParsedQuery; count: number; first: boolean; empty: boolean; related: boolean }) {
   const common = { id: o.id, role: 'option' as const, 'aria-selected': active, onPointerMove: () => setActive(i), onClick: () => choose(o) }
   if (o.kind === 'fix') return (
     <li {...common} className={cn('flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 text-sm', active ? 'bg-surface-2' : 'hover:bg-surface-2')}>
@@ -267,7 +270,7 @@ function Row({ o, i, active, setActive, choose, parsed, count, first, empty }: {
   const v = hit.doc.video, l = hit.doc.listen
   return (
     <>
-      {empty && first && <li role="presentation" className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-muted">Closest posts</li>}
+      {empty && first && <li role="presentation" className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-wider text-muted">{related ? 'Closest posts' : 'Newest posts'}</li>}
       <li {...common} className={cn('group relative flex cursor-pointer gap-3 rounded-xl p-2.5 transition-colors sm:gap-4 sm:p-3', active ? 'bg-surface-2' : 'hover:bg-surface-2/70')}>
         {active && <span aria-hidden className="absolute inset-y-3 left-0 w-[3px] rounded-full bg-accent" />}
         <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-border sm:h-[68px] sm:w-[104px]">

@@ -76,11 +76,14 @@ export default function Blog() {
   const sorted = useMemo(() => {
     const by: Record<Sort, (a: Hit, b: Hit) => number> = {
       relevance: (a, b) => b.score - a.score, new: (a, b) => b.doc.date.localeCompare(a.doc.date), old: (a, b) => a.doc.date.localeCompare(b.doc.date),
-      short: (a, b) => a.doc.minutes - b.doc.minutes || b.doc.date.localeCompare(a.doc.date), long: (a, b) => b.doc.minutes - a.doc.minutes,
+      short: (a, b) => a.doc.minutes - b.doc.minutes || b.score - a.score, long: (a, b) => b.doc.minutes - a.doc.minutes,
     }
     return [...ranked].sort(sort === 'relevance' && !parsed.textual ? by.new : by[sort])
   }, [ranked, sort, parsed.textual])
-  const closest = useMemo(() => (ranked.length || !parsed.textual ? [] : search(docs, { ...parsed, tags: [], has: [], time: null }, 'any').slice(0, 3)), [ranked.length, parsed, docs])
+  const closestRelated = useMemo(() => (ranked.length || !parsed.active ? [] : search(docs, { ...parsed, tags: [], has: [], time: null }, 'any').slice(0, 3)), [ranked.length, parsed, docs])
+  // nothing close at all: offer the newest posts so the panel never ends empty
+  const closest = useMemo(() => (ranked.length || !parsed.active || closestRelated.length ? closestRelated
+    : [...docs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3).map((doc) => ({ doc, score: 0, words: [], phrases: [], snippet: null }))), [ranked.length, parsed.active, closestRelated, docs])
   const suggestion = useMemo(() => (ranked.length || !parsed.textual ? null : suggestQuery(docs, input)), [ranked.length, parsed.textual, docs, input])
 
   const recent = useRecentSearches()
@@ -125,6 +128,7 @@ export default function Blog() {
             hits={sorted}
             parsed={parsed}
             closest={closest}
+            closestRelated={closestRelated.length > 0}
             suggestion={suggestion}
             metaBySlug={META_BY_SLUG}
             status={status}
@@ -153,7 +157,7 @@ export default function Blog() {
               <div role="radiogroup" aria-label="Sort posts" className="inline-flex rounded-xl border border-border bg-surface p-1">
                 {SORTS.map(([k, label]) => (
                   <button key={k} type="button" role="radio" aria-checked={sort === k} onClick={() => setParam('sort', k === (parsed.textual ? 'relevance' : 'new') ? '' : k, false)}
-                    className={cn('relative min-h-9 rounded-lg px-3 text-xs font-medium transition-colors cursor-pointer', sort === k ? 'text-on-accent' : 'text-muted hover:text-fg')}>
+                    className={cn('relative min-h-11 rounded-lg px-3 text-xs sm:min-h-9 font-medium transition-colors cursor-pointer', sort === k ? 'text-on-accent' : 'text-muted hover:text-fg')}>
                     {sort === k && <motion.span layoutId="blog-sort-pill" className="absolute inset-0 rounded-lg bg-accent" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
                     <span className="relative">{label}</span>
                   </button>
@@ -169,11 +173,11 @@ export default function Blog() {
                 <div className="flex flex-wrap items-center gap-2 pt-3 text-xs">
                   <span className="hidden text-muted md:inline">{list.length} {list.length === 1 ? 'post' : 'posts'}{searching && input.trim() ? <> for <span className="text-fg">"{input.trim().length > 48 ? input.trim().slice(0, 48) + '...' : input.trim()}"</span></> : null}</span>
                   {pills.map((p) => (
-                    <button key={p.key} type="button" onClick={p.onRemove} aria-label="Remove filter" className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 text-fg hover:border-accent cursor-pointer">
+                    <button key={p.key} type="button" onClick={p.onRemove} aria-label="Remove filter" className="inline-flex min-h-11 items-center gap-1.5 rounded-full sm:min-h-8 border border-border bg-surface px-2.5 text-fg hover:border-accent cursor-pointer">
                       {p.label}<X className="size-3 text-muted" />
                     </button>
                   ))}
-                  <button type="button" onClick={clearAll} className="ml-auto inline-flex min-h-8 items-center gap-1 rounded-full px-2.5 text-muted hover:text-fg cursor-pointer"><X className="size-3" /> Clear all</button>
+                  <button type="button" onClick={clearAll} className="ml-auto inline-flex min-h-11 items-center sm:min-h-8 gap-1 rounded-full px-2.5 text-muted hover:text-fg cursor-pointer"><X className="size-3" /> Clear all</button>
                 </div>
               </motion.div>
             )}
@@ -212,7 +216,7 @@ export default function Blog() {
               {suggestion && <button onClick={() => setInput(suggestion)} className="min-h-11 rounded-xl bg-accent px-4 text-sm font-medium text-on-accent cursor-pointer">Search for "{suggestion}"</button>}
               <button onClick={clearAll} className="min-h-11 rounded-xl border border-border px-4 text-sm hover:border-accent cursor-pointer">Show all posts</button>
             </div>}>
-            {closest.length ? <>Closest posts: {closest.map((h, i) => <span key={h.doc.slug}>{i ? ', ' : ''}<Link className="text-accent hover:underline" to={`/blog/${h.doc.slug}`}>{h.doc.title}</Link></span>)}</> : 'Try another word, or remove a filter.'}
+            {closest.length ? <>{closestRelated.length ? 'Closest posts' : 'Newest posts'}: {closest.map((h, i) => <span key={h.doc.slug}>{i ? ', ' : ''}<Link className="text-accent hover:underline" to={`/blog/${h.doc.slug}`}>{h.doc.title}</Link></span>)}</> : 'Try another word, or remove a filter.'}
           </EmptyState>
         )}
       </div>
