@@ -130,7 +130,7 @@ export function buildBlocks(lines: Line[], body: number, headingSizes: number[],
       let kind: BlockKind = isHeading ? hk! : bullet ? 'li' : num ? 'oli' : 'p'
       if (bullet && runs.length) runs[0].text = runs[0].text.replace(BULLET, '')
       runs = runs.filter((r) => r.text.length)
-      cur = { kind, runs, text: l.text.replace(bullet ? BULLET : /^$/, ''), size: l.size, indent: Math.max(0, l.x - leftEdge), y: l.y, align: centered ? 'center' : 'left' }
+      cur = { kind, runs, text: bullet ? l.text.replace(BULLET, '') : l.text, size: l.size, indent: Math.max(0, l.x - leftEdge), y: l.y, align: centered ? 'center' : 'left' }
     } else if (cur) {
       // continuation line: join, de-hyphenating words split across lines
       const lastRun = cur.runs[cur.runs.length - 1]

@@ -1,6 +1,7 @@
 /* E-book model shared by ebook-converter, epub-editor and the reader.
  * Reading: EPUB, MOBI, AZW3, KF8, FB2, FBZ, CBZ (foliate-js, MIT), plus TXT, HTML, Markdown, DOCX, PDF, RTF and CHM.
  * Writing: EPUB 3, HTML, TXT, Markdown, FB2, DOCX and PDF. */
+import { stripActive } from '../safe'
 
 export interface BookChapter { title: string; html: string }
 export interface BookModel {
@@ -28,6 +29,7 @@ const IMG_EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png
 async function harvest(doc: Document, images: Map<string, Blob>, seen: Map<string, string>): Promise<string> {
   doc.querySelectorAll('script,style,link,meta').forEach((n) => n.remove())
   const body = doc.body ?? doc.documentElement
+  stripActive(body) // event handlers, frames and script URLs from the source never reach the new book
   const grab = async (src: string): Promise<string | null> => {
     if (!src) return null
     if (seen.has(src)) return seen.get(src)!

@@ -29,7 +29,9 @@ export default function HtmlToImage() {
   const [transparent, setTransparent] = useState(true)
   const [bg, setBg] = useState('#ffffff')
   const [pad, setPad] = useState(24)
-  const [fontUrl, setFontUrl] = useState('')
+  const [fontUrlInput, setFontUrl] = useState('')
+  // Only web addresses are loaded as a stylesheet; quotes are encoded so the URL cannot break out of the @import rule.
+  const fontUrl = /^https?:\/\//i.test(fontUrlInput.trim()) ? fontUrlInput.trim().replace(/['"()\\\s]/g, encodeURIComponent) : ''
   const stage = useRef<HTMLDivElement>(null)
   const { busy, error, run } = useJob()
 
@@ -79,7 +81,7 @@ export default function HtmlToImage() {
         <Slider label="Padding" value={pad} onChange={setPad} min={0} max={120} suffix=" px" />
         <Switch checked={transparent && fmt !== 'jpg'} onChange={setTransparent} label="Transparent background" />
         {(!transparent || fmt === 'jpg') && <div><Label>Background</Label><ColorInput value={bg} onChange={setBg} /></div>}
-        <Field label="Web font stylesheet (optional)"><Input placeholder="https://fonts.googleapis.com/css2?family=Inter" value={fontUrl} onChange={(e) => setFontUrl(e.target.value)} /></Field>
+        <Field label="Web font stylesheet (optional)"><Input placeholder="https://fonts.googleapis.com/css2?family=Inter" value={fontUrlInput} onChange={(e) => setFontUrl(e.target.value)} /></Field>
         <ErrorNote error={error} />
         <Button size="lg" className="w-full" loading={busy} icon={<Download className="size-4" />} onClick={render}>Download {fmt.toUpperCase()}</Button>
         <p className="flex gap-2 text-[11px] text-muted"><Code2 className="size-3.5 shrink-0" />Scripts are removed for safety. Images from other sites only work if they allow cross-origin access.</p>

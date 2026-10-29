@@ -1,6 +1,7 @@
 import { zipSync, strToU8 } from 'fflate'
 import { getPrefs } from './prefs'
 import { downloadBus } from './ux'
+import { safeUrl } from './safe'
 
 export function formatBytes(bytes: number, decimals = 1) {
   if (!Number.isFinite(bytes)) return '-'
@@ -31,7 +32,8 @@ export function downloadBlob(data: Blob | Uint8Array | ArrayBuffer | string, fil
 
 export function downloadDataUrl(dataUrl: string, filename: string) {
   const name = finalName(filename)
-  const a = document.createElement('a'); a.href = dataUrl; a.download = name
+  const href = safeUrl(dataUrl); if (!href) return // only data:, blob: and web addresses are downloaded
+  const a = document.createElement('a'); a.href = href; a.download = name
   document.body.appendChild(a); a.click(); a.remove()
   try { hooks.after?.(name) } catch { /* ignore */ }
   try { downloadBus.emit({ name, dataUrl }) } catch { /* ignore */ }

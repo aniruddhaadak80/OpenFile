@@ -134,7 +134,7 @@ export default function RegexBuilder() {
             <span className="text-muted">/<span className="text-accent">{flags}</span></span>
           </div>
           <CopyButton text={pattern} label="Copy regex" size="md" />
-          <CopyButton text={() => `/${pattern.replace(/\//g, '\\/')}/${flags}`} label="Copy /literal/" size="md" variant="ghost" />
+          <CopyButton text={() => `/${pattern.replace(/\\[\s\S]|\//g, (m) => (m === '/' ? '\\/' : m))}/${flags}`} label="Copy /literal/" size="md" variant="ghost" />
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           {[['g', 'global'], ['i', 'ignore case'], ['m', 'multiline']].map(([f, n]) => <Chip key={f} active={flags.includes(f)} onClick={() => setFlags((s) => (s.includes(f) ? s.replace(f, '') : s + f))}><b className="font-mono">{f}</b> {n}</Chip>)}

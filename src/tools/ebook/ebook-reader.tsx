@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, ListTree, Search, Type, Maximize2, Minimize2, X, BookOpen } from 'lucide-react'
 import { Button, Dropzone, Input, Segmented, Spinner, ErrorNote, cn } from '@/components/ui'
 import { TopBar } from '@/lib/b4/ui'
+import { sanitizeMarkup } from '@/lib/safe'
 
 type Theme = 'light' | 'sepia' | 'dark'
 const THEMES: Record<Theme, { bg: string; fg: string; link: string }> = { light: { bg: '#ffffff', fg: '#1a1a1a', link: '#0b6bcb' }, sepia: { bg: '#f4ecd8', fg: '#3b2f1e', link: '#8a5a00' }, dark: { bg: '#121212', fg: '#e6e6e6', link: '#7cc4ff' } }
@@ -50,7 +51,7 @@ export default function EbookReader() {
     ;(async () => {
       setLoading(true); setError(null)
       try {
-        await import('foliate-js/view.js')
+        const { makeBook } = await import('foliate-js/view.js')
         let src: File = file
         if (!NATIVE.test(file.name)) {
           const { loadBook, writeEpub } = await import('@/lib/b4/book')
@@ -58,10 +59,28 @@ export default function EbookReader() {
           src = new File([await writeEpub(b)], file.name.replace(/\.[^.]+$/, '') + '.epub', { type: 'application/epub+zip' })
         }
         if (dead) return
+        // foliate-js renders book pages in same-origin frames that allow scripts (a WebKit requirement), so
+        // every page (EPUB, MOBI, KF8, FB2, comics) is made inert before it is shown: no scripts, event handlers or script URLs.
+        const book = await makeBook(src)
+        const inert = new Map<string, string>()
+        for (const s of book.sections ?? []) {
+          if (typeof s.load !== 'function') continue
+          const load = s.load.bind(s)
+          s.load = async () => {
+            const u = await load()
+            if (typeof u !== 'string' || !u.startsWith('blob:')) return u
+            const hit = inert.get(u); if (hit) return hit
+            const b = await (await fetch(u)).blob()
+            const type: DOMParserSupportedType = /svg/i.test(b.type) ? 'image/svg+xml' : /xml/i.test(b.type) ? 'application/xhtml+xml' : 'text/html'
+            const out = URL.createObjectURL(new Blob([sanitizeMarkup(await b.text(), type)], { type: b.type || type }))
+            inert.set(u, out); return out
+          }
+        }
+        if (dead) return
         const v: any = document.createElement('foliate-view')
         v.style.cssText = 'display:block;width:100%;height:100%'
         el.replaceChildren(v)
-        await v.open(src)
+        await v.open(book)
         if (dead) return
         view.current = v
         const m = v.book.metadata ?? {}

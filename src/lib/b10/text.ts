@@ -348,7 +348,9 @@ export function renderTable(rows: string[][], style: TableStyle, opts: { header?
   if (!rows.length) return ''
   const header = opts.header ?? true
   const cols = Math.max(...rows.map((r) => r.length))
-  const R = rows.map((r) => Array.from({ length: cols }, (_, i) => (r[i] ?? '').replace(/\n/g, ' ')))
+  // Markdown cells are escaped before widths are measured, so columns stay aligned and a cell can never close early.
+  const mdc = (c: string) => (style === 'markdown' ? c.replace(/\\/g, '\\\\').replace(/\|/g, '\\|') : c)
+  const R = rows.map((r) => Array.from({ length: cols }, (_, i) => mdc((r[i] ?? '').replace(/\n/g, ' '))))
   const wid = Array.from({ length: cols }, (_, i) => Math.max(style === 'markdown' ? 3 : 1, ...R.map((r) => strWidth(r[i]))))
   const isNum = Array.from({ length: cols }, (_, i) => R.slice(header ? 1 : 0).every((r) => r[i] === '' || /^[-+]?[\d,]*\.?\d+%?$/.test(r[i])) && R.length > (header ? 1 : 0))
   const al = (i: number) => opts.align?.[i] ?? (isNum[i] ? 'r' : 'l')
@@ -360,7 +362,7 @@ export function renderTable(rows: string[][], style: TableStyle, opts: { header?
   }
   const p = ' '.repeat(opts.padding ?? 1)
   if (style === 'markdown') {
-    const line = (r: string[]) => '|' + r.map((c, i) => p + pad(c.replace(/\|/g, '\\|'), wid[i], al(i)) + p).join('|') + '|'
+    const line = (r: string[]) => '|' + r.map((c, i) => p + pad(c, wid[i], al(i)) + p).join('|') + '|'
     const sep = '|' + wid.map((w, i) => { const a = al(i); const dash = '-'.repeat(w + 2 * p.length - (a === 'c' ? 2 : 1)); return a === 'c' ? ':' + dash + ':' : a === 'r' ? dash + ':' : ':' + dash }).join('|') + '|'
     const body = header ? R.slice(1) : R
     const head = header ? R[0] : wid.map((_, i) => 'Column ' + (i + 1))

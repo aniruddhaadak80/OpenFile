@@ -281,7 +281,9 @@ export function elementsToSvg(els: El[], o: { bg: string | null; dark: boolean; 
   for (const e of els) { const b = bounds(e); x1 = Math.min(x1, b.x1); y1 = Math.min(y1, b.y1 - (e.type === 'frame' ? 24 : 0)); x2 = Math.max(x2, b.x2); y2 = Math.max(y2, b.y2) }
   if (!isFinite(x1)) { x1 = y1 = 0; x2 = y2 = 100 }
   const W = Math.ceil(x2 - x1 + pad * 2), H = Math.ceil(y2 - y1 + pad * 2)
-  const col = (c?: string) => (c && o.dark ? darkColor(c) : c)
+  // Scenes can come from a shared link or an imported file, so every value written into an attribute is escaped.
+  const col = (c?: string) => { const v = c && o.dark ? darkColor(c) : c; return v == null ? v : escX(String(v)) }
+  const ax = (v: unknown) => escX(String(v))
   const parts: string[] = []
   const f = (n: number) => +n.toFixed(2)
   for (const el of sortForRender(els)) {
@@ -289,19 +291,19 @@ export function elementsToSvg(els: El[], o: { bg: string | null; dark: boolean; 
     for (const op of elementOps(el)) {
       if (op.t === 'path') {
         const d = op.d ?? cmdsToSvg(op.cmds!)
-        g.push(`<path d="${d}" fill="${op.fill ? col(op.fill) : 'none'}"${op.stroke ? ` stroke="${col(op.stroke)}" stroke-width="${f(op.width ?? 1)}" stroke-linecap="round" stroke-linejoin="round"${op.dash ? ` stroke-dasharray="${op.dash.join(' ')}"` : ''}` : ''}${op.alpha != null ? ` opacity="${op.alpha}"` : ''}/>`)
+        g.push(`<path d="${ax(d)}" fill="${op.fill ? col(op.fill) : 'none'}"${op.stroke ? ` stroke="${col(op.stroke)}" stroke-width="${f(op.width ?? 1)}" stroke-linecap="round" stroke-linejoin="round"${op.dash ? ` stroke-dasharray="${ax(op.dash.join(' '))}"` : ''}` : ''}${op.alpha != null ? ` opacity="${ax(op.alpha)}"` : ''}/>`)
       } else if (op.t === 'text') {
         const anchor = op.align === 'center' ? 'middle' : op.align === 'right' ? 'end' : 'start'
-        g.push(`<text font-family="${escX(FONT[op.family])}" font-size="${op.size}" font-weight="${op.family === 'hand' ? Math.max(op.weight ?? 400, 500) : op.weight ?? 400}" fill="${col(op.color)}" text-anchor="${anchor}" dominant-baseline="text-before-edge"${op.alpha != null ? ` opacity="${op.alpha}"` : ''}>${op.lines.map((l, i) => `<tspan x="${f(op.x)}" y="${f(op.y + i * op.size * LINE_H + op.size * (LINE_H - 1) / 2)}">${escX(l) || ' '}</tspan>`).join('')}</text>`)
-      } else if (op.t === 'image') g.push(`<image href="${op.src}" x="${f(op.x)}" y="${f(op.y)}" width="${f(op.w)}" height="${f(op.h)}" preserveAspectRatio="none"/>`)
-      else if (op.t === 'icon') g.push(`<path d="${op.d}" transform="translate(${f(op.x)} ${f(op.y)}) scale(${f(op.size / 24)})" fill="none" stroke="${col(op.color)}" stroke-width="${f(Math.max(1, op.width * 0.9))}" stroke-linecap="round" stroke-linejoin="round"/>`)
-      else if (op.t === 'shadow') g.push(`<rect x="${f(op.x + 2)}" y="${f(op.y + 6)}" width="${f(op.w - 4)}" height="${f(op.h - 4)}" rx="${op.r}" fill="#000" opacity="0.12" filter="url(#ofblur)"/>`)
+        g.push(`<text font-family="${escX(FONT[op.family])}" font-size="${ax(op.size)}" font-weight="${ax(op.family === 'hand' ? Math.max(op.weight ?? 400, 500) : op.weight ?? 400)}" fill="${col(op.color)}" text-anchor="${anchor}" dominant-baseline="text-before-edge"${op.alpha != null ? ` opacity="${ax(op.alpha)}"` : ''}>${op.lines.map((l, i) => `<tspan x="${f(op.x)}" y="${f(op.y + i * op.size * LINE_H + op.size * (LINE_H - 1) / 2)}">${escX(l) || ' '}</tspan>`).join('')}</text>`)
+      } else if (op.t === 'image') g.push(`<image href="${ax(op.src)}" x="${f(op.x)}" y="${f(op.y)}" width="${f(op.w)}" height="${f(op.h)}" preserveAspectRatio="none"/>`)
+      else if (op.t === 'icon') g.push(`<path d="${ax(op.d)}" transform="translate(${f(op.x)} ${f(op.y)}) scale(${f(op.size / 24)})" fill="none" stroke="${col(op.color)}" stroke-width="${f(Math.max(1, op.width * 0.9))}" stroke-linecap="round" stroke-linejoin="round"/>`)
+      else if (op.t === 'shadow') g.push(`<rect x="${f(op.x + 2)}" y="${f(op.y + 6)}" width="${f(op.w - 4)}" height="${f(op.h - 4)}" rx="${ax(op.r)}" fill="#000" opacity="0.12" filter="url(#ofblur)"/>`)
     }
-    parts.push(`<g${(el.opacity ?? 100) < 100 ? ` opacity="${el.opacity / 100}"` : ''}>${g.join('')}</g>`)
+    parts.push(`<g${(el.opacity ?? 100) < 100 ? ` opacity="${ax(el.opacity / 100)}"` : ''}>${g.join('')}</g>`)
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${f(x1 - pad)} ${f(y1 - pad)} ${W} ${H}">
 <defs><style>@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&amp;display=swap');</style><filter id="ofblur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6"/></filter></defs>
-${o.bg ? `<rect x="${f(x1 - pad)}" y="${f(y1 - pad)}" width="${W}" height="${H}" fill="${o.bg}"/>` : ''}
+${o.bg ? `<rect x="${f(x1 - pad)}" y="${f(y1 - pad)}" width="${W}" height="${H}" fill="${ax(o.bg)}"/>` : ''}
 ${parts.join('\n')}
 </svg>`
 }

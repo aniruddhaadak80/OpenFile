@@ -175,7 +175,7 @@ export async function installUpdate(opts: { allowMetered?: boolean } = {}) {
 
 export async function openReleasePage() {
   const url = getState().offer?.page || 'https://github.com/aniruddhaadak80/OpenFile/releases/latest'
-  if (getState().platform === 'android' && hasAndroidUpdater()) { await androidOpen(url).catch(() => window.open(url, '_blank')); return }
+  if (getState().platform === 'android' && hasAndroidUpdater()) { await androidOpen(url).catch(() => window.open(url, '_blank', 'noopener')); return }
   window.open(url, '_blank', 'noopener')
 }
 

@@ -2,7 +2,7 @@
 export function prep(line: string): string {
   let s = line.replace(/\/\/.*$|#.*$/, '').trim()
   if (!s) return ''
-  s = s.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\^/g, '^')
+  s = s.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-')
   s = s.replace(/(\d)\s*,\s*(?=\d{3}\b)/g, '$1') // 1,234 -> 1234
   // "20% of 150" -> (20/100)*150
   s = s.replace(/(\d+(?:\.\d+)?)\s*%\s*of\s+/gi, '($1/100)*')

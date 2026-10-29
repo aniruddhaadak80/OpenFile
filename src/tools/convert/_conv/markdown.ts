@@ -1,6 +1,6 @@
 /* Markdown → sanitised HTML with a tiny dependency-free syntax highlighter, plus print themes. */
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
 const KW = 'abstract|and|as|async|await|break|case|catch|class|const|continue|def|default|del|do|elif|else|enum|except|export|extends|false|final|finally|fn|for|from|func|function|go|if|impl|import|in|instanceof|interface|is|lambda|let|loop|match|mod|module|mut|new|nil|none|None|not|null|or|package|pass|private|protected|pub|public|raise|return|self|static|struct|super|switch|this|throw|throws|true|True|False|try|type|typeof|undefined|use|var|void|where|while|with|yield|select|insert|update|delete|create|table|values|into|join|on|group|by|order|limit|having|echo|then|fi|done|esac'
 const RULES: [string, RegExp][] = [

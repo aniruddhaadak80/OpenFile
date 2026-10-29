@@ -4,6 +4,7 @@
  * (and CSS `break-before/after: page` is honoured), then each page is rasterised with html2canvas
  * in memory-safe chunks and placed into a jsPDF document. */
 import type { jsPDF as JsPDF } from 'jspdf'
+import { sanitizeMarkup } from '@/lib/safe'
 
 export interface Margins { top: number; right: number; bottom: number; left: number }
 export interface HtmlPdfOptions {
@@ -47,7 +48,9 @@ function waitLoad(iframe: HTMLIFrameElement, html: string) {
     let done = false
     const finish = () => { if (!done) { done = true; res() } }
     iframe.onload = finish
-    iframe.srcdoc = html
+    // The frame shares the app's origin (html2canvas reads its DOM), so scripts and event handlers from the
+    // document (EPUB, HTML, Word or e-mail content) are stripped first. Layout and styles are unchanged.
+    iframe.srcdoc = sanitizeMarkup(html)
     setTimeout(finish, 8000)
   })
 }

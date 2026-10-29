@@ -286,11 +286,12 @@ export default function PdfReader() {
   }
   const printNative = () => {
     if (!file) return
-    const url = URL.createObjectURL(file)
+    // Always typed as PDF, so a renamed HTML file can never be rendered as a page on this origin.
+    const url = URL.createObjectURL(new Blob([file], { type: 'application/pdf' }))
     const f = document.createElement('iframe')
     f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'
     f.src = url
-    f.onload = () => { try { f.contentWindow?.focus(); f.contentWindow?.print() } catch { window.open(url, '_blank') } setTimeout(() => { f.remove(); URL.revokeObjectURL(url) }, 60000) }
+    f.onload = () => { try { f.contentWindow?.focus(); f.contentWindow?.print() } catch { window.open(url, '_blank', 'noopener') } setTimeout(() => { f.remove(); URL.revokeObjectURL(url) }, 60000) }
     document.body.appendChild(f)
   }
   const copyPage = async () => { if (!doc) return; const t = await pageText(doc, current); if (!t.trim()) toast('No text on this page (it may be a scan, try OCR PDF)', 'info'); else if (await copyText(t)) toast(`Copied text of page ${current}`, 'success') }

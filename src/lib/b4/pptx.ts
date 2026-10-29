@@ -28,9 +28,11 @@ async function rels(zip: JSZipType, path: string): Promise<Map<string, string>> 
 
 function color(el: Element | undefined, theme: Map<string, string>): string | undefined {
   if (!el) return undefined
-  const s = kid(el, 'srgbClr')?.getAttribute('val'); if (s) return '#' + s
+  // Colors go into style="..." of the slide HTML, so only real hex values from the file are used.
+  const hex = (v: string | null | undefined) => (v && /^[0-9a-f]{3,8}$/i.test(v) ? '#' + v : undefined)
+  const s = kid(el, 'srgbClr')?.getAttribute('val'); if (s) return hex(s)
   const sc = kid(el, 'schemeClr')?.getAttribute('val'); if (sc) return theme.get(sc === 'tx1' ? 'dk1' : sc === 'bg1' ? 'lt1' : sc === 'tx2' ? 'dk2' : sc === 'bg2' ? 'lt2' : sc)
-  const sys = kid(el, 'sysClr')?.getAttribute('lastClr'); if (sys) return '#' + sys
+  const sys = kid(el, 'sysClr')?.getAttribute('lastClr'); if (sys) return hex(sys)
   return undefined
 }
 
@@ -61,7 +63,7 @@ function textHtml(tx: Element | undefined, theme: Map<string, string>, defSize: 
       if (pr?.getAttribute('i') === '1') st.push('font-style:italic')
       if (pr?.getAttribute('u') && pr.getAttribute('u') !== 'none') st.push('text-decoration:underline')
       const c = color(kid(pr, 'solidFill'), theme); if (c) st.push(`color:${c}`)
-      const font = kid(pr, 'latin')?.getAttribute('typeface'); if (font && !font.startsWith('+')) st.push(`font-family:'${font}',sans-serif`)
+      const tf = kid(pr, 'latin')?.getAttribute('typeface'); const font = tf && !tf.startsWith('+') ? tf.replace(/[^\p{L}\p{N} ._-]/gu, '').trim() : ''; if (font) st.push(`font-family:'${font}',sans-serif`)
       return `<span style="${st.join(';')}">${esc(t)}</span>`
     }).join('')
     const endSz = kid(p, 'endParaRPr')?.getAttribute('sz')

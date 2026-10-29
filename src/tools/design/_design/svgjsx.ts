@@ -9,7 +9,7 @@ export function attrToJsx(name: string) {
 export function styleToObject(style: string) {
   const parts = style.split(';').map((s) => s.trim()).filter(Boolean)
   const entries = parts.map((p) => { const i = p.indexOf(':'); const k = p.slice(0, i).trim(); const v = p.slice(i + 1).trim(); return [k.startsWith('--') ? `'${k}'` : k.replace(/-([a-z])/g, (_, c) => c.toUpperCase()), v] })
-  return `{{ ${entries.map(([k, v]) => `${k}: ${/^-?\d+(\.\d+)?$/.test(v) ? v : `'${v.replace(/'/g, "\\'")}'`}`).join(', ')} }}`
+  return `{{ ${entries.map(([k, v]) => `${k}: ${/^-?\d+(\.\d+)?$/.test(v) ? v : `'${v.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\r?\n/g, ' ')}'`}`).join(', ')} }}`
 }
 
 export function svgToJsx(svg: string, opts: { name: string; typescript: boolean; currentColor: boolean; spreadProps: boolean; removeDims: boolean; memo?: boolean }) {
@@ -36,7 +36,7 @@ export function svgToJsx(svg: string, opts: { name: string; typescript: boolean;
     lines.push(open + '>')
     for (const k of kids) {
       if (k.nodeType === 3) lines.push(`${pad}  {${JSON.stringify(k.textContent!.trim())}}`)
-      else if (k.nodeName === 'style') lines.push(`${pad}  <style>{\`${(k.textContent ?? '').replace(/`/g, '\\`')}\`}</style>`)
+      else if (k.nodeName === 'style') lines.push(`${pad}  <style>{\`${(k.textContent ?? '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${')}\`}</style>`)
       else walk(k as Element, depth + 1)
     }
     lines.push(`${pad}</${tag}>`)

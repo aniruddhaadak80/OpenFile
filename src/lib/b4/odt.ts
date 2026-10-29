@@ -19,7 +19,7 @@ export async function odtToHtml(file: Blob): Promise<string> {
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
   // Links from the document keep relative, web, mail and phone targets; javascript:, data: and other schemes are dropped.
   const linkHref = (h: string) => { const t = h.replace(/[\u0000-\u0020]/g, ''); return /^[a-z][a-z0-9+.-]*:/i.test(t) && !/^(https?|mailto|tel|ftp):/i.test(t) ? '' : h.trim() }
-  const imgUrl = async (href: string) => { const f = zip.file(href); if (!f) return ''; const b = await f.async('base64'); const ext = href.split('.').pop()?.toLowerCase(); return `data:image/${ext === 'jpg' ? 'jpeg' : ext === 'svg' ? 'svg+xml' : ext};base64,${b}` }
+  const imgUrl = async (href: string) => { const f = zip.file(href); if (!f) return ''; const b = await f.async('base64'); const ext = (href.split('.').pop() ?? '').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png'; return `data:image/${ext === 'jpg' ? 'jpeg' : ext === 'svg' ? 'svg+xml' : ext};base64,${b}` }
   const inline = async (el: Element): Promise<string> => {
     let s = ''
     for (const n of Array.from(el.childNodes)) {

@@ -63,7 +63,8 @@ export default function ExifEditor() {
 
   if (!file || !bytes) return <div className="space-y-3"><ImageDrop multiple={false} onFiles={open} label="Drop a photo to edit its metadata" sub="JPEG, PNG and WebP are edited in place. HEIC, TIFF and others are saved as JPEG." accept="image/*,.heic,.tif,.tiff" /><ErrorNote error={error} /></div>
   const ext = kind === 'jpg' ? 'jpg' : kind
-  const mapHref = lat && lng ? `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}` : ''
+  const la = encodeURIComponent(lat.trim()), lo = encodeURIComponent(lng.trim())
+  const mapHref = lat && lng ? `https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=15/${la}/${lo}` : ''
   return (
     <div className="space-y-6">
       <ToolGrid

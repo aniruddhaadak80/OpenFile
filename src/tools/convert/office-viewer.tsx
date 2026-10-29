@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Printer, StickyNote, Search } from 'lucide-r
 import { Button, Dropzone, Input, Spinner, ErrorNote, cn } from '@/components/ui'
 import { TopBar } from '@/lib/b4/ui'
 import type { Deck } from '@/lib/b4/pptx'
+import { safeUrl, sanitizeMarkup } from '@/lib/safe'
 
 type Kind = 'docx' | 'sheet' | 'pptx' | 'odt' | 'rtf'
 const ACCEPT = '.docx,.docm,.dotx,.xlsx,.xlsm,.xls,.xlsb,.ods,.csv,.tsv,.pptx,.ppsx,.odt,.rtf'
@@ -105,13 +106,23 @@ function DocView({ file, kind }: { file: File; kind: 'docx' | 'odt' | 'rtf' }) {
     ;(async () => {
       try {
         if (kind === 'docx') {
-          const { renderAsync } = await import('docx-preview')
+          // Same as docx-preview's renderAsync, but the nodes are made inert before they reach the page:
+          // embedded HTML chunks (altChunk) render in a sandboxed frame and only safe link targets are kept.
+          const { parseAsync, renderDocument } = await import('docx-preview')
+          const opts = { className: 'docx', inWrapper: true, breakPages: true, ignoreLastRenderedPageBreak: true, renderHeaders: true, renderFooters: true, renderFootnotes: true, experimental: true, useBase64URL: true }
+          const nodes = await renderDocument(await parseAsync(file, opts), opts)
           el.innerHTML = ''
-          await renderAsync(file, el, undefined, { className: 'docx', inWrapper: true, breakPages: true, ignoreLastRenderedPageBreak: true, renderHeaders: true, renderFooters: true, renderFootnotes: true, experimental: true, useBase64URL: true })
+          for (const n of nodes) {
+            if (n instanceof Element) {
+              for (const f of [n, ...Array.from(n.querySelectorAll('iframe'))]) if (f.tagName === 'IFRAME') f.setAttribute('sandbox', '')
+              for (const a of [n, ...Array.from(n.querySelectorAll('[href]'))]) { const h = a.getAttribute('href'); if (h && !safeUrl(h)) a.removeAttribute('href') }
+            }
+            el.appendChild(n)
+          }
         } else {
           const html = kind === 'odt' ? await (await import('@/lib/b4/odt')).odtToHtml(file) : await (await import('@/lib/b4/rtf')).rtfToHtml(await file.arrayBuffer())
           const { DOC_CSS } = await import('@/lib/b4/office')
-          el.innerHTML = `<style>${DOC_CSS}</style><div style="max-width:794px;margin:0 auto;padding:56px;background:#fff;color:#111;box-shadow:0 1px 6px #0002">${html}</div>`
+          el.innerHTML = `<style>${DOC_CSS}</style><div style="max-width:794px;margin:0 auto;padding:56px;background:#fff;color:#111;box-shadow:0 1px 6px #0002">${sanitizeMarkup(html)}</div>`
         }
       } catch (e: any) { setError(e?.message || 'Could not render this document.') } finally { setBusy(false) }
     })()

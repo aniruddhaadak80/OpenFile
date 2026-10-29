@@ -72,7 +72,7 @@ export async function toHtml(file: File, onStatus?: (s: string) => void): Promis
 export async function htmlToMarkdown(html: string): Promise<string> {
   const Turndown = (await import('turndown')).default
   const td = new Turndown({ headingStyle: 'atx', codeBlockStyle: 'fenced', bulletListMarker: '-', emDelimiter: '*' })
-  const cell = (c: Element) => (c.textContent ?? '').replace(/\s+/g, ' ').replace(/\|/g, '\\|').trim()
+  const cell = (c: Element) => (c.textContent ?? '').replace(/\s+/g, ' ').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').trim()
   td.addRule('table', {
     filter: 'table',
     replacement: (_c: string, node: any) => {

@@ -45,7 +45,7 @@ export function parsePo(text: string): Catalog {
 export function writePo(c: Catalog): string {
   const out: string[] = []
   const lines = (key: string, v: string) => { if (v.includes('\n') && v.indexOf('\n') < v.length - 1) { const parts = v.split(/(?<=\n)/); return `${key} ""\n` + parts.map(q).join('\n') } return `${key} ${q(v)}` }
-  out.push('msgid ""\n' + lines('msgstr', headersText(c.headers)).replace(/^msgstr /, 'msgstr '))
+  out.push('msgid ""\n' + lines('msgstr', headersText(c.headers)))
   for (const e of c.entries) {
     const b: string[] = []
     e.comments?.forEach((x) => b.push(`# ${x}`)); e.extracted?.forEach((x) => b.push(`#. ${x}`)); if (e.refs?.length) b.push(`#: ${e.refs.join(' ')}`); if (e.flags?.length) b.push(`#, ${e.flags.join(', ')}`)

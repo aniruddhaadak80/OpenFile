@@ -159,7 +159,7 @@ export function infer(v: string): string | number | boolean | null {
 
 export interface OutOpts { tableName?: string; inferTypes?: boolean; pretty?: boolean; createTable?: boolean; delimiter?: string }
 
-const mdEsc = (s: string) => s.replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>')
+const mdEsc = (s: string) => s.replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>')
 const htmlEsc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const sqlIdent = (s: string) => (/^[A-Za-z_][A-Za-z0-9_]*$/.test(s) ? s : `"${s.replace(/"/g, '""')}"`)
 

@@ -34,7 +34,7 @@ export function toMarkdown(model: PNode[][], o: WriteOpts) {
 const plain = (runs: Run[]) => runs.map((r) => r.text).join('').replace(/\s+/g, ' ').trim()
 function mdTable(rows: string[][]) {
   const cols = Math.max(...rows.map((r) => r.length))
-  const cell = (s: string) => (s ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim()
+  const cell = (s: string) => (s ?? '').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim()
   const line = (r: string[]) => '| ' + Array.from({ length: cols }, (_, i) => cell(r[i])).join(' | ') + ' |'
   return [line(rows[0]), '|' + ' --- |'.repeat(cols), ...rows.slice(1).map(line)]
 }

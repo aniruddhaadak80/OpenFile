@@ -317,6 +317,8 @@ function ruby(r: Req) {
   return L.join('\n')
 }
 
+/** Text inside a Swift "..." literal: backslashes first, then quotes and line breaks. */
+const sw = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r/g, '\\r').replace(/\n/g, '\\n')
 function swift(r: Req) {
   const L = ['import Foundation', '', `var request = URLRequest(url: URL(string: ${q(r.url)})!)`, `request.httpMethod = ${q(r.method)}`]
   if (r.timeout) L.push(`request.timeoutInterval = ${r.timeout}`)
@@ -324,7 +326,7 @@ function swift(r: Req) {
   if (r.auth) L.push(`let cred = Data(${q(`${r.auth.user}:${r.auth.pass}`)}.utf8).base64EncodedString()`, 'request.setValue("Basic \\(cred)", forHTTPHeaderField: "Authorization")')
   if (r.bodyKind === 'multipart') {
     L.push('', 'let boundary = UUID().uuidString', 'request.setValue("multipart/form-data; boundary=\\(boundary)", forHTTPHeaderField: "Content-Type")', 'var body = Data()')
-    r.form.forEach((f) => { if (f.file) L.push(`body.append("--\\(boundary)\\r\\nContent-Disposition: form-data; name=\\"${f.name}\\"; filename=\\"${f.value.split('/').pop()}\\"\\r\\n\\r\\n".data(using: .utf8)!)`, `body.append(try! Data(contentsOf: URL(fileURLWithPath: ${q(f.value)})))`, 'body.append("\\r\\n".data(using: .utf8)!)'); else L.push(`body.append("--\\(boundary)\\r\\nContent-Disposition: form-data; name=\\"${f.name}\\"\\r\\n\\r\\n${f.value.replace(/"/g, '\\"')}\\r\\n".data(using: .utf8)!)`) })
+    r.form.forEach((f) => { if (f.file) L.push(`body.append("--\\(boundary)\\r\\nContent-Disposition: form-data; name=\\"${sw(f.name)}\\"; filename=\\"${sw(f.value.split('/').pop() ?? '')}\\"\\r\\n\\r\\n".data(using: .utf8)!)`, `body.append(try! Data(contentsOf: URL(fileURLWithPath: ${q(f.value)})))`, 'body.append("\\r\\n".data(using: .utf8)!)'); else L.push(`body.append("--\\(boundary)\\r\\nContent-Disposition: form-data; name=\\"${sw(f.name)}\\"\\r\\n\\r\\n${sw(f.value)}\\r\\n".data(using: .utf8)!)`) })
     L.push('body.append("--\\(boundary)--\\r\\n".data(using: .utf8)!)', 'request.httpBody = body')
   } else if (r.body !== null) L.push(`request.httpBody = ${r.body.includes('\n') || r.body.includes('"') ? `"""\n${r.body}\n"""` : q(r.body)}.data(using: .utf8)`)
   L.push('', 'let (data, response) = try await URLSession.shared.data(for: request)', 'if let http = response as? HTTPURLResponse { print(http.statusCode) }', 'print(String(decoding: data, as: UTF8.self))')

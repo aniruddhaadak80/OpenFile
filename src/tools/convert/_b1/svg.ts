@@ -1,4 +1,5 @@
 /* SVG → vector PDF pages with svg2pdf.js + jsPDF (both MIT). */
+import { sanitizeMarkup } from '@/lib/safe'
 export interface SvgInfo { w: number; h: number; text: string }
 export function svgSize(text: string): SvgInfo {
   const doc = new DOMParser().parseFromString(text, 'image/svg+xml')
@@ -47,7 +48,7 @@ export async function svgsToPdf(items: SvgInfo[], o: { page: SvgPage; margin: nu
       const aw = W - 2 * o.margin, ah = H - 2 * o.margin
       const s = Math.min(aw / it.w, ah / it.h)
       const dw = it.w * s, dh = it.h * s
-      host.innerHTML = it.text
+      host.innerHTML = sanitizeMarkup(it.text, 'image/svg+xml') // the SVG file's scripts and event handlers never run
       const el = host.querySelector('svg') as SVGSVGElement
       if (!el) throw new Error('Could not read SVG ' + (i + 1))
       await svg2pdf(el, pdf, { x: o.margin + (aw - dw) / 2, y: o.margin + (ah - dh) / 2, width: dw, height: dh })

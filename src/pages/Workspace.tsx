@@ -9,7 +9,7 @@ import { getPrefs } from '@/lib/prefs'
 
 type Step = { uid: string; id: string; params: Record<string, any>; enabled: boolean }
 type Recipe = { name: string; mode: Mode; steps: Step[] }
-const uid = () => Math.random().toString(36).slice(2, 9)
+const uid = () => { const a = new Uint32Array(2); crypto.getRandomValues(a); return (a[0].toString(36) + a[1].toString(36)).slice(0, 7) }
 // Image quality params start from the user's default quality (Settings); presets can still override it.
 const mk = (id: string, params?: Record<string, any>): Step => { const d = STEPS.find((s) => s.id === id)!; return { uid: uid(), id, enabled: true, params: { ...Object.fromEntries(d.params.map((p) => [p.key, d.mode === 'image' && p.key === 'quality' ? getPrefs().imageQuality : p.default])), ...params } } }
 

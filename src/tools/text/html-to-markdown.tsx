@@ -41,7 +41,7 @@ export default function HtmlToMarkdown() {
           td.addRule('table', {
             filter: 'table',
             replacement: (_c, node) => {
-              const rows = Array.from((node as HTMLTableElement).rows).map((r) => Array.from(r.cells).map((c) => (c.textContent ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim()))
+              const rows = Array.from((node as HTMLTableElement).rows).map((r) => Array.from(r.cells).map((c) => (c.textContent ?? '').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim()))
               if (!rows.length) return ''
               const w = Math.max(...rows.map((r) => r.length)); const norm = rows.map((r) => [...r, ...Array(w - r.length).fill('')])
               return '\n\n' + [`| ${norm[0].join(' | ')} |`, `| ${Array(w).fill('---').join(' | ')} |`, ...norm.slice(1).map((r) => `| ${r.join(' | ')} |`)].join('\n') + '\n\n'
