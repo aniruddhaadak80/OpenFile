@@ -199,7 +199,7 @@ jobs:
           ls -la dl
           echo "PKG=dl/$F" >> "$GITHUB_ENV"
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb imagemagick >/dev/null
+          sudo apt-get install -y -qq xvfb imagemagick x11-utils >/dev/null
       - name: Launch
         run: bash tests/apps/linux-smoke.sh ${{ matrix.kind }} "$PKG" app-smoke 20
       - uses: actions/upload-artifact@v7

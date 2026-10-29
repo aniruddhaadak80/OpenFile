@@ -40,6 +40,8 @@ if command -v import >/dev/null; then import -display :99 -window root "$OUT/ope
 else ffmpeg -loglevel error -f x11grab -video_size 1440x900 -i :99 -frames:v 1 "$OUT/openfile-$KIND.png" || true; fi
 
 FAILED=0
+WIN=$(xwininfo -display :99 -root -tree 2>/dev/null | grep -i '"OpenFile"' | head -n3 || true)
+if [ -n "$WIN" ]; then echo "Window: $WIN"; else echo "::error::No OpenFile window on the X display"; xwininfo -display :99 -root -tree 2>/dev/null | head -n 30; FAILED=1; fi
 if kill -0 "$PID" 2>/dev/null; then echo "OpenFile is running, PID $PID"
 else wait "$PID" && CODE=0 || CODE=$?; echo "::error::OpenFile exited early with code $CODE"; FAILED=1; fi
 echo "---- app output"; tail -n 80 "$OUT/openfile-$KIND.log" || true

@@ -6,7 +6,8 @@
   "loggingBehavior": "debug",
   "android": {
     "backgroundColor": "#000000",
-    "allowMixedContent": false
+    "allowMixedContent": false,
+    "minWebViewVersion": 94
   },
   "ios": {
     "backgroundColor": "#000000",
@@ -15,6 +16,7 @@
   },
   "server": {
     "androidScheme": "https",
+    "errorPath": "webview-update.html",
     "allowNavigation": [
       "aniruddhaadak80.github.io"
     ]
