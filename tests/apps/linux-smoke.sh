@@ -32,24 +32,45 @@ else
   CMD=("$PKG")
 fi
 
-"${CMD[@]}" >"$OUT/openfile-$KIND.log" 2>&1 &
-PID=$!
-echo "Launched PID $PID, waiting ${WAIT}s"
-sleep "$WAIT"
-if command -v import >/dev/null; then import -display :99 -window root "$OUT/openfile-$KIND.png" || true
-else ffmpeg -loglevel error -f x11grab -video_size 1440x900 -i :99 -frames:v 1 "$OUT/openfile-$KIND.png" || true; fi
+main_window() { xwininfo -display :99 -root -tree 2>/dev/null | grep -E '"OpenFile": \(.*\) +[0-9]{3,}x[0-9]{3,}' | head -n3 || true; }
 
-FAILED=0
-WIN=$(xwininfo -display :99 -root -tree 2>/dev/null | grep -i '"OpenFile"' | head -n3 || true)
-if [ -n "$WIN" ]; then echo "Window: $WIN"; else echo "::error::No OpenFile window on the X display"; xwininfo -display :99 -root -tree 2>/dev/null | head -n 30; FAILED=1; fi
-if kill -0 "$PID" 2>/dev/null; then echo "OpenFile is running, PID $PID"
-else wait "$PID" && CODE=0 || CODE=$?; echo "::error::OpenFile exited early with code $CODE"; FAILED=1; fi
-echo "---- app output"; tail -n 80 "$OUT/openfile-$KIND.log" || true
-if grep -Eqi 'segmentation fault|panicked at|core dumped' "$OUT/openfile-$KIND.log"; then echo "::error::Crash text in app output"; FAILED=1; fi
+# attempt <label> <command...>: launch, wait, then report whether the process is alive and the main window is mapped
+attempt() {
+  local label="$1"; shift
+  local log="$OUT/openfile-$KIND-$label.log"
+  "$@" >"$log" 2>&1 &
+  PID=$!
+  echo "[$label] launched PID $PID: $*  (waiting ${WAIT}s)"
+  sleep "$WAIT"
+  if command -v import >/dev/null; then import -display :99 -window root "$OUT/openfile-$KIND-$label.png" || true
+  else ffmpeg -loglevel error -f x11grab -video_size 1440x900 -i :99 -frames:v 1 "$OUT/openfile-$KIND-$label.png" || true; fi
+  ALIVE=0; kill -0 "$PID" 2>/dev/null && ALIVE=1
+  WIN=$(main_window)
+  echo "[$label] alive=$ALIVE window=${WIN:-none}"
+  echo "[$label] processes:"; ps -eo pid,ppid,stat,etime,args | grep -iE 'openfile|WebKit|dbus' | grep -v grep || true
+  echo "[$label] app output:"; tail -n 60 "$log" || true
+  if [ "$ALIVE" = 0 ]; then wait "$PID" && CODE=0 || CODE=$?; echo "[$label] exited with code $CODE"; fi
+  if grep -Eqi 'segmentation fault|panicked at|core dumped' "$log"; then echo "::error::[$label] crash text in app output"; CRASH=1; fi
+  [ "$ALIVE" = 1 ] && [ -n "$WIN" ]
+}
+stop_app() { kill "$PID" 2>/dev/null || true; pkill -x openfile 2>/dev/null || true; pkill -f WebKitWebProcess 2>/dev/null || true; sleep 2; }
 
-kill "$PID" 2>/dev/null || true
-pkill -x openfile 2>/dev/null || true
-sleep 1
+FAILED=0; CRASH=0
+if attempt plain "${CMD[@]}"; then
+  echo "Main window is up"
+else
+  stop_app
+  # A desktop session always has a D-Bus session bus; the runner has none. Retry inside one to tell the two apart.
+  if command -v dbus-run-session >/dev/null && attempt dbus dbus-run-session -- "${CMD[@]}"; then
+    echo "::warning::$KIND: the main window only appeared with a D-Bus session bus (present on every Linux desktop, absent on the runner)"
+  else
+    echo "::error::$KIND: OpenFile did not show its main window within ${WAIT}s"; FAILED=1
+    xwininfo -display :99 -root -tree 2>/dev/null | grep -v '(has no name)' | head -n 30
+  fi
+fi
+[ "$CRASH" = 1 ] && FAILED=1
+
+stop_app
 kill "$XVFB" 2>/dev/null || true
 if [ "$KIND" = deb ]; then sudo apt-get remove -y "$DEB_NAME" || { echo "::error::apt remove failed"; FAILED=1; }; fi
 [ "$FAILED" = 0 ] && echo "PASS: $KIND launch (${WAIT}s alive, no crash)"
