@@ -379,6 +379,19 @@ const RC_SKIP = /total|summe|gesamt|tax|gst|vat|mwst|\bust\b|\biva\b|\btva\b|net
 const RC_NOT_SHOP = /\biva\b|\bmwst\b|descri|prezzo|price|qty|amount|receipt|invoice|documento|commercial|scontrino|vendita|prestazione|rechnung|quittung|beleg|ticket|facture|factura|bon\b|tax|gst|vat|tel|phone|fax|www|http|date|bill\s*no|cashier|kasse|thank|danke|grazie|merci/i
 const RC_BIZ = /\b(kg|gmbh|ag|s\.?\s?p\.?\s?a|s\.?\s?r\.?\s?l|ltd|limited|inc|llc|pvt|plc|corp|sarl|bv|nv|oy|ab|mart|store|stores|supermarket|supermercato|market|markt|bazaar|restaurant|ristorante|cafe|caf[eé]|pharmacy|apotheke|farmacia)\b\.?/i
 
+/** Item name in front of its price: cut a VAT rate ("22,00%") and anything after it, then stray numbers and symbols
+ *  at the end ("FATT © 10,002"). Plain loops instead of trailing regexes, so long noisy OCR lines stay linear time. */
+function itemName(raw: string): string {
+  let s = raw
+  const pct = s.indexOf('%')
+  if (pct >= 0) { let i = pct; while (i > 0 && '0123456789 .,-—–:'.includes(s[i - 1])) i--; s = s.slice(0, i) }
+  const keep = (c: string) => /[A-Za-zÀ-ÿ0-9)]/.test(c)
+  const trimEnd = (t: string) => { let e = t.length; while (e > 0 && !keep(t[e - 1])) e--; return t.slice(0, e) }
+  const words = trimEnd(s).split(' ')
+  while (words.length > 1 && !/[A-Za-zÀ-ÿ]/.test(words[words.length - 1]) && /\d[.,]\d/.test(words[words.length - 1])) words.pop()
+  return trimEnd(words.join(' ')).trim()
+}
+
 /** Pick the shop, date, total, tax and line items out of OCR text. Works on noisy phone photos in several languages:
  *  amounts are read from anywhere on a line (not only the end), a total line without a number borrows the next line's,
  *  and the paid-by-card or cash line is the fallback total. */
@@ -386,11 +399,12 @@ export function parseReceipt(text: string): Receipt {
   const lines = text.split(/\r?\n/).map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean)
   const cur = /₹|\brs\.?\s?\d|\binr\b/i.test(text) ? 'INR' : /€|\beur\b/i.test(text) ? 'EUR' : /£|\bgbp\b/i.test(text) ? 'GBP' : /\$|\busd\b/i.test(text) ? 'USD' : /\bchf\b/i.test(text) ? 'CHF' : ''
   // Value on a keyword line: the first amount after the keyword, else the last amount on the line.
-  const valueOn = (l: string, re: RegExp) => { const a = rcAmounts(l); if (!a.length) return null; const k = re.exec(l); const after = k ? a.find((x) => x.at >= (k.index ?? 0) + k[0].length) : undefined; return (after ?? a[a.length - 1]).v }
-  const find = (re: RegExp, look = 0) => {
+  // strict: only an amount after the keyword counts ("Netto 20,37 MwSt" with the tax amount lost by OCR is not 20.37 tax).
+  const valueOn = (l: string, re: RegExp, strict = false) => { const a = rcAmounts(l); if (!a.length) return null; const k = re.exec(l); const after = k ? a.find((x) => x.at >= (k.index ?? 0) + k[0].length) : undefined; return after ? after.v : strict ? null : a[a.length - 1].v }
+  const find = (re: RegExp, look = 0, strict = false) => {
     for (let i = lines.length - 1; i >= 0; i--) {
       if (!re.test(lines[i])) continue
-      const v = valueOn(lines[i], re); if (v != null) return v
+      const v = valueOn(lines[i], re, strict); if (v != null) return v
       for (let j = 1; j <= look && i + j < lines.length; j++) { const a = rcAmounts(lines[i + j]); if (a.length) return a[a.length - 1].v }
     }
     return null
@@ -399,7 +413,7 @@ export function parseReceipt(text: string): Receipt {
   let total = find(new RegExp(`(?<!sub\\s*-?\\s*)${RC_TOTAL.source}`, 'i'), 1)
   const paid = find(RC_PAID)
   if (total == null || (paid != null && total < (subtotal ?? 0))) total = paid
-  let taxV = find(RC_TAX)
+  let taxV = find(RC_TAX, 0, true)
   if (taxV != null && total != null && taxV >= total) taxV = null
   let date = ''
   for (const l of lines) {
@@ -413,15 +427,17 @@ export function parseReceipt(text: string): Receipt {
   // upper case line above the first priced line.
   const firstPrice = lines.findIndex((l) => rcAmounts(l).length > 0)
   const head = lines.slice(0, Math.min(14, firstPrice < 0 ? lines.length : Math.max(firstPrice, 1)))
-  const clean = (l: string) => { const letters = (l.match(/[A-Za-zÀ-ÿ]/g) ?? []).length; const up = (l.match(/[A-ZÀ-Þ]/g) ?? []).length; return l.length >= 3 && l.length <= 40 && letters / l.replace(/\s/g, '').length >= 0.7 && up / Math.max(1, letters) >= 0.6 && /[A-Za-zÀ-ÿ]{3}/.test(l) && !RC_NOT_SHOP.test(l) }
-  const merchant = (lines.slice(0, 14).find((l) => RC_BIZ.test(l) && !RC_NOT_SHOP.test(l) && /[A-Za-zÀ-ÿ]{3}/.test(l)) ?? head.find(clean) ?? '').replace(/[^A-Za-zÀ-ÿ0-9.&')]+$/, '').trim()
+  const clean = (l: string) => !/[|\\{}[\]<>~^_=]/.test(l) && /[A-Za-zÀ-ÿ]{4}/.test(l) && cleanish(l)
+  const cleanish = (l: string) => { const letters = (l.match(/[A-Za-zÀ-ÿ]/g) ?? []).length; const up = (l.match(/[A-ZÀ-Þ]/g) ?? []).length; return l.length >= 3 && l.length <= 40 && letters / l.replace(/\s/g, '').length >= 0.7 && up / Math.max(1, letters) >= 0.6 && /[A-Za-zÀ-ÿ]{3}/.test(l) && !RC_NOT_SHOP.test(l) }
+  const merchant = (lines.slice(0, 14).find((l) => RC_BIZ.test(l) && !RC_NOT_SHOP.test(l) && /[A-Za-zÀ-ÿ]{3}/.test(l)) ?? head.find(clean) ?? '').trim()
+  const shop = (() => { let e = merchant.length; while (e > 0 && !/[A-Za-zÀ-ÿ0-9.&')]/.test(merchant[e - 1])) e--; return merchant.slice(0, e) })()
   const items = lines.filter((l) => !RC_SKIP.test(l)).flatMap((l) => {
     const a = rcAmounts(l); if (!a.length) return []
     const last = a[a.length - 1]
-    const name = l.slice(0, last.at).replace(/\s*[-—–.:]*\s*\d[\d\s.,]*%.*$/, '').replace(/[^A-Za-zÀ-ÿ0-9)]+$/, '').replace(/(\s+[^\sA-Za-zÀ-ÿ]*\d+[.,]\d+)+$/, '').replace(/[^A-Za-zÀ-ÿ0-9)]+$/, '').trim()
+    const name = itemName(l.slice(0, last.at))
     return name.length > 1 && /[A-Za-zÀ-ÿ]{2}/.test(name) ? [{ name, amount: last.v }] : []
   })
-  return { merchant, date, total, tax: taxV, subtotal, currency: cur, items }
+  return { merchant: shop, date, total, tax: taxV, subtotal, currency: cur, items }
 }
 
 /* ---------------- PDF statement rows from positioned text ---------------- */

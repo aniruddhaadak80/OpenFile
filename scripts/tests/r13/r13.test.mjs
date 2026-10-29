@@ -39,6 +39,15 @@ t('receipt ocr, real photos', () => {
   const it = F.parseReceipt(txt('receipt-ocr-italy.txt')); assert.equal(it.total, 11.89); assert.equal(it.merchant, ''); assert.ok(it.items.length >= 4); assert.equal(it.items[0].name, 'ACQUA S.ANGELO NATUR'); assert.equal(it.items[0].amount, 1.32)
   assert.ok(it.items.every((x) => !/%/.test(x.name)))
 })
+t('receipt ocr noise', () => {
+  // Live tesseract.js output lost the MwSt amount and read the shop as junk: no tax from the net amount, no junk shop.
+  const r = F.parseReceipt('o | BNO\nDOCUMENTO COMMERCIALE\nA 10,0% Netto 20,37 MwSt\nACQUA 1,32\nTOTALE COMPLESSIVO 11,85\n')
+  assert.equal(r.tax, null); assert.equal(r.merchant, ''); assert.equal(r.total, 11.85)
+})
+t('receipt parser stays linear on hostile text', () => {
+  const t0 = Date.now(); F.parseReceipt('\t' + '00,0\t'.repeat(20000)); F.parseReceipt('A' + ' 1,23 .'.repeat(20000) + '%'); F.parseReceipt('SHOP KG' + ' -'.repeat(20000) + 'x')
+  assert.ok(Date.now() - t0 < 1500, 'took ' + (Date.now() - t0) + ' ms')
+})
 t('recurring across calendar months', () => {
   const tx = [['2026-07-02', -1250, 'RENT'], ['2026-08-27', -1250, 'RENT'], ['2026-09-05', -1250, 'RENT'], ['2026-07-10', -40, 'SHOP'], ['2026-07-20', -55, 'SHOP'], ['2026-08-01', -12, 'SHOP']].map(([date, amount, description]) => ({ date, amount, description }))
   const r = F.findRecurring(tx); assert.equal(r.length, 1); assert.equal(r[0].name, 'RENT'); assert.equal(r[0].every, 'monthly')
