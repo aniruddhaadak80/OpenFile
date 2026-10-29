@@ -227,7 +227,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     pause()
     clearHighlight()
     if (isNeural) {
-      loadNeural(neuralId).then(() => { const a = audio.current!; const t = time; const set = () => { if (!userSeek.current) a.currentTime = Math.min(t, (a.duration || 1e9) - 0.5); if (was || wantPlay.current) { wantPlay.current = false; playRef.current() } }; if (a.readyState >= 1) set(); else a.addEventListener('loadedmetadata', set, { once: true }) })
+      loadNeural(neuralId).then(() => { const a = audio.current!; const t = time; const set = () => { const target = pendingTime.current ?? (userSeek.current ? null : t); pendingTime.current = null; if (target !== null && target > 0) a.currentTime = Math.min(target, (a.duration || 1e9) - 0.5); if (was || wantPlay.current) { wantPlay.current = false; playRef.current() } }; if (a.readyState >= 1) set(); else a.addEventListener('loadedmetadata', set, { once: true }) })
     } else {
       loadedFor.current = ''
       audio.current?.removeAttribute('src')
@@ -258,10 +258,11 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   }, [])
   const toggle = () => (playingRef.current ? pause() : play())
   const userSeek = useRef(false)
+  const pendingTime = useRef<number | null>(null) // a seek asked for before the audio knew its length
   const seekTime = useCallback((t: number) => {
     userSeek.current = true
     t = Math.max(0, Math.min(t, dur || 0))
-    if (isNeural) { if (audio.current) audio.current.currentTime = t; setTime(t); const i = wordAtTime(t); if (i >= 0) { lostRef.current = false; setLost(false); highlight(i) } }
+    if (isNeural) { if (audio.current) { if (audio.current.readyState < 1) pendingTime.current = t; audio.current.currentTime = t } setTime(t); const i = wordAtTime(t); if (i >= 0) { lostRef.current = false; setLost(false); highlight(i) } }
     else { const i = Math.min(words.current.length - 1, Math.round(t * WPS)); sysIdx.current = i; setTime(t); highlight(i); if (playingRef.current) speakFrom(i) }
   }, [dur, isNeural, highlight, speakFrom])
   const skip = (s: number) => seekTime((isNeural ? audio.current?.currentTime ?? 0 : sysIdx.current / WPS) + s)
@@ -276,7 +277,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       stopAt.current = isNeural ? (last?.t1 ?? word.t1) + 0.15 : 1
     }
     lostRef.current = false; setLost(false)
-    if (isNeural) { if (audio.current) audio.current.currentTime = word.t0; setTime(word.t0); highlight(i); if (andPlay) play() }
+    if (isNeural) { if (audio.current) { if (audio.current.readyState < 1) pendingTime.current = word.t0; audio.current.currentTime = word.t0 } setTime(word.t0); highlight(i); if (andPlay) play() }
     else { sysIdx.current = i; setTime(i / WPS); highlight(i); if (andPlay) { playingRef.current = true; setPlaying(true); speakFrom(i) } }
   }, [isNeural, highlight, play, speakFrom])
   const setRate = (r: number) => {
@@ -310,6 +311,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     const onEnd = () => { playingRef.current = false; setPlaying(false); savePos(0) }
     const onPause = () => { if (playingRef.current && !a.ended && isNeural && document.visibilityState === 'visible' && stopAt.current === null) { /* paused by the system */ playingRef.current = false; setPlaying(false) } else if (!playingRef.current) setPlaying(false) }
     const onPlay = () => { playingRef.current = true; setPlaying(true) }
+    const onLeave = () => { if (loadedFor.current && a.currentTime > 1) savePos(a.currentTime) }
+    a.addEventListener('pause', onLeave); addEventListener('pagehide', onLeave)
     let retries = 0
     const onErr = () => {
       if (!loadedFor.current || retries > 3) return
@@ -318,11 +321,13 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       a.src = audioUrl(slug, neuralId) + `?r=${Date.now()}`
       a.addEventListener('loadedmetadata', () => { a.currentTime = t; if (was) a.play().catch(() => {}) }, { once: true })
     }
+    const onMeta = () => { if (pendingTime.current !== null) { a.currentTime = pendingTime.current; pendingTime.current = null } }
+    a.addEventListener('loadedmetadata', onMeta)
     const onWait = () => setLoading(true)
     const onCan = () => setLoading(false)
     a.addEventListener('ended', onEnd); a.addEventListener('pause', onPause); a.addEventListener('play', onPlay); a.addEventListener('error', onErr)
     a.addEventListener('waiting', onWait); a.addEventListener('canplay', onCan); a.addEventListener('playing', onCan)
-    return () => { a.removeEventListener('ended', onEnd); a.removeEventListener('pause', onPause); a.removeEventListener('play', onPlay); a.removeEventListener('error', onErr); a.removeEventListener('waiting', onWait); a.removeEventListener('canplay', onCan); a.removeEventListener('playing', onCan) }
+    return () => { a.removeEventListener('ended', onEnd); a.removeEventListener('pause', onPause); a.removeEventListener('play', onPlay); a.removeEventListener('error', onErr); a.removeEventListener('loadedmetadata', onMeta); a.removeEventListener('pause', onLeave); removeEventListener('pagehide', onLeave); a.removeEventListener('waiting', onWait); a.removeEventListener('canplay', onCan); a.removeEventListener('playing', onCan) }
   }, [slug, neuralId, isNeural, savePos])
 
   // ---------- open / restore
@@ -434,7 +439,12 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
 
   useEffect(() => { document.documentElement.classList.toggle('read-mode', open); return () => document.documentElement.classList.remove('read-mode') }, [open])
   useEffect(() => () => { pause(); clearHighlight() }, [slug, pause])
-  useEffect(() => { if (!menu) return; const c = () => setMenu(null); addEventListener('click', c); addEventListener('scroll', c, { passive: true }); return () => { removeEventListener('click', c); removeEventListener('scroll', c) } }, [menu])
+  useEffect(() => {
+    if (!menu) return
+    const c = (e: Event) => { if (!(e.target as HTMLElement)?.closest?.('[role="menu"]')) setMenu(null) }
+    const t = setTimeout(() => { addEventListener('pointerdown', c, true); addEventListener('resize', c) }, 0)
+    return () => { clearTimeout(t); removeEventListener('pointerdown', c, true); removeEventListener('resize', c) }
+  }, [menu])
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(''), 1800); return () => clearTimeout(t) }, [toast])
 
   const backToReading = () => {

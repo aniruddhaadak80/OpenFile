@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Rss, ArrowRight } from 'lucide-react'
+import { Search, Rss, ArrowRight, Film } from 'lucide-react'
 import { POSTS, ALL_TAGS } from '@/blog/meta'
 import { PostCard, Meta } from '@/blog/PostCard'
 import { CoverMedia } from '@/blog/media/CoverMedia'
 import { ListenProvider, CardListen } from '@/blog/media/IndexListen'
-import { mediaFor } from '@/blog/media/media'
+import { fmtTime, mediaFor } from '@/blog/media/media'
 import { setPageMeta } from '@/lib/seo'
 import { Reveal } from '@/components/motion'
 import { cn } from '@/components/ui'
@@ -64,7 +64,7 @@ export default function Blog() {
         {featured && (
           <Reveal className="relative mt-10">
             <Link to={`/blog/${featured.slug}`} className="spotlight group grid overflow-hidden rounded-3xl border border-border bg-surface md:grid-cols-[1.2fr_1fr]">
-              <div className="relative overflow-hidden"><CoverMedia slug={featured.slug} kind={featured.cover} title={featured.title} className="aspect-[16/10] h-full transition duration-700 group-hover:scale-[1.04]" /></div>
+              <div className="relative overflow-hidden"><CoverMedia slug={featured.slug} kind={featured.cover} title={featured.title} className="aspect-[16/10] h-full transition duration-700 group-hover:scale-[1.04]" />{mediaFor(featured.slug).video && <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-medium text-white backdrop-blur"><Film className="size-3.5 text-accent" /> Video {fmtTime(mediaFor(featured.slug).video!.dur)}</span>}</div>
               <div className="flex flex-col justify-center p-6 sm:p-10">
                 <Meta p={featured} />
                 <h2 className="mt-3 font-display text-2xl font-bold leading-tight sm:text-3xl">{featured.title}</h2>

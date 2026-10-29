@@ -35,7 +35,7 @@ export function CoverMedia({ slug, kind, title, className, mode = 'inview', acti
   }, [shouldPlay, ready])
 
   return (
-    <div ref={box} className={cn('relative overflow-hidden', className)} onMouseEnter={() => { setHover(true); setLoad(true) }} onMouseLeave={() => setHover(false)}>
+    <div ref={box} aria-hidden="true" data-loop={has ? (still ? 'still' : load ? (ready && shouldPlay ? 'playing' : 'loading') : 'idle') : 'none'} className={cn('relative overflow-hidden', className)} onMouseEnter={() => { setHover(true); setLoad(true) }} onMouseLeave={() => setHover(false)}>
       <Cover kind={kind} title={title} className="h-full w-full" />
       {has && load && !still && (
         <video ref={vid} muted loop playsInline preload="metadata" poster={pub(slug, 'cover.webp')} aria-hidden="true" tabIndex={-1}
