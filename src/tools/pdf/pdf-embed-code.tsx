@@ -60,7 +60,8 @@ export default function PdfEmbedCode() {
 </script>`
   }, [kind, url, frag, title, style, download, page, zoom, id])
 
-  const previewSrc = local?.url ?? url
+  // Only web addresses and paths are previewed in the frame, so a javascript: or data: address typed here never runs in the app.
+  const previewSrc = local ? local.url + frag : /^\s*(https?:\/\/|\/)/i.test(url) ? url + frag : 'about:blank'
   return (
     <ToolGrid
       main={<div className="space-y-3">
@@ -70,7 +71,7 @@ export default function PdfEmbedCode() {
           <div className="flex flex-wrap gap-2"><CopyButton text={code} label="Copy code" size="md" variant="secondary" /><button type="button" onClick={() => downloadBlob(`<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}</title></head><body style="margin:24px">\n${code}\n</body></html>\n`, 'pdf-embed.html', 'text/html')} className="rounded-xl border border-border px-3 text-sm text-muted hover:border-accent hover:text-accent cursor-pointer">Download as test page</button></div>
         </Card> : <Card className="space-y-2">
           <div className="text-xs text-muted">{local ? `Previewing your local file ${local.name}. The code still points at the web address.` : kind === 'viewer' ? 'Preview uses your browser\'s built-in viewer. The PDF.js snippet looks the same in every browser once published.' : 'Live preview of the embed.'}</div>
-          <div className="overflow-hidden rounded-xl bg-surface-2"><iframe key={previewSrc + frag} src={previewSrc + frag} title="Preview" style={{ width: unit === '%' ? `${width}%` : Math.min(width, 2000), height, maxWidth: '100%', border: '1px solid var(--color-border)', borderRadius: rounded ? 12 : 0 }} /></div>
+          <div className="overflow-hidden rounded-xl bg-surface-2"><iframe key={previewSrc} src={previewSrc} title="Preview" style={{ width: unit === '%' ? `${width}%` : Math.min(width, 2000), height, maxWidth: '100%', border: '1px solid var(--color-border)', borderRadius: rounded ? 12 : 0 }} /></div>
         </Card>}
       </div>}
       side={<>
