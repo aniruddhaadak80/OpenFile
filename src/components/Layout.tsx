@@ -46,7 +46,7 @@ export function Layout() {
         <motion.div className="absolute inset-x-0 bottom-0 h-px origin-left bg-gradient-brand" style={{ scaleX: progress, opacity: scrolled ? 1 : 0 }} aria-hidden="true" />
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight">
-            <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline">v1.0</span>
+            <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline">v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
           </Link>
           <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
             <div className="relative" onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)} onKeyDown={(e) => { if (e.key === 'Escape') setMega(false) }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMega(false) }}>

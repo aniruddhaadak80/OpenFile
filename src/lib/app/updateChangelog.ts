@@ -38,6 +38,7 @@ function inline(s: string): string {
   let h = esc(s)
   h = h.replace(/`([^`]+)`/g, '<code>$1</code>')
   h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  h = h.replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:]|$)/g, '$1<em>$2</em>')
   h = h.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_m, t, u) => `<a href="${u}" target="_blank" rel="noopener noreferrer">${t}</a>`)
   h = h.replace(/&lt;kbd&gt;(.*?)&lt;\/kbd&gt;/g, '<kbd>$1</kbd>')
   return h
