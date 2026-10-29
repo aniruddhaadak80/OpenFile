@@ -100,7 +100,7 @@ export default function Blog() {
   const pills: { key: string; label: React.ReactNode; onRemove: () => void }[] = [
     ...typedTags.filter((t) => t !== tag).map((t) => ({ key: `t-${t}`, label: <><Hash className="size-3 text-accent" />{t}</>, onRemove: () => removeTyped('tag', t) })),
     ...parsed.has.map((h) => ({ key: `h-${h}`, label: <>{h === 'video' ? <Film className="size-3 text-sky-400" /> : h === 'listen' ? <Headphones className="size-3 text-emerald-400" /> : <ListChecks className="size-3 text-teal-400" />}has {h}</>, onRemove: () => { removeTyped('has', h); removeTyped('is', h) } })),
-    ...(parsed.time ? [{ key: 'time', label: <><Timer className="size-3 text-cyan-400" />{parsed.time.op === '=' ? '' : parsed.time.op.replace('<=', 'up to ').replace('>=', 'at least ').replace('<', 'under ').replace('>', 'over ')}{parsed.time.n} min</>, onRemove: () => removeTyped('time') }] : []),
+    ...(parsed.time ? [{ key: 'time', label: <><Timer className="size-3 text-cyan-400" />{parsed.time.op === '=' ? '' : ({ '<=': 'up to ', '>=': 'at least ', '<': 'under ', '>': 'over ' } as Record<string, string>)[parsed.time.op] ?? ''}{parsed.time.n} min</>, onRemove: () => removeTyped('time') }] : []),
   ]
 
   return (
