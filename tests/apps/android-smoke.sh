@@ -25,7 +25,10 @@ fi
 WV=$(adb shell dumpsys webviewupdate 2>/dev/null | grep -m1 -E 'Current WebView package' | tr -d '\r' || true)
 echo "WebView: ${WV:-unknown}"
 WV_MAJOR=$(echo "$WV" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 | cut -d. -f1)
-JS_ERR=$(grep -E 'Capacitor: JavaScript Error|Capacitor/Console.*(Uncaught|SyntaxError|TypeError|ReferenceError)' "$OUT/logcat.txt" || true)
+# Ignored: Capacitor 8 SystemBars logs (and catches) "Error injecting safe area CSS" when its native script runs
+# before document.documentElement exists. Framework bug, https://github.com/ionic-team/capacitor/issues/8530;
+# the app reads env(safe-area-inset-*) and does not depend on the injected variables.
+JS_ERR=$(grep -E 'Capacitor: JavaScript Error|Capacitor/Console.*(Uncaught|SyntaxError|TypeError|ReferenceError)' "$OUT/logcat.txt" | grep -v 'Error injecting safe area CSS' || true)
 if [ -n "$JS_ERR" ]; then
   echo "$JS_ERR" | head -n 20
   if [ -n "$WV_MAJOR" ] && [ "$WV_MAJOR" -lt "${MIN_WEBVIEW:-100}" ]; then

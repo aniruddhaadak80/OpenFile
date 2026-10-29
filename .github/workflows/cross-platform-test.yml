@@ -73,12 +73,16 @@ jobs:
     name: Web E2E / ${{ matrix.os }} / ${{ matrix.browser }}
     needs: build-web
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 35
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-2022, windows-2025, macos-14, macos-15]
         browser: [chromium, firefox, webkit]
+        exclude:
+          # Playwright 1.59+ dropped WebKit on macOS 14 (its frozen WebKit build hangs on launch). WebKit runs on macos-15.
+          - os: macos-14
+            browser: webkit
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
