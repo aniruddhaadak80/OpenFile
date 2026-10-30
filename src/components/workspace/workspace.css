@@ -1,0 +1,39 @@
+/* Workspace studio motion and surfaces. Gold/amber with teal, cyan, emerald and sky accents only. */
+.ws-grid {
+  background-image: radial-gradient(circle, color-mix(in oklab, var(--fg) 14%, transparent) 1px, transparent 1.2px);
+}
+.ws-canvas { background: radial-gradient(900px 400px at 15% 0%, color-mix(in oklab, var(--accent) 7%, transparent), transparent 60%), radial-gradient(700px 380px at 100% 100%, color-mix(in oklab, var(--accent-2) 7%, transparent), transparent 60%), var(--surface, transparent); }
+
+@keyframes ws-flow { to { stroke-dashoffset: -28; } }
+.ws-flow { animation: ws-flow 1.6s linear infinite; }
+.ws-flow-fast { animation-duration: .45s; }
+
+@keyframes ws-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--c, var(--accent)) 45%, transparent), 0 10px 30px -12px color-mix(in oklab, var(--c, var(--accent)) 60%, transparent); } 50% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--c, var(--accent)) 0%, transparent), 0 10px 40px -8px color-mix(in oklab, var(--c, var(--accent)) 70%, transparent); } }
+.ws-node-run { animation: ws-pulse 1.4s ease-in-out infinite; border-color: var(--c, var(--accent)); }
+
+@keyframes ws-orbit { to { transform: rotate(360deg); } }
+.ws-drop-orbit { position: absolute; inset: -40%; background: conic-gradient(from 0deg, transparent 0 70%, color-mix(in oklab, var(--accent) 22%, transparent) 80%, transparent 90%); animation: ws-orbit 7s linear infinite; opacity: .5; pointer-events: none; }
+.ws-drop-orbit-on { animation-duration: 1.4s; opacity: 1; }
+.ws-drop::after { content: ''; position: absolute; inset: 2px; border-radius: 14px; background: var(--surface, #0B0D10); z-index: 0; opacity: .92; pointer-events: none; }
+.ws-drop > * { z-index: 1; }
+
+@keyframes ws-glow { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 14px color-mix(in oklab, var(--accent) 60%, transparent)); } }
+.ws-ring-glow { animation: ws-glow 1.8s ease-in-out infinite; }
+
+@keyframes ws-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.ws-float { animation: ws-float 5s ease-in-out infinite; }
+.ws-float-2 { animation: ws-float 6.5s ease-in-out infinite reverse; }
+
+@keyframes ws-sheen { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.ws-sheen { background: linear-gradient(100deg, transparent 30%, color-mix(in oklab, var(--accent-glow) 35%, transparent) 50%, transparent 70%); background-size: 200% 100%; animation: ws-sheen 3.5s linear infinite; }
+
+.ws-range { accent-color: var(--accent); }
+@keyframes ws-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ws-m-full .ws-in { animation: ws-in .35s ease both; }
+
+/* motion levels: subtle slows everything down, off stops it */
+.ws-m-subtle .ws-flow { animation-duration: 4s; }
+.ws-m-subtle .ws-flow-fast { animation-duration: 1.4s; }
+.ws-m-subtle .ws-drop-orbit, .ws-m-subtle .ws-float, .ws-m-subtle .ws-float-2, .ws-m-subtle .ws-sheen { animation: none; }
+.ws-m-off *, .ws-m-off *::before, .ws-m-off *::after { animation: none !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+@media (prefers-reduced-motion: reduce) { .ws-m-full .ws-drop-orbit { animation-duration: 20s; } }

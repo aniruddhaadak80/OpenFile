@@ -123,8 +123,8 @@ function roadmapMd(): string {
 
 function workspaceStepsMd(): string {
   const fmt = (p: (typeof STEPS)[number]['params'][number]) => `${p.label}${p.options ? ` (${p.options.join(', ')})` : ''}, default \`${String(p.default)}\``
-  const table = (mode: 'image' | 'pdf') => ['| Step | What it does | Settings |', '| --- | --- | --- |', ...STEPS.filter((s) => s.mode === mode).map((s) => `| **${cell(s.name)}** | ${cell(s.desc)} | ${s.params.length ? cell(s.params.map(fmt).join('; ')) : 'none'} |`)].join('\n')
-  return `## Image steps\n\n${table('image')}\n\n## PDF steps\n\n${table('pdf')}\n`
+  const table = (mode: (typeof STEPS)[number]['mode']) => ['| Step | What it does | Settings |', '| --- | --- | --- |', ...STEPS.filter((s) => s.mode === mode).map((s) => `| **${cell(s.name)}** | ${cell(s.desc)} | ${s.params.length ? cell(s.params.map(fmt).join('; ')) : 'none'} |`)].join('\n')
+  return `## Image steps\n\n${table('image')}\n\n## PDF steps\n\n${table('pdf')}\n\n## Video and audio steps\n\n${table('media')}\n\n## Text and data steps\n\n${table('data')}\n\n## Archive and any-file steps\n\n${table('archive')}\n${table('file').split('\n').slice(2).join('\n')}\n`
 }
 function workspacePresetsMd(): string {
   const name = (id: string) => STEPS.find((s) => s.id === id)?.name ?? id

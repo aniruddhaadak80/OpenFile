@@ -1380,17 +1380,20 @@ mindmap
 
 ## 🔁 Workspace, batch pipelines
 
-The **[Workspace](https://openfile-studio.vercel.app/workspace)** turns single tools into automations: pick a mode, stack steps, drop a folder of files, download one ZIP.
+The **[Workspace](https://openfile-studio.vercel.app/workspace)** is a batch pipeline studio. Wire steps together on a node canvas (or a simple list), drop a folder of mixed files, and run it on hundreds of files at once. Branch, merge, pause, retry, then grab one ZIP. All of it runs in your tab, nothing is uploaded.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'fontFamily':'system-ui, sans-serif','lineColor':'#F5A524','primaryTextColor':'#F5F3EE'}}}%%
 flowchart LR
-    A["📁 Drop 248 photos"]:::input --> B["📐 Resize<br/>fit 1600 × 1600"]:::step
-    B --> C["💧 Watermark<br/>bottom-right · 60%"]:::step
-    C --> D["🔄 Convert<br/>WebP · q80"]:::step
-    D --> E["🏷️ Rename<br/>product-001…"]:::step
-    E --> F["📦 openfile-pipeline.zip"]:::output
-    P["💾 Saved recipe<br/>in your browser"]:::store -.-> B
+    A["📁 Drop a folder<br/>photos, PDFs, ZIPs"]:::input --> B["📐 Resize<br/>1920 px"]:::step
+    A --> C["✂️ Crop 1:1"]:::step
+    B --> D["🔄 Convert<br/>WebP q80"]:::step
+    C --> E["📐 Resize 320 px<br/>thumbs"]:::step
+    D --> Z["📦 Zip everything"]:::step
+    E --> Z
+    Z --> F["⬇️ Results<br/>never bigger than the original"]:::output
+    W["⚙️ Web Worker pool<br/>pause · resume · retry"]:::store -.-> B
+    P["💾 Recipe<br/>JSON · share link · tab sync"]:::store -.-> A
     classDef input fill:#F5A524,stroke:#FFE3A3,color:#050505,stroke-width:2px
     classDef step fill:#0B0D10,stroke:#F5A524,color:#F5F3EE,stroke-width:2px
     classDef output fill:#10B981,stroke:#A7F3D0,color:#050505,stroke-width:2px
@@ -1401,21 +1404,30 @@ flowchart LR
 <tr>
 <td width="50%" valign="top">
 
-**🖼️ Image steps**
-Resize · Convert format (JPG / PNG / WEBP / AVIF) · Compress · Rotate / flip · Filter · Watermark · Rounded corners · Rename (`{name}` `{n}` `{date}`)
+**🖼️ Image**
+Resize · Convert (JPG / PNG / WEBP / AVIF) · Compress (never bigger) · Crop · Rotate / flip · Filter · Watermark · Rounded corners · Strip metadata · Remove background (on-device AI)
+
+**📄 PDF**
+Merge all · Split pages · Compress · Rotate · Page numbers · Watermark · Clean metadata · Grayscale · Images to PDF · PDF to images · OCR to text
 
 </td>
 <td width="50%" valign="top">
 
-**📄 PDF steps**
-Merge all · Rotate pages · Page numbers · Watermark · Clean metadata · Compress (rasterize) · Grayscale
+**🎬 Video and audio** (self-hosted ffmpeg)
+Trim · Convert · Compress video (never bigger) · Extract audio · Video to GIF
+
+**📊 Text and data** · **📦 Archive** · **🗂️ Any file**
+Convert CSV / JSON / XLSX · Find and replace · Zip everything · Unzip · Rename by pattern · Checksums
 
 </td>
 </tr>
 <tr>
 <td colspan="2">
 
-**Built-in presets:** *Web-ready photos* · *Product catalog* · *Social avatars* · *Share-safe PDF pack* · *Confidential drafts* · *Shrink scans*, plus your own **saved recipes**, stored locally.
+**Inputs:** files, whole folders (drop or picker), paste images or text, public file URLs, ZIPs unpacked on add, a watch folder (Chrome and Edge), and sample files for every recipe.
+**Run engine:** Web Worker pool with a files-at-once control, pause, resume, cancel, per-file and overall progress with ETA, retry failed files, a memory guard, and keep-the-original when a result is bigger.
+**Recipes:** 16 ready recipes with motion previews, save and load, export and import JSON (schema checked), a share link in the URL hash, and sync across open tabs.
+**Guide:** an onboarding tour, contextual tips, a keyboard shortcut sheet (`?`), undo and redo, and a "how it works" film. Motion follows your system setting, with an Off, Subtle and Full switch.
 
 </td>
 </tr>

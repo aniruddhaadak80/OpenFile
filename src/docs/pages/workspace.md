@@ -20,12 +20,11 @@ The Workspace has two modes. Switching mode clears the file list and loads that 
 
 ## Building a pipeline
 
-1. Choose **Images** or **PDF**.
-2. Drop your files (or click to choose). The total input size is shown.
-3. Start from a **preset**, or add steps from the step list.
-4. Configure each step's parameters. Use the arrows to reorder steps, the switch to disable one temporarily, and the bin to remove it.
-5. Press **Run**. Each step shows live progress and a log line with its timing.
-6. Download individual results or **Download ZIP**.
+1. Drop files or folders, or press **Samples**.
+2. Start from a recipe in the gallery, or add steps from the step library. A click adds the step after the selected one; dragging drops it on the canvas.
+3. Select a step to change its settings and watch the live preview.
+4. Press **Run** (Ctrl + Enter). Pause, resume or cancel at any time, and retry failed files when it ends.
+5. Download single results, compare them with the before and after slider, or press **Download all as ZIP**.
 
 ## Image steps
 
@@ -68,7 +67,7 @@ The Workspace has two modes. Switching mode clears the file list and loads that 
 
 ## Saving recipes
 
-Type a name under **My recipes** and press save. Recipes are stored in this browser (localStorage key `of:recipes`) and appear for the matching mode. Click a recipe to load it, or delete it with the bin icon. Recipes are included when you [export your settings](/settings).
+Type a name under **My recipes** and press save. Recipes are stored in this browser (localStorage key `of:ws-recipes`; older `of:recipes` entries are carried over) and show up in every open tab. Click a recipe to load it, or delete it with the bin icon. Recipes are included when you [export your settings](/settings).
 
 ## Tips
 

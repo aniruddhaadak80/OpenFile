@@ -1,3 +1,10 @@
+## Workspace studio
+
+- **workspace**: the Workspace is now a batch pipeline studio. A node canvas with pan, zoom, snap and a minimap, plus a list mode you can reorder by drag or keyboard. Branch and merge steps, undo and redo, and per-step settings with a live preview on one of your files.
+- **workspace**: 32 steps across images, PDF, video and audio, text and data, archives and any file, reusing the shared tool code (image worker pool, pdf-lib and pdf.js, self-hosted ffmpeg, Tesseract, background removal, SheetJS, fflate).
+- **workspace**: inputs from folders, paste, public URLs, ZIPs and a watch folder. A Web Worker pool runs files in parallel with pause, resume, cancel, retry failed, ETA and a memory guard. Results come with a before and after slider, size changes and Download all as ZIP.
+- **workspace**: 16 ready recipes with motion previews and sample files, recipe export and import with a schema check, share links, sync across tabs, an onboarding tour, a shortcut sheet and a motion switch (off, subtle, full).
+
 ## 0.11
 
 - Six new tools: Roman numerals, Morse code, duplicate line remover, line sorter, text wrapper, colour contrast checker.
