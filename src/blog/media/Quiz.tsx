@@ -46,7 +46,7 @@ export function PostQuiz({ slug, tools }: { slug: string; tools: string[] }) {
         )}
         {try1.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {try1.map((t) => <Link key={t.slug} to={`/${t.slug}`} className="group inline-flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-1.5 text-sm font-medium text-on-accent">Try {t.name} <ArrowRight className="size-3.5 transition group-hover:translate-x-0.5" /></Link>)}
+            {try1.map((t) => <Link key={t.slug} to={`/${t.slug}`} className="group inline-flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-1.5 text-sm font-medium text-on-accent! no-underline!">Try {t.name} <ArrowRight className="size-3.5 transition group-hover:translate-x-0.5" /></Link>)}
           </div>
         )}
       </div>

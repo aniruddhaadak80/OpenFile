@@ -29,7 +29,7 @@ function Column({ title, links, more }: { title: string; links: FLink[]; more?: 
   if (!links.length) return null
   return (
     <div className="min-w-0">
-      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">{title}</h3>
+      <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">{title}</h2>
       <ul className="space-y-2 text-sm text-muted">
         {links.map((l) => (
           <li key={l.to + l.label} className="leading-snug">
@@ -101,7 +101,7 @@ export function Footer() {
         {/* categories + resources */}
         <div className="mt-12 grid gap-x-8 gap-y-10 border-t border-border pt-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]">
           <div className="min-w-0">
-            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">Categories</h3>
+            <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">Categories</h2>
             <div className="space-y-2">{catGroups(CATEGORIES).map((group, gi) => { const lay = gi === 0 ? { base: 1, sm: 2, md: 4 } : { base: 1, sm: 2, lg: evenCols(group.length, [5, 4, 3]) }; return group.length > 0 && (
             <ul key={gi} className={cn('grid gap-2', colsClass(lay))}>
               {group.map((c, i) => (
@@ -115,7 +115,7 @@ export function Footer() {
             </ul>) })}</div>
           </div>
           <div className="min-w-0">
-            <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">Resources</h3>
+            <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">Resources</h2>
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-muted">
               {resources.map((l) => (
                 <li key={l.label} className="leading-snug">

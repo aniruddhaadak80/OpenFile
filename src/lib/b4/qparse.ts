@@ -72,3 +72,29 @@ export function parseMcqText(s: string): Mcq[] {
   flush()
   return out
 }
+
+/**
+ * Build multiple choice from question and answer cards: each card's answer is the correct option and the
+ * other cards' answers (then other sentences of the text) are the wrong ones. Used when a small model writes
+ * neither JSON nor "A) B) C) D)" quizzes but still writes plain "Q: / A:" pairs (SmolLM2 360M on a CPU, Oct 2026).
+ */
+export function mcqFromCards(cards: Card[], text = ''): Mcq[] {
+  const seen = new Set<string>()
+  const uniq = cards.filter((c) => { const k = clean(c.a); if (!k || seen.has(k)) return false; seen.add(k); return true })
+  const sentences = text.replace(/\s+/g, ' ').split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter((s) => s.length > 12 && s.length < 200)
+  const out: Mcq[] = []
+  uniq.forEach((c, i) => {
+    const key = clean(c.a)
+    const differs = (s: string) => { const k = clean(s); return !!k && k !== key && !k.includes(key) && !key.includes(k) }
+    const wrong: string[] = []
+    for (const s of [...uniq.slice(i + 1), ...uniq.slice(0, i)].map((o) => o.a).concat(sentences)) {
+      if (wrong.length === 3) break
+      if (differs(s) && !wrong.some((w) => clean(w) === clean(s))) wrong.push(s)
+    }
+    if (!wrong.length) return
+    const answer = i % (wrong.length + 1)
+    const options = [...wrong]; options.splice(answer, 0, c.a)
+    out.push({ q: c.q, options, answer })
+  })
+  return out
+}

@@ -59,6 +59,9 @@ html[data-theme="light"] {
 }
 /* accent text needs more contrast on the warm light background */
 html[data-theme="light"] .text-accent { color: var(--accent-ink); }
+/* category-coloured kicker text (ToolGuide): darker on the light theme so it keeps 4.5:1 on white */
+.cat-ink { color: var(--cat); }
+html[data-theme="light"] .cat-ink { color: color-mix(in oklab, var(--cat) 62%, #000); }
 html[data-theme="light"] .on-dark .text-accent { color: var(--accent); }
 html[data-density="compact"] { --spacing: 0.215rem; font-size: 15px; }
 html[data-radius="sharp"] { --radius-xs: 1px; --radius-sm: 2px; --radius-md: 3px; --radius-lg: 4px; --radius-xl: 4px; --radius-2xl: 6px; --radius-3xl: 8px; }

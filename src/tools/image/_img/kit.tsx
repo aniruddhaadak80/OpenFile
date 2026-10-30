@@ -518,11 +518,11 @@ export function ImageDrop({ onFiles, multiple = true, label, sub, accept = IMG_A
 }
 
 /** Color input styled to the kit. */
-export function ColorInput({ value, onChange, className }: { value: string; onChange: (v: string) => void; className?: string }) {
+export function ColorInput({ value, onChange, className, label = 'Color' }: { value: string; onChange: (v: string) => void; className?: string; label?: string }) {
   return (
     <div className={cn('flex h-10 items-center gap-2 rounded-xl border border-border bg-surface-2/60 px-2', className)}>
-      <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="size-7 cursor-pointer rounded-md border-0 bg-transparent p-0" />
-      <input value={value} onChange={(e) => onChange(e.target.value)} className="w-full min-w-0 bg-transparent font-mono text-xs uppercase text-fg outline-none" spellCheck={false} />
+      <input type="color" aria-label={`${label} picker`} value={value} onChange={(e) => onChange(e.target.value)} className="size-7 cursor-pointer rounded-md border-0 bg-transparent p-0" />
+      <input aria-label={`${label} hex code`} value={value} onChange={(e) => onChange(e.target.value)} className="w-full min-w-0 bg-transparent font-mono text-xs uppercase text-fg outline-none" spellCheck={false} />
     </div>
   )
 }

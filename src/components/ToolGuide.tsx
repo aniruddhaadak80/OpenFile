@@ -1,5 +1,5 @@
 // "How it works", steps, tips, FAQ and related tools, rendered under every tool from registry data (see tools/guides.ts).
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Cpu, ListOrdered, Lightbulb, HelpCircle, ChevronDown, Download, ShieldCheck, BookOpen, ArrowRight, Workflow } from 'lucide-react'
@@ -20,7 +20,7 @@ export function ToolGuideSection({ tool, guide }: { tool: ToolMeta; guide: Guide
         <motion.section {...fade} className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-8">
           <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full blur-3xl" style={{ background: cat.color + '22' }} />
           <div className="relative">
-            <div className="text-xs font-bold uppercase tracking-widest" style={{ color: cat.color }}>Under the hood</div>
+            <div className="cat-ink text-xs font-bold uppercase tracking-widest" style={{ '--cat': cat.color } as CSSProperties}>Under the hood</div>
             <h2 className="mt-1.5 flex items-center gap-2 font-display text-2xl font-bold"><Cpu className="size-5 text-accent" /> How {tool.name} works</h2>
             <p className="mt-3 leading-relaxed text-muted">{guide.how}</p>
             <div className="mt-5 flex flex-wrap gap-2">

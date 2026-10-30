@@ -246,8 +246,8 @@ export function ResultCard({ blob, filename, originalSize, title = 'Your file is
 
 export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; onChange: (v: T) => void; tabs: { value: T; label: React.ReactNode }[] }) {
   return (
-    <div className="flex gap-1 border-b border-border">
-      {tabs.map((t) => <button key={t.value} onClick={() => onChange(t.value)} className={cn('-mb-px border-b-2 px-4 py-2 text-sm font-medium transition cursor-pointer', value === t.value ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg')}>{t.label}</button>)}
+    <div className="flex flex-wrap gap-x-1 border-b border-border">
+      {tabs.map((t) => <button key={t.value} type="button" onClick={() => onChange(t.value)} className={cn('-mb-px whitespace-nowrap border-b-2 px-3 py-2 sm:px-4 text-sm font-medium transition cursor-pointer', value === t.value ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg')}>{t.label}</button>)}
     </div>
   )
 }

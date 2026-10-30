@@ -4,7 +4,7 @@ import { Button, Label, Segmented, Slider, ToolGrid, cn } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
 import { aiRun, chunkText, extractJson, jsonObjects, MODELS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress, useDocInput, DocInput } from '@/lib/b4/aiui'
-import { parseQa, normCards, normMcq, parseMcqText, type Card, type Mcq } from '@/lib/b4/qparse'
+import { parseQa, normCards, normMcq, parseMcqText, mcqFromCards, type Card, type Mcq } from '@/lib/b4/qparse'
 
 type Kind = 'cards' | 'mcq'
 export { parseQa }
@@ -69,10 +69,12 @@ export default function QuestionGenerator() {
       else {
         let m = pickBest(j ? normMcq(j) : [], normMcq(objs)); if (!m.length) m = parseMcqText(r)
         if (!m.length) {
-          // one plain-text retry, as for flashcards: SmolLM2 on a CPU often returns no usable JSON for multiple choice (live, Oct 2026)
-          ai.setStatus('Trying again in plain text')
-          const r2: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text.' }, { role: 'user', content: `Text:\n${chunks[i]}\n\nWrite ${want} multiple-choice questions about the text above. Each has 4 options and one correct answer. Use this format:\nQ: question\nA) option\nB) option\nC) option\nD) option\nAnswer: letter of the correct option` }], { max: want * 110 + 40 }, ai.callbacks())
-          m = parseMcqText(r2); if (!m.length) m = normMcq(jsonObjects(r2))
+          // retry with plain "Q: / A:" pairs and make the choices from the other answers: SmolLM2 on a CPU
+          // writes no answer key for JSON or "A) B) C) D)" quizzes, but it does write question and answer pairs (live, Oct 2026)
+          ai.setStatus('Trying again with questions and answers')
+          const n2 = Math.max(want, 3)
+          const r2: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text.' }, { role: 'user', content: `Text:\n${chunks[i]}\n\nWrite ${n2} questions about the text above, each with a short answer. Use this format:\nQ: question\nA: answer` }], { max: n2 * 70 + 40 }, ai.callbacks())
+          m = parseMcqText(r2); if (!m.length) m = mcqFromCards(parseQa(r2).length ? parseQa(r2) : normCards(jsonObjects(r2)), chunks[i])
         }
         allM.push(...m.slice(0, count - allM.length)); setMcqs([...allM])
       }

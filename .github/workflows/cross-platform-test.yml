@@ -2,9 +2,9 @@ name: Cross-platform tests
 
 # Real tests on GitHub-hosted runners:
 #   1. Web app E2E (Playwright: Chromium, Firefox, WebKit) against the built site served by `vite preview`,
-#      on Linux, Windows Server 2022, Windows Server 2025 and macOS 14 / 15.
+#      on Linux, Windows Server 2022, Windows Server 2025 and macOS 15 / 26.
 #   2. Desktop app smoke tests of the published release: install, launch, stay alive 20 s, screenshot, uninstall.
-#      Windows MSI and NSIS setup on windows-2022 and windows-2025, macOS .dmg on macos-14 and macos-15,
+#      Windows MSI and NSIS setup on windows-2022 and windows-2025, macOS .dmg on macos-15 and macos-26,
 #      Linux AppImage and .deb on ubuntu-22.04 and ubuntu-24.04.
 #   3. Android: the release APK on an emulator (API 30 and 34), checks it launches without a crash.
 #   4. Web layouts: phone, tablet and desktop sizes of the main pages in one Linux job (tests/e2e/responsive.spec.ts).
@@ -78,12 +78,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-2022, windows-2025, macos-14, macos-15]
+        # macos-14 images retire on 2 November 2026 and brownouts already cancel those jobs (actions/runner-images#13518)
+        os: [ubuntu-latest, windows-2022, windows-2025, macos-15, macos-26]
         browser: [chromium, firefox, webkit]
-        exclude:
-          # Playwright 1.59+ dropped WebKit on macOS 14 (its frozen WebKit build hangs on launch). WebKit runs on macos-15.
-          - os: macos-14
-            browser: webkit
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -192,7 +189,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-15]
+        os: [macos-15, macos-26]
     steps:
       - uses: actions/checkout@v7
         with:
