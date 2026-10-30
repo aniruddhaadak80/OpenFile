@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { Button, Card, Label, Segmented, Switch } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -10,6 +10,8 @@ export default function SheetCleaner() {
   const s = useSheet()
   const [o, setO] = useState<CleanOpts>({ trim: true, collapse: true, blankRows: true, blankCols: true, nbsp: true, caseMode: 'none', numbers: true, dates: false, header: true, transpose: false, fill: false })
   const [view, setView] = useState<'after' | 'before'>('after'), [fmt, setFmt] = useState<'xlsx' | 'csv' | 'ods'>('xlsx')
+  // Save in the same kind of file that was opened: a CSV in gives a CSV out unless the user picks another format.
+  useEffect(() => { const n = s.file?.name.toLowerCase() ?? ''; if (n) setFmt(/\.(csv|tsv|txt)$/.test(n) ? 'csv' : /\.ods$/.test(n) ? 'ods' : 'xlsx') }, [s.file])
   const set = (p: Partial<CleanOpts>) => setO((x) => ({ ...x, ...p }))
   const r = useMemo(() => (s.rows.length ? cleanRows(s.rows, o) : null), [s.rows, o])
   if (!s.file) return <SheetDrop s={s} label="Drop a messy spreadsheet or CSV" sub="Trim spaces, remove blank rows and columns, fix number text, change case, fill down and transpose in one go." />

@@ -4,11 +4,17 @@ export interface Book { name: string; sheets: { name: string; rows: Grid }[] }
 export const SHEET_ACCEPT = '.xlsx,.xlsm,.xls,.ods,.csv,.tsv,.numbers'
 export const xlsx = () => import('xlsx')
 
+/** Plain numbers in CSV text become numbers; everything else (dates, codes with leading zeros, phone numbers) stays as written. */
+const csvCell = (v: any) => (typeof v === 'string' && /^-?(0|[1-9]\d{0,14})(\.\d+)?$/.test(v.trim()) ? Number(v.trim()) : v === '' ? null : v)
+
 export async function readBook(f: File): Promise<Book> {
   const X = await xlsx()
   const n = f.name.toLowerCase()
-  const wb = n.endsWith('.csv') || n.endsWith('.tsv') ? X.read(await f.text(), { type: 'string', FS: n.endsWith('.tsv') ? '\t' : undefined, raw: false }) : X.read(new Uint8Array(await f.arrayBuffer()), { type: 'array', cellDates: true })
-  return { name: f.name.replace(/\.[^.]+$/, ''), sheets: wb.SheetNames.map((s) => ({ name: s, rows: (X.utils.sheet_to_json(wb.Sheets[s], { header: 1, defval: null, raw: true, blankrows: false }) as Grid).map((r) => r.map((v: any) => (v instanceof Date ? v.toISOString().slice(0, v.getUTCHours() || v.getUTCMinutes() ? 19 : 10).replace('T', ' ') : v))) })) }
+  // CSV is read as text (raw): SheetJS would otherwise turn "2026-01-04" into a date serial like 46026 and drop
+  // leading zeros, which then leak into previews and exported files.
+  const text = n.endsWith('.csv') || n.endsWith('.tsv')
+  const wb = text ? X.read(await f.text(), { type: 'string', FS: n.endsWith('.tsv') ? '\t' : undefined, raw: true }) : X.read(new Uint8Array(await f.arrayBuffer()), { type: 'array', cellDates: true })
+  return { name: f.name.replace(/\.[^.]+$/, ''), sheets: wb.SheetNames.map((s) => ({ name: s, rows: (X.utils.sheet_to_json(wb.Sheets[s], { header: 1, defval: null, raw: true, blankrows: false }) as Grid).map((r) => r.map((v: any) => (text ? csvCell(v) : v instanceof Date ? v.toISOString().slice(0, v.getUTCHours() || v.getUTCMinutes() ? 19 : 10).replace('T', ' ') : v))) })) }
 }
 const safeSheet = (n: string, used: Set<string>) => { let b = n.replace(/[\\/?*[\]:]/g, ' ').slice(0, 31) || 'Sheet', k = b, i = 2; while (used.has(k.toLowerCase())) k = `${b.slice(0, 28)} ${i++}`; used.add(k.toLowerCase()); return k }
 export async function writeBook(sheets: { name: string; rows: Grid }[], type: 'xlsx' | 'ods' | 'csv' = 'xlsx'): Promise<Blob> {

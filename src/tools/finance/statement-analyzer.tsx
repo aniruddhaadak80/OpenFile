@@ -28,9 +28,9 @@ export default function StatementAnalyzer() {
             <div className="rounded-2xl border border-border bg-surface p-4"><Label>Top places you paid</Label><Bars items={sum.payees.slice(0, 10).map((p) => ({ label: p.name, value: Math.round(p.total * 100) / 100 }))} color="#22D3EE" /></div>
           </div>
           <div className="rounded-2xl border border-border bg-surface p-4">
-            <Label>Repeating payments</Label>
-            {sum.recurring.length ? <ul className="divide-y divide-border text-sm">{sum.recurring.map((r) => <li key={r.name} className="flex items-center gap-2 py-1.5"><span className="min-w-0 flex-1 truncate">{r.name}</span><span className="text-xs text-muted">{r.every} · {r.count} times</span><span className="font-mono">{fmtMoney(r.amount, cur)}</span></li>)}</ul>
-              : <p className="text-sm text-muted">No subscriptions or bills that repeat at the same amount were found. Longer statements (3 months or more) find more.</p>}
+            <Label hint={sum.recurring.length ? `${sum.recurring.filter((r) => !r.income).length} out, ${sum.recurring.filter((r) => r.income).length} in` : ''}>Repeating payments and income</Label>
+            {sum.recurring.length ? <ul className="divide-y divide-border text-sm">{sum.recurring.map((r) => <li key={(r.income ? '+' : '-') + r.name} className="flex items-center gap-2 py-1.5"><span className="min-w-0 flex-1 truncate">{r.name}</span>{r.income && <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] text-success">Income</span>}<span className="text-xs text-muted">{r.every} · {r.count} times</span><span className={`font-mono ${r.income ? 'text-success' : ''}`}>{r.income ? '+' : ''}{fmtMoney(r.amount, cur)}</span></li>)}</ul>
+              : <p className="text-sm text-muted">No bills, subscriptions or income that repeat at the same amount were found. Longer statements (3 months or more) find more.</p>}
           </div>
         </> : st.file && !st.error && <Empty>No transactions yet. Check the column choices on the right.</Empty>}
       </>}

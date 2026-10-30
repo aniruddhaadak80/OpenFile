@@ -215,16 +215,27 @@ function lstsq(X: number[][], y: number[]): number[] {
   }
   return A.map((r, i) => r[n] / r[i])
 }
-const fmtC = (v: number) => { const a = Math.abs(v); return a !== 0 && (a < 1e-3 || a >= 1e5) ? v.toExponential(3) : Number(v.toPrecision(5)).toString() }
+const fmtC = (v: number) => { const a = Math.abs(v); if (a === 0) return '0'; return a < 1e-3 || a >= 1e5 ? v.toExponential(3) : Number(v.toPrecision(5)).toString() }
+/** Polynomial-style equation: drops terms that are rounding noise next to the largest one and writes "- 3" instead of "+ -3". */
+function poly(terms: [number, string][]): string {
+  const big = Math.max(...terms.map(([c]) => Math.abs(c)), 0)
+  const kept = terms.filter(([c]) => Math.abs(c) > big * 1e-9 && Math.abs(Number(fmtC(c))) > 0)
+  if (!kept.length) return 'y = 0'
+  return 'y = ' + kept.map(([c, t], i) => {
+    const mag = fmtC(Math.abs(c)), body = t && mag === '1' ? t.replace(/^·/, '') : mag + t
+    return i === 0 ? (c < 0 ? '-' : '') + body : `${c < 0 ? ' - ' : ' + '}${body}`
+  }).join('')
+}
+const sgnC = (v: number) => (v < 0 ? `-${fmtC(-v)}` : fmtC(v))
 export function fit(xs: number[], ys: number[], kind: FitKind): Fit {
   const pts = xs.map((x, i) => [x, ys[i]]).filter(([x, y]) => isFinite(x) && isFinite(y))
   if (pts.length < (kind === 'quadratic' ? 3 : 2)) throw new Error('Need more points for this fit.')
   let coef: number[], f: (x: number) => number, eq: string
-  if (kind === 'linear') { coef = lstsq(pts.map(([x]) => [1, x]), pts.map(([, y]) => y)); f = (x) => coef[0] + coef[1] * x; eq = `y = ${fmtC(coef[1])}x + ${fmtC(coef[0])}` }
-  else if (kind === 'quadratic') { coef = lstsq(pts.map(([x]) => [1, x, x * x]), pts.map(([, y]) => y)); f = (x) => coef[0] + coef[1] * x + coef[2] * x * x; eq = `y = ${fmtC(coef[2])}x² + ${fmtC(coef[1])}x + ${fmtC(coef[0])}` }
-  else if (kind === 'exponential') { const p = pts.filter(([, y]) => y > 0); if (p.length < 2) throw new Error('Exponential fits need positive y values.'); const c = lstsq(p.map(([x]) => [1, x]), p.map(([, y]) => Math.log(y))); coef = [Math.exp(c[0]), c[1]]; f = (x) => coef[0] * Math.exp(coef[1] * x); eq = `y = ${fmtC(coef[0])}·e^(${fmtC(coef[1])}x)` }
-  else if (kind === 'power') { const p = pts.filter(([x, y]) => x > 0 && y > 0); if (p.length < 2) throw new Error('Power fits need positive x and y values.'); const c = lstsq(p.map(([x]) => [1, Math.log(x)]), p.map(([, y]) => Math.log(y))); coef = [Math.exp(c[0]), c[1]]; f = (x) => coef[0] * x ** coef[1]; eq = `y = ${fmtC(coef[0])}·x^${fmtC(coef[1])}` }
-  else { const p = pts.filter(([x]) => x > 0); if (p.length < 2) throw new Error('Log fits need positive x values.'); coef = lstsq(p.map(([x]) => [1, Math.log(x)]), p.map(([, y]) => y)); f = (x) => coef[0] + coef[1] * Math.log(x); eq = `y = ${fmtC(coef[1])}·ln(x) + ${fmtC(coef[0])}` }
+  if (kind === 'linear') { coef = lstsq(pts.map(([x]) => [1, x]), pts.map(([, y]) => y)); f = (x) => coef[0] + coef[1] * x; eq = poly([[coef[1], 'x'], [coef[0], '']]) }
+  else if (kind === 'quadratic') { coef = lstsq(pts.map(([x]) => [1, x, x * x]), pts.map(([, y]) => y)); f = (x) => coef[0] + coef[1] * x + coef[2] * x * x; eq = poly([[coef[2], 'x²'], [coef[1], 'x'], [coef[0], '']]) }
+  else if (kind === 'exponential') { const p = pts.filter(([, y]) => y > 0); if (p.length < 2) throw new Error('Exponential fits need positive y values.'); const c = lstsq(p.map(([x]) => [1, x]), p.map(([, y]) => Math.log(y))); coef = [Math.exp(c[0]), c[1]]; f = (x) => coef[0] * Math.exp(coef[1] * x); eq = `y = ${sgnC(coef[0])}·e^(${sgnC(coef[1])}x)` }
+  else if (kind === 'power') { const p = pts.filter(([x, y]) => x > 0 && y > 0); if (p.length < 2) throw new Error('Power fits need positive x and y values.'); const c = lstsq(p.map(([x]) => [1, Math.log(x)]), p.map(([, y]) => Math.log(y))); coef = [Math.exp(c[0]), c[1]]; f = (x) => coef[0] * x ** coef[1]; eq = `y = ${sgnC(coef[0])}·x^${coef[1] < 0 ? `(${sgnC(coef[1])})` : fmtC(coef[1])}` }
+  else { const p = pts.filter(([x]) => x > 0); if (p.length < 2) throw new Error('Log fits need positive x values.'); coef = lstsq(p.map(([x]) => [1, Math.log(x)]), p.map(([, y]) => y)); f = (x) => coef[0] + coef[1] * Math.log(x); eq = poly([[coef[1], '·ln(x)'], [coef[0], '']]) }
   const my = pts.reduce((s, [, y]) => s + y, 0) / pts.length
   const ssr = pts.reduce((s, [x, y]) => s + (y - f(x)) ** 2, 0), sst = pts.reduce((s, [, y]) => s + (y - my) ** 2, 0)
   return { kind, coef, r2: sst ? 1 - ssr / sst : 1, f, eq }

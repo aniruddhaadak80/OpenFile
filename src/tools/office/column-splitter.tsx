@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Columns3 } from 'lucide-react'
 import { Button, Card, Input, Label, Segmented, Select, Switch } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -15,6 +15,8 @@ export default function ColumnSplitter() {
   const [col, setCol] = useState('0'), [how, setHow] = useState<'delim' | 'name' | 'fixed' | 'email'>('delim'), [delim, setDelim] = useState(','), [width, setWidth] = useState('3,3'), [max, setMax] = useState('0'), [keep, setKeep] = useState(true)
   const [combine, setCombine] = useState<string[]>([]), [sep, setSep] = useState(' '), [newName, setNewName] = useState('Combined'), [skipBlank, setSkipBlank] = useState(true)
   const [fmt, setFmt] = useState<'xlsx' | 'csv'>('xlsx')
+  // Save in the same kind of file that was opened: a CSV in gives a CSV out unless the user picks another format.
+  useEffect(() => { const n = s.file?.name.toLowerCase() ?? ''; if (n) setFmt(/\.(csv|tsv|txt)$/.test(n) ? 'csv' : 'xlsx') }, [s.file])
   const opts = useColOptions(s.rows, true)
   const out = useMemo((): Rows => {
     if (!s.rows.length) return []

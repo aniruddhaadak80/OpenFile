@@ -14,7 +14,7 @@ const TABS: { value: Tab; label: string; icon: React.ComponentType<{ className?:
 function KeyBox({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) {
   return (
     <div>
-      <Label hint={<label className="cursor-pointer text-accent hover:underline"><input type="file" hidden accept=".asc,.gpg,.pgp,.key,.txt,.pub" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onChange(await f.text()) }} />Open file</label>}>{label}</Label>
+      <Label hint={<label className="cursor-pointer text-accent hover:underline focus-within:underline focus-within:outline-2 focus-within:outline-accent rounded"><input type="file" className="sr-only" accept=".asc,.gpg,.pgp,.key,.txt,.pub" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onChange(await f.text()) }} />Open file</label>}>{label}</Label>
       <Textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="min-h-28 text-[11px]" spellCheck={false} />
     </div>
   )

@@ -93,7 +93,7 @@ export default function EncodingRecipes() {
       {/* io */}
       <div className="min-w-0 space-y-3">
         <Pane title={file ? `Input file: ${file.name}` : 'Input'} className="h-[260px]" actions={<>
-          <label className="inline-flex"><input type="file" hidden onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) setFile({ name: f.name, bytes: new Uint8Array(await f.arrayBuffer()) }) }} /><span className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-xl px-3 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg"><Upload className="size-4" />Open file</span></label>
+          <label className="inline-flex rounded-xl focus-within:outline-2 focus-within:outline-accent"><input type="file" className="sr-only" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) setFile({ name: f.name, bytes: new Uint8Array(await f.arrayBuffer()) }) }} /><span className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-xl px-3 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg"><Upload className="size-4" />Open file</span></label>
           <Button size="sm" variant="ghost" onClick={() => { setFile(null); setInput('') }}>Clear</Button></>}>
           {file ? <pre className="scrollbar-thin h-full overflow-auto p-3 font-mono text-[11px] text-muted">{hexdump(file.bytes, 16, 4096)}</pre> : <CodeArea value={input} onChange={setInput} placeholder="Type or paste input" minRows={8} />}
         </Pane>

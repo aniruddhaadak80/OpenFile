@@ -27,14 +27,14 @@ export default function GstVatCalculator() {
       main={<>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3"><Stat label="Net (before tax)" value={f2(res.net)} /><Stat label={`Tax at ${r}%`} value={f2(res.tax)} /><Stat label="Gross (with tax)" value={f2(res.gross)} /></div>
         {isIndia && split && <div className="grid grid-cols-1 gap-2 sm:grid-cols-3"><Stat label={`CGST ${r / 2}%`} value={f2(res.tax / 2)} sub="Within one state" /><Stat label={`SGST ${r / 2}%`} value={f2(res.tax / 2)} sub="Within one state" /><Stat label={`IGST ${r}%`} value={f2(res.tax)} sub="Between states" /></div>}
-        <CopyButton text={summary} label="Copy result" />
+        <div className="flex flex-wrap gap-2"><CopyButton text={summary} label="Copy result" /><DlButton name="tax-result.csv" mime="text/csv" data={() => toCsv([['amount', 'mode', 'rate_pct', 'net', 'tax', 'gross', ...(isIndia && split ? ['cgst', 'sgst', 'igst'] : [])], [amount, mode === 'add' ? 'price before tax' : 'price with tax', String(r), res.net.toFixed(2), res.tax.toFixed(2), res.gross.toFixed(2), ...(isIndia && split ? [(res.tax / 2).toFixed(2), (res.tax / 2).toFixed(2), res.tax.toFixed(2)] : [])]])}>Download CSV</DlButton></div>
         <div className="rounded-2xl border border-border bg-surface p-4">
           <Label hint={lines.length ? `${lines.length} amounts` : ''}>Many amounts at once (one per line)</Label>
           <Textarea value={bulk} onChange={(e) => setBulk(e.target.value)} placeholder={'250\n1,499.00\n89.90'} className="min-h-28 font-mono text-sm" aria-label="Amounts, one per line" />
           {lines.length > 0 && <div className="mt-3 max-h-64 overflow-auto scrollbar-thin"><table className="w-full text-sm"><thead className="text-left text-xs text-muted"><tr><th className="py-1">Input</th><th className="py-1 text-right">Net</th><th className="py-1 text-right">Tax</th><th className="py-1 text-right">Gross</th></tr></thead>
             <tbody>{lines.map((l, i) => <tr key={i} className="border-t border-border font-mono text-xs tabular-nums"><td className="py-1">{l.ok ? l.input : <span className="text-danger">{l.input}</span>}</td><td className="py-1 text-right">{f2(l.net)}</td><td className="py-1 text-right">{f2(l.tax)}</td><td className="py-1 text-right">{f2(l.gross)}</td></tr>)}
               <tr className="border-t border-border font-mono text-xs font-semibold"><td className="py-1">Total</td><td className="py-1 text-right">{f2(lines.reduce((a, l) => a + l.net, 0))}</td><td className="py-1 text-right">{f2(lines.reduce((a, l) => a + l.tax, 0))}</td><td className="py-1 text-right">{f2(lines.reduce((a, l) => a + l.gross, 0))}</td></tr></tbody></table></div>}
-          {lines.length > 0 && <DlButton className="mt-2" name="tax.csv" mime="text/csv" data={() => toCsv([['input', 'net', 'tax', 'gross'], ...lines.map((l) => [l.input, l.net.toFixed(2), l.tax.toFixed(2), l.gross.toFixed(2)])])}>Download CSV</DlButton>}
+          {lines.length > 0 && <DlButton className="mt-2" name="tax.csv" mime="text/csv" data={() => toCsv([['input', 'net', 'tax', 'gross'], ...lines.map((l) => [l.input, l.net.toFixed(2), l.tax.toFixed(2), l.gross.toFixed(2)])])}>Download list CSV</DlButton>}
         </div>
       </>}
       side={<>

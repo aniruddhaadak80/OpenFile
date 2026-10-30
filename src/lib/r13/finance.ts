@@ -3,6 +3,8 @@
  * transaction categories. Pure functions with no DOM, so they run in Node tests too. */
 
 export interface Txn { date: string; amount: number; description: string; payee?: string; memo?: string; ref?: string; balance?: number; type?: string; category?: string; currency?: string }
+/** Payee and memo joined for a description, without repeating text when banks put the same words in both fields. */
+const joinDesc = (a?: string, b?: string) => { const x = (a ?? '').trim(), y = (b ?? '').trim(); if (!x || !y) return x || y; const X = x.toLowerCase(), Y = y.toLowerCase(); return Y.includes(X) ? y : X.includes(Y) ? x : `${x} ${y}` }
 export interface Statement { format: string; account?: string; currency?: string; txns: Txn[]; warnings: string[] }
 
 const iso = (y: number, m: number, d: number) => `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
@@ -60,7 +62,7 @@ export function parseOfx(text: string): Statement {
   const ofxDate = (s?: string) => (s && /^\d{8}/.test(s) ? iso(+s.slice(0, 4), +s.slice(4, 6), +s.slice(6, 8)) : '')
   const txns: Txn[] = blocks.map((b) => {
     const name = tag(b, 'NAME'), memo = tag(b, 'MEMO')
-    return { date: ofxDate(tag(b, 'DTPOSTED')), amount: num(tag(b, 'TRNAMT')), description: decodeEnt([name, memo].filter(Boolean).join(' ') || ''), payee: name && decodeEnt(name), memo: memo && decodeEnt(memo), ref: tag(b, 'FITID'), type: tag(b, 'TRNTYPE') }
+    return { date: ofxDate(tag(b, 'DTPOSTED')), amount: num(tag(b, 'TRNAMT')), description: decodeEnt(joinDesc(name, memo)), payee: name && decodeEnt(name), memo: memo && decodeEnt(memo), ref: tag(b, 'FITID'), type: tag(b, 'TRNTYPE') }
   }).filter((t) => t.date && isFinite(t.amount))
   if (!blocks.length) warnings.push('No transactions (STMTTRN) found in this OFX file.')
   return { format: /<\?xml/i.test(text) ? 'OFX 2 (XML)' : 'OFX 1 (SGML)', account: tag(text, 'ACCTID'), currency: tag(text, 'CURDEF'), txns, warnings }
@@ -77,7 +79,7 @@ export function parseQif(text: string, dayFirst = false): Statement {
     if (!line) continue
     if (line.startsWith('!')) { type = line.slice(1); continue }
     const c = line[0], v = line.slice(1).trim()
-    if (c === '^') { if (cur.date && isFinite(cur.amount as number)) txns.push({ date: cur.date, amount: cur.amount!, description: [cur.payee, cur.memo].filter(Boolean).join(' '), payee: cur.payee, memo: cur.memo, ref: cur.ref, category: cur.category }); cur = {}; continue }
+    if (c === '^') { if (cur.date && isFinite(cur.amount as number)) txns.push({ date: cur.date, amount: cur.amount!, description: joinDesc(cur.payee, cur.memo), payee: cur.payee, memo: cur.memo, ref: cur.ref, category: cur.category }); cur = {}; continue }
     if (c === 'D') cur.date = parseDate(v.replace(/'/g, '/').replace(/\s/g, ''), dayFirst)
     else if (c === 'T' || c === 'U') cur.amount = parseMoney(v)
     else if (c === 'P') cur.payee = v
@@ -100,7 +102,7 @@ export function parseCamt(xml: string): Statement {
     const date = parseDate(g(e, ['BookgDt', 'Dt']) || g(e, ['BookgDt', 'DtTm']).slice(0, 10) || g(e, ['ValDt', 'Dt']))
     const info = g(e, ['RmtInf', 'Ustrd']) || g(e, ['AddtlNtryInf'])
     const party = dbit ? g(e, ['Cdtr', 'Nm']) || g(e, ['Cdtr', 'Pty', 'Nm']) : g(e, ['Dbtr', 'Nm']) || g(e, ['Dbtr', 'Pty', 'Nm'])
-    return { date, amount: (dbit ? -1 : 1) * Number(amtM?.[2] ?? NaN), currency: amtM?.[1], description: [party, info].filter(Boolean).join(' '), payee: party || undefined, memo: info || undefined, ref: g(e, ['AcctSvcrRef']) || g(e, ['EndToEndId']) || undefined }
+    return { date, amount: (dbit ? -1 : 1) * Number(amtM?.[2] ?? NaN), currency: amtM?.[1], description: joinDesc(party, info), payee: party || undefined, memo: info || undefined, ref: g(e, ['AcctSvcrRef']) || g(e, ['EndToEndId']) || undefined }
   }).filter((t) => t.date && isFinite(t.amount))
   if (!entries.length) warnings.push('No entries (Ntry) found in this CAMT file.')
   const ver = /camt\.(05[234])/.exec(xml)?.[1]
@@ -233,26 +235,27 @@ export function cleanPayee(s: string) {
     .replace(/[*#/\\_\-:]+/g, ' ').replace(/\b\d[\d\s]{3,}\b/g, ' ').replace(/\b[A-Z0-9]{10,}\b/g, ' ').replace(/\s+/g, ' ').trim().split(' ').slice(0, 3).join(' ')
 }
 
-/** Payees that charge about the same amount at roughly monthly gaps (subscriptions, rent, bills). */
+/** Payees that charge (or pay in) about the same amount at roughly regular gaps: subscriptions, rent, bills, and income such as salary. */
 export function findRecurring(txns: Txn[]) {
   const by = new Map<string, Txn[]>()
-  for (const t of txns) if (t.amount < 0) { const k = cleanPayee(t.payee || t.description); if (k) by.set(k, [...(by.get(k) ?? []), t]) }
-  const out: { name: string; amount: number; every: string; count: number }[] = []
-  for (const [name, list] of by) {
+  for (const t of txns) if (t.amount !== 0) { const k = cleanPayee(t.payee || t.description); if (k) { const key = (t.amount < 0 ? '-' : '+') + k; by.set(key, [...(by.get(key) ?? []), t]) } }
+  const out: { name: string; amount: number; every: string; count: number; income: boolean }[] = []
+  for (const [key, list] of by) {
     if (list.length < 3) continue
+    const income = key[0] === '+', name = key.slice(1)
     const s = [...list].sort((a, b) => a.date.localeCompare(b.date))
     const gaps = s.slice(1).map((t, i) => (Date.parse(t.date) - Date.parse(s[i].date)) / 864e5)
     const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length
-    const amts = s.map((t) => -t.amount), mean = amts.reduce((a, b) => a + b, 0) / amts.length
+    const amts = s.map((t) => Math.abs(t.amount)), mean = amts.reduce((a, b) => a + b, 0) / amts.length
     const spread = Math.max(...amts.map((a) => Math.abs(a - mean))) / (mean || 1)
     // One charge in each of 3+ back to back calendar months also counts as monthly, even when the day of the month
     // moves around (rent paid on the 1st one month and the 9th the next).
     const ym = s.map((t) => +t.date.slice(0, 4) * 12 + +t.date.slice(5, 7))
     const monthRun = ym.every((v, i) => i === 0 || v - ym[i - 1] === 1)
     const every = (avg > 25 && avg < 35) || monthRun ? 'monthly' : avg > 5 && avg < 9 ? 'weekly' : avg > 350 && avg < 380 ? 'yearly' : ''
-    if (every && spread < 0.15) out.push({ name, amount: Math.round(mean * 100) / 100, every, count: s.length })
+    if (every && spread < 0.15) out.push({ name, amount: Math.round(mean * 100) / 100, every, count: s.length, income })
   }
-  return out.sort((a, b) => b.amount - a.amount)
+  return out.sort((a, b) => Number(a.income) - Number(b.income) || b.amount - a.amount)
 }
 
 /* ---------------- rule based categories (also the quick mode of the AI categorizer) ---------------- */
@@ -314,13 +317,14 @@ export function amortize(P: number, ratePct: number, n: number, extraMonthly = 0
 export interface GrowthRow { year: number; invested: number; interest: number; value: number }
 
 /** Lump sum plus a monthly contribution, compounded `perYear` times a year, contributions at month end. */
-export function growth(o: { start: number; monthly: number; ratePct: number; years: number; perYear?: number; stepUpPct?: number }): GrowthRow[] {
+/** timing 'start' adds each monthly amount at the start of the month, so it earns that month's growth too (how most SIP calculators work). */
+export function growth(o: { start: number; monthly: number; ratePct: number; years: number; perYear?: number; stepUpPct?: number; timing?: 'start' | 'end' }): GrowthRow[] {
   const per = o.perYear ?? 12
   const rows: GrowthRow[] = []
   let value = o.start, invested = o.start, monthly = o.monthly
   const mRate = (1 + o.ratePct / 100 / per) ** (per / 12) - 1 // effective monthly rate
   for (let y = 1; y <= o.years; y++) {
-    for (let m = 0; m < 12; m++) { value = value * (1 + mRate) + monthly; invested += monthly }
+    for (let m = 0; m < 12; m++) { value = o.timing === 'start' ? (value + monthly) * (1 + mRate) : value * (1 + mRate) + monthly; invested += monthly }
     rows.push({ year: y, invested, interest: value - invested, value })
     monthly *= 1 + (o.stepUpPct ?? 0) / 100
   }

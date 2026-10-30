@@ -78,7 +78,7 @@ export default function HtmlToMarkdown() {
           <CodeArea value={html} onChange={setHtml} placeholder="Paste HTML here" />
         </Pane>
         <Pane title={<Segmented value={view} onChange={setView} options={[{ value: 'md', label: 'Markdown' }, { value: 'preview', label: 'Preview' }]} />} className="h-[480px]" actions={md ? <><CopyButton text={md} variant="ghost" /><DownloadButton text={md} filename="converted.md" mime="text/markdown" /></> : null}>
-          {view === 'md' ? <CodeView code={md} className="h-full" /> : <div className="prose-sm scrollbar-thin h-full overflow-auto p-5 text-sm leading-relaxed [&_a]:text-accent [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-3 [&_code]:font-mono [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-bold [&_li]:ml-5 [&_ol]:list-decimal [&_pre]:rounded-lg [&_pre]:bg-surface-2 [&_pre]:p-3 [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:px-2 [&_th]:border [&_th]:border-border [&_th]:px-2 [&_ul]:list-disc" dangerouslySetInnerHTML={{ __html: previewHtml }} />}
+          {view === 'md' ? <CodeView code={md} lang="plain" className="h-full" /> : <div className="prose-sm scrollbar-thin h-full overflow-auto p-5 text-sm leading-relaxed [&_a]:text-accent [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-3 [&_code]:font-mono [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-bold [&_li]:ml-5 [&_ol]:list-decimal [&_pre]:rounded-lg [&_pre]:bg-surface-2 [&_pre]:p-3 [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:px-2 [&_th]:border [&_th]:border-border [&_th]:px-2 [&_ul]:list-disc" dangerouslySetInnerHTML={{ __html: previewHtml }} />}
         </Pane>
       </div>
     </div>

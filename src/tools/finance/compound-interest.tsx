@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Input, Label, Select, ToolGrid } from '@/components/ui'
+import { Input, Label, Segmented, Select, ToolGrid } from '@/components/ui'
 import { growth, cagr } from '@/lib/r13/finance'
 import { Lines } from '@/lib/r13/ui'
 import { toCsv, DlButton } from '@/lib/bcat/kit'
@@ -15,7 +15,8 @@ export default function CompoundInterest() {
   const [per, setPer] = useState('12')
   const [step, setStep] = useState('0')
   const [infl, setInfl] = useState('5')
-  const rows = useMemo(() => growth({ start: +start || 0, monthly: +monthly || 0, ratePct: +rate || 0, years: Math.min(80, Math.max(1, Math.round(+years || 1))), perYear: +per, stepUpPct: +step || 0 }), [start, monthly, rate, years, per, step])
+  const [timing, setTiming] = useState<'start' | 'end'>('start')
+  const rows = useMemo(() => growth({ start: +start || 0, monthly: +monthly || 0, ratePct: +rate || 0, years: Math.min(80, Math.max(1, Math.round(+years || 1))), perYear: +per, stepUpPct: +step || 0, timing }), [start, monthly, rate, years, per, step, timing])
   const last = rows.at(-1)!
   const real = last.value / (1 + (+infl || 0) / 100) ** rows.length
   return (
@@ -30,6 +31,7 @@ export default function CompoundInterest() {
       side={<>
         <label className="block text-xs text-muted">Starting amount<Input inputMode="decimal" value={start} onChange={(e) => setStart(e.target.value)} /></label>
         <label className="block text-xs text-muted">Added every month (SIP or savings)<Input inputMode="decimal" value={monthly} onChange={(e) => setMonthly(e.target.value)} /></label>
+        <div><Label hint={timing === 'start' ? 'Like most SIP calculators' : 'Like a recurring deposit paid at month end'}>Monthly amount goes in at the</Label><Segmented value={timing} onChange={setTiming} options={[{ value: 'start', label: 'Start of month' }, { value: 'end', label: 'End of month' }]} /></div>
         <label className="block text-xs text-muted">Yearly return or interest (%)<Input inputMode="decimal" value={rate} onChange={(e) => setRate(e.target.value)} /></label>
         <label className="block text-xs text-muted">Years<Input inputMode="numeric" value={years} onChange={(e) => setYears(e.target.value)} /></label>
         <label className="block text-xs text-muted">Compounding<Select value={per} onChange={setPer} options={[{ value: '1', label: 'Yearly' }, { value: '2', label: 'Half yearly' }, { value: '4', label: 'Quarterly (most bank deposits)' }, { value: '12', label: 'Monthly' }, { value: '365', label: 'Daily' }]} /></label>

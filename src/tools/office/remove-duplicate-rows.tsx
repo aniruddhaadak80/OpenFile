@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CopyMinus, Download } from 'lucide-react'
 import { Button, Card, Label, Segmented, Switch } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -12,6 +12,8 @@ export default function RemoveDuplicateRows() {
   const [cols, setCols] = useState<string[]>([])
   const [trim, setTrim] = useState(true), [caseless, setCaseless] = useState(true), [spaces, setSpaces] = useState(true)
   const [view, setView] = useState<'kept' | 'removed'>('kept'), [fmt, setFmt] = useState<'xlsx' | 'csv' | 'ods'>('xlsx')
+  // Save in the same kind of file that was opened: a CSV in gives a CSV out unless the user picks another format.
+  useEffect(() => { const n = s.file?.name.toLowerCase() ?? ''; if (n) setFmt(/\.(csv|tsv|txt)$/.test(n) ? 'csv' : /\.ods$/.test(n) ? 'ods' : 'xlsx') }, [s.file])
   const opts = useColOptions(s.rows, header)
   const r = useMemo(() => s.rows.length ? dedupe(s.rows, { cols: cols.length ? cols.map(Number) : null, header, keep, trim, caseless, spaces }) : null, [s.rows, cols, header, keep, trim, caseless, spaces])
   const save = async (which: 'kept' | 'removed') => { if (!r || !s.book) return; const rows = which === 'kept' ? r.rows : r.removed; downloadBlob(await writeBook([{ name: which === 'kept' ? s.book.sheets[s.sheet].name : 'Duplicates', rows }], fmt), `${s.book.name}-${which === 'kept' ? 'deduped' : 'duplicates'}.${fmt}`) }

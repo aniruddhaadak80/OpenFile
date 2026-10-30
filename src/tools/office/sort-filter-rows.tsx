@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowDownUp, Plus, X } from 'lucide-react'
 import { Button, Card, Input, Label, Segmented, Select, Switch } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -15,6 +15,8 @@ export default function SortFilterRows() {
   const [match, setMatch] = useState<'all' | 'any'>('all')
   const [sort, setSort] = useState<SortKey[]>([{ col: 0, dir: 'asc', as: 'auto' }])
   const [fmt, setFmt] = useState<'xlsx' | 'csv' | 'ods'>('xlsx')
+  // Save in the same kind of file that was opened: a CSV in gives a CSV out unless the user picks another format.
+  useEffect(() => { const n = s.file?.name.toLowerCase() ?? ''; if (n) setFmt(/\.(csv|tsv|txt)$/.test(n) ? 'csv' : /\.ods$/.test(n) ? 'ods' : 'xlsx') }, [s.file])
   const opts = useColOptions(s.rows, header)
   const out = useMemo(() => (s.rows.length ? sortFilter(s.rows, { header, filters, match, sort }) : []), [s.rows, header, filters, match, sort])
   const upd = <T,>(arr: T[], i: number, p: Partial<T>) => arr.map((x, k) => (k === i ? { ...x, ...p } : x))

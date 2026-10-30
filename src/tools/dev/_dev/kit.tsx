@@ -128,8 +128,11 @@ export const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 /** Tiny multi-language syntax highlighter → HTML string (tokens colored with inline classes). */
 const KW = /\b(const|let|var|function|return|await|async|import|from|export|new|if|else|for|while|try|catch|throw|class|public|private|static|void|fn|use|let|mut|package|func|def|end|do|require|using|var|val|true|false|null|nil|None|True|False|struct|impl|match|in|of|final|string|int|bool|echo|as|with|go|defer|main|self|this|then|elif|import|unwrap|try!|guard|print|println|Ok|Err)\b/g
 const SQL_KW = new Set('select from where and or join left right inner outer full cross on group by order having limit insert into values update set delete create table alter drop as distinct case when then else end not null is in like ilike union all with primary key references foreign index default asc desc offset returning exists between unique constraint check view trigger function procedure begin commit rollback transaction grant revoke truncate cascade if replace column add rename to using over partition window row rows fetch first next only top count sum avg min max coalesce cast int integer bigint smallint varchar char text boolean bool date timestamp timestamptz numeric decimal float real serial bigserial uuid json jsonb auto_increment engine charset collate lateral natural except intersect merge upsert conflict do nothing'.split(' '))
-export type HlLang = 'js' | 'py' | 'json' | 'sql' | 'generic'
+export type HlLang = 'js' | 'py' | 'json' | 'sql' | 'generic' | 'plain' | 'conf'
 export function highlightCode(code: string, lang: HlLang = 'generic'): string {
+  // prose (Markdown) is shown as is; config files (.gitignore) only dim their # comment lines
+  if (lang === 'plain') return esc(code)
+  if (lang === 'conf') return code.split('\n').map((l) => (/^\s*#/.test(l) ? `<span class="text-muted italic">${esc(l)}</span>` : esc(l))).join('\n')
   // tokenise: strings, comments, numbers, keywords
   const re = lang === 'sql'
     ? /(--[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.|'')*'|"(?:[^"\\]|\\.)*"|`[^`]*`)|(\b\d+(?:\.\d+)?\b)|(\b[A-Za-z_]\w*\b)/g

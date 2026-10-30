@@ -33,7 +33,7 @@ export default function GitignoreLicenseGenerator() {
             <Field label="Your own lines" hint="One pattern per line"><textarea value={extra} onChange={(e) => setExtra(e.target.value)} className="min-h-24 w-full rounded-xl border border-border bg-surface p-3 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent" placeholder={'uploads/\n*.local.json'} /></Field>
           </div>
           <Pane title={`.gitignore (${picked.length} stacks)`} className="h-[520px]" actions={<><CopyButton text={gitignore} variant="ghost" /><DownloadButton text={gitignore} filename=".gitignore" /></>}>
-            <CodeView code={gitignore || '# Pick a stack on the left'} className="h-full" />
+            <CodeView code={gitignore || '# Pick a stack on the left'} lang="conf" className="h-full" />
           </Pane>
         </div>
       ) : (

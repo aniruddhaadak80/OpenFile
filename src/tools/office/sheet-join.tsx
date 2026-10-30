@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Merge } from 'lucide-react'
 import { Button, Card, Label, Segmented, Select, Switch } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -12,6 +12,8 @@ export default function SheetJoin() {
   const [how, setHow] = useState<'left' | 'inner' | 'full' | 'anti'>('left')
   const [bring, setBring] = useState<string[]>([])
   const [caseless, setCaseless] = useState(true), [fmt, setFmt] = useState<'xlsx' | 'csv'>('xlsx')
+  // Save in the same kind of file that was opened: a CSV in gives a CSV out unless the user picks another format.
+  useEffect(() => { const n = a.file?.name.toLowerCase() ?? ''; if (n) setFmt(/\.(csv|tsv|txt)$/.test(n) ? 'csv' : 'xlsx') }, [a.file])
   const oa = useColOptions(a.rows, true), ob = useColOptions(b.rows, true)
   const cols = bring.length ? bring.map(Number) : ob.map((o) => +o.value).filter((i) => i !== +kb)
   const res = useMemo(() => {
