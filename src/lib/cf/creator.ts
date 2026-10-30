@@ -3,6 +3,11 @@
 
 const STOP = new Set('a an the and or but if then of to in on at by for with from as is are was were be been being this that these those it its into over under than so such not no can could would should will may might must do does did have has had which who whom whose what when where why how there their they them he she his her we our you your i me my also very more most many much some any each other about after before between during through while because just like get got make made really still even only new one two three all out up down off its im youre dont cant wont ive weve'.split(' '))
 
+function stripTags(x: string): string {
+  let prev: string
+  do { prev = x; x = x.replace(/<[^>]*>/g, '') } while (x !== prev)
+  return x.replace(/</g, '')
+}
 export const toTag = (s: string, style: 'camel' | 'lower' | 'pascal' = 'pascal') => {
   const words = s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(Boolean)
   if (!words.length) return ''
@@ -111,7 +116,7 @@ export function parseSubs(text: string): Cue[] {
   for (const block of t.split(/\n{2,}/)) {
     const lines = block.split('\n').filter(Boolean); const i = lines.findIndex((l) => l.includes('-->')); if (i < 0) continue
     const [a, b] = lines[i].split('-->'); const s = tc(a), e = tc(b.split(/\s/).filter(Boolean)[0] ?? '')
-    if (isFinite(s) && isFinite(e)) out.push({ start: s, end: e, text: lines.slice(i + 1).join('\n').replace(/<[^>]+>/g, '') })
+    if (isFinite(s) && isFinite(e)) out.push({ start: s, end: e, text: stripTags(lines.slice(i + 1).join('\n')) })
   }
   return out
 }

@@ -4,6 +4,7 @@ import { Button, Card, Dropzone, Label, Select, Slider, Switch } from '@/compone
 import { downloadBlob } from '@/lib/files'
 import { SAFE_ZONES } from '@/lib/cf/creator'
 import { canvasBlob, drawCover } from '@/lib/cf/canvas'
+import { safeBlobUrl } from '@/lib/safe'
 import { FileBar } from '@/lib/cf/ui'
 
 export default function SafeZoneChecker() {
@@ -17,7 +18,7 @@ export default function SafeZoneChecker() {
   const [rw, rh] = z.ratio.split(':').map(Number)
   const W = rw > rh ? 960 : 540, H = Math.round((W * rh) / rw)
   const open = (f: File) => {
-    setFile(f); const url = URL.createObjectURL(f)
+    setFile(f); const url = safeBlobUrl(URL.createObjectURL(f))
     if (f.type.startsWith('video')) { const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url; v.onloadeddata = () => { setDur(v.duration || 0); setSrc(v) }; v.onseeked = () => setTick((x) => x + 1) }
     else { const i = new Image(); i.onload = () => setSrc(i); i.src = url }
   }

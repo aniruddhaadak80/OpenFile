@@ -40,7 +40,11 @@ export function parseRobots(txt: string) {
   }
   return { groups, sitemaps }
 }
-const ruleRe = (p: string) => new RegExp('^' + p.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\\\$$/, '$').replace(/\$$/, '$'))
+const ruleRe = (p: string) => {
+  const end = p.endsWith('$')
+  const body = end ? p.slice(0, -1) : p
+  return new RegExp('^' + body.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + (end ? '$' : ''))
+}
 export function robotsAllowed(txt: string, agent: string, path: string): { allowed: boolean; rule?: string } {
   const { groups } = parseRobots(txt)
   const a = agent.toLowerCase()
@@ -177,13 +181,13 @@ export function headerList(o: HeaderOpts): [string, string][] {
   return h
 }
 export function headersFor(h: [string, string][], target: 'apache' | 'nginx' | 'netlify' | 'vercel' | 'cloudflare' | 'meta' | 'express'): string {
-  const q = (s: string) => s.replace(/"/g, '\\"')
+  const q = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
   switch (target) {
     case 'apache': return '<IfModule mod_headers.c>\n' + h.map(([k, v]) => `  Header always set ${k} "${q(v)}"`).join('\n') + '\n</IfModule>\n'
     case 'nginx': return h.map(([k, v]) => `add_header ${k} "${q(v)}" always;`).join('\n') + '\n'
     case 'netlify': case 'cloudflare': return '/*\n' + h.map(([k, v]) => `  ${k}: ${v}`).join('\n') + '\n'
     case 'vercel': return JSON.stringify({ headers: [{ source: '/(.*)', headers: h.map(([key, value]) => ({ key, value })) }] }, null, 2) + '\n'
-    case 'express': return "app.use((req, res, next) => {\n" + h.map(([k, v]) => `  res.setHeader('${k}', '${v.replace(/'/g, "\\'")}')`).join('\n') + '\n  next()\n})\n'
+    case 'express': return "app.use((req, res, next) => {\n" + h.map(([k, v]) => `  res.setHeader('${k}', '${v.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')`).join('\n') + '\n  next()\n})\n'
     case 'meta': return h.filter(([k]) => k === 'Content-Security-Policy' || k === 'Referrer-Policy').map(([k, v]) => k === 'Referrer-Policy' ? `<meta name="referrer" content="${xmlEsc(v)}">` : `<meta http-equiv="${k}" content="${xmlEsc(v)}">`).join('\n') + '\n'
   }
 }
@@ -289,7 +293,7 @@ export function linksFromLines(text: string) {
 export interface AuditItem { id: string; level: 'pass' | 'warn' | 'fail'; text: string }
 export interface Audit { title: string; description: string; h1: string[]; words: number; items: AuditItem[]; score: number; links: { internal: number; external: number }; images: number; missingAlt: number }
 const attr = (tag: string, n: string) => tag.match(new RegExp(`\\b${n}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'))?.slice(1).find((x) => x != null) ?? null
-const strip = (h: string) => h.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
+const strip = (h: string) => h.replace(/<script[\s\S]*?<\/script\s*>/gi, ' ').replace(/<style[\s\S]*?<\/style\s*>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
 export function auditHtml(html: string, keyword = ''): Audit {
   const items: AuditItem[] = []
   const add = (id: string, level: AuditItem['level'], text: string) => items.push({ id, level, text })

@@ -5,7 +5,7 @@ import { OutBox, Stat, Stats } from '@/lib/cf/ui'
 
 interface L { href: string; abs: string; text: string; rel: string; kind: 'internal' | 'external' | 'mail' | 'other'; target: string }
 const attr = (t: string, n: string) => t.match(new RegExp(`\\b${n}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'))?.slice(1).find((x) => x != null) ?? ''
-const strip = (h: string) => h.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
+const strip = (h: string) => h.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
 
 export function extractAnchors(html: string, base: string): L[] {
   let host = ''; try { host = new URL(base).host } catch { /* no base */ }

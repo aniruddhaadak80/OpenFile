@@ -14,7 +14,7 @@ interface Report { file: File; kind: string; findings: Finding[]; fix?: { slug: 
 const TOKEN_RE = new RegExp(['-----BEGIN [A-Z ]*PRI' + 'VATE KEY-----', 'AK' + 'IA[0-9A-Z]{16}', 'gh' + 'p_[A-Za-z0-9]{36}', 'AI' + 'za[0-9A-Za-z_-]{35}', 'xox' + '[baprs]-[A-Za-z0-9-]{10,}'].join('|'), 'g')
 const TEXT_EXT = /\.(txt|csv|md|json|log|html?|xml|ya?ml|ini|tsv|conf|cfg|properties)$/
 
-const strip = (s: string) => s.replace(/<[^>]+>/g, '').trim()
+const strip = (s: string) => { let p: string; do { p = s; s = s.replace(/<[^>]*>/g, '') } while (s !== p); return s.replace(/</g, '').trim() }
 async function officeLeaks(f: File, findings: Finding[]) {
   const JSZip = (await import('jszip')).default
   const z = await JSZip.loadAsync(await f.arrayBuffer())
