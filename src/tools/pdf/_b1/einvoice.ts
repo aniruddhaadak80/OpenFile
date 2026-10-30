@@ -133,10 +133,12 @@ export type Syntax = 'CII' | 'UBL'
 export interface Parsed { syntax: Syntax; guideline: string; invoice: Invoice; declared: { lineTotal?: number; taxBasis?: number; taxTotal?: number; grandTotal?: number; duePayable?: number; vat: VatBreak[]; lineAmounts: number[] } }
 
 export function parseInvoice(xml: string): Parsed {
+  // binary or non-XML files (a photo, an audio file) get a plain message instead of garbled characters
+  if (!/^\s*</.test(xml.replace(/^\uFEFF/, ''))) throw new Error('This file is not an XML e-invoice. Choose a ZUGFeRD, Factur-X or XRechnung XML file (CII or UBL).')
   const doc = parseXml(xml)
   if (doc.name === 'CrossIndustryInvoice') return parseCII(doc)
   if (doc.name === 'Invoice' || doc.name === 'CreditNote') return parseUBL(doc)
-  throw new Error(`Unknown e-invoice format (root element "${doc.name}"). Expected a CII or UBL invoice.`)
+  throw new Error(/^[\w.-]{1,60}$/.test(doc.name) ? `Unknown e-invoice format (root element "${doc.name}"). Expected a CII or UBL invoice.` : 'Unknown e-invoice format. Expected a CII or UBL invoice.')
 }
 function parseCII(d: XNode): Parsed {
   const tx = kid(d, 'SupplyChainTradeTransaction')

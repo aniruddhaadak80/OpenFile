@@ -38,7 +38,10 @@ export default function ImageCropper() {
   const socialPreset = SOCIAL_SIZES.find((s) => s.id === social)
   const ratio: number | null = circle ? 1 : socialPreset ? socialPreset.w / socialPreset.h : (() => { const r = RATIOS.find((x) => x.id === ratioId)!.r; return r === -1 ? (img ? img.naturalWidth / img.naturalHeight : null) : r })()
 
-  const onFiles = useCallback(async (f: File[]) => { const im = await decode(f[0]); setFile(f[0]); setImg(im); setAngle(0); setFlip({ h: false, v: false }); setResult(null) }, [])
+  const onFiles = useCallback(async (f: File[]) => { const im = await decode(f[0]); setFile(f[0]); setImg(im); setAngle(0); setFlip({ h: false, v: false }); setResult(null)
+    // keep the photo's own format so a crop of a JPG stays a small JPG
+    const t = f[0].type.toLowerCase(), n = f[0].name.toLowerCase()
+    setFmt(t === 'image/jpeg' || /\.jpe?g$/.test(n) ? 'jpg' : t === 'image/webp' || n.endsWith('.webp') ? 'webp' : 'png') }, [])
 
   // rebuild the rotated/flipped working canvas
   useEffect(() => {

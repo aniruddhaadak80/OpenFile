@@ -6,6 +6,15 @@ import { toast } from '@/components/toast'
 import { CODE_THEMES, tokenColor } from '@/lib/b14/design'
 import { OpenButton } from '@/lib/b14/ui'
 
+/** True when the file is binary (a photo, audio, an archive), so it is not loaded as text. */
+async function isBinaryFile(f: File): Promise<boolean> {
+  const b = new Uint8Array(await f.slice(0, 4096).arrayBuffer())
+  if ((b[0] === 0xff && b[1] === 0xfe) || (b[0] === 0xfe && b[1] === 0xff)) return false
+  let ctrl = 0
+  for (const c of b) { if (c === 0) return true; if (c < 9 || (c > 13 && c < 32)) ctrl++ }
+  return b.length > 0 && ctrl / b.length > 0.1
+}
+
 const SAMPLE = `// Debounce: wait until the user stops typing
 export function debounce<T extends (...a: any[]) => void>(fn: T, ms = 250) {
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -112,7 +121,7 @@ export default function CodeToImage() {
         </div>
         <Textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck={false} aria-label="Code" className="min-h-48" />
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-          <OpenButton accept=".js,.ts,.tsx,.jsx,.py,.java,.go,.rs,.c,.h,.cpp,.cs,.php,.rb,.kt,.swift,.sql,.sh,.json,.yaml,.yml,.xml,.css,.html,.md,.txt" onFiles={async (f) => { setCode((await f[0].text()).slice(0, 20000)); setTitle(f[0].name) }} label="Open code file" />
+          <OpenButton accept=".js,.ts,.tsx,.jsx,.py,.java,.go,.rs,.c,.h,.cpp,.cs,.php,.rb,.kt,.swift,.sql,.sh,.json,.yaml,.yml,.xml,.css,.html,.md,.txt" onFiles={async (f) => { if (await isBinaryFile(f[0])) { toast(`${f[0].name} is not a code or text file. Choose a source file such as .js, .py or .txt.`, 'error'); return } setCode((await f[0].text()).slice(0, 20000)); setTitle(f[0].name) }} label="Open code file" />
           <span>Detected: {hl.lang || 'plain text'} · {lines.length} lines</span>
         </div>
       </>}

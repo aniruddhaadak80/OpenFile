@@ -6,6 +6,15 @@ import { toast } from '@/components/toast'
 import { chartSvg, parseChartTable, type ChartKind } from '@/lib/b14/design'
 import { OpenButton, SvgPreview } from '@/lib/b14/ui'
 
+/** True when the file is binary (a photo, audio, an archive), so it is not loaded as text. */
+async function isBinaryFile(f: File): Promise<boolean> {
+  const b = new Uint8Array(await f.slice(0, 4096).arrayBuffer())
+  if ((b[0] === 0xff && b[1] === 0xfe) || (b[0] === 0xfe && b[1] === 0xff)) return false
+  let ctrl = 0
+  for (const c of b) { if (c === 0) return true; if (c < 9 || (c > 13 && c < 32)) ctrl++ }
+  return b.length > 0 && ctrl / b.length > 0.1
+}
+
 const SAMPLE = 'Month,Online,In store\nJan,120,80\nFeb,150,95\nMar,170,90\nApr,165,110\nMay,210,120\nJun,240,135'
 const KINDS: { id: ChartKind; label: string }[] = [{ id: 'bar', label: 'Bars' }, { id: 'stacked', label: 'Stacked' }, { id: 'hbar', label: 'Sideways bars' }, { id: 'line', label: 'Line' }, { id: 'area', label: 'Area' }, { id: 'pie', label: 'Pie' }, { id: 'donut', label: 'Donut' }, { id: 'scatter', label: 'Dots' }]
 const PALETTES: Record<string, string[]> = { brand: ['#F5A524', '#14B8A6', '#38BDF8', '#84CC16', '#F97316', '#22D3EE', '#10B981', '#FBBF24'], ocean: ['#0EA5E9', '#14B8A6', '#22D3EE', '#0F766E', '#38BDF8', '#2DD4BF'], warm: ['#F97316', '#F5A524', '#EF4444', '#FBBF24', '#FB923C', '#FDE68A'], mono: ['#111827', '#4B5563', '#9CA3AF', '#D1D5DB', '#6B7280', '#374151'] }
@@ -39,7 +48,7 @@ export default function ChartMaker() {
         </div>
         {pieWarn && <p className="text-xs text-muted">Pie and donut charts use the first number column only.</p>}
         <Field label="Data (paste from a spreadsheet, CSV or type it)"><Textarea value={text} onChange={(e) => setText(e.target.value)} spellCheck={false} className="min-h-44" /></Field>
-        <div className="flex flex-wrap gap-2"><OpenButton accept=".csv,.tsv,.txt" onFiles={async (f) => setText(await f[0].text())} label="Open CSV" /><span className="self-center text-xs text-muted">First column is labels, each next column is one series.</span></div>
+        <div className="flex flex-wrap gap-2"><OpenButton accept=".csv,.tsv,.txt" onFiles={async (f) => { if (await isBinaryFile(f[0])) { toast(`${f[0].name} is not a CSV or text file. Choose a .csv, .tsv or .txt file.`, 'error'); return } setText(await f[0].text()) }} label="Open CSV" /><span className="self-center text-xs text-muted">First column is labels, each next column is one series.</span></div>
       </>}
       side={<>
         <Field label="Title"><Input value={title} onChange={(e) => setTitle(e.target.value.slice(0, 90))} /></Field>
