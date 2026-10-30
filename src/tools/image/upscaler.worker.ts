@@ -8,8 +8,11 @@ env.allowLocalModels = false
 const post = (m: any, transfer: Transferable[] = []) => (self as unknown as DedicatedWorkerGlobalScope).postMessage(m, transfer)
 
 const MODEL = 'Xenova/swin2SR-classical-sr-x2-64'
+// The Photo Enhancer asks for the lightweight model when it runs on the CPU (about 3.5x faster on WebAssembly).
+const MODELS = new Set([MODEL, 'Xenova/swin2SR-lightweight-x2-64'])
 let pipe: any = null
 let pipeDevice = ''
+let pipeModel = ''
 
 async function gpuAvailable() {
   try {
@@ -20,10 +23,12 @@ async function gpuAvailable() {
   } catch { return false }
 }
 
-async function load(id: number, preferGpu: boolean) {
+/** gpuModel runs on WebGPU, cpuModel on WebAssembly (they are the same model unless the caller asks otherwise). */
+async function load(id: number, preferGpu: boolean, gpuModel: string, cpuModel: string) {
   const want = preferGpu && (await gpuAvailable()) ? ['webgpu', 'wasm'] : ['wasm']
-  if (pipe && want.includes(pipeDevice)) return pipe
-  if (pipe) { try { await pipe.dispose?.() } catch { /* ignore */ } pipe = null; pipeDevice = '' }
+  const modelFor = (d: string) => (d === 'webgpu' ? gpuModel : cpuModel)
+  if (pipe && want.includes(pipeDevice) && pipeModel === modelFor(pipeDevice)) return pipe
+  if (pipe) { try { await pipe.dispose?.() } catch { /* ignore */ } pipe = null; pipeDevice = ''; pipeModel = '' }
   const files = new Map<string, { loaded: number; total: number }>()
   const progress_callback = (e: any) => {
     if (e.status === 'progress' && e.file) {
@@ -34,7 +39,7 @@ async function load(id: number, preferGpu: boolean) {
   }
   let lastErr: unknown
   for (const device of want) {
-    try { pipe = await pipeline('image-to-image', MODEL, { device: device as any, progress_callback } as any); pipeDevice = device; return pipe }
+    try { pipe = await pipeline('image-to-image', modelFor(device), { device: device as any, progress_callback } as any); pipeDevice = device; pipeModel = modelFor(device); return pipe }
     catch (e) { lastErr = e }
   }
   throw lastErr
@@ -83,9 +88,11 @@ async function pass2x(p: any, src: Uint8ClampedArray, W: number, H: number, tile
 
 self.onmessage = async (ev: MessageEvent) => {
   const { id, rgba, width, height, passes, tile = 192, pad = 16, preferGpu = true } = ev.data
+  const model = MODELS.has(ev.data.model) ? ev.data.model : MODEL
+  const cpuModel = MODELS.has(ev.data.cpuModel) ? ev.data.cpuModel : model
   try {
-    const p = await load(id, preferGpu)
-    post({ id, type: 'ready', device: pipeDevice })
+    const p = await load(id, preferGpu, model, cpuModel)
+    post({ id, type: 'ready', device: pipeDevice, model: pipeModel })
     // RGBA to RGB once
     const px = new Uint8ClampedArray(rgba)
     let rgb = new Uint8ClampedArray(width * height * 3)

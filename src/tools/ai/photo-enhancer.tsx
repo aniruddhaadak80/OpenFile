@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Sparkles, Download, ZoomIn } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Sparkles, Download, ZoomIn, X } from 'lucide-react'
 import { Button, Field, FileChip, Progress, Segmented, Select, Slider, Switch, ToolGrid, ErrorNote, useJob } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
+import { estimateText } from '@/lib/b2/upscale-plan'
 import { BeforeAfter, ImageDrop, useDebounced, useObjectUrl } from '@/tools/image/_img/kit'
 import { decodeAny, encodeCanvas, type OutFmt } from '@/lib/b2/codecs'
 import { ENHANCE_DEFAULT, ENHANCE_PRESETS, enhance, enhanceGlobal, enhanceLocal, stripOverlap, type EnhanceOpts } from '@/lib/b2/enhance'
@@ -52,6 +53,10 @@ export default function PhotoEnhancer() {
   const [fmt, setFmt] = useState<OutFmt>('jpg')
   const [quality, setQuality] = useState(92)
   const [stage, setStage] = useState('')
+  const [upBusy, setUpBusy] = useState(false)
+  const [gpu, setGpu] = useState<boolean | null>(null)
+  const [note, setNote] = useState('')
+  const upMod = useRef<typeof import('@/lib/b2/upscale') | null>(null)
   const [beforeBlob, setBeforeBlob] = useState<Blob | null>(null)
   const [afterBlob, setAfterBlob] = useState<Blob | null>(null)
   const { busy, progress, error, run } = useJob()
@@ -67,6 +72,11 @@ export default function PhotoEnhancer() {
     return () => { dead = true; clearTimeout(t) }
   }, [small, opts])
 
+  // Learn whether a real GPU adapter exists once AI upscale is switched on, for the time estimate.
+  useEffect(() => { if (upscale && gpu === null) import('@/lib/b2/upscale').then((m) => { upMod.current = m; return m.hasGpuAdapter() }).then(setGpu) }, [upscale, gpu])
+  // Leaving the page stops a running upscale so the worker does not keep the CPU busy.
+  useEffect(() => () => upMod.current?.cancelUpscale(), [])
+
   const set = <K extends keyof EnhanceOpts>(k: K, v: EnhanceOpts[K]) => { setO((p) => ({ ...p, [k]: v })); setPreset('custom') }
   const pickPreset = (p: string) => { setPreset(p); if (ENHANCE_PRESETS[p]) setO(ENHANCE_PRESETS[p].opts) }
   const open = (fs: File[]) => run(async () => { const { canvas } = await decodeAny(fs[0]); setFile(fs[0]); setSrc(canvas); setAfterBlob(null) })
@@ -78,13 +88,17 @@ export default function PhotoEnhancer() {
 
   const save = () => run(async (setP) => {
     if (!src || !file) return
+    setNote('')
     setStage('Enhancing full-size photo'); setP(0.05)
     await new Promise((r) => setTimeout(r, 30))
     const end = upscale && !upTooBig ? 0.15 : 0.9
     let out = await applyEnhanceFull(src, o, (p) => setP(0.05 + p * (end - 0.05)))
     if (upscale && !upTooBig) {
-      const { upscale2x } = await import('@/lib/b2/upscale')
-      out = await upscale2x(out, (s, p) => { setStage(s); setP(0.15 + p * 0.8) })
+      const m = upMod.current ??= await import('@/lib/b2/upscale')
+      setUpBusy(true)
+      try { out = await m.upscale2x(out, (s, p) => { setStage(s); setP(0.15 + p * 0.8) }) }
+      catch (e: any) { setStage(''); if (e?.name === 'CancelledError') { setNote('Upscale cancelled. Nothing was saved.'); return } throw e }
+      finally { setUpBusy(false) }
     }
     setStage('Saving')
     downloadBlob(await encodeCanvas(out, fmt, { quality }), `${file.name.replace(/\.[^.]+$/, '')}-enhanced${upscale && !upTooBig ? '-2x' : ''}.${fmt}`)
@@ -113,12 +127,14 @@ export default function PhotoEnhancer() {
         <Switch checked={o.face} onChange={(v) => set('face', v)} label="Face friendly (smooth skin, gentle sharpening)" />
         <Switch checked={upscale} onChange={setUpscale} label={<span className="flex items-center gap-1"><ZoomIn className="size-3.5" />AI upscale 2× on download</span>} />
         {upscale && (upTooBig ? <p className="text-xs text-warn">This photo is too large to upscale in the browser. It will be saved at its current size.</p>
-          : <p className="text-xs text-muted">Uses the same AI model as the Image Upscaler (20 to 55 MB depending on your device, downloaded once).{upSlow ? ' Large photos can take a few minutes.' : ''}</p>)}
+          : <p className="text-xs text-muted">{gpu ? 'Runs the Image Upscaler\'s AI model on your GPU (21 to 55 MB depending on your browser, downloaded once).' : 'Runs a lighter AI model on your CPU (about 7 MB, downloaded once), tile by tile, so the page stays usable and you can cancel.'}{gpu !== null ? ` 2× in ${estimateText(src.width, src.height, gpu)}.` : ''}{!gpu && upSlow ? ' For a quick result, use a smaller photo or turn this off.' : ''}</p>)}
         <Field label="Save as"><Segmented value={fmt} onChange={setFmt} options={[{ value: 'jpg', label: 'JPG' }, { value: 'png', label: 'PNG' }, { value: 'webp', label: 'WEBP' }]} /></Field>
         {fmt !== 'png' && <Slider label="Quality" value={quality} onChange={setQuality} min={50} max={100} suffix="%" />}
         {busy && <Progress value={progress} label={stage || 'Working'} />}
         <ErrorNote error={error} />
-        <Button size="lg" className="w-full" loading={busy} icon={<Download className="size-4" />} onClick={save}>Download enhanced photo</Button>
+        {note && !busy && <p className="text-xs text-muted" role="status">{note}</p>}
+        {upBusy ? <Button size="lg" variant="outline" className="w-full" icon={<X className="size-4" />} onClick={() => upMod.current?.cancelUpscale()}>Cancel</Button>
+          : <Button size="lg" className="w-full" loading={busy} icon={<Download className="size-4" />} onClick={save}>Download enhanced photo</Button>}
         <Button variant="outline" className="w-full" icon={<Sparkles className="size-4" />} onClick={() => pickPreset('auto')} disabled={preset === 'auto'}>Back to Auto</Button>
         <Button variant="ghost" className="w-full" onClick={reset}>Start over</Button>
       </>}

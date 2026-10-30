@@ -1,55 +1,77 @@
-/* AI 2x upscale with the same Swin2SR model the Image Upscaler uses (so it is downloaded and cached once).
-   Runs in overlapping tiles for memory safety and real progress. */
-const MODEL = 'Xenova/swin2SR-classical-sr-x2-64'
-let upP: Promise<{ up: any; device: string }> | null = null
+/* AI 2x upscale for the Photo Enhancer. It sends the pixels to the Image Upscaler's worker (Swin2SR, run in overlapping
+   192 px tiles), so the page stays responsive, progress is reported per tile and cancelUpscale() stops it at once.
+   With a real WebGPU adapter it runs the full model on the GPU; on the CPU it runs the lightweight model, which is
+   about 3.5x faster on WebAssembly. */
+import { MODEL_CPU, MODEL_GPU, UP_PAD, UP_TILE, friendlyUpscaleError, remainingText } from './upscale-plan'
 
-export function getUpscaler(onDownload?: (loaded: number, total: number) => void) {
-  if (!upP) {
-    upP = (async () => {
-      const { pipeline } = await import('@huggingface/transformers')
-      const files: Record<string, { loaded: number; total: number }> = {}
-      const cb = (e: any) => {
-        if (e.status === 'progress' && e.file) {
-          files[e.file] = { loaded: e.loaded ?? 0, total: e.total ?? 0 }
-          const l = Object.values(files).reduce((a, f) => a + f.loaded, 0), t = Object.values(files).reduce((a, f) => a + f.total, 0)
-          onDownload?.(l, t)
-        }
-      }
-      // navigator.gpu can exist with no usable adapter (headless or blocklisted GPUs); trying WebGPU then downloads the
-      // model, fails with "no available backend" and downloads again for WASM, so ask for an adapter first
-      const adapter = await (navigator as any).gpu?.requestAdapter().catch(() => null)
-      const devices = adapter ? ['webgpu', 'wasm'] : ['wasm']
-      let last: unknown
-      for (const device of devices) {
-        try { return { up: await pipeline('image-to-image', MODEL, { device: device as any, progress_callback: cb } as any), device } }
-        catch (e) { last = e }
-      }
-      throw last
-    })()
-    upP.catch(() => { upP = null })
-  }
-  return upP
+let worker: Worker | null = null
+let seq = 0
+let pending: { id: number; reject: (e: unknown) => void } | null = null
+let gpuCheck: Promise<boolean> | null = null
+
+/** True only when WebGPU exists and an adapter can be obtained (navigator.gpu alone is not enough in headless or
+    blocklisted browsers). Cached for the page's lifetime. */
+export function hasGpuAdapter(): Promise<boolean> {
+  if (!gpuCheck) gpuCheck = (async () => {
+    try {
+      const gpu = (navigator as any).gpu
+      if (!gpu) return false
+      return !!(await Promise.race([gpu.requestAdapter(), new Promise((r) => setTimeout(() => r(null), 3000))]))
+    } catch { return false }
+  })()
+  return gpuCheck
 }
 
+export class CancelledError extends Error { constructor() { super('Cancelled'); this.name = 'CancelledError' } }
+
+/** Stop the running upscale at once. The pending call rejects with a CancelledError. */
+export function cancelUpscale() {
+  if (worker) { worker.terminate(); worker = null }
+  if (pending) { const p = pending; pending = null; p.reject(new CancelledError()) }
+}
+
+const mb = (n: number) => (n / 1048576).toFixed(1)
+
 export async function upscale2x(src: HTMLCanvasElement, onProgress: (stage: string, p: number) => void): Promise<HTMLCanvasElement> {
-  const { up, device } = await getUpscaler((l, t) => onProgress(`Downloading upscaler (first run only) ${(l / 1048576).toFixed(1)} / ${(t / 1048576).toFixed(1)} MB`, t ? (l / t) * 0.3 : 0))
-  const { RawImage } = await import('@huggingface/transformers')
-  const T = 192, P = 12, W = src.width, H = src.height
-  const out = document.createElement('canvas'); out.width = W * 2; out.height = H * 2
-  const ctx = out.getContext('2d')!
-  const cols = Math.ceil(W / T), rows = Math.ceil(H / T), total = cols * rows
-  let n = 0
-  for (let ty = 0; ty < rows; ty++) for (let tx = 0; tx < cols; tx++) {
-    const x = tx * T, y = ty * T, w = Math.min(T, W - x), h = Math.min(T, H - y)
-    const px = Math.max(0, x - P), py = Math.max(0, y - P)
-    const pw = Math.min(W, x + w + P) - px, ph = Math.min(H, y + h + P) - py
-    const tile = document.createElement('canvas'); tile.width = pw; tile.height = ph
-    tile.getContext('2d')!.drawImage(src, px, py, pw, ph, 0, 0, pw, ph)
-    const res = await up(RawImage.fromCanvas(tile).rgb())
-    const img = Array.isArray(res) ? res[0] : res
-    ctx.drawImage(img.toCanvas(), (x - px) * 2, (y - py) * 2, w * 2, h * 2, x * 2, y * 2, w * 2, h * 2)
-    onProgress(`Upscaling tile ${++n} of ${total} (${device === 'webgpu' ? 'GPU' : 'CPU'})`, 0.3 + (n / total) * 0.7)
-    await new Promise((r) => setTimeout(r, 0))
-  }
-  return out
+  onProgress('Loading the upscaler', 0)
+  const gpu = await hasGpuAdapter()
+  // Read the pixels before the worker starts so a canvas problem surfaces as a normal error.
+  const data = src.getContext('2d')!.getImageData(0, 0, src.width, src.height).data
+  return new Promise((resolve, reject) => {
+    if (pending) cancelUpscale() // never two runs on one worker
+    let w: Worker
+    // The worker stays alive between runs so the model stays loaded; Cancel or a crash terminates it.
+    try { w = worker ??= new Worker(new URL('../../tools/image/upscaler.worker.ts', import.meta.url), { type: 'module' }) }
+    catch (e) { reject(new Error(friendlyUpscaleError(e))); return }
+    const id = ++seq
+    let tilesStart = 0
+    pending = { id, reject }
+    const finish = () => { w.onmessage = null; w.onerror = null; w.onmessageerror = null; if (pending?.id === id) pending = null }
+    const fail = (msg: string) => { finish(); if (worker === w) { w.terminate(); worker = null } reject(new Error(msg)) }
+    w.onmessage = (ev) => {
+      const m = ev.data
+      if (!m || m.id !== id) return
+      if (m.type === 'load') {
+        if (m.total && m.loaded >= m.total) onProgress('Preparing the AI model (the first run can take a minute)', 0.2)
+        else onProgress(`Downloading the upscaler (first run only) ${mb(m.loaded)} / ${mb(m.total)} MB`, m.total ? (m.loaded / m.total) * 0.2 : 0)
+      } else if (m.type === 'ready') {
+        tilesStart = performance.now()
+        onProgress(m.device === 'webgpu' ? 'Upscaling on the GPU' : 'Upscaling on the CPU, tile by tile', 0.22)
+      } else if (m.type === 'tile') {
+        const left = remainingText(m.done, m.total, performance.now() - tilesStart)
+        onProgress(`Upscaling on the ${m.device === 'webgpu' ? 'GPU' : 'CPU'}: ${m.done} of ${m.total} tiles done${left ? `, ${left}` : ''}`, 0.22 + (m.done / m.total) * 0.78)
+      } else if (m.type === 'done') {
+        finish()
+        try {
+          const out = document.createElement('canvas'); out.width = m.width; out.height = m.height
+          out.getContext('2d')!.putImageData(new ImageData(new Uint8ClampedArray(m.rgba), m.width, m.height), 0, 0)
+          resolve(out)
+        } catch (e) { reject(new Error(friendlyUpscaleError(e))) }
+      } else if (m.type === 'error') fail(friendlyUpscaleError(m.message))
+    }
+    // A crashed or out-of-memory worker fires error without a message of its own.
+    w.onerror = (e) => { e.preventDefault?.(); fail(e.message ? friendlyUpscaleError(e.message) : 'The AI upscaler stopped unexpectedly, most likely because the browser ran out of memory. Turn off AI upscale or use a smaller photo.') }
+    w.onmessageerror = () => fail(friendlyUpscaleError('message'))
+    w.postMessage({ id, rgba: data.buffer, width: src.width, height: src.height, passes: 1, tile: UP_TILE, pad: UP_PAD, preferGpu: gpu, model: MODEL_GPU, cpuModel: MODEL_CPU }, [data.buffer])
+  })
 }
