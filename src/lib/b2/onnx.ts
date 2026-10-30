@@ -1,66 +1,34 @@
-/* On-device ONNX model loader shared by the AI image tools (Batch 2).
-   onnxruntime-web (MIT) with WebGPU when available and a WebAssembly fallback. Model files are cached
-   in the browser Cache Storage so they download only once. */
-import wasmUrl from '../../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm?url'
-import mjsUrl from '../../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs?url'
-
-export type Ort = typeof import('onnxruntime-web/webgpu')
-let ortP: Promise<Ort> | null = null
-export function loadOrt(): Promise<Ort> {
-  if (!ortP) {
-    ortP = (async () => {
-      const ort: any = await import('onnxruntime-web/webgpu')
-      ort.env.wasm.wasmPaths = { wasm: wasmUrl, mjs: mjsUrl }
-      ort.env.wasm.numThreads = (self as any).crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 2) : 1
-      return ort as Ort
-    })()
-    ortP.catch(() => { ortP = null })
-  }
-  return ortP
-}
-
-const CACHE = 'openfile-models-v1'
-
-/** Download a model with progress, caching it for next time. */
-export async function fetchModel(url: string, onProgress?: (loaded: number, total: number) => void): Promise<Uint8Array> {
-  try {
-    const cache = await caches.open(CACHE)
-    const hit = await cache.match(url)
-    if (hit) { const b = new Uint8Array(await hit.arrayBuffer()); onProgress?.(b.length, b.length); return b }
-  } catch { /* Cache Storage not available (private mode) */ }
-  const res = await fetch(url)
-  if (!res.ok || !res.body) throw new Error(`Could not download the AI model (${res.status}). Check your connection and try again.`)
-  const total = Number(res.headers.get('content-length')) || 0
-  const reader = res.body.getReader(); const parts: Uint8Array[] = []; let loaded = 0
-  for (;;) { const { done, value } = await reader.read(); if (done) break; parts.push(value); loaded += value.length; onProgress?.(loaded, total) }
-  const out = new Uint8Array(loaded); let o = 0; for (const p of parts) { out.set(p, o); o += p.length }
-  try { const cache = await caches.open(CACHE); await cache.put(url, new Response(out.slice().buffer, { headers: { 'content-type': 'application/octet-stream' } })) } catch { /* quota */ }
-  return out
-}
+/* On-device ONNX models for the AI image tools (Batch 2): onnxruntime-web (MIT) runs in a background worker
+   (onnx.worker.ts) with WebGPU when available and a WebAssembly fallback. Model files are cached in the browser
+   Cache Storage so they download only once. */
+import { fetchModel, CACHE } from './onnxfetch'
+export { fetchModel }
 
 export async function isModelCached(url: string) { try { return !!(await (await caches.open(CACHE)).match(url)) } catch { return false } }
 
-const sessions = new Map<string, Promise<{ session: any; ort: Ort; backend: string }>>()
-/** Create (or reuse) an inference session. Tries WebGPU first, then WASM. */
-export function getSession(url: string, onProgress?: (loaded: number, total: number) => void) {
-  let s = sessions.get(url)
-  if (!s) {
-    s = (async () => {
-      const ort = await loadOrt()
-      const bytes = await fetchModel(url, onProgress)
-      const tries: string[] = (navigator as any).gpu ? ['webgpu', 'wasm'] : ['wasm']
-      let last: any
-      for (const ep of tries) {
-        try { const session = await (ort as any).InferenceSession.create(bytes, { executionProviders: [ep], graphOptimizationLevel: 'all' }); return { session, ort, backend: ep } }
-        catch (e) { last = e }
-      }
-      throw new Error('This device could not run the AI model: ' + (last?.message || last))
-    })()
-    s.catch(() => sessions.delete(url))
-    sessions.set(url, s)
+export interface OnnxOut { outputs: Record<string, { data: Float32Array; dims: number[] }>; names: string[] }
+let worker: Worker | null = null
+let seq = 0
+const pending = new Map<number, { resolve: (v: OnnxOut) => void; reject: (e: any) => void; onLoad?: (l: number, t: number) => void; onReady?: (backend: string) => void; onStatus?: (s: string) => void }>()
+/** Run a model in the background worker. Feeds without a name use the model's inputs in order. */
+export function runModel(url: string, feeds: { name?: string; type: 'float32'; data: Float32Array; dims: number[] }[], cb: { onLoad?: (l: number, t: number) => void; onReady?: (backend: string) => void; onStatus?: (s: string) => void } = {}): Promise<OnnxOut> {
+  if (!worker) {
+    worker = new Worker(new URL('./onnx.worker.ts', import.meta.url), { type: 'module' })
+    worker.onmessage = (e) => {
+      const m = e.data, p = pending.get(m.id); if (!p) return
+      if (m.type === 'load') p.onLoad?.(m.loaded, m.total)
+      else if (m.type === 'status') p.onStatus?.(m.text)
+      else if (m.type === 'ready') p.onReady?.(m.backend)
+      else if (m.type === 'done') { pending.delete(m.id); p.resolve({ outputs: m.outputs, names: m.names }) }
+      else if (m.type === 'error') { pending.delete(m.id); p.reject(new Error(/memory|allocation|bad_alloc/i.test(m.message) ? 'The browser ran out of memory while running the AI model. Close other tabs and try again.' : m.message)) }
+    }
+    worker.onerror = (e) => { const err = new Error('The AI model stopped: ' + (e.message || 'the background worker crashed')); pending.forEach((p) => p.reject(err)); pending.clear(); worker?.terminate(); worker = null }
   }
-  return s
+  const id = ++seq
+  return new Promise((resolve, reject) => { pending.set(id, { resolve, reject, ...cb }); worker!.postMessage({ id, url, feeds }) })
 }
+/** Stop the running model at once by ending the worker. Pending runs reject with a CancelledError. */
+export function cancelModel() { worker?.terminate(); worker = null; pending.forEach((p) => p.reject(Object.assign(new Error('Cancelled'), { name: 'CancelledError' }))); pending.clear() }
 
 /** Canvas -> planar float tensor data [1,3,H,W] in 0..1 (or custom normalisation). */
 export function toCHW(c: HTMLCanvasElement, norm: (v: number, ch: number) => number = (v) => v / 255): Float32Array {

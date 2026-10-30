@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Palette, Download, Cpu, RotateCcw } from 'lucide-react'
+import { Palette, Download, Cpu, RotateCcw, X } from 'lucide-react'
 import { Button, Field, FileChip, Progress, Segmented, Slider, ToolGrid, ErrorNote, useJob } from '@/components/ui'
 import { downloadBlob, formatBytes } from '@/lib/files'
 import { BeforeAfter, ImageDrop, useObjectUrl } from '@/tools/image/_img/kit'
 import { decodeAny, encodeCanvas, type OutFmt } from '@/lib/b2/codecs'
-import { DDCOLOR_SIZE, ddcolorInput, mergeAB, meanChroma } from '@/lib/b2/colorize'
+import { DDCOLOR_SIZE, ddcolorInput, mergeAB, meanChroma, cleanBorder } from '@/lib/b2/colorize'
 
 // DDColor tiny (Apache-2.0, piddnad/DDColor), ONNX fp16 export with a fixed 512x512 input.
 const MODEL_URL = 'https://huggingface.co/lensmera/lensmera-color-ddcolor/resolve/main/ddcolor_tiny_fp16.onnx'
@@ -28,20 +28,20 @@ const toBlob = (c: HTMLCanvasElement) => new Promise<Blob>((res, rej) => c.toBlo
 
 /** Predict the a/b colour channels for a photo. Returns planar [2,512,512]. */
 async function predictAB(src: HTMLCanvasElement, onDl: (l: number, t: number) => void, onStage: (s: string) => void) {
-  const { getSession } = await import('@/lib/b2/onnx')
+  const { runModel } = await import('@/lib/b2/onnx')
   onStage('Loading AI model')
-  const { session, ort, backend } = await getSession(MODEL_URL, onDl)
   const S = DDCOLOR_SIZE
   const c = document.createElement('canvas'); c.width = S; c.height = S
   const ctx = c.getContext('2d')!; ctx.imageSmoothingQuality = 'high'
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, S, S); ctx.drawImage(src, 0, 0, S, S)
   const input = ddcolorInput(ctx.getImageData(0, 0, S, S).data, S)
-  onStage(`Adding colour (${backend === 'webgpu' ? 'GPU' : 'CPU'})`)
-  const out = await session.run({ [session.inputNames[0]]: new ort.Tensor('float32', input, [1, 3, S, S]) })
-  const t = out[session.outputNames[0]]
-  const data = t.data as Float32Array
+  const r = await runModel(MODEL_URL, [{ type: 'float32', data: input, dims: [1, 3, S, S] }], {
+    onLoad: onDl, onStatus: onStage,
+    onReady: (backend) => onStage(backend === 'webgpu' ? 'Adding colour on the GPU' : 'Adding colour on the CPU. This can take a minute.'),
+  })
+  const data = r.outputs[r.names[0]].data
   if (data.length !== 2 * S * S) throw new Error('The AI model returned an unexpected result. Try again or use another photo.')
-  return Float32Array.from(data)
+  return cleanBorder(data, S)
 }
 
 export default function ColorizePhoto() {
@@ -78,9 +78,11 @@ export default function ColorizePhoto() {
   const colorize = () => run(async (setP) => {
     if (!src) return
     setP(0.02)
-    const r = await predictAB(src, (l, t) => setP(t ? (l / t) * 0.85 : 0.4), setStage)
+    let r: Float32Array
+    try { r = await predictAB(src, (l, t) => setP(t ? (l / t) * 0.85 : 0.4), setStage) } catch (e: any) { setStage(''); if (e?.name === 'CancelledError') return; throw e }
     setAb(r); setCached(true); setStage(''); setProgress(1)
   })
+  const cancel = () => { import('@/lib/b2/onnx').then((x) => x.cancelModel()) }
   const save = () => run(async () => {
     if (!src || !ab || !file) return
     setStage('Building full-size image')
@@ -105,6 +107,7 @@ export default function ColorizePhoto() {
         {cached === false && <p className="flex gap-2 rounded-xl border border-border bg-surface-2/50 p-3 text-xs text-muted"><Cpu className="size-4 shrink-0 text-accent" />The first run downloads the DDColor model ({formatBytes(MODEL_SIZE)}). It is cached for next time and runs on your device.</p>}
         <Button size="lg" className="w-full" loading={busy && !ab} disabled={busy} icon={ab ? <RotateCcw className="size-4" /> : <Palette className="size-4" />} onClick={colorize}>{ab ? 'Run again' : 'Colorize'}</Button>
         {busy && <Progress value={progress} label={stage || 'Working'} />}
+        {busy && stage && stage !== 'Building full-size image' && <Button variant="outline" className="w-full" icon={<X className="size-4" />} onClick={cancel}>Cancel</Button>}
         <Slider label="Colour strength" value={strength} onChange={setStrength} min={0} max={160} suffix="%" />
         <p className="text-xs text-muted">Below 100% gives a softer, hand-tinted look. Above 100% makes colours bolder.</p>
         <Field label="Save as"><Segmented value={fmt} onChange={setFmt} options={[{ value: 'jpg', label: 'JPG' }, { value: 'png', label: 'PNG' }, { value: 'webp', label: 'WEBP' }]} /></Field>

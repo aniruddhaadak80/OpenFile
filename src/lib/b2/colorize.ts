@@ -58,3 +58,15 @@ export function meanChroma(rgba: Uint8ClampedArray | Uint8Array, w: number, h: n
   for (let i = 0; i < n; i += step) { const [, a, b] = rgbToLab(rgba[i * 4] / 255, rgba[i * 4 + 1] / 255, rgba[i * 4 + 2] / 255); s += Math.hypot(a, b); k++ }
   return k ? s / k : 0
 }
+
+/** DDColor tiny sometimes paints a thin band of strong colour (often blue) along the image border, where its
+    convolutions see padding. Copy the colour of the first clean row or column over the outer `k` pixels.
+    Works in place on planar [2,S,S] and returns it. */
+export function cleanBorder(ab: Float32Array, S = DDCOLOR_SIZE, k = 4): Float32Array {
+  for (let ch = 0; ch < 2; ch++) {
+    const o = ch * S * S
+    for (let y = 0; y < S; y++) for (let x = 0; x < k; x++) { ab[o + y * S + x] = ab[o + y * S + k]; ab[o + y * S + S - 1 - x] = ab[o + y * S + S - 1 - k] }
+    for (let y = 0; y < k; y++) { ab.copyWithin(o + y * S, o + k * S, o + k * S + S); ab.copyWithin(o + (S - 1 - y) * S, o + (S - 1 - k) * S, o + (S - k) * S) }
+  }
+  return ab
+}

@@ -1,6 +1,6 @@
 // node --experimental-strip-types scripts/tests/b2/colorize.test.mjs
 import assert from 'node:assert'
-const { lightness, ddcolorInput, mergeAB, meanChroma } = await import('../../../src/lib/b2/colorize.ts')
+const { lightness, ddcolorInput, mergeAB, meanChroma, cleanBorder } = await import('../../../src/lib/b2/colorize.ts')
 const { rgbToLab } = await import('../../../src/lib/b2/lab.ts')
 // lightness matches rgbToLab
 const px = new Uint8ClampedArray([200, 120, 40, 255, 0, 0, 0, 255, 255, 255, 255, 255, 30, 90, 160, 128])
@@ -27,4 +27,7 @@ const Lb = lightness(big, W, H), Lc = lightness(col, W, H)
 for (let i = 0; i < W * H; i++) { assert.equal(col[i * 4 + 3], big[i * 4 + 3]); assert.ok(Math.abs(Lb[i] - Lc[i]) < 1.5, `L kept ${Lb[i]} ${Lc[i]}`) }
 const half = mergeAB(big, W, H, ab, 0.5, S)
 assert.ok(meanChroma(half, W, H) < meanChroma(col, W, H))
+// border band is replaced by the first clean row or column
+{ const T = 16, g = new Float32Array(2 * T * T).fill(5); for (let y = 0; y < T; y++) { g[y * T] = -90; g[T * T + y * T + T - 1] = 70 } for (let x = 0; x < T; x++) g[x] = 99
+  cleanBorder(g, T, 2); assert.ok(g.every((v) => v === 5), 'border cleaned') }
 console.log('ok colorize')

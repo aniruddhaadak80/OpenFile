@@ -15,7 +15,10 @@ export function getUpscaler(onDownload?: (loaded: number, total: number) => void
           onDownload?.(l, t)
         }
       }
-      const devices = (navigator as any).gpu ? ['webgpu', 'wasm'] : ['wasm']
+      // navigator.gpu can exist with no usable adapter (headless or blocklisted GPUs); trying WebGPU then downloads the
+      // model, fails with "no available backend" and downloads again for WASM, so ask for an adapter first
+      const adapter = await (navigator as any).gpu?.requestAdapter().catch(() => null)
+      const devices = adapter ? ['webgpu', 'wasm'] : ['wasm']
       let last: unknown
       for (const device of devices) {
         try { return { up: await pipeline('image-to-image', MODEL, { device: device as any, progress_callback: cb } as any), device } }
