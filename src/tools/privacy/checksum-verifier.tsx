@@ -78,7 +78,7 @@ export default function ChecksumVerifier() {
       side={
         <>
           <div><Label hint={expected.length ? `${expected.length} hashes` : ''}>Expected checksums (optional)</Label><Textarea value={sums} onChange={(e) => { setSums(e.target.value); setRows(null) }} placeholder={'Paste one hash, or a list like:\ne3b0c442...b855  file.iso'} className="min-h-28 text-[11px]" aria-label="Expected checksums" /></div>
-          <div><Label hint={algo === 'auto' && expected[0] ? `detected ${algoByLen(expected[0].hash.length)}` : ''}>Algorithm</Label><Select value={algo} onChange={setAlgo} options={[{ value: 'auto', label: 'Auto (from the list, else SHA-256)' }, 'MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512', 'BLAKE3']} /></div>
+          <label className="block"><Label hint={algo === 'auto' && expected[0] ? `detected ${algoByLen(expected[0].hash.length)}` : ''}>Algorithm</Label><Select value={algo} onChange={setAlgo} options={[{ value: 'auto', label: 'Auto (from the list, else SHA-256)' }, 'MD5', 'SHA-1', 'SHA-256', 'SHA-384', 'SHA-512', 'BLAKE3']} /></label>
           <Button className="w-full" icon={<BadgeCheck className="size-4" />} loading={prog != null} disabled={!files.length} onClick={go}>{expected.length ? 'Verify' : 'Calculate'} {files.length} file{files.length > 1 ? 's' : ''}</Button>
           {rows && rows.some((r) => r.hash) && <DlButton className="w-full" name={`${realAlgo.replace('-', '').toUpperCase()}SUMS`} data={() => rows.filter((r) => r.hash).map((r) => `${r.hash}  ${r.name}`).join('\n') + '\n'}>Save checksum file</DlButton>}
           <Button variant="ghost" className="w-full" onClick={() => { setFiles([]); setRows(null); setSums('') }}>Start over</Button>

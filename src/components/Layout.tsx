@@ -197,7 +197,7 @@ function BootDone() {
 
 function RouteSkeleton() {
   return (
-    <div className="of-delay mx-auto max-w-7xl px-4 pt-12 sm:px-6" aria-busy="true" aria-label="Loading">
+    <div className="of-delay mx-auto max-w-7xl px-4 pt-12 sm:px-6" role="status" aria-busy="true" aria-label="Loading">
       <div className="skeleton h-10 w-64" /><div className="skeleton mt-3 h-4 w-96 max-w-full" />
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 8 }, (_, i) => <div key={i} className="skeleton h-40 rounded-2xl" />)}</div>
     </div>

@@ -83,9 +83,9 @@ export default function StopwatchTimer() {
       )}
       {mode === 'interval' && !iStart && (
         <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-surface p-4">
-          <div><Label>Work (s)</Label><Input type="number" min={1} value={work} onChange={(e) => setWork(Math.max(1, Number(e.target.value) || 1))} className="w-24" /></div>
-          <div><Label>Rest (s)</Label><Input type="number" min={0} value={rest} onChange={(e) => setRest(Math.max(0, Number(e.target.value) || 0))} className="w-24" /></div>
-          <div><Label>Rounds</Label><Input type="number" min={1} value={rounds} onChange={(e) => setRounds(Math.max(1, Number(e.target.value) || 1))} className="w-24" /></div>
+          <div><Label>Work (s)</Label><Input aria-label="Work (s)" type="number" min={1} value={work} onChange={(e) => setWork(Math.max(1, Number(e.target.value) || 1))} className="w-24" /></div>
+          <div><Label>Rest (s)</Label><Input aria-label="Rest (s)" type="number" min={0} value={rest} onChange={(e) => setRest(Math.max(0, Number(e.target.value) || 0))} className="w-24" /></div>
+          <div><Label>Rounds</Label><Input aria-label="Rounds" type="number" min={1} value={rounds} onChange={(e) => setRounds(Math.max(1, Number(e.target.value) || 1))} className="w-24" /></div>
           <span className="text-sm text-muted">Total {fmt(rounds * (work + rest) * 1000, false)}. A beep marks each change.</span>
         </div>
       )}

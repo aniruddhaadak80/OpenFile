@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Sheet } from 'lucide-react'
-import { Button, Card, Dropzone, Label, Segmented, Select, Switch, ResultCard, Progress, ErrorNote, useJob } from '@/components/ui'
+import { Button, Card, Dropzone, Label, Segmented, Select, Switch, ResultCard, Progress, ErrorNote, useJob, Field } from '@/components/ui'
 import { sniffDelimiter, typeCell, type Rows } from '@/lib/cf/sheet'
 import { FileBar, RowsTable } from '@/lib/cf/ui'
 
@@ -63,8 +63,8 @@ export default function CsvToExcel() {
         {out && <ResultCard blob={out.blob} filename={out.name} title="Workbook ready" />}
       </div>
       <Card className="space-y-4 self-start">
-        <div><Label>Separator</Label><Select value={delim} onChange={(v) => { setDelim(v); setOut(null) }} options={[{ value: 'auto', label: 'Detect' }, { value: ',', label: 'Comma' }, { value: ';', label: 'Semicolon' }, { value: 'tab', label: 'Tab' }, { value: '|', label: 'Pipe' }]} /></div>
-        <div><Label>Text encoding</Label><Select value={enc} onChange={setEnc} options={[{ value: 'auto', label: 'Detect (UTF-8 or Windows)' }, { value: 'utf-8', label: 'UTF-8' }, { value: 'windows-1252', label: 'Windows Western' }, { value: 'iso-8859-1', label: 'Latin-1' }, { value: 'utf-16le', label: 'UTF-16' }, { value: 'shift_jis', label: 'Japanese Shift JIS' }]} /></div>
+        <Field label="Separator"><Select value={delim} onChange={(v) => { setDelim(v); setOut(null) }} options={[{ value: 'auto', label: 'Detect' }, { value: ',', label: 'Comma' }, { value: ';', label: 'Semicolon' }, { value: 'tab', label: 'Tab' }, { value: '|', label: 'Pipe' }]} /></Field>
+        <Field label="Text encoding"><Select value={enc} onChange={setEnc} options={[{ value: 'auto', label: 'Detect (UTF-8 or Windows)' }, { value: 'utf-8', label: 'UTF-8' }, { value: 'windows-1252', label: 'Windows Western' }, { value: 'iso-8859-1', label: 'Latin-1' }, { value: 'utf-16le', label: 'UTF-16' }, { value: 'shift_jis', label: 'Japanese Shift JIS' }]} /></Field>
         <Switch checked={types} onChange={setTypes} label="Store numbers as numbers (keeps 007 as text)" />
         <Switch checked={bold} onChange={setBold} label="Bold header row" /><Switch checked={freeze} onChange={setFreeze} label="Freeze header row" /><Switch checked={filter} onChange={setFilter} label="Add filter buttons" />
         {files.length > 1 && <div><Label>Several files</Label><Segmented value={mode} onChange={setMode} options={[{ value: 'tabs', label: 'One workbook, a tab each' }, { value: 'separate', label: 'Separate files' }]} /></div>}

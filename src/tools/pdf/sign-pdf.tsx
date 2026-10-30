@@ -212,16 +212,16 @@ export default function SignPdf() {
             <div className="space-y-2">
               <Label>Date & text stamps</Label>
               <div className="flex gap-2">
-                <Select value={dateFmt} onChange={setDateFmt} options={DATE_FORMATS.map((d) => ({ value: d.value, label: fmtDate(new Date(), d.value) }))} className="flex-1" />
+                <label className="flex-1"><span className="sr-only">Date format</span><Select value={dateFmt} onChange={setDateFmt} options={DATE_FORMATS.map((d) => ({ value: d.value, label: fmtDate(new Date(), d.value) }))} /></label>
                 <Button variant="outline" icon={<CalendarDays className="size-4" />} onClick={() => armText(fmtDate(new Date(), dateFmt), 'date')}>Date</Button>
               </div>
               <div className="flex gap-2">
-                <Input value={freeText} onChange={(e) => setFreeText(e.target.value)} placeholder="Name, title, place…" onKeyDown={(e) => { if (e.key === 'Enter') armText(freeText, 'text') }} />
+                <Input aria-label="Stamp text" value={freeText} onChange={(e) => setFreeText(e.target.value)} placeholder="Name, title, place…" onKeyDown={(e) => { if (e.key === 'Enter') armText(freeText, 'text') }} />
                 <Button variant="outline" icon={<Type className="size-4" />} disabled={!freeText.trim()} onClick={() => armText(freeText, 'text')}>Add</Button>
               </div>
               <div className="flex items-center justify-between gap-2">
                 <ColorPicker colors={['#111111', '#1e3a8a', '#b91c1c']} value={stampColor} onChange={(c) => c && setStampColor(c)} />
-                <Select value={stampFont} onChange={setStampFont} options={['Helvetica', 'Times', 'Courier']} className="w-32" />
+                <label className="w-32"><span className="sr-only">Stamp font</span><Select value={stampFont} onChange={setStampFont} options={['Helvetica', 'Times', 'Courier']} /></label>
               </div>
             </div>
 
@@ -229,7 +229,7 @@ export default function SignPdf() {
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-3 overflow-hidden rounded-xl border border-accent/30 bg-accent/5 p-3">
                 <div className="text-xs font-semibold uppercase tracking-wide text-accent">Selected {selected.label ?? selected.type}</div>
                 {selected.type === 'text' && (<>
-                  <Input value={selected.text ?? ''} onChange={(e) => patchSel({ text: e.target.value })} />
+                  <Input aria-label="Text" value={selected.text ?? ''} onChange={(e) => patchSel({ text: e.target.value })} />
                   <Slider label="Size" value={Math.round(selected.size ?? 12)} min={6} max={48} onChange={(v) => patchSel({ size: v })} suffix=" pt" />
                   <ColorPicker colors={['#111111', '#1e3a8a', '#b91c1c']} value={selected.color} onChange={(c) => c && patchSel({ color: c })} />
                 </>)}

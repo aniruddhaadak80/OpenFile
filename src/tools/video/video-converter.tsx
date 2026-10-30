@@ -135,7 +135,7 @@ export default function VideoConverter() {
           </div>
           <div>
             <Label>Or pick a device</Label>
-            <select value={device} onChange={(e) => { const d = DEVICES.find((x) => x.id === e.target.value); setDevice(e.target.value); if (d) setFmt(d.fmt) }} className="h-10 w-full cursor-pointer rounded-xl border border-border bg-surface-2/60 px-3 text-sm text-fg outline-none focus:border-accent">
+            <select aria-label="Or pick a device" value={device} onChange={(e) => { const d = DEVICES.find((x) => x.id === e.target.value); setDevice(e.target.value); if (d) setFmt(d.fmt) }} className="h-10 w-full cursor-pointer rounded-xl border border-border bg-surface-2/60 px-3 text-sm text-fg outline-none focus:border-accent">
               <option value="">No device preset</option>
               {DEVICES.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}
             </select>

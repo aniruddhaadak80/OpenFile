@@ -53,7 +53,7 @@ export default function HashtagGenerator() {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
       <div className="space-y-4">
-        <div><Label>Your caption, script or video description</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-40 font-sans text-sm" /></div>
+        <div><Label>Your caption, script or video description</Label><Textarea aria-label="Your caption, script or video description" value={text} onChange={(e) => setText(e.target.value)} className="min-h-40 font-sans text-sm" /></div>
         <VisionProgress ai={ai} />
         {tags && <Card className="space-y-4">
           <div className="flex flex-wrap items-center gap-2"><div className="mr-auto font-semibold">{picked.length} hashtags</div><CopyButton text={line} label="Copy tags" /><CopyButton text={text.trim() + '\n\n' + line} label="Copy caption with tags" /></div>

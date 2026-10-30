@@ -13,6 +13,7 @@ export function JobPanel({ job, onRetry }: { job: MediaJob; onRetry?: () => void
   const [, force] = useState(0)
   useInterval(() => force((n) => n + 1), job.busy ? 1000 : null)
   const loadingEngine = job.busy && engine.status === 'loading'
+  const left = job.busy && !loadingEngine ? eta(job.startedAt, job.progress) : null
   return (
     <AnimatePresence initial={false}>
       {job.busy && (
@@ -25,7 +26,7 @@ export function JobPanel({ job, onRetry }: { job: MediaJob; onRetry?: () => void
             </>
           ) : (
             <>
-              <Progress value={job.progress} label={<span>{job.label}{eta(job.startedAt, job.progress) && <span className="ml-2 text-muted/80">· {eta(job.startedAt, job.progress)}</span>}</span>} />
+              <Progress value={job.progress} label={<span>{job.label}{left && <span className="ml-2 text-muted/80">· {left}</span>}</span>} />
               <p className="text-xs text-muted">Runs on your device. Keep this tab open; larger files take longer.</p>
             </>
           )}

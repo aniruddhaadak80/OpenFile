@@ -42,7 +42,7 @@ export default function GpxEditor() {
         </>}
       </div>
       <Card className="space-y-4 self-start">
-        {t.tracks.length > 1 && <div><Label>Track</Label><select className="of-field h-10 w-full rounded-xl border border-border bg-surface-2/60 px-2 text-sm" value={t.sel} onChange={(e) => t.setSel(+e.target.value)}>{t.tracks.map((x, i) => <option key={i} value={i}>{x.name}</option>)}</select></div>}
+        {t.tracks.length > 1 && <div><Label>Track</Label><select aria-label="Track" className="of-field h-10 w-full rounded-xl border border-border bg-surface-2/60 px-2 text-sm" value={t.sel} onChange={(e) => t.setSel(+e.target.value)}>{t.tracks.map((x, i) => <option key={i} value={i}>{x.name}</option>)}</select></div>}
         <Slider label="Cut from the start" value={trimS} onChange={setTrimS} min={0} max={Math.max(0, Math.floor(total / 2))} step={10} suffix=" m" />
         <Slider label="Cut from the end" value={trimE} onChange={setTrimE} min={0} max={Math.max(0, Math.floor(total / 2))} step={10} suffix=" m" />
         <Switch checked={stops} onChange={setStops} label="Remove stops (and close the time gap)" />
@@ -51,9 +51,9 @@ export default function GpxEditor() {
         {rev && <Switch checked={keepTimes} onChange={setKeepTimes} label="Keep times running forward" />}
         <div><Label>Times</Label><Segmented value={shiftMode} onChange={setShiftMode} options={[{ value: 'none', label: 'Keep' }, { value: 'shift', label: 'Shift' }, { value: 'start', label: 'New start' }, { value: 'pace', label: 'Set speed' }]} /></div>
         {shiftMode === 'shift' && <Slider label="Shift by" value={shiftMin} onChange={setShiftMin} min={-720} max={720} suffix=" min" />}
-        {(shiftMode === 'start' || shiftMode === 'pace') && <div><Label>Start time</Label><Input type="datetime-local" value={start || (src[0]?.time ? toLocal(src[0].time) : '')} onChange={(e) => setStart(e.target.value)} /></div>}
+        {(shiftMode === 'start' || shiftMode === 'pace') && <div><Label>Start time</Label><Input aria-label="Start time" type="datetime-local" value={start || (src[0]?.time ? toLocal(src[0].time) : '')} onChange={(e) => setStart(e.target.value)} /></div>}
         {shiftMode === 'pace' && <Slider label="Even speed (for planned routes)" value={kmh} onChange={setKmh} min={2} max={60} suffix=" km/h" />}
-        <div><Label>Track name</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.track?.name} /></div>
+        <div><Label>Track name</Label><Input aria-label="Track name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t.track?.name} /></div>
         <Button className="w-full" icon={<Download className="size-4" />} disabled={out.length < 2} onClick={() => downloadBlob(new Blob([writeGpx([{ name: nm, points: out }], t.waypoints)], { type: 'application/gpx+xml' }), `${nm.replace(/[^\w-]+/g, '-')}-edited.gpx`)}>Download GPX</Button>
       </Card>
     </div>

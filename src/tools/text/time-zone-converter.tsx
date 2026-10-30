@@ -51,9 +51,9 @@ export default function TimeZoneConverter() {
 
       {mode === 'convert' && (
         <div className="grid gap-3 rounded-2xl border border-border bg-surface p-4 sm:grid-cols-[1fr_auto_auto_auto]">
-          <div><Label>From zone</Label><Select value={src} onChange={setSrc} options={zones} /></div>
-          <div><Label>Date</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
-          <div><Label>Time</Label><Input type="time" value={time} onChange={(e) => setTime(e.target.value)} /></div>
+          <label className="block"><Label>From zone</Label><Select value={src} onChange={setSrc} options={zones} /></label>
+          <div><Label>Date</Label><Input aria-label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
+          <div><Label>Time</Label><Input aria-label="Time" type="time" value={time} onChange={(e) => setTime(e.target.value)} /></div>
           <div className="flex items-end"><Button variant="ghost" icon={<RotateCcw className="size-4" />} onClick={() => { const p = wallParts(src, new Date()); setDate(`${p.y}-${pad(p.mo)}-${pad(p.d)}`); setTime(`${pad(p.h)}:${pad(p.mi)}`) }}>Now</Button></div>
         </div>
       )}

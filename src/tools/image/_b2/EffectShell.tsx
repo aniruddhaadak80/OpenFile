@@ -17,7 +17,7 @@ export function scaled(src: HTMLCanvasElement, max: number) {
   return c
 }
 
-export function EffectShell({ render, deps, controls, suffix, defaultFmt = 'png', label, previewMax = 900, compare = true }: { render: Render; deps: unknown[]; controls: React.ReactNode; suffix: string; defaultFmt?: OutFmt; label?: string; previewMax?: number; compare?: boolean }) {
+export function EffectShell({ render, deps, controls, suffix, defaultFmt = 'png', label, previewMax = 900, compare = true, matchInput = false }: { render: Render; deps: unknown[]; controls: React.ReactNode; suffix: string; defaultFmt?: OutFmt; label?: string; previewMax?: number; compare?: boolean; matchInput?: boolean }) {
   const [file, setFile] = useState<File | null>(null)
   const [src, setSrc] = useState<HTMLCanvasElement | null>(null)
   const [small, setSmall] = useState<HTMLCanvasElement | null>(null)
@@ -32,6 +32,8 @@ export function EffectShell({ render, deps, controls, suffix, defaultFmt = 'png'
   const open = (fs: File[]) => run(async () => {
     const { canvas } = await decodeAny(fs[0])
     setFile(fs[0]); setSrc(canvas); setSmall(scaled(canvas, previewMax))
+    // A JPG or WEBP photo saves in its own format by default, so a full-size effect is not a huge PNG.
+    if (matchInput) setFmt(/jpe?g$/i.test(fs[0].type) || /\.jpe?g$/i.test(fs[0].name) ? 'jpg' : /webp$/i.test(fs[0].type) ? 'webp' : defaultFmt)
   })
   useEffect(() => {
     if (!small || !view.current) return

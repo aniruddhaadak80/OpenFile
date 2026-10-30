@@ -19,7 +19,7 @@ export default function SolutionCalculator() {
     <div className="space-y-4">
       <Segmented value={mode} onChange={setMode} options={[{ value: 'molarity', label: 'Molarity' }, { value: 'dilution', label: 'Dilution C1V1 = C2V2' }, { value: 'percent', label: 'Percent' }]} />
       {mode === 'molarity' && <Card className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-2"><div><Label hint={mmVal ? `${mmVal.toFixed(3)} g/mol` : 'unknown'}>Solute formula</Label><Input value={formula} onChange={(e) => setFormula(e.target.value)} className="font-mono" /></div></div>
+        <div className="grid gap-3 sm:grid-cols-2"><div><Label hint={mmVal ? `${mmVal.toFixed(3)} g/mol` : 'unknown'}>Solute formula</Label><Input aria-label="Solute formula" value={formula} onChange={(e) => setFormula(e.target.value)} className="font-mono" /></div></div>
         <p className="text-sm text-muted">Fill two of the three boxes. Leave the one you want empty.</p>
         <div className="grid gap-3 sm:grid-cols-3"><NumBox label="Molarity" unit="mol/L" value={M} onChange={setM} /><NumBox label="Mass of solute" unit="g" value={g} onChange={setG} /><NumBox label="Volume" unit="mL" value={mL} onChange={setML} /></div>
         <ErrorNote error={mol.e} />

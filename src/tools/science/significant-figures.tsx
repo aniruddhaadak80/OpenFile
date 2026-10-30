@@ -38,9 +38,9 @@ export default function SignificantFigures() {
       ) : (
         <Card className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
-            <div><Label>First value</Label><Input value={a} onChange={(e) => setA(e.target.value)} className="font-mono" /></div>
-            <div><Label>Operation</Label><Select value={op} onChange={setOp} options={[{ value: '+', label: '+ add' }, { value: '-', label: '- subtract' }, { value: '*', label: '× multiply' }, { value: '/', label: '÷ divide' }]} /></div>
-            <div><Label>Second value</Label><Input value={b} onChange={(e) => setB(e.target.value)} className="font-mono" /></div>
+            <div><Label>First value</Label><Input aria-label="First value" value={a} onChange={(e) => setA(e.target.value)} className="font-mono" /></div>
+            <label className="block"><Label>Operation</Label><Select value={op} onChange={setOp} options={[{ value: '+', label: '+ add' }, { value: '-', label: '- subtract' }, { value: '*', label: '× multiply' }, { value: '/', label: '÷ divide' }]} /></label>
+            <div><Label>Second value</Label><Input aria-label="Second value" value={b} onChange={(e) => setB(e.target.value)} className="font-mono" /></div>
           </div>
           <ErrorNote error={calc.e} />
           {calc.r && <><Stats cols={2}><Stat label="Answer with correct sig figs" value={calc.r.text} tone="good" /><Stat label="Calculator answer" value={<span className="text-base">{calc.r.result}</span>} /></Stats><p className="text-sm text-muted">{calc.r.rule}</p></>}

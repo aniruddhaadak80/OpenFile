@@ -108,7 +108,7 @@ export function Footer() {
                 <li key={c.id} className={cn('min-w-0', spanClass(i, group.length, lay))}>
                   <Link to={`/category/${c.id}`} className="group flex min-h-10 items-center justify-between gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-muted transition hover:border-accent/60 hover:text-fg">
                     <span className="flex min-w-0 items-center gap-2"><span className="size-2 shrink-0 rounded-full" style={{ background: c.color }} /><span className="truncate">{c.name}</span></span>
-                    <span className="shrink-0 font-mono text-[11px] text-muted/80">{count(c.id)}</span>
+                    <span className="shrink-0 font-mono text-[11px] text-muted">{count(c.id)}</span>
                   </Link>
                 </li>
               ))}
@@ -132,7 +132,7 @@ export function Footer() {
       {/* bottom bar */}
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-xs text-muted sm:px-6 md:flex-row md:items-center md:justify-between">
-          <span>© {year} OpenFile. MIT licensed. Built by <a className="text-fg/80 hover:text-accent" href="https://github.com/aniruddhaadak80" target="_blank" rel="noreferrer">Aniruddha Adak</a>.</span>
+          <span>© {year} OpenFile. MIT licensed. Built by <a className="text-fg/80 underline decoration-border underline-offset-2 hover:text-accent" href="https://github.com/aniruddhaadak80" target="_blank" rel="noreferrer">Aniruddha Adak</a>.</span>
           <FooterApp />
         </div>
       </div>

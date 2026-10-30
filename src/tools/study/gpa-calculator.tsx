@@ -30,7 +30,7 @@ export default function GpaCalculator() {
         <Button variant="outline" size="sm" icon={<Plus className="size-4" />} onClick={() => setRows([...rows, { name: '', credits: 3, grade: '' }])}>Add course</Button>
       </Card>
       <Card className="space-y-4 self-start">
-        <div><Label>Grading scale</Label><Select value={scale} onChange={setScale} options={Object.entries(GPA_SCALES).map(([k, v]) => ({ value: k, label: v.label }))} /></div>
+        <label className="block"><Label>Grading scale</Label><Select value={scale} onChange={setScale} options={Object.entries(GPA_SCALES).map(([k, v]) => ({ value: k, label: v.label }))} /></label>
         <Stats cols={2}><Stat label="This term" value={scale === 'pct' || scale === 'uk' ? `${r.gpa.toFixed(1)}%` : r.gpa.toFixed(2)} sub={pct(r.gpa)} tone="good" /><Stat label="Credits" value={r.credits} /></Stats>
         <div className="grid grid-cols-2 gap-2"><NumBox label="Earlier GPA" value={prevGpa} onChange={setPrevGpa} /><NumBox label="Earlier credits" value={prevCr} onChange={setPrevCr} /></div>
         {cum != null && <Stat label="Cumulative" value={cum.toFixed(2)} sub={`over ${(prevCr ?? 0) + r.credits} credits`} />}

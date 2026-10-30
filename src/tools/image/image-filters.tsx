@@ -131,6 +131,8 @@ export default function ImageFilters() {
     const res = applyFilters(full, f)
     let ff: Fmt = fmt === 'keep' ? fmtFromMime(file.type, file.name) : fmt
     if (!['png', 'jpg', 'webp'].includes(ff)) ff = 'png'
+    // Nothing changed and the format is the same: hand back the original file instead of a bigger re-encode.
+    if (!changed && ff === fmtFromMime(file.type, file.name)) { downloadBlob(file, outName(file.name, ff, '-edited')); return }
     downloadBlob(await exportCanvas(res, ff, 0.93), outName(file.name, ff, preset ? `-${preset.toLowerCase().replace(/\W+/g, '')}` : '-edited'))
   })
   const reset = () => { setFile(null); setSrc(null); setOut(null); setThumbs({}) }

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CalendarDays, MapPin, Repeat } from 'lucide-react'
-import { Dropzone, Input, Label, Segmented, ToolGrid, Empty } from '@/components/ui'
+import { Dropzone, Input, Label, Segmented, ToolGrid, Empty, Field } from '@/components/ui'
 import { TopBar } from '@/lib/b4/ui'
 import { parseIcs, describeRrule, type IcsEvent } from '@/lib/bcat/office'
 import { DlButton, toCsv } from '@/lib/bcat/kit'
@@ -53,7 +53,7 @@ export default function IcsViewer() {
       side={
         <>
           {cal?.name && <p className="font-medium">{cal.name}</p>}
-          <div><Label>Search</Label><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Title, place, people" /></div>
+          <Field label="Search"><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Title, place, people" /></Field>
           <div><Label>Show</Label><Segmented value={range} onChange={setRange} options={[{ value: 'all', label: 'All' }, { value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past' }]} /></div>
           {list.length > 0 && (
             <div className="flex flex-wrap gap-2">

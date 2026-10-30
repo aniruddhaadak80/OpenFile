@@ -60,7 +60,7 @@ export default function Bip39Generator() {
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="space-y-2">
             <Label>Optional passphrase (the "25th word")</Label>
-            <Input type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Leave empty for none" autoComplete="off" />
+            <Input aria-label="Optional passphrase (the &quot;25th word&quot;)" type="password" value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Leave empty for none" autoComplete="off" />
             <KV label={`Entropy (${entropy.length * 4} bits)`} value={entropy} />
           </div>
           <KV label="BIP39 seed (512-bit, hex)" value={seed || '…'} />

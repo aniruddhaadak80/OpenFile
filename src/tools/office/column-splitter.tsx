@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Columns3 } from 'lucide-react'
-import { Button, Card, Input, Label, Segmented, Select, Switch } from '@/components/ui'
+import { Button, Card, Input, Label, Segmented, Select, Switch, Field } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
 import { writeBook } from '@/lib/bcat/sheets'
 import { str, type Rows } from '@/lib/cf/sheet'
@@ -47,14 +47,14 @@ export default function ColumnSplitter() {
         <SheetPicker s={s} />
         <Segmented value={mode} onChange={setMode} options={[{ value: 'split', label: 'Split a column' }, { value: 'combine', label: 'Combine columns' }]} />
         {mode === 'split' ? <>
-          <div><Label>Column</Label><Select value={col} onChange={setCol} options={opts} /></div>
-          <div><Label>Split</Label><Select value={how} onChange={setHow} options={[{ value: 'delim', label: 'At a separator' }, { value: 'name', label: 'Full name into first, middle, last' }, { value: 'email', label: 'Email into user and domain' }, { value: 'fixed', label: 'By fixed widths' }]} /></div>
-          {how === 'delim' && <div className="grid grid-cols-2 gap-2"><div><Label>Separator</Label><Input value={delim} onChange={(e) => setDelim(e.target.value)} placeholder=", or ; or \t" /></div><div><Label>Max columns</Label><Input value={max} onChange={(e) => setMax(e.target.value)} placeholder="0 = all" /></div></div>}
-          {how === 'fixed' && <div><Label>Widths (characters)</Label><Input value={width} onChange={(e) => setWidth(e.target.value)} placeholder="3, 3, 4" /></div>}
+          <Field label="Column"><Select value={col} onChange={setCol} options={opts} /></Field>
+          <Field label="Split"><Select value={how} onChange={setHow} options={[{ value: 'delim', label: 'At a separator' }, { value: 'name', label: 'Full name into first, middle, last' }, { value: 'email', label: 'Email into user and domain' }, { value: 'fixed', label: 'By fixed widths' }]} /></Field>
+          {how === 'delim' && <div className="grid grid-cols-2 gap-2"><Field label="Separator"><Input value={delim} onChange={(e) => setDelim(e.target.value)} placeholder=", or ; or \t" /></Field><Field label="Max columns"><Input value={max} onChange={(e) => setMax(e.target.value)} placeholder="0 = all" /></Field></div>}
+          {how === 'fixed' && <Field label="Widths (characters)"><Input value={width} onChange={(e) => setWidth(e.target.value)} placeholder="3, 3, 4" /></Field>}
           <Switch checked={keep} onChange={setKeep} label="Keep the original column" />
         </> : <>
           <div><Label>Columns to join, in order</Label><div className="flex max-h-40 flex-wrap gap-1.5 overflow-auto">{opts.map((o) => <button key={o.value} aria-pressed={combine.includes(o.value)} onClick={() => setCombine((x) => x.includes(o.value) ? x.filter((y) => y !== o.value) : [...x, o.value])} className={`rounded-full border px-2.5 py-1 text-xs cursor-pointer ${combine.includes(o.value) ? 'border-accent text-fg' : 'border-border text-muted'}`}>{combine.includes(o.value) ? `${combine.indexOf(o.value) + 1}. ` : ''}{o.label}</button>)}</div></div>
-          <div className="grid grid-cols-2 gap-2"><div><Label>Joiner</Label><Input value={sep} onChange={(e) => setSep(e.target.value)} /></div><div><Label>New column</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></div></div>
+          <div className="grid grid-cols-2 gap-2"><Field label="Joiner"><Input value={sep} onChange={(e) => setSep(e.target.value)} /></Field><Field label="New column"><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></Field></div>
           <Switch checked={skipBlank} onChange={setSkipBlank} label="Skip empty cells" />
         </>}
         <div><Label>Save as</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'xlsx', label: 'XLSX' }, { value: 'csv', label: 'CSV' }]} /></div>

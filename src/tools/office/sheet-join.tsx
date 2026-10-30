@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Merge } from 'lucide-react'
-import { Button, Card, Label, Segmented, Select, Switch } from '@/components/ui'
+import { Button, Card, Label, Segmented, Select, Switch, Field } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
 import { writeBook } from '@/lib/bcat/sheets'
 import { str, type Rows } from '@/lib/cf/sheet'
@@ -42,9 +42,9 @@ export default function SheetJoin() {
       </div>
       <Card className="space-y-4 self-start">
         <SheetPicker s={a} /><SheetPicker s={b} />
-        <div><Label>Key in main sheet</Label><Select value={ka} onChange={setKa} options={oa} /></div>
-        <div><Label>Matching key in lookup sheet</Label><Select value={kb} onChange={setKb} options={ob} /></div>
-        <div><Label>Rows to keep</Label><Select value={how} onChange={setHow} options={[{ value: 'left', label: 'All main rows (like VLOOKUP)' }, { value: 'inner', label: 'Only rows found in both' }, { value: 'full', label: 'Everything from both' }, { value: 'anti', label: 'Main rows NOT in lookup' }]} /></div>
+        <Field label="Key in main sheet"><Select value={ka} onChange={setKa} options={oa} /></Field>
+        <Field label="Matching key in lookup sheet"><Select value={kb} onChange={setKb} options={ob} /></Field>
+        <Field label="Rows to keep"><Select value={how} onChange={setHow} options={[{ value: 'left', label: 'All main rows (like VLOOKUP)' }, { value: 'inner', label: 'Only rows found in both' }, { value: 'full', label: 'Everything from both' }, { value: 'anti', label: 'Main rows NOT in lookup' }]} /></Field>
         {how !== 'anti' && <div><Label hint={bring.length ? `${bring.length}` : 'all'}>Columns to bring across</Label><div className="flex max-h-40 flex-wrap gap-1.5 overflow-auto">{ob.filter((o) => o.value !== kb).map((o) => <button key={o.value} aria-pressed={bring.includes(o.value)} onClick={() => setBring((x) => x.includes(o.value) ? x.filter((y) => y !== o.value) : [...x, o.value])} className={`rounded-full border px-2.5 py-1 text-xs cursor-pointer ${bring.includes(o.value) ? 'border-accent text-fg' : 'border-border text-muted'}`}>{o.label}</button>)}</div></div>}
         <Switch checked={caseless} onChange={setCaseless} label="Ignore case and outer spaces in keys" />
         <div><Label>Save as</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'xlsx', label: 'XLSX' }, { value: 'csv', label: 'CSV' }]} /></div>

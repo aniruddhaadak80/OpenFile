@@ -3,6 +3,7 @@ import { BookImage, Download, ImagePlus, X } from 'lucide-react'
 import { Button, Field, Input, Select, Slider, ToolGrid, Label, cn } from '@/components/ui'
 import { downloadBlob, canvasToBlob } from '@/lib/files'
 import { OpenButton } from '@/lib/b14/ui'
+import { toast } from '@/components/toast'
 
 const SIZES = [{ value: '1600x2560', label: 'Kindle eBook 1600 x 2560' }, { value: '1800x2700', label: 'Print 6 x 9 in (1800 x 2700)' }, { value: '1410x2250', label: 'Wattpad / web 1410 x 2250' }, { value: '2400x2400', label: 'Audiobook square 2400 x 2400' }]
 const STYLES = ['band', 'minimal', 'split', 'frame', 'photo'] as const
@@ -62,7 +63,12 @@ export default function EbookCoverMaker() {
   }, [title, sub, author, series, size, style, theme, font, tsize, img, dim])
 
   const save = async (type: 'image/jpeg' | 'image/png') => { const c = canvas.current; if (!c) return; downloadBlob(await canvasToBlob(c, type, 0.92), `${(title || 'cover').replace(/[^\w-]+/g, '-').toLowerCase()}-cover.${type === 'image/png' ? 'png' : 'jpg'}`) }
-  const loadImg = (f: File) => { const u = URL.createObjectURL(f); const im = new Image(); im.onload = () => setImg(im); im.src = u }
+  const loadImg = (f: File) => {
+    const u = URL.createObjectURL(f); const im = new Image()
+    im.onload = () => setImg(im)
+    im.onerror = () => { URL.revokeObjectURL(u); toast(`${f.name} is not a picture this browser can open. Choose a JPG, PNG or WebP.`, 'error') }
+    im.src = u
+  }
   return (
     <ToolGrid
       main={<div className="grid place-items-center rounded-2xl border border-border bg-surface-2/40 p-4"><canvas ref={canvas} className="h-auto max-h-[640px] w-auto max-w-full rounded-md shadow-2xl" aria-label="Cover preview" /></div>}

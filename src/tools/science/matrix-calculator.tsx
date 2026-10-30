@@ -83,7 +83,7 @@ export default function MatrixCalculator() {
       }
       side={
         <>
-          <div><Label>Operation</Label><Select value={op} onChange={setOp} options={OPS.map((o) => ({ value: o.value, label: o.label }))} /></div>
+          <label className="block"><Label>Operation</Label><Select value={op} onChange={setOp} options={OPS.map((o) => ({ value: o.value, label: o.label }))} /></label>
           <Switch checked={frac} onChange={setFrac} label="Show fractions" />
           <p className="text-xs text-muted">Type one row per line, values separated by spaces or commas. Fractions like 1/3 are fine. Row reduction and rank use exact fractions, so there is no rounding error.</p>
         </>

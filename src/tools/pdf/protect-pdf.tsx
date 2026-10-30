@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, ShieldCheck, Wand2, Printer, Copy as CopyIcon, FilePen, MessageSquare, ClipboardList, Layers, KeyRound, FileLock2 } from 'lucide-react'
-import { Button, Dropzone, FileChip, Label, Switch, Segmented, Select, ErrorNote, ResultCard, Progress, useJob, CopyButton, cn } from '@/components/ui'
+import { Button, Dropzone, FileChip, Label, Switch, Segmented, Select, ErrorNote, ResultCard, Progress, useJob, CopyButton, cn, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { pdfBlob } from '@/lib/pdf'
 import { renameExt } from '@/lib/files'
@@ -154,10 +154,7 @@ export default function ProtectPdf() {
               {sameOwner && <div className="text-xs text-danger">Use a different owner password, otherwise the restrictions can be bypassed.</div>}
             </> : <p className="text-xs text-muted">A random owner password will be generated so the restrictions can't be bypassed with the open password.</p>}
           </div>
-          <div className="border-t border-border pt-4">
-            <Label>Encryption</Label>
-            <Select value={algo} onChange={setAlgo} options={[{ value: 'AES-256', label: 'AES-256 (recommended)' }, { value: 'AES-128', label: 'AES-128 (older readers)' }]} />
-          </div>
+          <Field label="Encryption" className="border-t border-border pt-4"><Select value={algo} onChange={setAlgo} options={[{ value: 'AES-256', label: 'AES-256 (recommended)' }, { value: 'AES-128', label: 'AES-128 (older readers)' }]} /></Field>
           {job.busy && <Progress value={job.progress} label="Encrypting…" />}
           <ErrorNote error={job.error} />
           <Button size="lg" className="w-full" icon={<FileLock2 className="size-4" />} disabled={!ready || preview.locked} loading={job.busy} onClick={protect}>Protect PDF</Button>

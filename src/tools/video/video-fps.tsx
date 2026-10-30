@@ -38,7 +38,9 @@ export default function VideoFps() {
         const input = inName(file)
         const rate = mode === 'stopmotion' ? stop : +fps
         const dur = (meta?.duration || info.duration) * (mode === 'slowmo' ? factor : mode === 'timelapse' ? 1 / factor : 1)
-        const blob = await h.run(fpsOp(input, mode, rate, factor, info.hasAudio), [{ name: input, file }], dur)
+        // more frames per second than the source is allowed to make a bigger file
+        const moreFrames = (mode === 'convert' || mode === 'smooth') && rate > (info.fps || 30) + 0.5
+        const blob = await h.run(fpsOp(input, mode, rate, factor, info.hasAudio), [{ name: input, file }], dur, { pure: !moreFrames })
         return { blob, name: outName(file, mode === 'convert' ? `${rate}fps` : mode), title: 'Done' }
       }}
     />

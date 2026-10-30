@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MousePointer2, SquareDashed, ScanSearch, Undo2, Redo2, Trash2, EyeOff, Eye, ShieldCheck, X, Search } from 'lucide-react'
-import { Button, Dropzone, FileChip, Label, Input, Textarea, Switch, Select, Spinner, ErrorNote, ResultCard, Progress, Tabs, useJob, cn, Empty } from '@/components/ui'
+import { Button, Dropzone, FileChip, Label, Input, Textarea, Switch, Select, Spinner, ErrorNote, ResultCard, Progress, Tabs, useJob, cn, Empty, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { openPdfJs, renderPage, pdfBlob } from '@/lib/pdf'
 import { renameExt } from '@/lib/files'
@@ -202,10 +202,7 @@ export default function RedactPdf() {
                     )
                   })}
                 </div>
-                <div>
-                  <Label>Custom words or names</Label>
-                  <Textarea value={words} onChange={(e) => setWords(e.target.value)} placeholder={'John Smith, Acme Corp\nProject Falcon'} className="min-h-16 font-sans" />
-                </div>
+                <Field label="Custom words or names"><Textarea value={words} onChange={(e) => setWords(e.target.value)} placeholder={'John Smith, Acme Corp\nProject Falcon'} className="min-h-16 font-sans" /></Field>
                 <div>
                   <Label>Custom regex</Label>
                   <Input value={regex} onChange={(e) => setRegex(e.target.value)} placeholder="e.g. INV-\d{6}" className="font-mono" />
@@ -242,8 +239,8 @@ export default function RedactPdf() {
 
           <div className="space-y-3 border-t border-border pt-4">
             <div className="grid grid-cols-2 gap-2">
-              <div><Label>Fill</Label><Select value={color} onChange={setColor} options={[{ value: 'black', label: 'Black bars' }, { value: 'white', label: 'White (blank)' }]} /></div>
-              <div><Label>Quality</Label><Select value={dpi} onChange={setDpi} options={[{ value: '150', label: '150 DPI' }, { value: '200', label: '200 DPI' }, { value: '300', label: '300 DPI' }]} /></div>
+              <Field label="Fill"><Select value={color} onChange={setColor} options={[{ value: 'black', label: 'Black bars' }, { value: 'white', label: 'White (blank)' }]} /></Field>
+              <Field label="Quality"><Select value={dpi} onChange={setDpi} options={[{ value: '150', label: '150 DPI' }, { value: '200', label: '200 DPI' }, { value: '300', label: '300 DPI' }]} /></Field>
             </div>
             <Switch checked={stamp} onChange={setStamp} label={<span className="text-sm">Label boxes “REDACTED”</span>} />
             <Switch checked={onlyMarked} onChange={setOnlyMarked} label={<span className="text-sm">Keep unmarked pages as-is</span>} />

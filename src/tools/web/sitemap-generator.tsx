@@ -14,12 +14,12 @@ export default function SitemapGenerator() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <div className="space-y-3">
-        <div><Label>Site address</Label><Input value={base} onChange={(e) => setBase(e.target.value)} /></div>
-        <div><Label hint={`${urls.length} pages`}>Page URLs, one per line</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-56" /></div>
+        <div><Label>Site address</Label><Input aria-label="Site address" value={base} onChange={(e) => setBase(e.target.value)} /></div>
+        <div><Label hint={`${urls.length} pages`}>Page URLs, one per line</Label><Textarea aria-label="Page URLs, one per line" value={text} onChange={(e) => setText(e.target.value)} className="min-h-56" /></div>
         <Dropzone compact multiple accept=".html,.htm,.txt,.csv" onFiles={fromHtml} label="Or drop your HTML files" sub="Links inside them and their own paths are added" />
         <Card className="grid gap-3 sm:grid-cols-2">
           <Switch checked={lastmod} onChange={setLastmod} label="Last modified date" />{lastmod && <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Last modified" />}
-          <div><Label>Change frequency</Label><Select value={freq} onChange={setFreq} options={[{ value: '', label: 'Leave out (ignored by Google)' }, 'daily', 'weekly', 'monthly', 'yearly']} /></div>
+          <label className="block"><Label>Change frequency</Label><Select value={freq} onChange={setFreq} options={[{ value: '', label: 'Leave out (ignored by Google)' }, 'daily', 'weekly', 'monthly', 'yearly']} /></label>
           <Switch checked={prio} onChange={setPrio} label="Priority by depth" /><Switch checked={sameHost} onChange={setSameHost} label="Only this site's pages" />
         </Card>
       </div>

@@ -78,7 +78,7 @@ export default function CoverLetterBuilder() {
             </Card>
             <Card className="space-y-2.5">
               <div className="flex items-center justify-between gap-2"><div className="text-sm font-semibold">Letter</div>
-                <Select value="" onChange={(id) => { const t = TEMPLATES.find((x) => x.id === id); if (t) set({ subject: t.subject, body: t.body }) }} options={[{ value: '', label: 'Start from a template…' }, ...TEMPLATES.map((t) => ({ value: t.id, label: t.label }))]} className="h-8 w-auto text-xs" /></div>
+                <label><span className="sr-only">Letter template</span><Select value="" onChange={(id) => { const t = TEMPLATES.find((x) => x.id === id); if (t) set({ subject: t.subject, body: t.body }) }} options={[{ value: '', label: 'Start from a template…' }, ...TEMPLATES.map((t) => ({ value: t.id, label: t.label }))]} className="h-8 w-auto text-xs" /></label></div>
               <Field label="Subject line"><Input value={l.subject} onChange={(e) => set({ subject: e.target.value })} /></Field>
               <div className="grid grid-cols-2 gap-2"><Field label="Greeting"><Input value={l.greeting} onChange={(e) => set({ greeting: e.target.value })} /></Field><Field label="Closing"><Input value={l.closing} onChange={(e) => set({ closing: e.target.value })} /></Field></div>
               <Field label="Body" hint={`${l.body.split(/\s+/).filter(Boolean).length} words`}><Textarea className="min-h-72 font-sans text-sm" value={l.body} onChange={(e) => set({ body: e.target.value })} /></Field>

@@ -74,9 +74,9 @@ export default function MathEvaluator() {
       {tab === 'eta' && (
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
           <div className="space-y-3 rounded-2xl border border-border bg-surface p-5">
-            <div><Label>Total amount of work</Label><Input type="number" value={total} onChange={(e) => setTotal(Number(e.target.value) || 0)} /></div>
-            <div><Label>Done so far</Label><Input type="number" value={done} onChange={(e) => setDone(Number(e.target.value) || 0)} /></div>
-            <div><Label>Minutes it took</Label><Input type="number" value={mins} onChange={(e) => setMins(Number(e.target.value) || 0)} /></div>
+            <div><Label>Total amount of work</Label><Input aria-label="Total amount of work" type="number" value={total} onChange={(e) => setTotal(Number(e.target.value) || 0)} /></div>
+            <div><Label>Done so far</Label><Input aria-label="Done so far" type="number" value={done} onChange={(e) => setDone(Number(e.target.value) || 0)} /></div>
+            <div><Label>Minutes it took</Label><Input aria-label="Minutes it took" type="number" value={mins} onChange={(e) => setMins(Number(e.target.value) || 0)} /></div>
             <p className="text-xs text-muted">Works for downloads (MB), pages read, files processed, laps run, anything with a steady pace.</p>
           </div>
           <div className="grid content-start gap-2 sm:grid-cols-2">

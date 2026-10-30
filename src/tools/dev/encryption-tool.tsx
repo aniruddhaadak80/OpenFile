@@ -92,7 +92,7 @@ export default function EncryptionTool() {
       </div>
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
-          {dir === 'enc' && <div><Label>Cipher</Label><Select value={fmt} onChange={setFmt} options={FMTS} /></div>}
+          {dir === 'enc' && <label className="block"><Label>Cipher</Label><Select value={fmt} onChange={setFmt} options={FMTS} /></label>}
           <div>
             <Label>Password</Label>
             <div className="flex gap-2"><Input type={show ? 'text' : 'password'} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" aria-label="Password" /><Button variant="outline" onClick={() => setShow(!show)} icon={show ? <EyeOff className="size-4" /> : <Eye className="size-4" />} aria-label={show ? 'Hide password' : 'Show password'} /></div>

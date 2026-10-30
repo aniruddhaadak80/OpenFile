@@ -4188,7 +4188,7 @@
     "poster": "media/tools/checksum-manifest.jpg",
     "duration": 11.33,
     "voice": "af_bella 80% + af_jessica 20%",
-    "bytes": 277253,
+    "bytes": 330143,
     "music": "C 73 bpm bell"
   },
   "zip-repair": {
@@ -4236,7 +4236,7 @@
     "poster": "media/tools/bates-numbering.jpg",
     "duration": 11.17,
     "voice": "bm_fable 70% + bm_lewis 30%",
-    "bytes": 235703,
+    "bytes": 274382,
     "music": "A 101 bpm bell"
   },
   "pdf-stamps": {
@@ -4244,7 +4244,7 @@
     "poster": "media/tools/pdf-stamps.jpg",
     "duration": 10.6,
     "voice": "af_heart 70% + af_aoede 30%",
-    "bytes": 230756,
+    "bytes": 253353,
     "music": "G 98 bpm marimba"
   },
   "pdf-to-long-image": {
@@ -4252,7 +4252,7 @@
     "poster": "media/tools/pdf-to-long-image.jpg",
     "duration": 12.0,
     "voice": "am_michael 70% + am_echo 30%",
-    "bytes": 294127,
+    "bytes": 343988,
     "music": "E 104 bpm kalimba"
   },
   "pdf-scan-effect": {
@@ -4268,7 +4268,7 @@
     "poster": "media/tools/pdf-to-json.jpg",
     "duration": 10.7,
     "voice": "bm_george 70% + bm_daniel 30%",
-    "bytes": 270130,
+    "bytes": 312102,
     "music": "F 91 bpm kalimba"
   },
   "image-recolor": {
@@ -4284,7 +4284,7 @@
     "poster": "media/tools/image-stitcher.jpg",
     "duration": 10.57,
     "voice": "af_bella 70% + af_aoede 30%",
-    "bytes": 248375,
+    "bytes": 285602,
     "music": "C# 91 bpm bell"
   },
   "image-to-ascii": {

@@ -21,7 +21,7 @@ export function useVision(model: VModel, opts: { quick?: boolean } = {}) {
   const device: 'wasm' | 'webgpu' = gpu && gpuOk ? 'webgpu' : 'wasm'
   const cb = (extra: VCallbacks = {}): VCallbacks => ({
     onLoad: (l, t) => { setPhase('loading'); setLoad({ loaded: l, total: t }) },
-    onStatus: (s) => setStatus(s),
+    onStatus: (s) => { setStatus(s); if (s.startsWith('Preparing')) setLoad(null) },
     onReady: () => { setPhase('running'); setLoad(null); setStatus('Running the model on your device') },
     onProgress: (d, t) => { setProgress(d / Math.max(1, t)); setStatus(`Working: ${d} of ${t}`) },
     ...extra,

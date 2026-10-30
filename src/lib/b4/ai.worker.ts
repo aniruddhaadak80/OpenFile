@@ -23,7 +23,7 @@ async function get(task: string, model: string, device: string, dtype: string | 
       else if (e.status === 'initiate') post({ id, type: 'status', text: `Downloading ${e.file}` })
       // after the last file arrives ONNX Runtime still has to build the model, which takes a while on a CPU; say so instead of
       // leaving the last "Downloading <file>" line on screen
-      else if (e.status === 'done') post({ id, type: 'status', text: 'Preparing the model. On a CPU this can take a minute or two.' })
+      else if (e.status === 'done') { let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); if (t > 0 && l >= t) post({ id, type: 'status', text: 'Preparing the model. On a CPU this can take a minute or two.' }) }
     },
   })
   cache.set(key, p)
@@ -41,7 +41,9 @@ self.onmessage = async (ev: MessageEvent) => {
       for (let i = 0; i < texts.length; i++) {
         const t = texts[i]
         if (!t.trim()) { out.push(t); continue }
-        const r: any = await p(t, { src_lang: options.src, tgt_lang: options.tgt, max_new_tokens: Math.min(512, Math.ceil(t.length / 2) + 40) })
+        // NLLB needs src_lang and tgt_lang; OPUS-MT has one model per pair and takes an optional >>lang<< token instead
+        const lang = options.src ? { src_lang: options.src, tgt_lang: options.tgt } : {}
+        const r: any = await p((options.prefix ?? '') + t, { ...lang, max_new_tokens: Math.min(512, Math.ceil(t.length / 2) + 40) })
         out.push((Array.isArray(r) ? r[0] : r).translation_text)
         post({ id, type: 'progress', done: i + 1, total: texts.length, partial: out[out.length - 1] })
       }

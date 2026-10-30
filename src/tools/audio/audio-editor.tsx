@@ -159,8 +159,8 @@ export default function AudioEditor() {
             <div className="mb-3 flex flex-wrap items-center gap-3 text-xs text-muted">
               {sel ? <>
                 <span className="font-medium text-fg">Selection</span>
-                <div className="w-28"><TimeInput value={sel[0]} max={sel[1] - 0.01} onChange={(v) => setSel([v, sel[1]])} className="h-8" /></div>→
-                <div className="w-28"><TimeInput value={sel[1]} min={sel[0] + 0.01} max={buffer.duration} onChange={(v) => setSel([sel[0], v])} className="h-8" /></div>
+                <div className="w-28"><TimeInput label="Selection start" value={sel[0]} max={sel[1] - 0.01} onChange={(v) => setSel([v, sel[1]])} className="h-8" /></div>→
+                <div className="w-28"><TimeInput label="Selection end" value={sel[1]} min={sel[0] + 0.01} max={buffer.duration} onChange={(v) => setSel([sel[0], v])} className="h-8" /></div>
                 <span className="font-mono">{fmtTime(sel[1] - sel[0])}</span>
                 <button className="text-accent hover:underline cursor-pointer" onClick={zoomSel}>Zoom to selection</button>
                 <button className="hover:text-fg cursor-pointer" onClick={() => setSel(null)}>Clear</button>

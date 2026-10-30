@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FileDown, Table2, Eye, Loader2 } from 'lucide-react'
-import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, ErrorNote, ResultCard, Tabs, Badge, useJob } from '@/components/ui'
+import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, ErrorNote, ResultCard, Tabs, Badge, useJob, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { baseName } from '@/lib/files'
 import { FileBar, PdfPreview, Pill, Reveal, Stat, pageDims, mm, useDebounced, type PageSizeKey } from './_conv/shared'
@@ -124,7 +124,7 @@ export default function ExcelToPdf() {
         side={<>
           <div className="grid grid-cols-3 gap-2"><Stat label="Rows" value={(sheet?.rows.length ?? 0).toLocaleString()} /><Stat label="Cols" value={sheet?.rows[0]?.length ?? 0} /><Stat label="Pages" value={pdf?.pages ?? '…'} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Page</Label><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a3', label: 'A3' }]} /></div>
+            <Field label="Page"><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a3', label: 'A3' }]} /></Field>
             <div><Label>Orientation</Label><Segmented value={orient} onChange={setOrient} options={[{ value: 'portrait', label: 'Port.' }, { value: 'landscape', label: 'Land.' }]} /></div>
           </div>
           <div>

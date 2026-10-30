@@ -26,6 +26,8 @@ async function get(task: string, model: string, device: string, dtype: string | 
         const now = Date.now(); if (now - lastPost < 200 && l < t) return; lastPost = now
         post({ id, type: 'load', loaded: l, total: t })
       } else if (e.status === 'initiate') post({ id, type: 'status', text: `Downloading ${String(e.file).split('/').pop()}` })
+      // after the last byte ONNX Runtime still builds the model, which takes a while on a CPU: say so instead of a full bar
+      else if (e.status === 'done') { let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); if (t > 0 && l >= t) post({ id, type: 'status', text: 'Preparing the model. On a CPU this can take a minute.' }) }
     },
   })
   cache.set(key, p)

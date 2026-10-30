@@ -17,7 +17,9 @@ export default function Status() {
   const install = useInstall()
   useEffect(() => {
     setPageMeta('Status | OpenFile', 'Server API status and the browser capabilities OpenFile can use on your device.')
-    fetch(`${import.meta.env.BASE_URL}api/health`).then((r) => r.ok ? r.json() : Promise.reject()).then((j) => { setInfo(j); setApi('ok') }).catch(() => setApi('static'))
+    // The GitHub Pages build (base /OpenFile/) is static files only, so skip the probe there instead of logging a 404
+    if (import.meta.env.BASE_URL !== '/') setApi('static')
+    else fetch(`${import.meta.env.BASE_URL}api/health`).then((r) => r.ok ? r.json() : Promise.reject()).then((j) => { setInfo(j); setApi('ok') }).catch(() => setApi('static'))
     navigator.storage?.estimate?.().then((e) => setStorage({ usage: e.usage ?? 0, quota: e.quota ?? 0 })).catch(() => {})
     if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistration().then((r) => setSw(r?.active ? 'active' : 'none')).catch(() => setSw('none')); else setSw('none')
   }, [])

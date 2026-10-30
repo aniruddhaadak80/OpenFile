@@ -58,9 +58,9 @@ export default function KeyGenerator() {
         <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
           <div><Label>Key type</Label><Segmented value={kind} onChange={setKind} options={[{ value: 'ed25519', label: 'Ed25519' }, { value: 'ecdsa', label: 'ECDSA' }, { value: 'rsa', label: 'RSA' }]} /></div>
           {kind === 'rsa' && <><div><Label>Key size</Label><Segmented value={bits} onChange={setBits} options={[{ value: '2048', label: '2048' }, { value: '3072', label: '3072' }, { value: '4096', label: '4096' }]} /></div>
-            <div><Label>Use for</Label><Select value={usage} onChange={setUsage} options={[{ value: 'sign', label: 'Signing and SSH (RSASSA-PKCS1)' }, { value: 'encrypt', label: 'Encryption (RSA-OAEP)' }]} /></div></>}
+            <label className="block"><Label>Use for</Label><Select value={usage} onChange={setUsage} options={[{ value: 'sign', label: 'Signing and SSH (RSASSA-PKCS1)' }, { value: 'encrypt', label: 'Encryption (RSA-OAEP)' }]} /></label></>}
           {kind === 'ecdsa' && <div><Label>Curve</Label><Segmented value={curve} onChange={setCurve} options={['P-256', 'P-384', 'P-521']} /></div>}
-          <div><Label>Comment (SSH)</Label><Input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="you@machine" /></div>
+          <div><Label>Comment (SSH)</Label><Input aria-label="Comment (SSH)" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="you@machine" /></div>
           <Button className="w-full" size="lg" loading={busy} icon={<KeyRound className="size-4" />} onClick={go}>Generate key pair</Button>
           <p className="flex gap-2 text-xs text-muted"><ShieldAlert className="size-4 shrink-0 text-warn" />Anyone with the private key can act as you. Store it safely and never share it.</p>
           {kind === 'rsa' && bits === '4096' && <p className="text-xs text-muted">4096-bit RSA can take a few seconds.</p>}

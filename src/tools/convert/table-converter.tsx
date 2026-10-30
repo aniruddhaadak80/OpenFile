@@ -163,7 +163,7 @@ export default function TableConverter() {
             <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={'Paste CSV, TSV, JSON, XML, a Markdown or HTML table, or SQL INSERT statements'} className="h-64" spellCheck={false} />
           )}
           <div className="flex flex-wrap items-center gap-3">
-            {!wb && <div className="w-48"><Select value={inFmt} onChange={setInFmt} options={IN_OPTS} /></div>}
+            {!wb && <label className="w-48"><span className="sr-only">Input format</span><Select value={inFmt} onChange={setInFmt} options={IN_OPTS} /></label>}
             {inFmt === 'auto' && detected && !wb && <Badge>Detected: {detected.toUpperCase()}</Badge>}
             {recordPath && !wb && <span className="text-xs text-muted">Records: {recordPath}</span>}
             <Switch checked={header} onChange={setHeader} label="First row is header" />
@@ -176,7 +176,7 @@ export default function TableConverter() {
           <div className="flex items-center gap-2"><ArrowLeftRight className="size-4 text-accent" /><span className="text-sm font-semibold">Convert to</span></div>
           <div className="flex flex-wrap gap-1.5">{OUT_OPTS.map((o) => <Pill key={o.value} active={out === o.value} onClick={() => setOut(o.value)}>{o.label}</Pill>)}</div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            {out === 'sql' && <><div className="flex items-center gap-2"><span className="text-xs text-muted">Table</span><Input value={tableName} onChange={(e) => setTableName(e.target.value)} className="h-8 w-36 text-xs" /></div><Switch checked={createTable} onChange={setCreateTable} label="CREATE TABLE" /></>}
+            {out === 'sql' && <><div className="flex items-center gap-2"><span className="text-xs text-muted">Table</span><Input value={tableName} onChange={(e) => setTableName(e.target.value)} className="h-8 w-36 text-xs" aria-label="Table name" /></div><Switch checked={createTable} onChange={setCreateTable} label="CREATE TABLE" /></>}
             {out === 'xml' && <><div className="flex items-center gap-2"><span className="text-xs text-muted">Root</span><Input value={xmlRoot} onChange={(e) => setXmlRoot(e.target.value)} className="h-8 w-24 text-xs" aria-label="Root element" /></div><div className="flex items-center gap-2"><span className="text-xs text-muted">Row</span><Input value={xmlRow} onChange={(e) => setXmlRow(e.target.value)} className="h-8 w-24 text-xs" aria-label="Row element" /></div><Switch checked={xmlAttrs} onChange={setXmlAttrs} label="Columns as attributes" /></>}
             {['json', 'json-arrays', 'sql', 'yaml', 'xlsx', 'ods'].includes(out) && <Switch checked={inferTypes} onChange={setInferTypes} label="Detect numbers and booleans" />}
             {['json', 'json-arrays', 'html', 'xml'].includes(out) && <Switch checked={pretty} onChange={setPretty} label="Pretty" />}

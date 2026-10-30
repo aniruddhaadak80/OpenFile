@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Music } from 'lucide-react'
-import { Button, Dropzone, Label, ResultCard, Segmented, Select, ToolGrid, cn } from '@/components/ui'
+import { Button, Dropzone, Field, Label, ResultCard, Segmented, Select, ToolGrid, cn } from '@/components/ui'
 import { baseName, formatBytes } from '@/lib/files'
 import { ffRun, extFromBlob } from './_media/engine'
 import { audioCodecArgs } from './_media/audio'
@@ -67,7 +67,7 @@ export default function ExtractAudio() {
             </div>
           </div>
           {INFO[fmt].lossy && <div><Label>Bitrate</Label><Segmented value={br} onChange={setBr} options={['96', '128', '192', '256', '320'].map((v) => ({ value: v, label: v }))} /><p className="mt-1 text-xs text-muted">kbps · 192 is transparent for most listeners.</p></div>}
-          <div><Label>Sample rate</Label><Select value={sr} onChange={setSr} options={[{ value: 'original', label: 'Keep original' }, { value: '48000', label: '48 kHz' }, { value: '44100', label: '44.1 kHz (CD)' }, { value: '22050', label: '22 kHz (voice)' }]} /></div>
+          <Field label="Sample rate"><Select value={sr} onChange={setSr} options={[{ value: 'original', label: 'Keep original' }, { value: '48000', label: '48 kHz' }, { value: '44100', label: '44.1 kHz (CD)' }, { value: '22050', label: '22 kHz (voice)' }]} /></Field>
           {est > 0 && <div className="flex justify-between rounded-xl bg-surface-2/60 px-3 py-2 text-sm"><span className="text-muted">Estimated size</span><span className="font-mono">≈{formatBytes(est)}</span></div>}
           <Button size="lg" className="w-full" icon={<Music className="size-5" />} onClick={go} loading={job.busy}>Extract audio</Button>
           <JobPanel job={job} onRetry={go} />

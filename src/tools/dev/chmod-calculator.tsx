@@ -45,7 +45,7 @@ export default function ChmodCalculator() {
         <div className="flex flex-wrap gap-1.5">{PRESETS.map(([o, l]) => <Chip key={o} active={oct === o} onClick={() => update(fromOctal(o)!)}>{o} · {l}</Chip>)}</div>
       </div>
       <aside className="space-y-2 lg:sticky lg:top-24 lg:self-start">
-        <div><Label>File name for commands</Label><Input value={file} onChange={(e) => setFile(e.target.value)} className="font-mono" /></div>
+        <div><Label>File name for commands</Label><Input aria-label="File name for commands" value={file} onChange={(e) => setFile(e.target.value)} className="font-mono" /></div>
         <KV label="Octal" value={oct} />
         <KV label="ls -l view" value={'-' + toSymbolic(mode)} />
         <KV label="Command (octal)" value={`chmod ${oct} ${file}`} />

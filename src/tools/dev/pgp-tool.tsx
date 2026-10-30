@@ -86,12 +86,12 @@ export default function PgpTool() {
       {tab === 'keys' && (
         <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
           <div className="space-y-3 rounded-2xl border border-border bg-surface p-5">
-            <div><Label>Name</Label><Input value={g.name} onChange={(e) => setG({ ...g, name: e.target.value })} /></div>
-            <div><Label>Email</Label><Input type="email" value={g.email} onChange={(e) => setG({ ...g, email: e.target.value })} /></div>
-            <div><Label>Passphrase (recommended)</Label><Input type="password" value={g.passphrase} onChange={(e) => setG({ ...g, passphrase: e.target.value })} autoComplete="new-password" /></div>
-            <div><Label>Key type</Label><Select value={g.type} onChange={(v) => setG({ ...g, type: v })} options={[{ value: 'ecc', label: 'ECC Curve25519 (widely supported)' }, { value: 'curve25519', label: 'Curve25519 v6 (newest, RFC 9580)' }, { value: 'rsa', label: 'RSA' }]} /></div>
+            <div><Label>Name</Label><Input aria-label="Name" value={g.name} onChange={(e) => setG({ ...g, name: e.target.value })} /></div>
+            <div><Label>Email</Label><Input aria-label="Email" type="email" value={g.email} onChange={(e) => setG({ ...g, email: e.target.value })} /></div>
+            <div><Label>Passphrase (recommended)</Label><Input aria-label="Passphrase (recommended)" type="password" value={g.passphrase} onChange={(e) => setG({ ...g, passphrase: e.target.value })} autoComplete="new-password" /></div>
+            <label className="block"><Label>Key type</Label><Select value={g.type} onChange={(v) => setG({ ...g, type: v })} options={[{ value: 'ecc', label: 'ECC Curve25519 (widely supported)' }, { value: 'curve25519', label: 'Curve25519 v6 (newest, RFC 9580)' }, { value: 'rsa', label: 'RSA' }]} /></label>
             {g.type === 'rsa' && <div><Label>RSA size</Label><Segmented value={String(g.rsaBits) as '4096'} onChange={(v) => setG({ ...g, rsaBits: Number(v) })} options={['2048', '3072', '4096']} /></div>}
-            <div><Label>Expires</Label><Select value={String(g.expiry)} onChange={(v) => setG({ ...g, expiry: Number(v) })} options={[{ value: '0', label: 'Never' }, { value: '365', label: '1 year' }, { value: '730', label: '2 years' }, { value: '1825', label: '5 years' }]} /></div>
+            <label className="block"><Label>Expires</Label><Select value={String(g.expiry)} onChange={(v) => setG({ ...g, expiry: Number(v) })} options={[{ value: '0', label: 'Never' }, { value: '365', label: '1 year' }, { value: '730', label: '2 years' }, { value: '1825', label: '5 years' }]} /></label>
             <Button className="w-full" loading={busy} icon={<KeyRound className="size-4" />} onClick={doGen}>Generate key pair</Button>
           </div>
           <div className="space-y-3">
@@ -105,14 +105,14 @@ export default function PgpTool() {
           <div className="min-w-0 space-y-3">
             {!(file && (tab === 'encrypt' || tab === 'decrypt')) && <div><Label>{tab === 'encrypt' ? 'Message' : tab === 'decrypt' ? 'Encrypted message' : tab === 'sign' ? 'Text to sign' : detached ? 'Original text' : 'Signed message'}</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-44" placeholder={tab === 'decrypt' ? '-----BEGIN PGP MESSAGE-----' : tab === 'verify' && !detached ? '-----BEGIN PGP SIGNED MESSAGE-----' : ''} /></div>}
             {fileZone}
-            {tab === 'verify' && detached && <div><Label>Detached signature</Label><Textarea value={detSig} onChange={(e) => setDetSig(e.target.value)} className="min-h-24 text-[11px]" placeholder="-----BEGIN PGP SIGNATURE-----" /></div>}
+            {tab === 'verify' && detached && <div><Label>Detached signature</Label><Textarea aria-label="Detached signature" value={detSig} onChange={(e) => setDetSig(e.target.value)} className="min-h-24 text-[11px]" placeholder="-----BEGIN PGP SIGNATURE-----" /></div>}
             {err && <Status kind="err">{err}</Status>}
             {sigs && <Sigs sigs={sigs} />}
             {result && (tab === 'decrypt' || tab === 'verify' ? <div><Label hint={<CopyButton text={result} variant="ghost" />}>{tab === 'decrypt' ? 'Decrypted' : 'Signed text'}</Label><pre className="scrollbar-thin max-h-72 overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface p-3 text-sm">{result}</pre></div> : <Out text={result} file={tab === 'sign' ? (detached ? 'signature.asc' : 'signed.asc') : 'message.asc'} />)}
           </div>
           <div className="space-y-3 rounded-2xl border border-border bg-surface p-5">
             {(tab === 'encrypt' || tab === 'verify' || tab === 'decrypt') && <KeyBox label={tab === 'encrypt' ? 'Recipient public key(s)' : tab === 'verify' ? "Signer's public key" : "Sender's public key (to check the signature, optional)"} value={pub} onChange={setPub} placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----" />}
-            {(tab === 'decrypt' || tab === 'sign' || (tab === 'encrypt' && signToo)) && <><KeyBox label="Your private key" value={priv} onChange={setPriv} placeholder="-----BEGIN PGP PRIVATE KEY BLOCK-----" /><div><Label>Passphrase</Label><Input type="password" value={pass} onChange={(e) => setPass(e.target.value)} autoComplete="off" /></div></>}
+            {(tab === 'decrypt' || tab === 'sign' || (tab === 'encrypt' && signToo)) && <><KeyBox label="Your private key" value={priv} onChange={setPriv} placeholder="-----BEGIN PGP PRIVATE KEY BLOCK-----" /><div><Label>Passphrase</Label><Input aria-label="Passphrase" type="password" value={pass} onChange={(e) => setPass(e.target.value)} autoComplete="off" /></div></>}
             {(tab === 'encrypt' || tab === 'decrypt') && <div><Label>{tab === 'encrypt' ? 'Or also lock with a password' : 'Message password (if any)'}</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" /></div>}
             {tab === 'encrypt' && <><Switch checked={signToo} onChange={setSignToo} label="Sign with my private key" />{file && <Switch checked={armor} onChange={setArmor} label="ASCII armor (.asc)" />}</>}
             {(tab === 'sign' || tab === 'verify') && <Switch checked={detached} onChange={setDetached} label="Detached signature" />}

@@ -65,3 +65,24 @@ export function matchAudioKbps(kbps: number, fallback = 192): number {
   const steps = [64, 96, 112, 128, 160, 192, 224, 256, 320]
   return steps.find((s) => s >= kbps * 0.98) ?? 320
 }
+
+/** Arguments for a second, smaller encode when a re-encode came back bigger than its source: a higher CRF and a video
+ *  cap a little under the source rate. Returns null when the video is not re-encoded by a cappable encoder (stream copy). */
+export function lowerQuality(args: string[], src: SourceRate): string[] | null {
+  const out = [...args]
+  const ci = out.indexOf('-c:v')
+  if (ci < 0 || !CAPPABLE.includes(out[ci + 1])) return null
+  const qi = out.indexOf('-crf')
+  if (qi >= 0) out[qi + 1] = String(Math.min(40, (+out[qi + 1] || 23) + 6))
+  if (src.video > 0) {
+    const v = Math.max(16, Math.round(src.video * 0.8))
+    const mi = out.indexOf('-maxrate'), bi = out.indexOf('-bufsize')
+    // keep the output file name last
+    const tail = out.pop() as string
+    if (mi >= 0) out[mi + 1] = `${v}k`; else out.push('-maxrate', `${v}k`)
+    if (bi >= 0) out[bi + 1] = `${v * 2}k`; else out.push('-bufsize', `${v * 2}k`)
+    const vb = out.indexOf('-b:v'); if (vb >= 0) out[vb + 1] = `${v}k`
+    out.push(tail)
+  }
+  return out
+}

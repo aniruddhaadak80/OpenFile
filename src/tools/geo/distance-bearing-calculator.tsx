@@ -35,9 +35,9 @@ export default function DistanceBearingCalculator() {
       <Card className="space-y-4 self-start">
         <Segmented value={mode} onChange={setMode} options={[{ value: 'between', label: 'Two points' }, { value: 'destination', label: 'Go from a point' }, { value: 'route', label: 'Route' }]} />
         {mode !== 'route' && <div><Label>{mode === 'between' ? 'From' : 'Start'}</Label><Input value={a} onChange={(e) => setA(e.target.value)} className="font-mono" /></div>}
-        {mode === 'between' && <div><Label>To</Label><Input value={b} onChange={(e) => setB(e.target.value)} className="font-mono" /></div>}
+        {mode === 'between' && <div><Label>To</Label><Input aria-label="To" value={b} onChange={(e) => setB(e.target.value)} className="font-mono" /></div>}
         {mode === 'destination' && <div className="grid grid-cols-2 gap-2"><NumBox label="Bearing" unit="°" value={brg} onChange={setBrg} /><NumBox label="Distance" unit={I ? 'mi' : 'km'} value={km} onChange={setKm} /></div>}
-        {mode === 'route' && <div><Label>Points, one per line</Label><textarea value={route} onChange={(e) => setRoute(e.target.value)} className="of-field min-h-40 w-full rounded-xl border border-border bg-surface-2/60 p-2 font-mono text-xs" /></div>}
+        {mode === 'route' && <div><Label>Points, one per line</Label><textarea aria-label="Points, one per line" value={route} onChange={(e) => setRoute(e.target.value)} className="of-field min-h-40 w-full rounded-xl border border-border bg-surface-2/60 p-2 font-mono text-xs" /></div>}
         <Segmented value={imp} onChange={setImp} options={[{ value: 'metric', label: 'km' }, { value: 'imperial', label: 'miles' }]} />
         <p className="text-xs text-muted">Uses the haversine formula on a sphere of radius 6,371 km. Results are within about 0.5 percent of survey-grade distances.</p>
       </Card>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Dropzone, Label, Select, Switch, ToolGrid, ErrorNote, Empty, FileChip, cn } from '@/components/ui'
+import { Dropzone, Label, Select, Switch, ToolGrid, ErrorNote, Empty, FileChip, cn, Field } from '@/components/ui'
 import { readBook, SHEET_ACCEPT, type Book } from '@/lib/bcat/sheets'
 import { diffSheets, colName } from '@/lib/bcat/office'
 import { DlButton, toCsv } from '@/lib/bcat/kit'
@@ -10,7 +10,7 @@ function Side({ label, book, onFile, sheet, setSheet, file }: { label: string; b
     <div className="space-y-2">
       <Label>{label}</Label>
       {!file ? <Dropzone compact accept={SHEET_ACCEPT} onFiles={(f) => onFile(f[0])} label={`Drop the ${label.toLowerCase()}`} /> : <FileChip file={file} onRemove={() => onFile(null as any)} />}
-      {book && book.sheets.length > 1 && <Select value={sheet} onChange={setSheet} options={book.sheets.map((s, i) => ({ value: String(i), label: s.name }))} />}
+      {book && book.sheets.length > 1 && <label className="block"><span className="sr-only">{`${label} sheet`}</span><Select value={sheet} onChange={setSheet} options={book.sheets.map((s, i) => ({ value: String(i), label: s.name }))} /></label>}
     </div>
   )
 }
@@ -64,7 +64,7 @@ export default function SpreadsheetCompare() {
       }
       side={
         <>
-          <div><Label>Match rows by</Label><Select value={key} onChange={setKey} options={[{ value: '-1', label: 'Row position' }, ...head.map((h, i) => ({ value: String(i), label: `Key column: ${String(h ?? colName(i))}` }))]} /></div>
+          <Field label="Match rows by"><Select value={key} onChange={setKey} options={[{ value: '-1', label: 'Row position' }, ...head.map((h, i) => ({ value: String(i), label: `Key column: ${String(h ?? colName(i))}` }))]} /></Field>
           <p className="text-xs text-muted">Pick a key column (like an ID or email) when rows may have moved, been sorted or inserted.</p>
           <Switch checked={only} onChange={setOnly} label="Show changed rows only" />
           {d && <DlButton className="w-full" name="sheet-differences.csv" mime="text/csv" data={() => toCsv([['change', 'row', 'column', 'old value', 'new value'], ...d.changed.map((c) => ['changed', c.row + 1, String(head[c.col] ?? colName(c.col)), c.a, c.b]), ...d.addedRows.map((r) => ['added row', r + 1, '', '', B[r].join(' | ')]), ...d.removedRows.map((r) => ['removed row', r + 1, '', A[r].join(' | '), ''])])}>Download report (CSV)</DlButton>}

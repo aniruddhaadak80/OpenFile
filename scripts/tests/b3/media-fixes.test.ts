@@ -5,7 +5,7 @@ import path from 'node:path'
 import url from 'node:url'
 import * as F from '../../../src/lib/b3/ffops'
 import { vizGraph, type Viz } from '../../../src/lib/b3/viz'
-import { capToSource, VIDEO_FLOOR_KBPS } from '../../../src/tools/video/_media/bitrate'
+import { capToSource, lowerQuality, VIDEO_FLOOR_KBPS } from '../../../src/tools/video/_media/bitrate'
 
 const root = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '../../..')
 ;(globalThis as any).self ??= globalThis
@@ -146,5 +146,23 @@ for (const viz of ['waves', 'line', 'bars', 'spectrum', 'circle'] as Viz[]) {
   const p = await probe('o.mp4', r.data!)
   assert.ok(Math.abs(p.duration - 3) < 0.2, `reversed clip with chapters is ${p.duration}s, want 3`)
   console.log('ok chunked reverse with chapters', plan.pieces.length, 'pieces', p.duration, 's')
+}
+// 8. A pure edit of a very low bitrate clip that came back bigger is made again smaller (crf up, cap under the source)
+{
+  const src = { total: 34, video: 32, audio: 0 }
+  const first = [...capToSource(['-i', 'in.mp4', '-vf', 'hue=s=0', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21', '-pix_fmt', 'yuv420p'], src, 1.25), 'out.mp4']
+  const again = lowerQuality(first, src)!
+  assert.equal(again[again.length - 1], 'out.mp4', 'output name stays last')
+  assert.equal(again[again.indexOf('-crf') + 1], '27')
+  assert.equal(again[again.indexOf('-maxrate') + 1], '26k')
+  assert.equal(again[again.indexOf('-bufsize') + 1], '52k')
+  assert.equal(again.filter((a) => a === '-maxrate').length, 1)
+  assert.equal(lowerQuality(['-i', 'in.mp4', '-c:v', 'copy', 'out.mp4'], src), null, 'stream copy is left alone')
+  // real core: a 320x240 15 fps clip at about 32 kb/s, filtered to grey
+  const LOW = await make(['-f', 'lavfi', '-i', 'testsrc2=size=320x240:rate=15:duration=6', '-c:v', 'libx264', '-preset', 'veryfast', '-b:v', '30k', '-maxrate', '30k', '-bufsize', '60k', '-pix_fmt', 'yuv420p'], 'low.mp4')
+  const r1 = await ff(first, { 'in.mp4': LOW }, 'out.mp4'); assert.equal(r1.code, 0, r1.logs.slice(-3).join('\n'))
+  const r2 = await ff(again, { 'in.mp4': LOW }, 'out.mp4'); assert.equal(r2.code, 0, r2.logs.slice(-3).join('\n'))
+  assert.ok(r2.data!.length < r1.data!.length, `second encode ${r2.data!.length} B is smaller than the first ${r1.data!.length} B`)
+  console.log('ok lower quality retry', LOW.length, '->', r1.data!.length, '->', r2.data!.length)
 }
 console.log('media-fixes: all passed')

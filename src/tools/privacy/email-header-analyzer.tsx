@@ -27,7 +27,7 @@ export default function EmailHeaderAnalyzer() {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 lg:grid-cols-[1fr_260px]">
-        <div><Label>Paste the full email headers (Show original or View source in your mail app)</Label><Textarea value={raw} onChange={(e) => setRaw(e.target.value)} className="min-h-44" /></div>
+        <div><Label>Paste the full email headers (Show original or View source in your mail app)</Label><Textarea aria-label="Paste the full email headers (Show original or View source in your mail app)" value={raw} onChange={(e) => setRaw(e.target.value)} className="min-h-44" /></div>
         <Dropzone compact accept=".eml,.txt,.msg" onFiles={async (f) => setRaw(await f[0].text())} label="Or drop a .eml file" sub="Read on your device" />
       </div>
       <Stats cols={4}><Stat label="SPF" value={<span className="text-base">{badge(r.spf)}</span>} /><Stat label="DKIM" value={<span className="text-base">{badge(r.dkim)}</span>} /><Stat label="DMARC" value={<span className="text-base">{badge(r.dmarc)}</span>} /><Stat label="Delivery time" value={total != null ? fmtDelay(total) : '-'} sub={`${r.hops.length} hops`} /></Stats>

@@ -15,9 +15,24 @@ async function renderMeta(buf: ArrayBuffer): Promise<{ svg: string; w: number; h
   const { EMFJS, WMFJS } = await import('rtf.js')
   EMFJS.loggingEnabled(false); WMFJS.loggingEnabled(false)
   const W = Math.max(1, Math.round(info.width)), H = Math.max(1, Math.round(info.height))
-  const el: SVGElement = info.kind === 'emf'
-    ? new EMFJS.Renderer(buf).render({ width: W + 'px', height: H + 'px', wExt: W, hExt: H, xExt: W, yExt: H, mapMode: 8 })
-    : new WMFJS.Renderer(buf).render({ width: W + 'px', height: H + 'px', xExt: W, yExt: H, mapMode: 8 })
+  // Metafiles may hold rectangles with a negative width or height. SVG rejects those (and the browser logs an error),
+  // so while rtf.js builds the picture store the size as positive and move the corner instead.
+  const neg: [Element, 'x' | 'y', number][] = []
+  const orig = Element.prototype.setAttribute
+  Element.prototype.setAttribute = function (this: Element, name: string, value: string) {
+    if ((name === 'width' || name === 'height') && this.namespaceURI === 'http://www.w3.org/2000/svg' && this.localName !== 'svg') {
+      const n = parseFloat(String(value))
+      if (n < 0) { neg.push([this, name === 'width' ? 'x' : 'y', n]); value = String(-n) }
+    }
+    return orig.call(this, name, value)
+  }
+  let el: SVGElement
+  try {
+    el = info.kind === 'emf'
+      ? new EMFJS.Renderer(buf).render({ width: W + 'px', height: H + 'px', wExt: W, hExt: H, xExt: W, yExt: H, mapMode: 8 })
+      : new WMFJS.Renderer(buf).render({ width: W + 'px', height: H + 'px', xExt: W, yExt: H, mapMode: 8 })
+  } finally { Element.prototype.setAttribute = orig }
+  for (const [node, axis, n] of neg) node.setAttribute(axis, String((parseFloat(node.getAttribute(axis) ?? '0') || 0) + n))
   // measure the real drawing, so pictures with odd window origins are not cut off or tiny
   const host = document.createElement('div'); host.style.cssText = 'position:fixed;left:-99999px;top:0;visibility:hidden'
   host.appendChild(el); document.body.appendChild(host)

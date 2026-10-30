@@ -70,7 +70,7 @@ export default function CsvAnonymizer() {
         <Slider label="Shift dates by" value={shift} onChange={setShift} min={-365} max={365} suffix=" days" />
         <Slider label="Range or rounding size" value={band} onChange={setBand} min={1} max={1000} />
         <Slider label="Hash length" value={hashLen} onChange={setHashLen} min={8} max={64} />
-        <div><Label>Secret salt (same salt gives the same results across files)</Label><Input value={salt} onChange={(e) => setSalt(e.target.value)} className="font-mono text-xs" /></div>
+        <div><Label>Secret salt (same salt gives the same results across files)</Label><Input aria-label="Secret salt (same salt gives the same results across files)" value={salt} onChange={(e) => setSalt(e.target.value)} className="font-mono text-xs" /></div>
         <Switch checked={keyFile} onChange={setKeyFile} label="Also make a key to undo it (keep it private)" />
         <div><Label>Save as</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'csv', label: 'CSV' }, { value: 'xlsx', label: 'XLSX' }]} /></div>
         <Button className="w-full" icon={<ShieldCheck className="size-4" />} loading={job.busy} onClick={run}>Anonymise</Button>

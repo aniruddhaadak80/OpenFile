@@ -87,7 +87,7 @@ export default function GpxElevationProfile() {
       }
       side={
         <>
-          {t.tracks.length > 1 && <div><Label>Track</Label><Select value={String(t.sel)} onChange={(v) => t.setSel(+v)} options={t.tracks.map((x, i) => ({ value: String(i), label: `${x.name} (${x.points.length} points)` }))} /></div>}
+          {t.tracks.length > 1 && <label className="block"><Label>Track</Label><Select value={String(t.sel)} onChange={(v) => t.setSel(+v)} options={t.tracks.map((x, i) => ({ value: String(i), label: `${x.name} (${x.points.length} points)` }))} /></label>}
           <div><Label>Units</Label><Segmented value={units} onChange={setUnits} options={[{ value: 'metric', label: 'km, m' }, { value: 'imperial', label: 'mi, ft' }]} /></div>
           <Slider label="Smoothing" value={smooth} onChange={setSmooth} min={0} max={20} />
           {climbs.length > 0 && <div><Label>Biggest climbs</Label><div className="space-y-1 text-xs">{climbs.map((c, i) => <div key={i} className="flex justify-between gap-2 rounded-lg bg-surface-2/50 px-2 py-1"><span>{fmtKm(c.from, imp)} to {fmtKm(c.to, imp)}</span><span className="font-mono">+{Math.round(imp ? c.gain * 3.28084 : c.gain)}{imp ? 'ft' : 'm'} · {c.avg.toFixed(1)}%</span></div>)}</div></div>}

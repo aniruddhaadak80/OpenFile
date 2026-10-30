@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Dropzone, Label, Select, ToolGrid, ErrorNote } from '@/components/ui'
+import { Dropzone, Label, Select, ToolGrid, ErrorNote, Field } from '@/components/ui'
 import { TopBar } from '@/lib/b4/ui'
 import { readBook, writeBook, SHEET_ACCEPT, type Book } from '@/lib/bcat/sheets'
 import { pivot, type Agg } from '@/lib/bcat/office'
@@ -57,11 +57,11 @@ export default function PivotTable() {
       }
       side={
         <>
-          {book && book.sheets.length > 1 && <div><Label>Sheet</Label><Select value={sheet} onChange={changeSheet} options={book.sheets.map((s, i) => ({ value: String(i), label: s.name }))} /></div>}
-          <div><Label>Rows (group by)</Label><Select value={rowF} onChange={setRowF} options={fieldOpts} /></div>
-          <div><Label>Columns (optional)</Label><Select value={colF} onChange={setColF} options={[{ value: '', label: 'None' }, ...fieldOpts]} /></div>
-          <div><Label>Values</Label><Select value={valF} onChange={setValF} options={[{ value: '', label: 'Count rows' }, ...fieldOpts]} /></div>
-          <div><Label>Summarise by</Label><Select value={agg} onChange={setAgg} options={[{ value: 'sum', label: 'Sum' }, { value: 'count', label: 'Count' }, { value: 'avg', label: 'Average' }, { value: 'min', label: 'Minimum' }, { value: 'max', label: 'Maximum' }, { value: 'distinct', label: 'Count distinct' }]} /></div>
+          {book && book.sheets.length > 1 && <Field label="Sheet"><Select value={sheet} onChange={changeSheet} options={book.sheets.map((s, i) => ({ value: String(i), label: s.name }))} /></Field>}
+          <Field label="Rows (group by)"><Select value={rowF} onChange={setRowF} options={fieldOpts} /></Field>
+          <Field label="Columns (optional)"><Select value={colF} onChange={setColF} options={[{ value: '', label: 'None' }, ...fieldOpts]} /></Field>
+          <Field label="Values"><Select value={valF} onChange={setValF} options={[{ value: '', label: 'Count rows' }, ...fieldOpts]} /></Field>
+          <Field label="Summarise by"><Select value={agg} onChange={setAgg} options={[{ value: 'sum', label: 'Sum' }, { value: 'count', label: 'Count' }, { value: 'avg', label: 'Average' }, { value: 'min', label: 'Minimum' }, { value: 'max', label: 'Maximum' }, { value: 'distinct', label: 'Count distinct' }]} /></Field>
           {p && (
             <div className="flex flex-wrap gap-2">
               <DlButton variant="primary" name={`${book!.name}-pivot.xlsx`} data={() => writeBook([{ name: 'Pivot', rows: grid() }], 'xlsx')}>XLSX</DlButton>

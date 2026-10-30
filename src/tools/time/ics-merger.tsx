@@ -23,8 +23,8 @@ export default function IcsMerger() {
       </div>
       <Card className="space-y-4 self-start">
         <div><Label>Remove duplicates by</Label><Segmented value={dedupe} onChange={setDedupe} options={[{ value: 'uid', label: 'Event ID' }, { value: 'title-time', label: 'Title and time' }, { value: 'none', label: 'Keep all' }]} /></div>
-        <div className="grid grid-cols-2 gap-2"><div><Label>From</Label><Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div><div><Label>To</Label><Input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div></div>
-        <div><Label>Only events containing</Label><Input value={kw} onChange={(e) => setKw(e.target.value)} placeholder="any word" /></div>
+        <div className="grid grid-cols-2 gap-2"><div><Label>From</Label><Input aria-label="From" type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div><div><Label>To</Label><Input aria-label="To" type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div></div>
+        <div><Label>Only events containing</Label><Input aria-label="Only events containing" value={kw} onChange={(e) => setKw(e.target.value)} placeholder="any word" /></div>
         <Switch checked={prefix} onChange={setPrefix} label="Put the source file name in each title" />
         <Button className="w-full" icon={<Download className="size-4" />} disabled={!r?.count} onClick={() => downloadBlob(new Blob([r!.ics], { type: 'text/calendar' }), 'merged-calendar.ics')}>Download merged .ics</Button>
         <p className="text-xs text-muted">Repeating events are kept whole. Time zone definitions from every file are carried over.</p>

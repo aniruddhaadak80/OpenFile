@@ -109,7 +109,7 @@ export default function Docs() {
             </div>
           </aside>
 
-          <main className="min-w-0 pb-16" id="docs-main">
+          <div className="min-w-0 pb-16" id="docs-main">
             <div className="sticky top-16 z-30 -mx-4 mb-4 flex items-center gap-2 border-b border-border bg-bg/85 px-4 py-2 backdrop-blur lg:hidden">
               <button onClick={() => setDrawer(true)} className="flex h-11 shrink-0 items-center gap-2 rounded-xl border border-border bg-surface px-3 text-sm cursor-pointer" aria-label="Open docs menu" aria-expanded={drawer} aria-controls="docs-drawer"><Menu className="size-4" /> Menu</button>
               <div className="min-w-0 flex-1"><SearchButton compact onOpen={() => setSearch(true)} /></div>
@@ -155,7 +155,7 @@ export default function Docs() {
                 </motion.article>
               </AnimatePresence>
             )}
-          </main>
+          </div>
 
           <aside className="hidden xl:block" aria-label="On this page">
             <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pb-10 scrollbar-thin">

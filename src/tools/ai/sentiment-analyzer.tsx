@@ -3,7 +3,7 @@ import { Smile } from 'lucide-react'
 import { Button, ToolGrid, Empty, cn } from '@/components/ui'
 import { VMODELS } from '@/lib/bcat/vision'
 import { useVision, EnginePanel, VisionProgress } from '@/lib/bcat/aiui'
-import { lexiconSentiment } from '@/lib/bcat/quick'
+import { lexiconSentiment, sentimentBand } from '@/lib/bcat/quick'
 import { useTextInput, TextInput } from '@/lib/bcat/textin'
 import { toCsv, DlButton } from '@/lib/bcat/kit'
 import { Stat } from '@/tools/dev/_b5/shell'
@@ -29,8 +29,7 @@ export default function SentimentAnalyzer() {
     const r = await ai.infer<{ label: string; score: number }[][]>(s.items, { top_k: 2 })
     setRows(s.items.map((t, i) => {
       const pos = r[i].find((x) => x.label === 'POSITIVE')?.score ?? 0
-      const label: Row['label'] = pos > 0.65 ? 'POSITIVE' : pos < 0.35 ? 'NEGATIVE' : 'NEUTRAL'
-      return { text: t, label, score: label === 'POSITIVE' ? pos : label === 'NEGATIVE' ? 1 - pos : 1 - Math.abs(pos - 0.5) * 2 }
+      return { text: t, ...sentimentBand(pos, t) }
     }))
   })
 
@@ -64,7 +63,7 @@ export default function SentimentAnalyzer() {
           <VisionProgress ai={ai} />
           <Button className="w-full" icon={<Smile className="size-4" />} loading={ai.busy} onClick={go}>Analyse {s.items.length || ''} {s.items.length === 1 ? 'item' : 'items'}</Button>
           {rows && <DlButton className="w-full" name="sentiment.csv" mime="text/csv" data={() => toCsv([['text', 'sentiment', 'confidence'], ...rows.map((r) => [r.text, NAMES[r.label], r.score.toFixed(3)])])}>Download results (CSV)</DlButton>}
-          <p className="text-xs text-muted">The AI model reads English best. A score near 50% between positive and negative is shown as neutral.</p>
+          <p className="text-xs text-muted">The AI model reads English best. It only knows positive and negative, so a line it is not sure about, like a plain fact, is shown as neutral.</p>
         </>
       }
     />

@@ -16,8 +16,8 @@ export default function HalfLifeCalculator() {
   return (
     <div className="space-y-4">
       <Card className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><div><Label>Presets</Label><Select value="" onChange={(n) => { const p = ISOTOPES.find((x) => x.n === n); if (p) { setV((o) => ({ ...o, T: p.T })); setUnit(p.u) } }} options={[{ value: '', label: 'Pick an isotope or substance' }, ...ISOTOPES.map((x) => ({ value: x.n, label: `${x.n} (${x.T} ${x.u})` }))]} /></div>
-          <div><Label>Time unit</Label><Select value={unit} onChange={setUnit} options={['seconds', 'minutes', 'hours', 'days', 'years']} /></div></div>
+        <div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><label className="block"><Label>Presets</Label><Select value="" onChange={(n) => { const p = ISOTOPES.find((x) => x.n === n); if (p) { setV((o) => ({ ...o, T: p.T })); setUnit(p.u) } }} options={[{ value: '', label: 'Pick an isotope or substance' }, ...ISOTOPES.map((x) => ({ value: x.n, label: `${x.n} (${x.T} ${x.u})` }))]} /></label>
+          <label className="block"><Label>Time unit</Label><Select value={unit} onChange={setUnit} options={['seconds', 'minutes', 'hours', 'days', 'years']} /></label></div>
         <p className="text-sm text-muted">Leave one box empty to solve for it.</p>
         <div className="grid gap-3 sm:grid-cols-4">
           <NumBox label="Start amount N0" value={v.N0} onChange={(x) => setV((o) => ({ ...o, N0: x }))} />

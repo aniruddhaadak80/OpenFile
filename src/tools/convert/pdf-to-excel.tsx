@@ -137,13 +137,13 @@ export default function PdfToExcel() {
         side={<>
           <div className="grid grid-cols-3 gap-2"><Stat label="Pages" value={included.length} /><Stat label="Rows" value={totalRows} /><Stat label="Empty" value={emptyPages} /></div>
           <div>
-            <Slider label={<span className="inline-flex items-center gap-1.5"><Columns3 className="size-3.5" />Column split sensitivity</span>} value={cellGap} onChange={setCellGap} min={0.4} max={4} step={0.1} suffix="×" />
+            <Slider label={<span className="inline-flex items-center gap-1.5"><Columns3 className="size-3.5" />Column split sensitivity</span>} ariaLabel="Column split sensitivity" value={cellGap} onChange={setCellGap} min={0.4} max={4} step={0.1} suffix="×" />
             <p className="mt-1 text-[11px] text-muted">Lower = split cells on smaller gaps (more columns). Raise it if words get split into separate columns.</p>
           </div>
           <div><Label>Output format</Label><Segmented value={format} onChange={setFormat} options={[{ value: 'xlsx', label: 'Excel (XLSX)' }, { value: 'csv', label: 'CSV' }, { value: 'ods', label: 'ODS' }]} /></div>
           {format === 'csv' && <div><Label>CSV separator</Label><Segmented value={delim} onChange={setDelim} options={[{ value: ',', label: 'Comma' }, { value: ';', label: 'Semicolon' }, { value: '\t', label: 'Tab' }]} /><p className="mt-1 text-[11px] text-muted">One sheet per page gives a ZIP with one CSV per page.</p></div>}
           <div><Label>Workbook layout</Label><Segmented value={layout} onChange={setLayout} options={[{ value: 'per-page', label: 'One sheet per page' }, { value: 'single', label: 'Single sheet' }]} /></div>
-          <div><Label hint={range ? `${included.length} pages` : 'all'}>Pages</Label><Input value={range} onChange={(e) => setRange(e.target.value)} placeholder="e.g. 1-3, 5 (blank = all)" /></div>
+          <div><Label hint={range ? `${included.length} pages` : 'all'}>Pages</Label><Input aria-label="Pages" value={range} onChange={(e) => setRange(e.target.value)} placeholder="e.g. 1-3, 5 (blank = all)" /></div>
           <Switch checked={numbers} onChange={setNumbers} label={<span className="inline-flex items-center gap-1.5"><Rows3 className="size-4 text-muted" />Convert numbers ($1,234.50 → 1234.5)</span>} />
           {conv.busy && <Progress value={0.6} label="Building workbook" />}
           <ErrorNote error={conv.error} />

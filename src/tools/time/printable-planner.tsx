@@ -58,7 +58,7 @@ export default function PrintablePlanner() {
         <Slider label={kind === 'week' ? 'Weeks' : kind === 'day' ? 'Days' : 'Months'} value={pages} onChange={setPages} min={1} max={kind === 'day' ? 62 : kind === 'week' ? 53 : 12} />
         {kind === 'day' && <><Slider label="Day starts" value={from} onChange={setFrom} min={4} max={12} suffix=":00" /><Slider label="Day ends" value={to} onChange={setTo} min={14} max={23} suffix=":00" /></>}
         {kind !== 'habit' && <><Switch checked={todo} onChange={setTodo} label="To do list" />{kind === 'day' && <Switch checked={notes} onChange={setNotes} label="Notes area" />}</>}
-        {kind === 'habit' && <div><Label>Habits (comma separated)</Label><Input value={habits} onChange={(e) => setHabits(e.target.value)} /></div>}
+        {kind === 'habit' && <div><Label>Habits (comma separated)</Label><Input aria-label="Habits (comma separated)" value={habits} onChange={(e) => setHabits(e.target.value)} /></div>}
         <div><Label>Paper</Label><Segmented value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }]} /></div>
         <Button className="w-full" icon={<FileDown className="size-4" />} onClick={make}>Download PDF</Button>
       </Card>

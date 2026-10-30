@@ -36,7 +36,7 @@ export default function DockerComposeConverter() {
   return (
     <div className="space-y-4">
       <Bar>
-        <label className="flex items-center gap-2"><Label className="mb-0">Project name</Label><Input value={project} onChange={(e) => setProject(e.target.value.replace(/[^a-z0-9_-]/gi, '').toLowerCase())} className="h-9 w-40" /></label>
+        <label className="flex items-center gap-2"><Label className="mb-0">Project name</Label><Input aria-label="Project name" value={project} onChange={(e) => setProject(e.target.value.replace(/[^a-z0-9_-]/gi, '').toLowerCase())} className="h-9 w-40" /></label>
         <Segmented value={indent} onChange={setIndent} options={[{ value: '2', label: '2 spaces' }, { value: '4', label: '4 spaces' }]} />
         <Button size="sm" variant="ghost" className="ml-auto" icon={<FileCode2 className="size-4" />} onClick={() => setInput(SAMPLE)}>Sample</Button>
       </Bar>

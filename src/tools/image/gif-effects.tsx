@@ -109,7 +109,8 @@ export default function GifEffects() {
   const removeBg = () => job.run(async ({ setProgress, setLabel }) => {
     if (!anim) return
     setLabel('Loading cut-out model (first time only)')
-    const { removeBackground } = await import('@imgly/background-removal')
+    // the model runs in a worker so the page keeps responding between frames
+    const { cutOut } = await import('./_img/bgcut')
     const c = document.createElement('canvas'); c.width = anim.width; c.height = anim.height
     const ctx = c.getContext('2d', { willReadFrequently: true })!
     const frames: Frame[] = []
@@ -117,7 +118,7 @@ export default function GifEffects() {
       setLabel(`Removing background, frame ${i + 1} of ${anim.frames.length}`)
       ctx.putImageData(new ImageData(new Uint8ClampedArray(anim.frames[i].rgba), anim.width, anim.height), 0, 0)
       const png = await new Promise<Blob>((r) => c.toBlob((b) => r(b!), 'image/png'))
-      const cut = await removeBackground(png)
+      const cut = await cutOut(png, (key, cur, total) => { if (key.startsWith('fetch') && total) setLabel(`Downloading cut-out model (first time only) ${Math.round((cur / total) * 100)}%`) })
       const bmp = await createImageBitmap(cut)
       ctx.clearRect(0, 0, c.width, c.height); ctx.drawImage(bmp, 0, 0, c.width, c.height)
       frames.push({ rgba: ctx.getImageData(0, 0, c.width, c.height).data, delay: anim.frames[i].delay })

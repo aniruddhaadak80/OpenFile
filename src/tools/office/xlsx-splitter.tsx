@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Split } from 'lucide-react'
-import { Button, Dropzone, Label, Segmented, Select, Slider, Switch, ToolGrid, ErrorNote, ResultCard } from '@/components/ui'
+import { Button, Dropzone, Label, Segmented, Select, Slider, Switch, ToolGrid, ErrorNote, ResultCard, Field } from '@/components/ui'
 import { zipFiles } from '@/lib/files'
 import { TopBar } from '@/lib/b4/ui'
 import { readBook, writeBook, SHEET_ACCEPT, type Book, type Grid } from '@/lib/bcat/sheets'
@@ -56,9 +56,9 @@ export default function XlsxSplitter() {
       side={
         <>
           <div><Label>Split</Label><Segmented value={mode} onChange={setMode} options={[{ value: 'sheets', label: 'Each sheet' }, { value: 'rows', label: 'Every N rows' }, { value: 'value', label: 'By column value' }]} /></div>
-          {mode !== 'sheets' && book && book.sheets.length > 1 && <div><Label>Sheet</Label><Select value={sheet} onChange={setSheet} options={book.sheets.map((x, i) => ({ value: String(i), label: x.name }))} /></div>}
+          {mode !== 'sheets' && book && book.sheets.length > 1 && <Field label="Sheet"><Select value={sheet} onChange={setSheet} options={book.sheets.map((x, i) => ({ value: String(i), label: x.name }))} /></Field>}
           {mode === 'rows' && <Slider label="Rows per part" value={rows} onChange={setRows} min={10} max={100000} step={10} />}
-          {mode === 'value' && <div><Label>Column</Label><Select value={col} onChange={setCol} options={head.map((h, i) => ({ value: String(i), label: String(h ?? `Column ${i + 1}`) }))} /></div>}
+          {mode === 'value' && <Field label="Column"><Select value={col} onChange={setCol} options={head.map((h, i) => ({ value: String(i), label: String(h ?? `Column ${i + 1}`) }))} /></Field>}
           {mode !== 'sheets' && <Switch checked={header} onChange={setHeader} label="First row is a header (repeat it in every part)" />}
           {mode !== 'sheets' && <Switch checked={asTabs} onChange={setAsTabs} label="One workbook with a tab per part" />}
           {!(asTabs && mode !== 'sheets') && <div><Label>Each part as</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'xlsx', label: 'XLSX' }, { value: 'csv', label: 'CSV' }]} /></div>}

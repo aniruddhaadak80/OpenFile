@@ -16,8 +16,8 @@ export default function SitemapChecker() {
     <div className="grid gap-4 lg:grid-cols-2">
       <div className="space-y-3">
         <Dropzone compact accept=".xml,.txt,.gz" onFiles={async (f) => { const file = f[0]; if (file.name.endsWith('.gz')) { const { gunzipSync, strFromU8 } = await import('fflate'); setXml(strFromU8(gunzipSync(new Uint8Array(await file.arrayBuffer())))) } else setXml(await file.text()) }} label="Drop a sitemap.xml or .xml.gz" />
-        <div><Label>Or paste it</Label><Textarea value={xml} onChange={(e) => setXml(e.target.value)} className="min-h-64" /></div>
-        <div><Label>Optional: URLs that should be in it (to find missing pages)</Label><Textarea value={compare} onChange={(e) => setCompare(e.target.value)} className="min-h-20" /></div>
+        <div><Label>Or paste it</Label><Textarea aria-label="Or paste it" value={xml} onChange={(e) => setXml(e.target.value)} className="min-h-64" /></div>
+        <div><Label>Optional: URLs that should be in it (to find missing pages)</Label><Textarea aria-label="Optional: URLs that should be in it (to find missing pages)" value={compare} onChange={(e) => setCompare(e.target.value)} className="min-h-20" /></div>
       </div>
       <div className="space-y-3">
         <Stats><Stat label="Type" value={<span className="text-base">{r.kind === 'index' ? 'Sitemap index' : r.kind === 'urlset' ? 'URL list' : 'Unknown'}</span>} /><Stat label={r.kind === 'index' ? 'Sitemaps' : 'URLs'} value={r.urls.length.toLocaleString()} /><Stat label="Size" value={`${sizeKb.toFixed(1)} KB`} /></Stats>

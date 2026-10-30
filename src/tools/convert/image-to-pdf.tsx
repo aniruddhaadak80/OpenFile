@@ -4,7 +4,7 @@ import { DndContext, closestCenter, PointerSensor, KeyboardSensor, TouchSensor, 
 import { SortableContext, rectSortingStrategy, useSortable, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, RotateCw, X, FileDown, ArrowDownAZ, Loader2 } from 'lucide-react'
-import { Button, Dropzone, ToolGrid, Label, Segmented, Slider, Select, Input, Progress, ErrorNote, ResultCard, Badge, useJob, cn } from '@/components/ui'
+import { Button, Dropzone, ToolGrid, Label, Segmented, Slider, Select, Input, Progress, ErrorNote, ResultCard, Badge, useJob, cn, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { canvasToBlob, createCanvas, loadImage, formatBytes } from '@/lib/files'
 import { pdfBlob } from '@/lib/pdf'
@@ -195,7 +195,7 @@ export default function ImageToPdf() {
           )}
         </>}
         side={<>
-          <div><Label>Page size</Label><Select value={size} onChange={(v) => { setSize(v); setResult(null) }} options={[{ value: 'a4', label: 'A4 (210 × 297 mm)' }, { value: 'letter', label: 'US Letter (8.5 × 11 in)' }, { value: 'legal', label: 'US Legal (8.5 × 14 in)' }, { value: 'fit', label: 'Fit to image' }]} /></div>
+          <Field label="Page size"><Select value={size} onChange={(v) => { setSize(v); setResult(null) }} options={[{ value: 'a4', label: 'A4 (210 × 297 mm)' }, { value: 'letter', label: 'US Letter (8.5 × 11 in)' }, { value: 'legal', label: 'US Legal (8.5 × 14 in)' }, { value: 'fit', label: 'Fit to image' }]} /></Field>
           {size !== 'fit' && <div><Label>Orientation</Label><Segmented value={orient} onChange={(v) => { setOrient(v); setResult(null) }} options={[{ value: 'auto', label: 'Auto' }, { value: 'portrait', label: 'Portrait' }, { value: 'landscape', label: 'Landscape' }]} /></div>}
           <div>
             <Slider label="Margin" value={marginMm} onChange={(v) => { setMarginMm(v); setResult(null) }} min={0} max={40} suffix=" mm" />
@@ -206,7 +206,7 @@ export default function ImageToPdf() {
             <Slider label="Image quality" value={quality} onChange={(v) => { setQuality(v); setResult(null) }} min={40} max={100} suffix="%" />
             <p className="mt-1 text-[11px] text-muted">{quality >= 100 ? 'Lossless: PNG/WEBP sources stay pixel-perfect.' : 'JPEG compression, lower is smaller.'}</p>
           </div>
-          <div><Label>File name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
+          <Field label="File name"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
           {busy && <Progress value={progress} label="Building PDF" />}
           <ErrorNote error={error} />
           <Button size="lg" className="w-full" loading={busy} disabled={!ready.length || loading} icon={<FileDown className="size-5" />} onClick={build}>

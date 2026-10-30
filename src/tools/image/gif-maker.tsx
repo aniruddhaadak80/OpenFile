@@ -11,7 +11,7 @@ function Frame({ it, i, onRemove, active }: { it: Item; i: number; onRemove: () 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: it.id })
   return (
     <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }} className={cn('group relative overflow-hidden rounded-xl border bg-surface-2/40', isDragging ? 'z-10 shadow-2xl ring-2 ring-accent' : active ? 'border-accent' : 'border-border')}>
-      <div {...attributes} {...listeners} className="checker grid aspect-square cursor-grab place-items-center active:cursor-grabbing"><img src={it.url} alt="" draggable={false} className="max-h-full max-w-full object-contain" /></div>
+      <div {...attributes} {...listeners} aria-label={`Frame ${i + 1}, drag to reorder`} className="checker grid aspect-square cursor-grab place-items-center active:cursor-grabbing"><img src={it.url} alt="" draggable={false} className="max-h-full max-w-full object-contain" /></div>
       <div className="flex items-center gap-1 px-2 py-1 text-[11px] text-muted"><GripVertical className="size-3" />Frame {i + 1}</div>
       <button onClick={onRemove} className="absolute right-1.5 top-1.5 rounded-lg bg-black/55 p-1 text-white opacity-0 transition group-hover:opacity-100 cursor-pointer max-sm:opacity-100" aria-label="Remove frame"><X className="size-3.5" /></button>
     </div>

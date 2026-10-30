@@ -88,7 +88,7 @@ export function resizeOp(input: string, w: number, h: number, mode: FillMode, pa
  * size and encoder settings, so the copy join is seamless. The sound is reversed in one pass at the end
  * (audio is small). */
 
-export interface ReverseSource { duration: number; width?: number; height?: number; fps?: number }
+export interface ReverseSource { duration: number; width?: number; height?: number; fps?: number; /** source video bitrate in kb/s, when known */ kbps?: number }
 export interface ReversePlan {
   /** constant output frame rate */
   fps: number
@@ -96,6 +96,8 @@ export interface ReversePlan {
   scale: number
   /** frames per piece */
   frames: number
+  /** video bitrate cap for the pieces in kb/s (0 = none), so a low bitrate source does not come back many times bigger */
+  maxKbps?: number
   /** pieces in source order; start and length in seconds. One piece with len 0 means "whole file, no seeking". */
   pieces: { start: number; len: number }[]
 }
@@ -125,11 +127,14 @@ export function reversePlan(src: ReverseSource, opts: { budgetMB?: number; maxSi
   // between 0.5 s and 5 s of frames per piece, fewer if the frames are big
   const frames = Math.max(Math.ceil(fps * 0.5), Math.min(Math.round(fps * 5), Math.floor(budget / frameBytes)))
   const dur = src.duration > 0 && Number.isFinite(src.duration) ? src.duration : 0
-  if (!dur) return { fps, scale, frames, pieces: [{ start: 0, len: 0 }] }
+  // the cap only binds on low bitrate sources: twice the source rate, never under 1.5 Mb/s at 1080p (scaled by area)
+  const area = (w * scale * h * scale) / (1920 * 1080)
+  const maxKbps = src.kbps && src.kbps > 0 ? Math.round(Math.max(src.kbps * 2, 1500 * Math.min(1, Math.max(0.1, area)))) : 0
+  if (!dur) return { fps, scale, frames, maxKbps, pieces: [{ start: 0, len: 0 }] }
   const total = Math.max(1, Math.ceil(dur * fps - 0.01))
   const pieces: { start: number; len: number }[] = []
   for (let f = 0; f < total; f += frames) pieces.push({ start: f / fps, len: Math.min(frames, total - f) / fps })
-  return { fps, scale, frames, pieces }
+  return { fps, scale, frames, maxKbps, pieces }
 }
 
 const fpsStr = (fps: number) => (Math.round(fps * 1000) / 1000).toString()
@@ -139,6 +144,11 @@ function picture(plan: ReversePlan, frames?: number) {
   const size = k === 1 ? EVEN : `scale=trunc(iw*${f3(k)}/2)*2:trunc(ih*${f3(k)}/2)*2`
   return [`fps=${fpsStr(plan.fps)}`, ...(frames ? [`trim=end_frame=${frames}`, 'setpts=PTS-STARTPTS'] : []), size, 'format=yuv420p'].join(',')
 }
+/** Encoder for the reverse pieces and the forward half. Every piece must use the same settings, because the join
+ *  copies them into one stream. ultrafast with CABAC, B-frames and deblocking switched back on encodes about twice as
+ *  fast as veryfast in ffmpeg.wasm at a similar size (CRF 25 here is close to veryfast CRF 21 in size). */
+export const PIECE_H264 = (plan: ReversePlan) => ['-c:v', 'libx264', '-preset', 'ultrafast', '-x264-params', 'cabac=1:bframes=3:b-adapt=0:deblock=0,0', '-crf', '25',
+  ...(plan.maxKbps ? ['-maxrate', `${plan.maxKbps}k`, '-bufsize', `${plan.maxKbps * 2}k`] : []), '-pix_fmt', 'yuv420p']
 const CFR = (plan: ReversePlan) => ['-r', fpsStr(plan.fps), '-fps_mode', 'cfr', '-video_track_timescale', '90000']
 
 // Phone clips often carry chapters, which the mp4 muxer writes as a text track that keeps the source's length.
@@ -154,12 +164,12 @@ export function reversePieceOp(input: string, plan: ReversePlan, i: number): Op 
   // read one extra frame of input so rounding never drops the last frame, then trim to the exact count
   const seek = p.len ? ['-ss', f3(p.start), '-t', f3(p.len + 1 / plan.fps), '-i', input] : ['-i', input]
   const out = pieceName(i)
-  return { output: out, args: [...seek, '-map', '0:v:0', ...NO_CHAPTERS, '-vf', `${picture(plan, frames)},reverse`, '-an', '-sn', '-dn', ...H264(), ...CFR(plan), out] }
+  return { output: out, args: [...seek, '-map', '0:v:0', ...NO_CHAPTERS, '-vf', `${picture(plan, frames)},reverse`, '-an', '-sn', '-dn', ...PIECE_H264(plan), ...CFR(plan), out] }
 }
 
 /** The clip played forward with the same settings as the pieces (first half of a boomerang). */
 export function forwardPieceOp(input: string, plan: ReversePlan): Op {
-  return { output: 'fwd.mp4', args: ['-i', input, '-map', '0:v:0', ...NO_CHAPTERS, '-vf', picture(plan), '-an', '-sn', '-dn', ...H264(), ...CFR(plan), 'fwd.mp4'] }
+  return { output: 'fwd.mp4', args: ['-i', input, '-map', '0:v:0', ...NO_CHAPTERS, '-vf', picture(plan), '-an', '-sn', '-dn', ...PIECE_H264(plan), ...CFR(plan), 'fwd.mp4'] }
 }
 
 /** concat demuxer list: names in play order */

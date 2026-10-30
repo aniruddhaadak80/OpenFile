@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Bold, Italic, Heading2, Link2, Code2, List, ListOrdered, Table, Quote, Scissors, Upload, FileDown, FileCode2, FileText, Sparkles } from 'lucide-react'
-import { Button, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Card, useJob, cn } from '@/components/ui'
+import { Button, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Card, useJob, cn, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { downloadBlob } from '@/lib/files'
 import { LiveFrame, PdfPreview, Pill, Reveal, pageDims, mm, useDebounced, type PageSizeKey } from './_conv/shared'
@@ -79,7 +79,11 @@ export default function MarkdownToPdf() {
     const doc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>${th.css}body{max-width:820px;margin:40px auto;padding:0 24px;}</style></head><body>${body}</body></html>`
     downloadBlob(new Blob([doc], { type: 'text/html;charset=utf-8' }), `${title}.html`)
   }
-  const onUpload = async (f?: File) => { if (!f) return; setMd(await f.text()); toast(`Loaded ${f.name}`, 'success') }
+  const onUpload = async (f?: File) => {
+    if (!f) return
+    if (!/\.(md|markdown|mdown|mkd|txt)$/i.test(f.name) && !/^text\//.test(f.type)) { toast(`${f.name} is not a Markdown or text file. Choose a .md or .txt file.`, 'error'); return }
+    setMd(await f.text()); toast(`Loaded ${f.name}`, 'success')
+  }
 
   const tools: [React.ReactNode, string, () => void][] = [
     [<Bold className="size-4" />, 'Bold (Ctrl+B)', () => wrap('**')], [<Italic className="size-4" />, 'Italic (Ctrl+I)', () => wrap('_')], [<Heading2 className="size-4" />, 'Heading', () => linePrefix('## ')],
@@ -93,7 +97,7 @@ export default function MarkdownToPdf() {
       {/* options bar */}
       <Card className="flex flex-wrap items-end gap-x-5 gap-y-3 p-4">
         <div><Label>Theme</Label><div className="flex flex-wrap gap-1.5">{(Object.keys(THEMES) as ThemeKey[]).map((k) => <Pill key={k} active={theme === k} onClick={() => setTheme(k)}>{THEMES[k].label}</Pill>)}</div></div>
-        <div className="w-28"><Label>Page</Label><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a5', label: 'A5' }]} /></div>
+        <Field label="Page" className="w-28"><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a5', label: 'A5' }]} /></Field>
         <div><Label>Orientation</Label><Segmented value={orient} onChange={setOrient} options={[{ value: 'portrait', label: 'Portrait' }, { value: 'landscape', label: 'Landscape' }]} /></div>
         <Slider className="w-36" label="Margins" value={marginMm} onChange={setMarginMm} min={5} max={35} suffix=" mm" />
         <Slider className="w-32" label="Text size" value={fontScale} onChange={setFontScale} min={80} max={130} step={5} suffix="%" />

@@ -17,7 +17,7 @@ export default function SeoAudit() {
       <div className="space-y-3">
         <Dropzone compact multiple={false} accept=".html,.htm,.xhtml,.php,.txt" onFiles={async (f) => setHtml(await f[0].text())} label="Drop an HTML file" sub="Or paste page source below (View source in your browser, then copy)" />
         <Textarea value={html} onChange={(e) => setHtml(e.target.value)} className="min-h-72" aria-label="Page HTML" />
-        <div><Label>Main keyword (optional)</Label><Input value={kw} onChange={(e) => setKw(e.target.value)} /></div>
+        <div><Label>Main keyword (optional)</Label><Input aria-label="Main keyword (optional)" value={kw} onChange={(e) => setKw(e.target.value)} /></div>
       </div>
       <div className="space-y-3">
         <Stats cols={4}><Stat label="Score" value={a.score} tone={a.score >= 80 ? 'good' : a.score >= 60 ? 'warn' : 'bad'} /><Stat label="Words" value={a.words} /><Stat label="Links" value={a.links.internal + a.links.external} sub={`${a.links.internal} internal`} /><Stat label="Images" value={a.images} sub={`${a.missingAlt} without alt`} /></Stats>

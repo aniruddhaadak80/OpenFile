@@ -15,7 +15,7 @@ export default function AgeCalculator() {
   const miles = b && r && typeof r !== 'string' ? [10000, 15000, 20000, 25000, 30000].map((days) => ({ days, date: new Date(+b + days * 864e5) })).filter((x) => x.date > new Date(+new Date(on) - 365 * 864e5)).slice(0, 3) : []
   return (
     <div className="space-y-4">
-      <Card className="grid gap-3 sm:grid-cols-2"><div><Label>Date of birth</Label><Input type="date" value={dob} onChange={(e) => setDob(e.target.value)} /></div><div><Label>Age on</Label><Input type="date" value={on} onChange={(e) => setOn(e.target.value)} /></div></Card>
+      <Card className="grid gap-3 sm:grid-cols-2"><div><Label>Date of birth</Label><Input aria-label="Date of birth" type="date" value={dob} onChange={(e) => setDob(e.target.value)} /></div><div><Label>Age on</Label><Input aria-label="Age on" type="date" value={on} onChange={(e) => setOn(e.target.value)} /></div></Card>
       {r === 'later' && <p className="text-sm text-danger">The birth date is after the second date.</p>}
       {r && typeof r !== 'string' && <>
         <Card className="text-center"><div className="font-display text-4xl font-bold">{r.years} years, {r.months} months, {r.days} days</div><div className="mt-1 text-sm text-muted">Born on a {r.weekday}</div></Card>

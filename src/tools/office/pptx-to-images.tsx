@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Images } from 'lucide-react'
-import { Button, Card, Dropzone, Input, Label, Segmented, Slider, ResultCard, Progress, ErrorNote, useJob } from '@/components/ui'
+import { Button, Card, Dropzone, Input, Label, Segmented, Slider, ResultCard, Progress, ErrorNote, useJob, Field } from '@/components/ui'
 import { parsePageRanges, zipFiles } from '@/lib/files'
 import type { Deck } from '@/lib/b4/pptx'
 import { FileBar } from '@/lib/cf/ui'
@@ -57,7 +57,7 @@ export default function PptxToImages() {
         <div><Label>Format</Label><Segmented value={fmt} onChange={setFmt} options={[{ value: 'png', label: 'PNG' }, { value: 'jpeg', label: 'JPG' }, { value: 'webp', label: 'WEBP' }]} /></div>
         <Slider label="Size" value={scale} onChange={setScale} min={1} max={4} step={0.5} suffix="×" />
         {deck && <p className="text-xs text-muted">{pxW} × {pxH} pixels per slide</p>}
-        <div><Label>Slides (empty for all)</Label><Input value={range} onChange={(e) => setRange(e.target.value)} placeholder="1-3, 7" /></div>
+        <Field label="Slides (empty for all)"><Input value={range} onChange={(e) => setRange(e.target.value)} placeholder="1-3, 7" /></Field>
         <Button className="w-full" icon={<Images className="size-4" />} disabled={!deck} loading={job.busy} onClick={go}>Export images</Button>
         <p className="text-xs text-muted">Slides are drawn by the browser from the file, so unusual fonts or effects can look a little different from PowerPoint.</p>
       </Card>

@@ -52,7 +52,7 @@ export default function ArchiveConverter() {
         </ResultCard>}
       </>}
       side={<>
-        <div><Label>Convert to</Label><Select value={to} onChange={setTo} options={FORMATS} /></div>
+        <label className="block"><Label>Convert to</Label><Select value={to} onChange={setTo} options={FORMATS} /></label>
         {to !== 'tar' && <Slider label="Compression level" value={level} onChange={setLevel} min={1} max={9} />}
         {needPw && <div><Label>Password of the source archive</Label><Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} aria-label="Source password" /></div>}
         {(to === 'zip' || to === '7z') && <div><Label>New password (optional)</Label><Input type="password" value={outPw} onChange={(e) => setOutPw(e.target.value)} placeholder="No password" aria-label="New password" autoComplete="new-password" /></div>}

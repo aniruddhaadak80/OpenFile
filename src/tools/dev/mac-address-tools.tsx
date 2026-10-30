@@ -57,7 +57,7 @@ export default function MacAddressTools() {
           <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
             <Slider label="How many" value={count} onChange={setCount} min={1} max={500} />
             <div><Label>Format</Label><Segmented value={style} onChange={setStyle} options={[{ value: 'colon', label: 'AA:BB' }, { value: 'dash', label: 'AA-BB' }, { value: 'dot', label: 'aabb.cc' }, { value: 'bare', label: 'AABB' }]} /></div>
-            <div><Label>Vendor prefix (optional)</Label><Input value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder="e.g. 00:1A:11" className="font-mono" /></div>
+            <div><Label>Vendor prefix (optional)</Label><Input aria-label="Vendor prefix (optional)" value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder="e.g. 00:1A:11" className="font-mono" /></div>
             {!prefix && <Switch checked={local} onChange={setLocal} label="Locally administered (safe for VMs)" />}
             <p className="text-xs text-muted">Random addresses use the secure random generator. Locally administered addresses never clash with real hardware vendors.</p>
           </div>

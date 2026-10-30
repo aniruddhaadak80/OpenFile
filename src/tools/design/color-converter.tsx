@@ -13,7 +13,7 @@ const FORMATS: { key: keyof typeof fmt; label: string }[] = [
 ]
 
 export default function ColorConverter() {
-  const [color, setColor] = useState<RGBA>({ r: 109, g: 74, b: 255, a: 1 })
+  const [color, setColor] = useState<RGBA>({ r: 245, g: 165, b: 36, a: 1 })
   const [input, setInput] = useState('#f5a524')
   const [bad, setBad] = useState(false)
   const [fg, setFg] = useState('#ffffff')

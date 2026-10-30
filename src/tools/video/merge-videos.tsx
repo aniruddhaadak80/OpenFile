@@ -4,7 +4,7 @@ import { DndContext, closestCenter, PointerSensor, KeyboardSensor, TouchSensor, 
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Dropzone, Label, ResultCard, Segmented, Select, Slider, ToolGrid, Empty } from '@/components/ui'
+import { Button, Dropzone, Field, Label, ResultCard, Segmented, Select, Slider, ToolGrid, Empty } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
 import { ffRun, ffProbe, extFromBlob, X264, type ProbeInfo } from './_media/engine'
 import { sourceRate } from './_media/bitrate'
@@ -164,8 +164,7 @@ export default function MergeVideos() {
             {mixed && <p className="mt-1.5 text-xs text-warn">Your clips have different sizes, they'll be normalized to {target.w}×{target.h}.</p>}
           </div>
           <div>
-            <Label>Transition</Label>
-            <Select value={transition} onChange={setTransition} options={TRANSITIONS} />
+            <Field label="Transition"><Select value={transition} onChange={setTransition} options={TRANSITIONS} /></Field>
             {transition !== 'none' && <Slider className="mt-3" label="Transition length" value={td} onChange={setTd} min={0.2} max={2} step={0.1} suffix=" s" />}
           </div>
           <Note>All clips are re-encoded to H.264/AAC at 30 fps so they join seamlessly. Clips without sound get silent audio.</Note>

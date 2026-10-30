@@ -30,7 +30,7 @@ export default function SchemaGenerator() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="space-y-3">
-        <div><Label>Type of page</Label><Select value={type} onChange={(v) => setType(v as SchemaType)} options={Object.keys(FIELDS).map((k) => ({ value: k, label: k.replace(/([a-z])([A-Z])/g, '$1 $2') }))} /></div>
+        <label className="block"><Label>Type of page</Label><Select value={type} onChange={(v) => setType(v as SchemaType)} options={Object.keys(FIELDS).map((k) => ({ value: k, label: k.replace(/([a-z])([A-Z])/g, '$1 $2') }))} /></label>
         {FIELDS[type].map(([k, l, kind, d]) => <div key={type + k}><Label>{l}</Label>{kind === 'multi' ? <Textarea value={f(k, d)} onChange={(e) => setVals({ ...vals, [`${type}.${k}`]: e.target.value })} className="min-h-20 font-sans text-sm" /> : <Input type={kind === 'date' ? 'date' : 'text'} value={f(k, d)} onChange={(e) => setVals({ ...vals, [`${type}.${k}`]: e.target.value })} />}</div>)}
       </Card>
       <div className="space-y-3">

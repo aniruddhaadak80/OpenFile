@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Languages, ArrowRightLeft, Download, FileDown } from 'lucide-react'
 import { Button, Label, Select, ToolGrid, Progress } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
-import { aiRun, chunkText, MODELS, NLLB_LANGS } from '@/lib/b4/ai'
+import { translateTexts, chunkText, MODELS, NLLB_LANGS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress, useDocInput, DocInput } from '@/lib/b4/aiui'
 import { Note } from '@/tools/video/_media/ui'
 
@@ -24,7 +24,7 @@ export default function TranslatePdf() {
     if (!list.length) throw new Error('There is no text to translate.')
     setParas(list)
     ai.setStatus(`Translating ${list.length} passages`)
-    const out: string[] = await aiRun('translation', ai.info, ai.device, list.map((x) => x.src), { src, tgt }, ai.callbacks({
+    const out: string[] = await translateTexts(ai.info, ai.device, list.map((x) => x.src), src, tgt, ai.callbacks({
       onProgress: (d, t, partial) => { ai.setProgress(d / t); ai.setStatus(`Translated ${d} of ${t} passages`); setParas((l) => l.map((x, i) => (i === d - 1 ? { ...x, out: partial } : x))) },
     }))
     setParas(list.map((x, i) => ({ ...x, out: out[i] })))

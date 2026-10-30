@@ -88,7 +88,7 @@ export default function ArchiveCreator() {
       </>}
       side={<>
         <div><Label>Archive name</Label><Input value={name} onChange={(e) => setName(e.target.value.replace(/[\\/:*?"<>|]/g, ''))} aria-label="Archive name" /></div>
-        <div><Label>Format</Label><Select value={fmt} onChange={setFmt} options={FORMATS} /></div>
+        <label className="block"><Label>Format</Label><Select value={fmt} onChange={setFmt} options={FORMATS} /></label>
         {fmt !== 'tar' && <Slider label="Compression level" value={level} onChange={setLevel} min={fmt === 'zip' || fmt === '7z' ? 0 : 1} max={9} suffix={level === 0 ? ' (store)' : level >= 8 ? ' (max)' : ''} />}
         {canPw ? (
           <div className="space-y-2">

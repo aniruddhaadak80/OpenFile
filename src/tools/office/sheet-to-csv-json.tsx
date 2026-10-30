@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FileJson } from 'lucide-react'
-import { Button, Card, Dropzone, Label, Segmented, Select, Switch, ResultCard, Progress, ErrorNote, useJob } from '@/components/ui'
+import { Button, Card, Dropzone, Label, Segmented, Select, Switch, ResultCard, Progress, ErrorNote, useJob, Field } from '@/components/ui'
 import { zipFiles, formatBytes } from '@/lib/files'
 import { readBook, SHEET_ACCEPT } from '@/lib/bcat/sheets'
 import { rowsToJson, toCsvText, type Rows } from '@/lib/cf/sheet'
@@ -47,7 +47,7 @@ export default function SheetToCsvJson() {
       </div>
       <Card className="space-y-4 self-start">
         <div><Label>Convert to</Label><Segmented value={fmt} onChange={(v) => { setFmt(v); setOut(null) }} options={[{ value: 'csv', label: 'CSV' }, { value: 'tsv', label: 'TSV' }, { value: 'json', label: 'JSON' }, { value: 'ndjson', label: 'NDJSON' }]} /></div>
-        {fmt === 'csv' && <div><Label>Separator</Label><Select value={delim} onChange={setDelim} options={[{ value: ',', label: 'Comma ,' }, { value: ';', label: 'Semicolon ; (Excel in Europe)' }, { value: '|', label: 'Pipe |' }]} /></div>}
+        {fmt === 'csv' && <Field label="Separator"><Select value={delim} onChange={setDelim} options={[{ value: ',', label: 'Comma ,' }, { value: ';', label: 'Semicolon ; (Excel in Europe)' }, { value: '|', label: 'Pipe |' }]} /></Field>}
         {(fmt === 'csv' || fmt === 'tsv') && <Switch checked={bom} onChange={setBom} label="Add UTF-8 mark so Excel shows accents right" />}
         {(fmt === 'json' || fmt === 'ndjson') && <>
           <Switch checked={header} onChange={setHeader} label="First row holds the keys" />

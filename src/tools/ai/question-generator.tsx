@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrainCircuit, Download, RotateCcw, Check, X } from 'lucide-react'
 import { Button, Label, Segmented, Slider, ToolGrid, cn } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
-import { aiRun, chunkText, extractJson, MODELS } from '@/lib/b4/ai'
+import { aiRun, chunkText, extractJson, jsonObjects, MODELS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress, useDocInput, DocInput } from '@/lib/b4/aiui'
 
 type Kind = 'cards' | 'mcq'
@@ -29,33 +29,51 @@ function normMcq(x: any): Mcq[] {
 export default function QuestionGenerator() {
   const doc = useDocInput()
   const [kind, setKind] = useState<Kind>('cards')
-  const [count, setCount] = useState(10)
+  const [count, setCountRaw] = useState(10)
+  // a small model on a CPU writes about one card every 20 to 60 seconds, so start with 5 there until the user picks a number
+  const touched = useRef(false)
+  const setCount = (n: number) => { touched.current = true; setCountRaw(n) }
   const [cards, setCards] = useState<Card[]>([])
   const [mcqs, setMcqs] = useState<Mcq[]>([])
   const [flipped, setFlipped] = useState<Set<number>>(new Set())
   const [picked, setPicked] = useState<Record<number, number>>({})
-  const [stream, setStream] = useState('')
   const ai = useAiState(MODELS.chat)
+  useEffect(() => { if (!touched.current) setCountRaw(ai.device === 'webgpu' ? 10 : 5) }, [ai.device])
 
   const go = () => ai.run(async () => {
     setCards([]); setMcqs([]); setFlipped(new Set()); setPicked({})
-    let chunks = chunkText(doc.text, 3500)
+    // shorter parts on a CPU: the model reads the whole part before it writes the first word
+    let chunks = chunkText(doc.text, ai.device === 'webgpu' ? 3500 : 2000)
     const per = Math.max(2, Math.ceil(count / Math.min(chunks.length, count)))
     if (chunks.length > count) chunks = chunks.filter((_, i) => i % Math.ceil(chunks.length / Math.ceil(count / 2)) === 0)
     const allC: Card[] = [], allM: Mcq[] = []
     for (let i = 0; i < chunks.length && (kind === 'cards' ? allC.length : allM.length) < count; i++) {
-      ai.setStatus(`Writing questions from part ${i + 1} of ${chunks.length}`); ai.setProgress(i / chunks.length)
+      const before = kind === 'cards' ? allC.length : allM.length
+      ai.setStatus(chunks.length > 1 ? `Writing questions from part ${i + 1} of ${chunks.length}` : 'Writing questions'); ai.setProgress(before / count)
       const want = Math.min(per, count - (kind === 'cards' ? allC.length : allM.length))
       const prompt = kind === 'cards'
         ? `Create ${want} flashcards that test the most important facts in the text below. Reply with only a JSON array like [{"q":"question","a":"short answer"}].\n\nText:\n${chunks[i]}`
         : `Create ${want} multiple-choice questions about the most important facts in the text below. Each has 4 options and exactly one correct answer. Reply with only a JSON array like [{"q":"question","options":["A","B","C","D"],"answer":0,"explain":"why"}] where answer is the index of the correct option.\n\nText:\n${chunks[i]}`
-      let txt = ''; setStream('')
-      const r: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text. Output valid JSON only.' }, { role: 'user', content: prompt }], { max: want * 90 + 60 }, ai.callbacks({ onToken: (t) => { txt += t; setStream(txt.slice(-300)) } }))
-      const j = extractJson(r)
-      if (kind === 'cards') { const c = j ? normCards(j) : parseQa(r); allC.push(...c); setCards([...allC]) }
-      else { const m = j ? normMcq(j) : []; allM.push(...m); setMcqs([...allM]) }
+      // cards appear one by one while the model writes; the raw JSON is never shown
+      let txt = '', shown = 0
+      const have = () => (kind === 'cards' ? allC.length : allM.length)
+      const onToken = (t: string) => {
+        txt += t
+        if (!t.includes('}')) return
+        const objs = jsonObjects(txt)
+        if (objs.length === shown) return
+        shown = objs.length
+        const got = kind === 'cards' ? normCards(objs) : normMcq(objs)
+        if (kind === 'cards') setCards([...allC, ...(got as Card[])].slice(0, count)); else setMcqs([...allM, ...(got as Mcq[])].slice(0, count))
+        const n = Math.min(count, have() + got.length)
+        ai.setStatus(`Wrote ${n} of ${count} questions`); ai.setProgress(n / count)
+      }
+      const r: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text. Output valid JSON only.' }, { role: 'user', content: prompt }], { max: want * 90 + 60 }, ai.callbacks({ onToken }))
+      const j = extractJson(r), objs = jsonObjects(r)
+      const pickBest = <T,>(a: T[], b: T[]) => (b.length > a.length ? b : a)
+      if (kind === 'cards') { const c = pickBest(j ? normCards(j) : [], normCards(objs)); allC.push(...(c.length ? c : parseQa(r)).slice(0, count - allC.length)); setCards([...allC]) }
+      else { const m = pickBest(j ? normMcq(j) : [], normMcq(objs)); allM.push(...m.slice(0, count - allM.length)); setMcqs([...allM]) }
     }
-    setStream('')
     if (!(kind === 'cards' ? allC.length : allM.length)) throw new Error('The model did not return usable questions. Try the larger model, or a shorter, clearer text.')
   })
 
@@ -73,7 +91,6 @@ export default function QuestionGenerator() {
     <ToolGrid
       main={<>
         <DocInput doc={doc} label="Drop your notes, a chapter or an article" sub="PDF, DOCX, EPUB, TXT, Markdown or HTML. Questions are written on your device by a small AI model." />
-        {stream && <pre className="max-h-24 overflow-hidden whitespace-pre-wrap rounded-xl border border-border bg-surface-2/50 p-2 font-mono text-[11px] text-muted">{stream}</pre>}
         {kind === 'cards' && cards.length > 0 && <div className="grid gap-3 sm:grid-cols-2">{cards.map((c, i) => (
           <button key={i} onClick={() => setFlipped((s) => { const x = new Set(s); x.has(i) ? x.delete(i) : x.add(i); return x })} className={cn('min-h-32 cursor-pointer rounded-2xl border p-4 text-left transition', flipped.has(i) ? 'border-success/40 bg-success/5' : 'border-border bg-surface hover:border-accent/60')} aria-label={`Flashcard ${i + 1}`}>
             <div className="mb-1 text-[10px] font-medium uppercase tracking-wide text-muted">{flipped.has(i) ? 'Answer' : `Question ${i + 1}`}</div>

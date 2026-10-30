@@ -31,7 +31,7 @@ export default function SecretLink() {
   if (frag) return (
     <Card className="mx-auto max-w-2xl space-y-4">
       <div className="flex items-center gap-2 font-semibold"><LockOpen className="size-5 text-accent" />{opened ? 'Secret note' : 'Someone sent you a secret note'}</div>
-      {!opened && <>{noteNeedsPassword(frag) && <div><Label>Password</Label><Input type="password" value={openPw} onChange={(e) => setOpenPw(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && open()} autoFocus /></div>}
+      {!opened && <>{noteNeedsPassword(frag) && <div><Label>Password</Label><Input aria-label="Password" type="password" value={openPw} onChange={(e) => setOpenPw(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && open()} autoFocus /></div>}
         <Button icon={<LockOpen className="size-4" />} loading={busy} onClick={open}>Open note</Button></>}
       <ErrorNote error={err} />
       {opened && <><pre className="whitespace-pre-wrap break-words rounded-xl border border-border bg-surface-2/60 p-4 text-sm">{opened.text}</pre>
@@ -43,7 +43,7 @@ export default function SecretLink() {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="space-y-4">
-        <div><Label hint={`${text.length} characters`}>Your secret (a password, a key, a private message)</Label><Textarea value={text} onChange={(e) => { setText(e.target.value); setLink('') }} className="min-h-40 font-sans" placeholder="Wi-Fi: HomeNet, password: ..." /></div>
+        <div><Label hint={`${text.length} characters`}>Your secret (a password, a key, a private message)</Label><Textarea aria-label="Your secret (a password, a key, a private message)" value={text} onChange={(e) => { setText(e.target.value); setLink('') }} className="min-h-40 font-sans" placeholder="Wi-Fi: HomeNet, password: ..." /></div>
         <ErrorNote error={err} />
         {link && <Card className="space-y-3">
           <Label>Share this link</Label>

@@ -60,7 +60,7 @@ export default function GpxSplits() {
       }
       side={
         <>
-          {t.tracks.length > 1 && <div><Label>Track</Label><Select value={String(t.sel)} onChange={(v) => t.setSel(+v)} options={t.tracks.map((x, i) => ({ value: String(i), label: x.name }))} /></div>}
+          {t.tracks.length > 1 && <label className="block"><Label>Track</Label><Select value={String(t.sel)} onChange={(v) => t.setSel(+v)} options={t.tracks.map((x, i) => ({ value: String(i), label: x.name }))} /></label>}
           <div><Label>Split every</Label><Segmented value={unit} onChange={setUnit} options={[{ value: 'km', label: 'Kilometre' }, { value: 'mi', label: 'Mile' }]} /></div>
           <div><Label>Show</Label><Segmented value={sport} onChange={setSport} options={[{ value: 'run', label: 'Pace (run, walk)' }, { value: 'ride', label: 'Speed (ride)' }]} /></div>
           {st?.start && <p className="text-xs text-muted">Started {new Date(st.start).toLocaleString()}</p>}

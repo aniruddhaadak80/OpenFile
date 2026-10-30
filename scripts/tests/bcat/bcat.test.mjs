@@ -182,6 +182,9 @@ t('word freq', () => { const f = C.wordFreq("The cat's cat sat. The CAT!"); asse
 /* AI fallbacks */
 t('quick', () => {
   assert.equal(Q.lexiconSentiment('I love it, really great').label, 'POSITIVE'); assert.equal(Q.lexiconSentiment('not good, very slow').label, 'NEGATIVE')
+  // SST-2 band: a plain fact the model is 98% sure about is neutral; clear opinions keep their label
+  assert.equal(Q.sentimentBand(0.98328, 'It arrived on Tuesday.').label, 'NEUTRAL'); assert.equal(Q.sentimentBand(0.0080, 'The train leaves from platform 2.').label, 'NEUTRAL')
+  assert.equal(Q.sentimentBand(0.99988, 'I love this product.').label, 'POSITIVE'); assert.equal(Q.sentimentBand(0.0054, 'The app keeps crashing.').label, 'NEGATIVE'); assert.equal(Q.sentimentBand(0.0003, 'Delivery took three weeks and nobody answered.').label, 'NEGATIVE')
   assert.deepEqual(Q.mergeNer([{ entity: 'B-PER', word: 'Sa', score: 0.9, index: 1 }, { entity: 'I-PER', word: '##rah', score: 0.9, index: 2 }, { entity: 'B-LOC', word: 'London', score: 0.99, index: 5 }]).map((e) => e.text), ['Sarah', 'London'])
   const re = Q.ruleEntities('Email a@b.co on 12 March 2026 about $4,500 with Priya Sharma.'); assert.ok(re.some((e) => e.type === 'Email') && re.some((e) => e.type === 'Date') && re.some((e) => e.type === 'Money') && re.some((e) => e.text === 'Priya Sharma'))
   assert.equal(Q.bm25(['the cat sat', 'dogs bark', 'a cat and a cat'], 'cat')[0].index, 2)

@@ -101,7 +101,7 @@ export default function PasswordHasher() {
             <Button variant="outline" onClick={() => setShow(!show)} icon={show ? <EyeOff className="size-4" /> : <Eye className="size-4" />} aria-label={show ? 'Hide password' : 'Show password'} />
           </div>
         </div>
-        {mode === 'verify' && <div><Label>Hash to check</Label><Textarea value={hashIn} onChange={(e) => setHashIn(e.target.value)} className="min-h-20" placeholder="$2b$10$... or $argon2id$v=19$..." />{hashIn.trim() && <p className="mt-1 text-xs text-muted">Detected: {detect(hashIn.trim()) ?? 'unknown'}</p>}</div>}
+        {mode === 'verify' && <div><Label>Hash to check</Label><Textarea aria-label="Hash to check" value={hashIn} onChange={(e) => setHashIn(e.target.value)} className="min-h-20" placeholder="$2b$10$... or $argon2id$v=19$..." />{hashIn.trim() && <p className="mt-1 text-xs text-muted">Detected: {detect(hashIn.trim()) ?? 'unknown'}</p>}</div>}
         <Button size="lg" loading={busy} icon={mode === 'hash' ? <Hash className="size-4" /> : <ShieldCheck className="size-4" />} onClick={mode === 'hash' ? doHash : doVerify} disabled={mode === 'verify' && !hashIn.trim()}>{mode === 'hash' ? 'Generate hash' : 'Check password'}</Button>
         {busy && algo === 'bcrypt' && mode === 'hash' && <Progress value={prog} label="Hashing" />}
         {err && <Status kind="err">{err}</Status>}
@@ -111,11 +111,11 @@ export default function PasswordHasher() {
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
           {mode === 'hash' ? <>
-            <div><Label>Algorithm</Label><Select value={algo} onChange={setAlgo} options={ALGOS} /></div>
+            <label className="block"><Label>Algorithm</Label><Select value={algo} onChange={setAlgo} options={ALGOS} /></label>
             {algo === 'bcrypt' && <Slider label="Cost (rounds)" value={rounds} onChange={setRounds} min={4} max={15} />}
             {algo.startsWith('argon2') && <><Slider label="Memory" value={mem} onChange={setMem} min={1} max={256} suffix=" MiB" /><Slider label="Iterations" value={iters} onChange={setIters} min={1} max={10} /><Slider label="Parallelism" value={par} onChange={setPar} min={1} max={8} /></>}
             {algo === 'scrypt' && <><Slider label="Cost N = 2^" value={logN} onChange={setLogN} min={10} max={20} /><Slider label="Parallelism" value={par} onChange={setPar} min={1} max={8} /></>}
-            {algo === 'pbkdf2' && <><div><Label>Hash function</Label><Select value={pbHash} onChange={setPbHash} options={[{ value: 'sha256', label: 'SHA-256' }, { value: 'sha512', label: 'SHA-512' }, { value: 'sha1', label: 'SHA-1 (legacy)' }]} /></div><div><Label>Iterations</Label><Input type="number" min={1000} value={pbIters} onChange={(e) => setPbIters(Math.max(1, Number(e.target.value) || 1))} /></div></>}
+            {algo === 'pbkdf2' && <><label className="block"><Label>Hash function</Label><Select value={pbHash} onChange={setPbHash} options={[{ value: 'sha256', label: 'SHA-256' }, { value: 'sha512', label: 'SHA-512' }, { value: 'sha1', label: 'SHA-1 (legacy)' }]} /></label><div><Label>Iterations</Label><Input aria-label="Iterations" type="number" min={1000} value={pbIters} onChange={(e) => setPbIters(Math.max(1, Number(e.target.value) || 1))} /></div></>}
             <p className="text-xs text-muted">Defaults follow current OWASP guidance: Argon2id with 19 MiB and 2 passes, bcrypt cost 10 or more, PBKDF2-SHA256 with 600,000 iterations.</p>
           </> : <p className="text-sm text-muted">The algorithm and settings are read from the hash itself. Supports bcrypt, Argon2 (PHC format), and the scrypt and PBKDF2 strings this tool makes.</p>}
           <p className="text-xs text-muted">Everything runs in your browser with WebAssembly. Your password is never sent anywhere.</p>

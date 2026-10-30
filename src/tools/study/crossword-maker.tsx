@@ -34,8 +34,8 @@ export default function CrosswordMaker() {
         {cw.r && cw.r.skipped.length > 0 && <p className="text-sm text-warn">Could not link: {cw.r.skipped.join(', ')}. Shuffle or add words that share letters.</p>}
       </Card>
       <Card className="space-y-4 self-start">
-        <div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-        <div><Label hint={`${items.length}`}>WORD - clue, one per line</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-56 font-sans text-sm" /></div>
+        <div><Label>Title</Label><Input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+        <div><Label hint={`${items.length}`}>WORD - clue, one per line</Label><Textarea aria-label="WORD - clue, one per line" value={text} onChange={(e) => setText(e.target.value)} className="min-h-56 font-sans text-sm" /></div>
         <Switch checked={show} onChange={setShow} label="Show answers" />
         <div><Label>Paper</Label><Segmented value={paper} onChange={setPaper} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }]} /></div>
         <div className="grid grid-cols-[auto_1fr] gap-2"><Button variant="outline" icon={<RefreshCw className="size-4" />} onClick={() => setSeed(seed + 1)}>Shuffle</Button>

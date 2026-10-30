@@ -255,7 +255,7 @@ export function PageScope({ total, mode, setMode, range, setRange }: { total: nu
       <div className="flex gap-1 rounded-xl border border-border bg-surface-2/60 p-1">
         {(['all', 'range'] as const).map((m) => <button key={m} type="button" onClick={() => setMode(m)} className={cn('flex-1 rounded-lg px-3 py-1.5 text-xs font-medium transition cursor-pointer', mode === m ? 'bg-surface text-fg shadow-sm ring-1 ring-border' : 'text-muted hover:text-fg')}>{m === 'all' ? 'All pages' : 'Page range'}</button>)}
       </div>
-      {mode === 'range' && <Input value={range} onChange={(e) => setRange(e.target.value)} placeholder="e.g. 1-3, 5, 8-" />}
+      {mode === 'range' && <Input aria-label="Page range" value={range} onChange={(e) => setRange(e.target.value)} placeholder="e.g. 1-3, 5, 8-" />}
       <div className="text-xs text-muted">Applies to {n} of {total} page{total === 1 ? '' : 's'}</div>
     </div>
   )
@@ -268,8 +268,8 @@ export function scopePages(mode: 'all' | 'range', range: string, total: number) 
 export function ColorInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex items-center gap-2">
-      <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="h-10 w-12 cursor-pointer rounded-lg border border-border bg-transparent p-1" />
-      <Input value={value} onChange={(e) => /^#[0-9a-f]{0,6}$/i.test(e.target.value) && onChange(e.target.value)} className="font-mono" />
+      <input type="color" aria-label="Pick a colour" value={value} onChange={(e) => onChange(e.target.value)} className="h-10 w-12 cursor-pointer rounded-lg border border-border bg-transparent p-1" />
+      <Input aria-label="Colour hex code" value={value} onChange={(e) => /^#[0-9a-f]{0,6}$/i.test(e.target.value) && onChange(e.target.value)} className="font-mono" />
     </div>
   )
 }

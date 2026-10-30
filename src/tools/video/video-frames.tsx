@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Images, Camera, Download, Check, X, Archive } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button, Dropzone, Label, Segmented, Slider, ToolGrid, Select, Input, Progress, cn } from '@/components/ui'
+import { Button, Dropzone, Field, Label, Segmented, Slider, ToolGrid, Select, Input, Progress, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { baseName, downloadBlob, zipFiles, canvasToBlob } from '@/lib/files'
 import { ffRunMany, extFromBlob, ts } from './_media/engine'
@@ -95,17 +95,17 @@ export default function VideoFrames() {
         </>}
         side={<>
           <div><Label>Mode</Label><Segmented value={mode} onChange={setMode} options={[{ value: 'interval', label: 'Every N sec' }, { value: 'fps', label: 'N per sec' }, { value: 'single', label: 'At playhead' }]} /></div>
-          {mode === 'interval' && <div><Label>Every (seconds)</Label><Input type="number" min={0.1} step={0.5} value={every} onChange={(ev) => setEvery(ev.target.value)} /></div>}
+          {mode === 'interval' && <div><Label>Every (seconds)</Label><Input aria-label="Every (seconds)" type="number" min={0.1} step={0.5} value={every} onChange={(ev) => setEvery(ev.target.value)} /></div>}
           {mode === 'fps' && <Slider label="Frames per second" value={perSec} onChange={setPerSec} min={1} max={30} suffix=" fps" />}
           {mode !== 'single' && (
             <div className="grid grid-cols-2 gap-3">
-              <div><Label>From</Label><TimeInput value={s} max={e} onChange={(v) => setRange([v, e])} /></div>
-              <div><Label>To</Label><TimeInput value={e} min={s} max={dur || Infinity} onChange={(v) => setRange([s, v])} /></div>
+              <div><Label>From</Label><TimeInput label="From" value={s} max={e} onChange={(v) => setRange([v, e])} /></div>
+              <div><Label>To</Label><TimeInput label="To" value={e} min={s} max={dur || Infinity} onChange={(v) => setRange([s, v])} /></div>
             </div>
           )}
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Format</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'jpg', label: 'JPG' }, { value: 'png', label: 'PNG' }, { value: 'webp', label: 'WEBP' }]} /></div>
-            <div><Label>Width</Label><Select value={width} onChange={setWidth} options={[{ value: 'original', label: meta?.width ? `Original (${meta.width})` : 'Original' }, { value: '1280', label: '1280 px' }, { value: '640', label: '640 px' }, { value: '320', label: '320 px' }]} /></div>
+            <Field label="Format"><Select value={fmt} onChange={setFmt} options={[{ value: 'jpg', label: 'JPG' }, { value: 'png', label: 'PNG' }, { value: 'webp', label: 'WEBP' }]} /></Field>
+            <Field label="Width"><Select value={width} onChange={setWidth} options={[{ value: 'original', label: meta?.width ? `Original (${meta.width})` : 'Original' }, { value: '1280', label: '1280 px' }, { value: '640', label: '640 px' }, { value: '320', label: '320 px' }]} /></Field>
           </div>
           {fmt !== 'png' && <Slider label="Quality" value={quality} onChange={setQuality} min={40} max={100} suffix="%" />}
           {mode === 'single' ? (

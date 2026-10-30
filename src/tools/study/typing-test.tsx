@@ -25,7 +25,7 @@ export default function TypingTest() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2"><Segmented value={len} onChange={(v) => { setLen(v); reset() }} options={[{ value: '30', label: '30 s' }, { value: '60', label: '1 min' }, { value: '120', label: '2 min' }, { value: 'text', label: 'Whole text' }]} /><Segmented value={src} onChange={(v) => { setSrc(v); reset() }} options={[{ value: 'built', label: 'Our texts' }, { value: 'custom', label: 'My own text' }]} /></div>
-      {src === 'custom' && <div><Label>Paste the text to practise (notes, a speech, code)</Label><Textarea value={custom} onChange={(e) => { setCustom(e.target.value); reset() }} className="min-h-24 font-sans" /></div>}
+      {src === 'custom' && <div><Label>Paste the text to practise (notes, a speech, code)</Label><Textarea aria-label="Paste the text to practise (notes, a speech, code)" value={custom} onChange={(e) => { setCustom(e.target.value); reset() }} className="min-h-24 font-sans" /></div>}
       <Stats cols={4}><Stat label="Time" value={len === 'text' ? `${Math.round(secs)} s` : `${Math.max(0, Math.ceil(limit - secs))} s`} /><Stat label="Speed" value={`${st.net} wpm`} sub={`${st.wpm} gross`} tone="good" /><Stat label="Accuracy" value={`${Math.round(st.accuracy * 100)}%`} /><Stat label="Best here" value={`${best} wpm`} /></Stats>
       <Card className="relative space-y-3" onClick={() => box.current?.focus()}>
         <p className="font-mono text-lg leading-relaxed tracking-wide select-none" aria-hidden="true">

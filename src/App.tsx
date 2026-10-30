@@ -21,7 +21,7 @@ const Open = lazy(() => import('@/pages/Open'))
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-      <Suspense fallback={<div className="of-delay grid h-[60vh] place-items-center" aria-busy="true" aria-label="Loading"><span className="of-ring" /></div>}>
+      <Suspense fallback={<div className="of-delay grid h-[60vh] place-items-center" role="status" aria-busy="true" aria-label="Loading"><span className="of-ring" /></div>}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />

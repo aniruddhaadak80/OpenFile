@@ -21,6 +21,8 @@ export default function AddTextToImage() {
 
   const onFiles = useCallback(async (f: File[]) => {
     const im = await decode(f[0]); setFile(f[0]); setImg(im)
+    // Keep a photo as a photo: a JPG or WEBP in gives the same format out, so the file does not balloon into a big PNG.
+    setFmt(/jpe?g$/i.test(f[0].type) || /\.jpe?g$/i.test(f[0].name) ? 'jpg' : /webp$/i.test(f[0].type) ? 'webp' : 'png')
     const L = newLayer({ text: 'Double the impact', y: 0.18 }); setLayers([L]); setSel(L.id)
   }, [])
   const upd = (id: string, p: Partial<TextLayer>) => setLayers((ls) => ls.map((l) => (l.id === id ? { ...l, ...p } : l)))

@@ -135,7 +135,7 @@ export default function PhotoEffects() {
   const amountLabel: Partial<Record<Effect, string>> = { duotone: 'Strength', glitch: 'Slices', noise: 'Grain', shadow: 'Distance', polaroid: 'Tilt', border: 'Corner radius', kaleidoscope: 'Rotation', vignette: 'Darkness', sketch: 'Darkness' }
   const sizeLabel: Partial<Record<Effect, string>> = { glitch: 'Channel offset', outline: 'Stroke width', shadow: 'Blur', border: 'Border width', splash: 'Hue tolerance', vignette: 'Spread', sketch: 'Line softness' }
   return (
-    <EffectShell suffix={effect} label="Drop a photo to add effects" deps={[effect, a, b, amount, size, color, mode, seed, k, mono]}
+    <EffectShell matchInput suffix={effect} label="Drop a photo to add effects" deps={[effect, a, b, amount, size, color, mode, seed, k, mono]}
       render={(src, _p, kk) => render(src, effect, { a, b, amount, size: size * (kk === 1 ? 1 : 1), color, mode, seed, k, mono })}
       controls={<>
         <Field label="Effect"><Select value={effect} onChange={(v) => pick(v as Effect)} options={EFFECTS.map((e) => ({ value: e.id, label: e.label }))} /></Field>

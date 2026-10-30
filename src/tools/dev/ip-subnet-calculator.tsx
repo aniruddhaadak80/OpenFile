@@ -77,8 +77,8 @@ export default function IpSubnetCalculator() {
 
       {mode === 'range' && <>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div><Label>Start address</Label><Input value={from} onChange={(e) => setFrom(e.target.value)} className="font-mono" /></div>
-          <div><Label>End address</Label><Input value={to} onChange={(e) => setTo(e.target.value)} className="font-mono" /></div>
+          <div><Label>Start address</Label><Input aria-label="Start address" value={from} onChange={(e) => setFrom(e.target.value)} className="font-mono" /></div>
+          <div><Label>End address</Label><Input aria-label="End address" value={to} onChange={(e) => setTo(e.target.value)} className="font-mono" /></div>
         </div>
         {'err' in range ? <Status kind="err">{range.err}</Status> : <>
           <Status kind="ok">{range.count.toLocaleString()} addresses fit in {range.list!.length} CIDR block{range.list!.length === 1 ? '' : 's'}.</Status>

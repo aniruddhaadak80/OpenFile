@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BookImage, RefreshCw } from 'lucide-react'
-import { Button, Dropzone, Label, Select, Slider, Switch, ToolGrid, ResultCard, ErrorNote, Progress, cn } from '@/components/ui'
+import { Button, Dropzone, Label, Select, Slider, Switch, ToolGrid, ResultCard, ErrorNote, Progress, cn, Field } from '@/components/ui'
 import { baseName, formatBytes } from '@/lib/files'
 import { extractArchive, createArchive, cancelArchive, PasswordError } from '@/lib/b4/archive'
 import { TopBar, StatusLine } from '@/lib/b4/ui'
@@ -127,7 +127,7 @@ export default function ComicConverter() {
         <div><Label>Convert to</Label><div className="grid grid-cols-2 gap-2">{([['pdf', 'PDF'], ['cbz', 'CBZ'], ['cb7', 'CB7'], ['zip', 'Images (ZIP)']] as [Out, string][]).map(([v, l]) => <button key={v} onClick={() => setOut(v)} className={cn('rounded-xl border px-2 py-2 text-sm font-medium transition cursor-pointer', out === v ? 'border-accent bg-accent/10' : 'border-border hover:border-accent/50')}>{l}</button>)}</div></div>
         <Switch checked={shrink} onChange={setShrink} label="Shrink pages (smaller file)" />
         {shrink && <>
-          <div><Label>Max page width</Label><Select value={String(maxW)} onChange={(v) => setMaxW(+v)} options={[{ value: '1024', label: '1024 px (phone)' }, { value: '1440', label: '1440 px (tablet)' }, { value: '1600', label: '1600 px' }, { value: '2048', label: '2048 px (HD)' }]} /></div>
+          <Field label="Max page width"><Select value={String(maxW)} onChange={(v) => setMaxW(+v)} options={[{ value: '1024', label: '1024 px (phone)' }, { value: '1440', label: '1440 px (tablet)' }, { value: '1600', label: '1600 px' }, { value: '2048', label: '2048 px (HD)' }]} /></Field>
           <Slider label="Quality" value={q} onChange={setQ} min={40} max={95} suffix="%" />
           {out !== 'pdf' && <Switch checked={webp} onChange={setWebp} label="Use WebP (even smaller)" />}
         </>}

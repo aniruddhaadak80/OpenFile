@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Upload, FileDown, Languages, Loader2 } from 'lucide-react'
-import { Button, ToolGrid, Label, Select, Segmented, Slider, Switch, Input, Progress, ErrorNote, ResultCard, Badge, useJob, cn } from '@/components/ui'
+import { Button, ToolGrid, Label, Select, Segmented, Slider, Switch, Input, Progress, ErrorNote, ResultCard, Badge, useJob, cn, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { PdfPreview, Stat, pageDims, mm, useDebounced, type PageSizeKey } from './_conv/shared'
 import { renderHtmlToPdf, pdfToBlob } from './_conv/htmlPdf'
@@ -107,7 +107,10 @@ export default function TextToPdf() {
   useEffect(() => setUnicodeResult(null), [key])
   const exportUnicode = () => run(async (setP) => { setUnicodeResult(await buildUnicode(opts, setP)); toast('PDF ready', 'success') })
 
-  const onFile = async (f?: File) => { if (!f) return; setText(await f.text()); if (!title) setTitle(f.name.replace(/\.[^.]+$/, '')) }
+  const onFile = async (f?: File) => {
+    if (!f) return
+    if (!/\.(txt|text|log|csv|md|json|xml|ya?ml|ini|cfg)$/i.test(f.name) && !/^text\//.test(f.type)) { toast(`${f.name} is not a text file. Choose a .txt, .md, .csv, .log or similar file.`, 'error'); return }
+    setText(await f.text()); if (!title) setTitle(f.name.replace(/\.[^.]+$/, '')) }
   const words = (text.match(/\S+/g) ?? []).length
   const outName = `${(title || 'text').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'text'}.pdf`
   const result = unicode ? unicodeResult : preview
@@ -139,7 +142,7 @@ export default function TextToPdf() {
           <Slider label="Line height" value={lineHeight} onChange={setLineHeight} min={1} max={2.4} step={0.05} />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div><Label>Page</Label><Select value={page} onChange={setPage} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a5', label: 'A5' }]} /></div>
+          <Field label="Page"><Select value={page} onChange={setPage} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a5', label: 'A5' }]} /></Field>
           <div><Label>Orientation</Label><Segmented value={orient} onChange={setOrient} options={[{ value: 'portrait', label: 'Port.' }, { value: 'landscape', label: 'Land.' }]} /></div>
         </div>
         <Slider label="Margins" value={marginMm} onChange={setMarginMm} min={5} max={40} suffix=" mm" />

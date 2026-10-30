@@ -31,7 +31,7 @@ export default function LinkExtractor() {
       <div className="space-y-3">
         <Dropzone compact multiple accept=".html,.htm,.xml,.md,.txt" onFiles={async (fs) => setHtml((await Promise.all(fs.map((f) => f.text()))).join('\n'))} label="Drop HTML files" sub="Or paste page source below" />
         <Textarea value={html} onChange={(e) => setHtml(e.target.value)} className="min-h-64" aria-label="HTML" />
-        <div><Label>Page address (to tell internal from external)</Label><Input value={base} onChange={(e) => setBase(e.target.value)} /></div>
+        <div><Label>Page address (to tell internal from external)</Label><Input aria-label="Page address (to tell internal from external)" value={base} onChange={(e) => setBase(e.target.value)} /></div>
       </div>
       <div className="space-y-3">
         <Stats cols={4}><Stat label="Links" value={links.length} /><Stat label="Internal" value={n('internal')} /><Stat label="External" value={n('external')} /><Stat label="Nofollow" value={links.filter((x) => /nofollow|ugc|sponsored/.test(x.rel)).length} /></Stats>

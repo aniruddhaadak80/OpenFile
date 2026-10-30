@@ -6,8 +6,16 @@ export interface ModelInfo {
   cpuDefault?: boolean
 }
 
+/** Virtual id for the light translator: the real OPUS-MT model is picked per language pair by opusPlan(). */
+export const OPUS_ID = 'opus-mt'
+
 export const MODELS = {
-  translate: [{ id: 'Xenova/nllb-200-distilled-600M', label: 'NLLB-200 (200 languages)', size: 'about 900 MB', dtype: { wasm: 'q8', webgpu: 'q8' }, note: 'Meta NLLB, CC-BY-NC 4.0 weights: free for personal, non-commercial use.' }],
+  translate: [
+    // NLLB q8 is about 900 MB (encoder 419 MB plus decoder 475 MB); loading it crashed CPU-only tabs, so it is kept for WebGPU
+    { id: 'Xenova/nllb-200-distilled-600M', label: 'NLLB-200 (200 languages, best with a GPU)', size: 'about 900 MB', dtype: { wasm: 'q8', webgpu: 'q8' }, note: 'Meta NLLB, CC-BY-NC 4.0 weights: free for personal, non-commercial use. Without a GPU it can run the tab out of memory.' },
+    // CPU default: Helsinki-NLP OPUS-MT (CC-BY 4.0), about 115 MB per language pair, picked per pair by opusPlan()
+    { id: OPUS_ID, label: 'OPUS-MT (light, best without a GPU)', size: 'about 115 MB per language pair (twice that when neither language is English)', dtype: { wasm: 'q8', webgpu: 'fp32' }, cpuDefault: true, note: 'Helsinki-NLP OPUS-MT, CC-BY 4.0. One small model per language pair, through English when neither side is English. Simpler wording than NLLB.' },
+  ],
   summarize: [{ id: 'Xenova/distilbart-cnn-6-6', label: 'DistilBART (fast summary)', size: 'about 300 MB', dtype: { wasm: 'q8', webgpu: 'fp32' } }],
   chat: [
     // wasm uses q8 (488 MB): Qwen's q4 file keeps the embeddings in fp32 and is 749 MB, which crashed CPU-only tabs while loading
@@ -91,6 +99,28 @@ export function extractJson(s: string): any {
   return null
 }
 
+/** Every complete JSON object in model output, in order, even when the surrounding array is cut off, has trailing
+ * commas, or sits inside a code fence. Used to show quiz cards while the model is still writing. Pure. */
+export function jsonObjects(s: string): any[] {
+  const out: any[] = []
+  let depth = 0, start = -1, inStr = false, esc = false
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i]
+    if (inStr) { if (esc) esc = false; else if (ch === '\\') esc = true; else if (ch === '"') inStr = false; continue }
+    if (ch === '"') { if (depth > 0) inStr = true; continue }
+    if (ch === '{') { if (depth === 0) start = i; depth++ }
+    else if (ch === '}' && depth > 0) {
+      depth--
+      if (depth === 0 && start >= 0) {
+        const raw = s.slice(start, i + 1)
+        try { out.push(JSON.parse(raw)) } catch { try { out.push(JSON.parse(raw.replace(/,\s*([}\]])/g, '$1'))) } catch { /* skip a broken object */ } }
+        start = -1
+      }
+    }
+  }
+  return out
+}
+
 /** NLLB-200 language codes (common subset). */
 export const NLLB_LANGS: { code: string; name: string }[] = [
   ['eng_Latn', 'English'], ['spa_Latn', 'Spanish'], ['fra_Latn', 'French'], ['deu_Latn', 'German'], ['ita_Latn', 'Italian'], ['por_Latn', 'Portuguese'], ['nld_Latn', 'Dutch'], ['pol_Latn', 'Polish'],
@@ -101,3 +131,46 @@ export const NLLB_LANGS: { code: string; name: string }[] = [
   ['tgl_Latn', 'Tagalog'], ['swh_Latn', 'Swahili'], ['amh_Ethi', 'Amharic'], ['hau_Latn', 'Hausa'], ['yor_Latn', 'Yoruba'], ['zul_Latn', 'Zulu'], ['afr_Latn', 'Afrikaans'], ['cat_Latn', 'Catalan'],
   ['bul_Cyrl', 'Bulgarian'], ['hrv_Latn', 'Croatian'], ['srp_Cyrl', 'Serbian'], ['slk_Latn', 'Slovak'], ['slv_Latn', 'Slovenian'], ['lit_Latn', 'Lithuanian'], ['lvs_Latn', 'Latvian'], ['est_Latn', 'Estonian'],
 ].map(([code, name]) => ({ code, name }))
+
+// OPUS-MT pairs with their own small model on the Hugging Face hub (Xenova ONNX exports). Other pairs go through
+// opus-mt-en-mul (needs a >>lang<< token) or opus-mt-mul-en. en-jap is Bible-only, so Japanese uses en-mul.
+const OPUS_EN_TO = ['es', 'fr', 'de', 'it', 'nl', 'ru', 'uk', 'cs', 'da', 'fi', 'hu', 'sv', 'ro', 'ar', 'hi', 'id', 'vi', 'zh', 'af']
+const OPUS_TO_EN = ['es', 'fr', 'de', 'it', 'nl', 'ru', 'uk', 'cs', 'da', 'fi', 'hu', 'sv', 'ar', 'hi', 'id', 'vi', 'zh', 'af', 'ja', 'ko', 'pl', 'th', 'tr', 'et']
+const NLLB_TO_ISO1: Record<string, string> = {
+  spa_Latn: 'es', fra_Latn: 'fr', deu_Latn: 'de', ita_Latn: 'it', nld_Latn: 'nl', rus_Cyrl: 'ru', ukr_Cyrl: 'uk', ces_Latn: 'cs', dan_Latn: 'da', fin_Latn: 'fi',
+  hun_Latn: 'hu', swe_Latn: 'sv', ron_Latn: 'ro', arb_Arab: 'ar', hin_Deva: 'hi', ind_Latn: 'id', vie_Latn: 'vi', zho_Hans: 'zh', afr_Latn: 'af', jpn_Jpan: 'ja',
+  kor_Hang: 'ko', pol_Latn: 'pl', tha_Thai: 'th', tur_Latn: 'tr', est_Latn: 'et',
+}
+// opus-mt-en-mul target tokens where they differ from the first part of the NLLB code. Korean, Tagalog and Slovak are not targets of en-mul.
+const ENMUL_TOKEN: Record<string, string | null> = { arb_Arab: 'ara', zho_Hans: 'cmn_Hans', zho_Hant: 'cmn_Hant', pan_Guru: 'pan_Guru', zsm_Latn: 'zsm_Latn', hau_Latn: 'hau_Latn', srp_Cyrl: 'srp_Cyrl', lvs_Latn: 'lav', kor_Hang: null, tgl_Latn: null, slk_Latn: null }
+export interface OpusStep { model: string; prefix: string; to: string }
+/** The OPUS-MT models (in order) that translate src to tgt, both NLLB codes. Throws when the light model cannot reach tgt. Pure, unit tested. */
+export function opusPlan(src: string, tgt: string): OpusStep[] {
+  const EN = 'eng_Latn'
+  if (src === tgt) return []
+  const toEn = (s: string): OpusStep => { const c = NLLB_TO_ISO1[s]; return { model: c && OPUS_TO_EN.includes(c) ? `Xenova/opus-mt-${c}-en` : 'Xenova/opus-mt-mul-en', prefix: '', to: EN } }
+  const fromEn = (t: string): OpusStep => {
+    const c = NLLB_TO_ISO1[t]
+    if (c && OPUS_EN_TO.includes(c)) return { model: `Xenova/opus-mt-en-${c}`, prefix: '', to: t }
+    const tok = t in ENMUL_TOKEN ? ENMUL_TOKEN[t] : t.split('_')[0]
+    if (!tok) throw new Error(`The light model cannot translate into ${NLLB_LANGS.find((l) => l.code === t)?.name ?? t}. Pick the NLLB-200 model for this language.`)
+    return { model: 'Xenova/opus-mt-en-mul', prefix: `>>${tok}<< `, to: t }
+  }
+  if (src === EN) return [fromEn(tgt)]
+  if (tgt === EN) return [toEn(src)]
+  return [toEn(src), fromEn(tgt)]
+}
+
+/** Translate texts with the picked model. NLLB runs in one pass; OPUS-MT runs one small model per step of opusPlan(). */
+export async function translateTexts(model: ModelInfo, device: 'wasm' | 'webgpu', texts: string[], src: string, tgt: string, cb: AiCallbacks = {}): Promise<string[]> {
+  if (model.id !== OPUS_ID) return aiRun<string[]>('translation', model, device, texts, { src, tgt }, cb)
+  const steps = opusPlan(src, tgt)
+  let cur = texts
+  for (let i = 0; i < steps.length; i++) {
+    const st = steps[i], last = i === steps.length - 1
+    const step = { ...model, id: st.model }
+    const scb: AiCallbacks = last ? cb : { ...cb, onProgress: (d, t) => cb.onStatus?.(`Step 1 of 2: into English first, ${d} of ${t}`) }
+    cur = await aiRun<string[]>('translation', step, device, cur, { prefix: st.prefix }, scb)
+  }
+  return cur
+}

@@ -4,7 +4,7 @@ import { Button, Dropzone, Label, Select, Switch, ToolGrid, ErrorNote } from '@/
 import { baseName, downloadBlob } from '@/lib/files'
 import { parseSubtitles, writeSubtitles, plainText, fmtClock, SUB_FORMATS, SUB_ACCEPT, subExt, subMime, type SubDoc, type SubFormat } from '@/lib/b4/subtitles'
 import { readTextFile } from '@/lib/b4/text'
-import { aiRun, MODELS, NLLB_LANGS } from '@/lib/b4/ai'
+import { translateTexts, MODELS, NLLB_LANGS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress } from '@/lib/b4/aiui'
 import { TopBar } from '@/lib/b4/ui'
 
@@ -26,7 +26,7 @@ export default function SubtitleTranslator() {
   const go = () => doc && ai.run(async () => {
     setOut([])
     const texts = doc.cues.map((c) => plainText(c.text).replace(/\s*\n\s*/g, ' ').trim())
-    const res: string[] = await aiRun('translation', ai.info, ai.device, texts, { src, tgt }, ai.callbacks({ onProgress: (d, t, partial) => { ai.setProgress(d / t); ai.setStatus(`Translated ${d} of ${t} lines`); setOut((o) => { const n = [...o]; n[d - 1] = partial ?? ''; return n }) } }))
+    const res: string[] = await translateTexts(ai.info, ai.device, texts, src, tgt, ai.callbacks({ onProgress: (d, t, partial) => { ai.setProgress(d / t); ai.setStatus(`Translated ${d} of ${t} lines`); setOut((o) => { const n = [...o]; n[d - 1] = partial ?? ''; return n }) } }))
     setOut(res)
   })
   const wrap = (s: string) => { if (s.length <= 42) return s; const mid = s.lastIndexOf(' ', Math.ceil(s.length / 2) + 6); return mid > 10 ? s.slice(0, mid) + '\n' + s.slice(mid + 1) : s }

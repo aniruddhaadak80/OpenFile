@@ -39,8 +39,20 @@ export function Card({ className, children, ...rest }: React.HTMLAttributes<HTML
   return <div {...rest} className={cn('rounded-2xl border border-border bg-surface p-5', className)}>{children}</div>
 }
 
+const FIELD = 'input:not([type=hidden]):not([type=file]),textarea,select'
+const hasName = (f: Element) => f.hasAttribute('aria-label') || f.hasAttribute('aria-labelledby') || !!(f as HTMLInputElement).labels?.length
 export function Label({ children, hint, className }: { children: React.ReactNode; hint?: React.ReactNode; className?: string }) {
-  return <div className={cn('mb-1.5 flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted', className)}><span>{children}</span>{hint && <span className="normal-case tracking-normal font-mono text-fg/80">{hint}</span>}</div>
+  const id = React.useId()
+  const ref = useRef<HTMLDivElement>(null)
+  // Name the field that follows this label (the next sibling, or the first field inside it) when it has no name of its own,
+  // so screen readers announce "Input JSON, edit text" instead of a bare text box.
+  useEffect(() => {
+    const next = ref.current?.nextElementSibling
+    if (!next) return
+    const f = next.matches(FIELD) ? next : next.querySelectorAll(FIELD).length === 1 ? next.querySelector(FIELD) : null
+    if (f && (!hasName(f) || f.getAttribute('aria-labelledby') === id)) f.setAttribute('aria-labelledby', id)
+  })
+  return <div ref={ref} className={cn('mb-1.5 flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted', className)}><span id={id}>{children}</span>{hint && <span className="normal-case tracking-normal font-mono text-fg/80">{hint}</span>}</div>
 }
 
 /** Plain text of a React node (for accessible names of buttons whose label is markup). */
@@ -129,7 +141,7 @@ export function Spinner({ label }: { label?: string }) {
 export function CopyButton({ text, label = 'Copy', size = 'sm', variant = 'outline' }: { text: string | (() => string); label?: string; size?: 'sm' | 'md'; variant?: 'outline' | 'secondary' | 'ghost' }) {
   const [ok, setOk] = useState(false)
   return (
-    <Button size={size} variant={variant} icon={ok ? <Check className="size-4 text-success" /> : <Copy className="size-4" />} onClick={async () => { if (await copyText(typeof text === 'function' ? text() : text)) { setOk(true); toast('Copied to clipboard'); setTimeout(() => setOk(false), 1500) } }}>{ok ? 'Copied' : label}</Button>
+    <Button size={size} variant={variant} icon={ok ? <Check className="size-4 text-success" /> : <Copy className="size-4" />} onClick={async () => { if (await copyText(typeof text === 'function' ? text() : text)) { setOk(true); toast('Copied to clipboard'); setTimeout(() => setOk(false), 1500) } }} aria-label={label ? undefined : ok ? 'Copied' : 'Copy'}>{ok ? 'Copied' : label}</Button>
   )
 }
 

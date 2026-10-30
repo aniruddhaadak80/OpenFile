@@ -175,8 +175,8 @@ function FieldInput({ f, value, onChange }: { f: FieldInfo; value: FieldValue | 
     const s = String(value ?? '')
     const counter = f.maxLength ? <div className="mt-1 text-right font-mono text-[10px] text-muted">{s.length}/{f.maxLength}</div> : null
     return f.multiline
-      ? <><Textarea value={s} disabled={dis} maxLength={f.maxLength} onChange={(e) => onChange(e.target.value)} className="min-h-20 font-sans" />{counter}</>
-      : <><Input value={s} disabled={dis} maxLength={f.maxLength} onChange={(e) => onChange(e.target.value)} />{counter}</>
+      ? <><Textarea aria-label={f.label} value={s} disabled={dis} maxLength={f.maxLength} onChange={(e) => onChange(e.target.value)} className="min-h-20 font-sans" />{counter}</>
+      : <><Input aria-label={f.label} value={s} disabled={dis} maxLength={f.maxLength} onChange={(e) => onChange(e.target.value)} />{counter}</>
   }
   if (f.kind === 'checkbox') return (
     <button type="button" disabled={dis} onClick={() => onChange(!value)} className={cn('flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition cursor-pointer disabled:opacity-50', value ? 'border-accent bg-accent/10 text-fg' : 'border-border text-muted hover:border-accent/40')}>
@@ -197,9 +197,9 @@ function FieldInput({ f, value, onChange }: { f: FieldInfo; value: FieldValue | 
     const s = String(value ?? '')
     return (
       <div className="space-y-1.5">
-        <Select value={opts.includes(s) ? s : s ? '__custom' : ''} onChange={(v) => onChange(v === '__custom' ? s || ' ' : v)}
-          options={[{ value: '', label: '(select)' }, ...opts.map((o) => ({ value: o, label: o })), ...(f.editable ? [{ value: '__custom', label: 'Other…' }] : [])]} />
-        {f.editable && s && !opts.includes(s) && <Input value={s.trim()} onChange={(e) => onChange(e.target.value)} placeholder="Custom value" />}
+        <label className="block"><span className="sr-only">{f.label}</span><Select value={opts.includes(s) ? s : s ? '__custom' : ''} onChange={(v) => onChange(v === '__custom' ? s || ' ' : v)}
+          options={[{ value: '', label: '(select)' }, ...opts.map((o) => ({ value: o, label: o })), ...(f.editable ? [{ value: '__custom', label: 'Other…' }] : [])]} /></label>
+        {f.editable && s && !opts.includes(s) && <Input aria-label={`${f.label}, custom value`} value={s.trim()} onChange={(e) => onChange(e.target.value)} placeholder="Custom value" />}
       </div>
     )
   }

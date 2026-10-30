@@ -7,7 +7,7 @@ import { safeAudioCopy, type Op } from '@/lib/b3/ffops'
 import { ffRun, ffProbe, extFromBlob, type ProbeInfo } from '../_media/engine'
 import { fmtTime, useMediaJob, useObjectUrl, useVideoMeta, type VideoMeta, type MediaJob } from '../_media/media'
 import { FileBar, JobPanel, Reveal, VideoStage, Note } from '../_media/ui'
-import { capToSource, sourceRate } from '../_media/bitrate'
+import { capToSource, lowerQuality, sourceRate } from '../_media/bitrate'
 
 export const VIDEO_ACCEPT = 'video/*,.mkv,.avi,.mov,.m4v,.flv,.wmv,.3gp,.ts,.mts,.m2ts,.mpg,.mpeg,.vob,.ogv'
 export const inName = (f: Blob, stem = 'in') => stem + extFromBlob(f)
@@ -15,7 +15,7 @@ export const inName = (f: Blob, stem = 'in') => stem + extFromBlob(f)
 export interface Ctx { file: File; url: string | null; meta: VideoMeta | null; video: React.RefObject<HTMLVideoElement | null> }
 /** `pixelScale`: output pixels over source pixels, when a recipe makes the picture bigger (resize, canvas, grid).
  * `cap: false` leaves the encoder uncapped (the input is not the main video, for example a slideshow). */
-export interface RunOpts { pixelScale?: number; cap?: boolean }
+export interface RunOpts { pixelScale?: number; cap?: boolean; /** false: the result may be bigger than the source (do not retry smaller) */ pure?: boolean }
 export interface RunHelpers { setProgress: (p: number) => void; setLabel: (s: string) => void; probe: () => Promise<ProbeInfo>; run: (op: Op, inputs: { name: string; file: Blob | Uint8Array }[], duration?: number, opts?: RunOpts) => Promise<Blob> }
 export interface Output { blob: Blob; name: string; title?: string; note?: string }
 
@@ -36,6 +36,7 @@ export function VideoOpTool({ dropLabel, dropSub, accept = VIDEO_ACCEPT, main, s
   const outUrl = useObjectUrl(out?.blob)
   const job = useMediaJob()
   const probeCache = useRef<{ f: File; p: Promise<ProbeInfo> } | null>(null)
+  const sizeNote = useRef('')
   const reset = () => { if (job.busy) job.cancel(); setFile(null); setOut(null); job.reset(); probeCache.current = null; onReset?.() }
 
   if (!file) return <Dropzone accept={accept} onFiles={(f) => setFile(f[0])} label={dropLabel} sub={dropSub ?? 'MP4, MOV, WEBM, MKV, AVI and more. Processed on your device.'} />
@@ -61,11 +62,29 @@ export function VideoOpTool({ dropLabel, dropSub, accept = VIDEO_ACCEPT, main, s
           if (outAt === args.length - 1) args = [...capToSource(args.slice(0, -1), { ...src, video: src.video * Math.max(1, opts.pixelScale ?? 1) }, 1.25), op.output]
         }
       }
-      return ffRun({ inputs, args, output: op.output, duration: duration ?? (meta?.duration || undefined), onProgress: setProgress })
+      const expected = duration ?? (meta?.duration || undefined)
+      const blob = await ffRun({ inputs, args, output: op.output, duration: expected, onProgress: setProgress })
+      // A pure edit (same length, same or smaller picture, no new video or audio file) should not come back bigger than
+      // the source. Very low bitrate clips can, because the encoder needs a minimum size per frame, so try once more
+      // at a lower quality and keep whichever file is smaller.
+      const srcDur = info?.duration || meta?.duration || 0
+      const pure = info && opts.cap !== false && opts.pure !== false && (opts.pixelScale ?? 1) <= 1 && srcDur > 0 && (!expected || expected <= srcDur * 1.02)
+        && inputs.every((i) => i.file === file || !(i.file instanceof Blob && /^(video|audio)\//.test(i.file.type)))
+      if (!pure || blob.size <= file.size) return blob
+      const smaller = lowerQuality(args, sourceRate(info, file.size, srcDur))
+      if (!smaller) return blob
+      setLabel('Making a smaller copy'); setProgress(0)
+      const again = await ffRun({ inputs, args: smaller, output: op.output, duration: expected, onProgress: setProgress }).catch(() => null)
+      const best = again && again.size < blob.size ? again : blob
+      sizeNote.current = best.size <= file.size
+        ? 'The first result came out bigger than your video, so it was made again at a slightly lower quality to keep it smaller.'
+        : `Your video is already very compressed, so the edited copy is ${Math.round((best.size / file.size - 1) * 100)}% bigger. This is the smallest result that keeps the picture usable.`
+      return best
     }
     setLabel('Reading streams')
+    sizeNote.current = ''
     const r = await onRun(ctx, { setProgress, setLabel, probe, run })
-    setOut(r)
+    setOut(sizeNote.current ? { ...r, note: [r.note, sizeNote.current].filter(Boolean).join(' ') } : r)
   })
   const isVideoOut = out && /^video\//.test(out.blob.type) && !/x-matroska|x-msvideo/.test(out.blob.type)
   return (

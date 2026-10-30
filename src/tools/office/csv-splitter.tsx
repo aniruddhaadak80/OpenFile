@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Scissors } from 'lucide-react'
-import { Button, Card, Dropzone, Label, Segmented, Select, Slider, Switch, ResultCard, Progress, ErrorNote, useJob } from '@/components/ui'
+import { Button, Card, Dropzone, Label, Segmented, Select, Slider, Switch, ResultCard, Progress, ErrorNote, useJob, Field } from '@/components/ui'
 import { formatBytes, zipFiles } from '@/lib/files'
 import { csvSplit } from '@/lib/cf/study'
 import { sniffDelimiter } from '@/lib/cf/sheet'
@@ -71,7 +71,7 @@ export default function CsvSplitter() {
         {mode === 'rows' && <Slider label="Rows per file" value={rows} onChange={setRows} min={100} max={1000000} step={100} />}
         {mode === 'size' && <Slider label="Max size per file" value={mb} onChange={setMb} min={1} max={500} suffix=" MB" />}
         {mode === 'parts' && <Slider label="Number of files" value={parts} onChange={setParts} min={2} max={100} />}
-        {mode === 'value' && <div><Label>Column</Label><Select value={col} onChange={setCol} options={headRow.map((h, i) => ({ value: String(i), label: header ? h || `Column ${i + 1}` : `Column ${i + 1}` }))} /></div>}
+        {mode === 'value' && <Field label="Column"><Select value={col} onChange={setCol} options={headRow.map((h, i) => ({ value: String(i), label: header ? h || `Column ${i + 1}` : `Column ${i + 1}` }))} /></Field>}
         <Switch checked={header} onChange={setHeader} label="First row is a header (copied to every file)" />
         <p className="text-xs text-muted">{formatBytes(file.size)}. Quoted fields with line breaks stay together.</p>
         <Button className="w-full" icon={<Scissors className="size-4" />} loading={job.busy} onClick={go}>Split file</Button>

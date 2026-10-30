@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Globe, Code2, FileDown, Link2, AlertTriangle, Sparkles, Upload, Monitor, Smartphone, FileText } from 'lucide-react'
-import { Button, ToolGrid, Label, Select, Segmented, Slider, Switch, Input, Textarea, Progress, ErrorNote, ResultCard, Tabs, Dropzone, useJob, cn } from '@/components/ui'
+import { Button, ToolGrid, Label, Select, Segmented, Slider, Switch, Input, Textarea, Progress, ErrorNote, ResultCard, Tabs, Dropzone, useJob, cn, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { FramePreview, PdfPreview, Reveal, pageDims, mm, useDebounced, type PageSizeKey } from './_conv/shared'
 import { renderHtmlToPdf, addPageNumbers, pdfToBlob } from './_conv/htmlPdf'
@@ -143,7 +143,7 @@ export default function HtmlToPdf() {
             <Textarea value={html} onChange={(e) => setHtml(e.target.value)} placeholder="<html>…</html> , paste a full page or a fragment. Scripts are removed for safety." className="h-56" spellCheck={false} />
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="ghost" icon={<Sparkles className="size-4" />} onClick={() => setHtml(SAMPLE)}>Load sample</Button>
-              <label className="inline-flex"><input type="file" accept=".html,.htm,text/html" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f) setHtml(await f.text()); e.target.value = '' }} /><span className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-xl px-3 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg"><Upload className="size-4" />Open .html file</span></label>
+              <label className="inline-flex"><input type="file" accept=".html,.htm,text/html" hidden onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; if (!/\.(html?|xhtml)$/i.test(f.name) && f.type !== 'text/html') { toast(`${f.name} is not an HTML file. Choose a .html or .htm file.`, 'error'); return } setHtml(await f.text()) }} /><span className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-xl px-3 text-xs font-medium text-muted hover:bg-surface-2 hover:text-fg"><Upload className="size-4" />Open .html file</span></label>
             </div>
           </div>
         ) : (
@@ -175,10 +175,10 @@ export default function HtmlToPdf() {
       side={<>
         {atPage.size && <Switch checked={honorPage} onChange={setHonorPage} label={`Use the page size from the HTML (${Math.round(atPage.size.w / 72 * 25.4)} × ${Math.round(atPage.size.h / 72 * 25.4)} mm)`} />}
         {!usePageRule && <div className="grid grid-cols-2 gap-3">
-          <div><Label>Page</Label><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a3', label: 'A3' }, { value: 'a5', label: 'A5' }, { value: 'custom', label: 'Custom' }]} /></div>
+          <Field label="Page"><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a3', label: 'A3' }, { value: 'a5', label: 'A5' }, { value: 'custom', label: 'Custom' }]} /></Field>
           <div><Label>Orientation</Label><Segmented value={orient} onChange={setOrient} options={[{ value: 'portrait', label: 'Port.' }, { value: 'landscape', label: 'Land.' }]} /></div>
         </div>}
-        {!usePageRule && size === 'custom' && <div className="grid grid-cols-2 gap-3"><div><Label>Width (mm)</Label><Input type="number" min={50} max={2000} value={customMm.w} onChange={(e) => setCustomMm({ ...customMm, w: Math.max(50, Number(e.target.value) || 50) })} /></div><div><Label>Height (mm)</Label><Input type="number" min={50} max={5000} value={customMm.h} onChange={(e) => setCustomMm({ ...customMm, h: Math.max(50, Number(e.target.value) || 50) })} /></div></div>}
+        {!usePageRule && size === 'custom' && <div className="grid grid-cols-2 gap-3"><Field label="Width (mm)"><Input type="number" min={50} max={2000} value={customMm.w} onChange={(e) => setCustomMm({ ...customMm, w: Math.max(50, Number(e.target.value) || 50) })} /></Field><Field label="Height (mm)"><Input type="number" min={50} max={5000} value={customMm.h} onChange={(e) => setCustomMm({ ...customMm, h: Math.max(50, Number(e.target.value) || 50) })} /></Field></div>}
         <div>
           <Label>Layout width</Label>
           <div className="grid gap-1.5">

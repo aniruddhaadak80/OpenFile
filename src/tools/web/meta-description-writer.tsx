@@ -31,8 +31,8 @@ export default function MetaDescriptionWriter() {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="min-w-0 space-y-4">
-        <div><Label>Page text</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-44 font-sans text-sm" /></div>
-        <div className="grid gap-3 sm:grid-cols-2"><div><Label>Page title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div><div><Label>Main keyword</Label><Input value={kw} onChange={(e) => setKw(e.target.value)} /></div></div>
+        <div><Label>Page text</Label><Textarea aria-label="Page text" value={text} onChange={(e) => setText(e.target.value)} className="min-h-44 font-sans text-sm" /></div>
+        <div className="grid gap-3 sm:grid-cols-2"><div><Label>Page title</Label><Input aria-label="Page title" value={title} onChange={(e) => setTitle(e.target.value)} /></div><div><Label>Main keyword</Label><Input aria-label="Main keyword" value={kw} onChange={(e) => setKw(e.target.value)} /></div></div>
         <VisionProgress ai={ai} />
         {opts.map((o, i) => { const px = truncatePx(o, 920, 14); return (
           <Card key={i} className="space-y-2"><div className="text-xs text-muted">example.com</div><div className="text-lg text-sky-400">{title}</div><div className="text-sm">{o}</div>

@@ -25,7 +25,7 @@ export default function BibliographyConverter() {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 lg:grid-cols-[1fr_260px]">
-        <div><Label hint={parsed.f ? `${parsed.f.toUpperCase()}, ${parsed.refs.length} references` : ''}>Paste BibTeX, RIS or CSL JSON</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-56" /></div>
+        <div><Label hint={parsed.f ? `${parsed.f.toUpperCase()}, ${parsed.refs.length} references` : ''}>Paste BibTeX, RIS or CSL JSON</Label><Textarea aria-label="Paste BibTeX, RIS or CSL JSON" value={text} onChange={(e) => setText(e.target.value)} className="min-h-56" /></div>
         <Dropzone compact multiple accept=".bib,.ris,.json,.txt,.enw" onFiles={async (fs) => setText((await Promise.all(fs.map((f) => f.text()))).join('\n\n'))} label="Or drop .bib, .ris or .json files" sub="From Zotero, Mendeley, EndNote, Google Scholar" />
       </div>
       <ErrorNote error={parsed.e} />

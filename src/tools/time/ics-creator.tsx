@@ -24,14 +24,14 @@ export default function IcsCreator() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="space-y-3">
-        <div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-        <div className="grid grid-cols-3 gap-2"><div className="col-span-3 sm:col-span-1"><Label>Date</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>{!allDay && <><div><Label>Starts</Label><Input type="time" value={start} onChange={(e) => setStart(e.target.value)} /></div><div><Label>Ends</Label><Input type="time" value={end} onChange={(e) => setEnd(e.target.value)} /></div></>}</div>
+        <div><Label>Title</Label><Input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+        <div className="grid grid-cols-3 gap-2"><div className="col-span-3 sm:col-span-1"><Label>Date</Label><Input aria-label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>{!allDay && <><div><Label>Starts</Label><Input aria-label="Starts" type="time" value={start} onChange={(e) => setStart(e.target.value)} /></div><div><Label>Ends</Label><Input aria-label="Ends" type="time" value={end} onChange={(e) => setEnd(e.target.value)} /></div></>}</div>
         <Switch checked={allDay} onChange={setAllDay} label="All day" />
-        <div><Label>Place or meeting link</Label><Input value={loc} onChange={(e) => setLoc(e.target.value)} /></div>
-        <div><Label>Details</Label><Textarea value={desc} onChange={(e) => setDesc(e.target.value)} className="min-h-20 font-sans" /></div>
-        <div className="grid grid-cols-2 gap-2"><div><Label>Reminder</Label><Select value={alarm} onChange={setAlarm} options={[{ value: '', label: 'None' }, { value: '10', label: '10 minutes before' }, { value: '15', label: '15 minutes before' }, { value: '60', label: '1 hour before' }, { value: '1440', label: '1 day before' }]} /></div>
-          <div><Label>Repeats</Label><Select value={repeat} onChange={setRepeat} options={[{ value: '', label: 'Does not repeat' }, { value: 'FREQ=DAILY', label: 'Every day' }, { value: 'FREQ=WEEKLY', label: 'Every week' }, { value: 'FREQ=WEEKLY;INTERVAL=2', label: 'Every 2 weeks' }, { value: 'FREQ=MONTHLY', label: 'Every month' }, { value: 'FREQ=YEARLY', label: 'Every year' }]} /></div></div>
-        <div><Label>Web link (optional)</Label><Input value={url} onChange={(e) => setUrl(e.target.value)} /></div>
+        <div><Label>Place or meeting link</Label><Input aria-label="Place or meeting link" value={loc} onChange={(e) => setLoc(e.target.value)} /></div>
+        <div><Label>Details</Label><Textarea aria-label="Details" value={desc} onChange={(e) => setDesc(e.target.value)} className="min-h-20 font-sans" /></div>
+        <div className="grid grid-cols-2 gap-2"><label className="block"><Label>Reminder</Label><Select value={alarm} onChange={setAlarm} options={[{ value: '', label: 'None' }, { value: '10', label: '10 minutes before' }, { value: '15', label: '15 minutes before' }, { value: '60', label: '1 hour before' }, { value: '1440', label: '1 day before' }]} /></label>
+          <label className="block"><Label>Repeats</Label><Select value={repeat} onChange={setRepeat} options={[{ value: '', label: 'Does not repeat' }, { value: 'FREQ=DAILY', label: 'Every day' }, { value: 'FREQ=WEEKLY', label: 'Every week' }, { value: 'FREQ=WEEKLY;INTERVAL=2', label: 'Every 2 weeks' }, { value: 'FREQ=MONTHLY', label: 'Every month' }, { value: 'FREQ=YEARLY', label: 'Every year' }]} /></label></div>
+        <div><Label>Web link (optional)</Label><Input aria-label="Web link (optional)" value={url} onChange={(e) => setUrl(e.target.value)} /></div>
       </Card>
       <div className="space-y-3">
         <Card className="space-y-3"><div className="text-xs text-muted">Times use your device time zone ({Intl.DateTimeFormat().resolvedOptions().timeZone}) and are saved in UTC, so everyone sees their own local time.</div>

@@ -47,9 +47,17 @@ export default function ImageRotateFlip() {
         let f: Fmt = fmt === 'keep' ? fmtFromMime(it.file.type, it.file.name) : fmt
         if (!['png', 'jpg', 'webp'].includes(f)) f = 'png'
         if (o.transparent && f === 'jpg' && o.angle % 90 !== 0) f = 'png'
-        const c = rotateFlip(await decode(it.file), it.w, it.h, o)
-        const blob = await exportCanvas(c, f, 0.93, o.bg)
-        out.push({ id: it.id, name: outName(it.file.name, f, '-rotated'), blob, originalSize: it.file.size, url: URL.createObjectURL(blob), note: `${c.width}×${c.height}` })
+        const same = f === fmtFromMime(it.file.type, it.file.name)
+        let blob: Blob, dims = `${it.w}×${it.h}`
+        if (same && o.angle === 0 && !o.fh && !o.fv) blob = it.file
+        else {
+          const c = rotateFlip(await decode(it.file), it.w, it.h, o)
+          dims = `${c.width}×${c.height}`
+          blob = await exportCanvas(c, f, 0.93, o.bg)
+          // A pure rotate or flip should not hand back a much bigger photo: step the quality down until it fits.
+          if (same && f !== 'png') for (const q of [0.88, 0.82, 0.76]) { if (blob.size <= it.file.size) break; const b2 = await exportCanvas(c, f, q, o.bg); if (b2.size < blob.size) blob = b2 }
+        }
+        out.push({ id: it.id, name: outName(it.file.name, f, '-rotated'), blob, originalSize: it.file.size, url: URL.createObjectURL(blob), note: dims })
         setStatus((s) => ({ ...s, [it.id]: 'done' }))
       } catch (e) { setStatus((s) => ({ ...s, [it.id]: 'err' })); if (items.length === 1) throw e }
       setP((i + 1) / items.length)

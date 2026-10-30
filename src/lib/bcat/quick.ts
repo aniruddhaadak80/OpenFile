@@ -2,7 +2,7 @@
 
 /* ---------- sentiment (lexicon) ---------- */
 const POS = 'good great excellent amazing awesome love loved lovely like liked nice happy glad best better fantastic wonderful perfect brilliant enjoy enjoyed fast easy helpful beautiful pleasant superb recommend recommended impressive smooth clean friendly fun cool fine solid reliable worth thanks thank delightful satisfied positive outstanding favourite favorite incredible useful win wins winning works working success successful calm safe kind'.split(' ')
-const NEG = 'bad terrible awful horrible hate hated poor worst worse slow broken bug bugs buggy crash crashes crashed ugly annoying angry sad disappointed disappointing useless expensive difficult hard boring rude dirty fail failed fails failure problem problems issue issues wrong waste refund scam noisy pain painful never lost lose losing negative unhappy confusing confused weak late delay delayed cheap fake sucks worthless awkward'.split(' ')
+const NEG = 'bad terrible awful horrible hate hated poor worst worse slow broken bug bugs buggy crash crashes crashed crashing broke breaks stuck freezes freezing damaged ugly annoying angry sad disappointed disappointing useless expensive difficult hard boring rude dirty fail failed fails failure problem problems issue issues wrong waste refund scam noisy pain painful never lost lose losing negative unhappy confusing confused weak late delay delayed cheap fake sucks worthless awkward'.split(' ')
 const NEGATORS = new Set(['not', 'no', "don't", 'dont', "didn't", 'didnt', "isn't", 'isnt', "wasn't", 'wasnt', 'never', "can't", 'cant', "won't", 'wont', 'hardly'])
 const BOOST = new Set(['very', 'really', 'so', 'extremely', 'super', 'too', 'quite'])
 export function lexiconSentiment(text: string) {
@@ -147,4 +147,15 @@ export function quickTags(px: Uint8ClampedArray | number[], w: number, h: number
   const counts = centers.map((_, c) => labels.reduce((s, l) => s + (l === c ? 1 : 0), 0))
   counts.map((c, i) => ({ c, i })).sort((a, b) => b.c - a.c).forEach(({ c, i }) => { const name = colorName(centers[i]); if (!tags.some((t) => t.label === name)) tags.push({ label: name, score: c / n }) })
   return tags
+}
+
+/** Label for the SST-2 sentiment model, which only knows positive and negative and is very sure even about plain facts
+ * ("It arrived on Tuesday" scores 98% positive). Clear opinions score above 99.9%, so a less sure answer is neutral; with
+ * an opinion word from the word list in the text, 99% is enough. score is the confidence in the label shown. Pure, unit tested. */
+export function sentimentBand(pos: number, text: string): { label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL'; score: number } {
+  const conf = Math.max(pos, 1 - pos)
+  const lex = lexiconSentiment(text)
+  const need = lex.positive.length + lex.negative.length > 0 ? 0.99 : 0.999
+  if (conf < need) return { label: 'NEUTRAL', score: 1 - ((conf - 0.5) / (need - 0.5)) * 0.5 }
+  return pos >= 0.5 ? { label: 'POSITIVE', score: pos } : { label: 'NEGATIVE', score: 1 - pos }
 }

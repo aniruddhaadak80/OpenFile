@@ -56,8 +56,8 @@ export default function QuizMaker() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2"><Segmented value={mode} onChange={(v) => (v === 'take' ? take() : setMode(v))} options={[{ value: 'write', label: 'Write quiz' }, { value: 'take', label: 'Try it' }]} /><span className="text-sm text-muted">{qs.length} questions</span></div>
       {mode === 'write' ? <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="space-y-2"><div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-          <div><Label>Questions: number each one, list options with a), mark right ones with *, use = for typed answers and &gt; for an explanation</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-96 font-sans text-sm" /></div></div>
+        <div className="space-y-2"><div><Label>Title</Label><Input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+          <div><Label>Questions: number each one, list options with a), mark right ones with *, use = for typed answers and &gt; for an explanation</Label><Textarea aria-label="Questions: number each one, list options with a), mark right ones with *, use = for typed answers and &gt; for an explanation" value={text} onChange={(e) => setText(e.target.value)} className="min-h-96 font-sans text-sm" /></div></div>
         <Card className="space-y-3 self-start">
           <div className="space-y-1 text-xs text-muted">{qs.map((q, i) => <div key={i} className="truncate"><b className="text-fg">{i + 1}.</b> {q.q} <span className="text-accent">({q.kind === 'tf' ? 'true or false' : q.kind === 'text' ? 'typed' : q.kind === 'multi' ? 'several right' : 'one right'})</span>{!q.answer.length && <span className="text-danger"> no answer marked</span>}</div>)}</div>
           <Switch checked={shuf} onChange={setShuf} label="Shuffle questions and options" />

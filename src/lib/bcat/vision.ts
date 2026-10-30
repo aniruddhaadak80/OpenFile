@@ -14,7 +14,8 @@ export const VMODELS = {
   clip: { id: 'Xenova/clip-vit-base-patch32', task: 'zero-shot-image-classification', label: 'CLIP ViT-B/32', size: 'about 150 MB', dtype: q8 },
   clipEmbed: { id: 'Xenova/clip-vit-base-patch32', task: 'image-feature-extraction', label: 'CLIP ViT-B/32 image embeddings', size: 'about 90 MB', dtype: q8 },
   sentiment: { id: 'Xenova/distilbert-base-uncased-finetuned-sst-2-english', task: 'text-classification', label: 'DistilBERT SST-2 (English)', size: 'about 66 MB', dtype: q8 },
-  zeroShot: { id: 'Xenova/mobilebert-uncased-mnli', task: 'zero-shot-classification', label: 'MobileBERT MNLI', size: 'about 27 MB', dtype: q8 },
+  // DeBERTa v3 xsmall: in a local check it put 5 of 6 support messages under the right label where MobileBERT MNLI got 2
+  zeroShot: { id: 'Xenova/nli-deberta-v3-xsmall', task: 'zero-shot-classification', label: 'DeBERTa v3 xsmall NLI', size: 'about 90 MB', dtype: q8 },
   ner: { id: 'Xenova/bert-base-NER', task: 'token-classification', label: 'BERT NER (people, places, organisations)', size: 'about 105 MB', dtype: q8 },
   embed: { id: 'Xenova/all-MiniLM-L6-v2', task: 'feature-extraction', label: 'MiniLM sentence embeddings', size: 'about 25 MB', dtype: q8 },
 } satisfies Record<string, VModel>

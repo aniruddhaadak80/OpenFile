@@ -40,10 +40,10 @@ export default function PrintableCalendar() {
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <Card className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">{Array.from({ length: 12 }, (_, mo) => <div key={mo} className="text-[10px]"><div className="mb-1 text-center font-semibold text-accent">{MONTHS[mo]}</div><div className="grid grid-cols-7 gap-px text-center">{heads.map((h) => <span key={h} className="text-muted">{h[0]}</span>)}{monthGrid(year, mo, ws).map((d, i) => <span key={i} className={d && marks.has(ymd(new Date(year, mo, d))) ? 'rounded bg-accent/30' : ''}>{d ?? ''}</span>)}</div></div>)}</Card>
       <Card className="space-y-4 self-start">
-        <div className="grid grid-cols-2 gap-2"><div><Label>Year</Label><Input type="number" value={year} onChange={(e) => setYear(+e.target.value)} /></div><div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={String(year)} /></div></div>
+        <div className="grid grid-cols-2 gap-2"><div><Label>Year</Label><Input aria-label="Year" type="number" value={year} onChange={(e) => setYear(+e.target.value)} /></div><div><Label>Title</Label><Input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={String(year)} /></div></div>
         <div><Label>Layout</Label><Segmented value={layout} onChange={setLayout} options={[{ value: 'months', label: 'A month per page' }, { value: 'year', label: 'Year on one page' }]} /></div>
         <Switch checked={monday} onChange={setMonday} label="Weeks start on Monday" /><Switch checked={weeks} onChange={setWeeks} label="Week numbers" />{layout === 'months' && <Switch checked={land} onChange={setLand} label="Landscape" />}
-        <div><Label>Holidays and dates to mark (YYYY-MM-DD name)</Label><Textarea value={events} onChange={(e) => setEvents(e.target.value)} className="min-h-28 text-xs" /></div>
+        <div><Label>Holidays and dates to mark (YYYY-MM-DD name)</Label><Textarea aria-label="Holidays and dates to mark (YYYY-MM-DD name)" value={events} onChange={(e) => setEvents(e.target.value)} className="min-h-28 text-xs" /></div>
         <div><Label>Paper</Label><Segmented value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }]} /></div>
         <Button className="w-full" icon={<FileDown className="size-4" />} onClick={make}>Download PDF</Button>
       </Card>

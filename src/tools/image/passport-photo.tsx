@@ -90,9 +90,10 @@ export default function PassportPhoto() {
 
   const removeBg = async (img: HTMLCanvasElement, setP: (n: number) => void) => {
     setStage('Loading background engine')
-    const { removeBackground } = await import('@imgly/background-removal')
+    const { cutOut } = await import('./_img/bgcut')
     const blob = await new Promise<Blob>((r) => img.toBlob((b) => r(b!), 'image/png'))
-    const out = await removeBackground(blob, { model: 'isnet_fp16', device: (navigator as any).gpu ? 'gpu' : 'cpu', output: { format: 'image/png' }, progress: (key: string, cur: number, total: number) => { const f = total ? cur / total : 0; if (key.startsWith('fetch')) { setStage(`Downloading model (first run only) ${formatBytes(cur)}`); setP(f * 0.8) } else { setStage('Removing background'); setP(0.8 + f * 0.2) } } } as any)
+    // runs in a worker: on the main thread the model froze the page for many seconds on a CPU
+    const out = await cutOut(blob, (key, cur, total) => { const f = total ? cur / total : 0; if (key.startsWith('fetch')) { setStage(`Downloading model (first run only) ${formatBytes(cur)}`); setP(f * 0.8) } else { setStage('Removing background'); setP(0.8 + f * 0.2) } })
     const c = toCanvas(await decode(out)); setCut(c); setStage(''); return c
   }
 

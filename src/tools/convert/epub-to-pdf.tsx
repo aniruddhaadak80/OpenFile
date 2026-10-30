@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { BookOpen, FileDown, ListTree, Check, Loader2, User, X } from 'lucide-react'
-import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Badge, useJob, cn } from '@/components/ui'
+import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Badge, useJob, cn, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { baseName, loadImage, canvasToBlob } from '@/lib/files'
 import regUrl from 'pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf?url'
@@ -236,7 +236,7 @@ export default function EpubToPdf() {
             <Segmented value={mode} onChange={setMode} options={[{ value: 'text', label: 'Real text' }, { value: 'image', label: 'Exact look (images)' }]} />
             <p className="mt-1.5 text-[11px] text-muted">{mode === 'text' ? 'Selectable, searchable text with small files. Pictures are kept where the book has them.' : "Each page is a picture of the book's own layout. Large files and no selectable text."}</p>
           </div>
-          <div><Label>Page size</Label><Select value={size} onChange={setSize} options={(Object.keys(SIZES) as SizeKey[]).map((k) => ({ value: k, label: SIZES[k].label }))} /></div>
+          <Field label="Page size"><Select value={size} onChange={setSize} options={(Object.keys(SIZES) as SizeKey[]).map((k) => ({ value: k, label: SIZES[k].label }))} /></Field>
           {mode === 'image' && <div>
             <Label>Styling</Label>
             <Segmented value={styles} onChange={setStyles} options={[{ value: 'clean', label: 'Clean reading' }, { value: 'book', label: "Book's own CSS" }]} />

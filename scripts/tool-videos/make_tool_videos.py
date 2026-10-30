@@ -2670,6 +2670,13 @@ def convert_formats(tool):
 
 
 # ----------------------------------------------------------------------------- frame composition
+# Tools whose demo action ends early and then held still for over half the clip (ffmpeg freezedetect, QA 2026-10-30).
+# Their demo replays the action and drifts slowly so the preview keeps moving from start to end.
+CONTINUOUS = {'bates-numbering', 'pdf-to-long-image', 'gear-generator', 'svg-to-dxf', 'toxicity-checker', 'hpgl-viewer', 'edi-viewer',
+              'sql-on-files', 'pdf-to-json', 'laser-box-maker', 'json-flattener', 'pdf-stamps', 'mhtml-viewer', 'chart-maker',
+              'remove-black-bars', 'checksum-manifest', 'image-stitcher', 'image-to-ascii'}
+
+
 class Renderer:
     def __init__(self, tool, dur, vo_at):
         self.tool = tool
@@ -2686,6 +2693,7 @@ class Renderer:
         self.ctx = cairo.Context(self.surf)
         self.gl = GlowLayer(W, H, 4)
         self.demo_start = 1.7
+        self.loop = tool['slug'] in CONTINUOUS
         self.outro = dur - 1.5
         self.desc = short_desc(tool['desc'])
 
@@ -2744,14 +2752,32 @@ class Renderer:
             dt = t - self.demo_start
             a_ = ease_out((dt + 0.2) / 0.5) * (1 - out_k)
             if a_ > 0.01:
+                span = self.outro - self.demo_start
+                tl, dd, fa = max(0, dt), span, 1.0
+                if self.loop and span >= 6.6:
+                    # play the action twice so the demo keeps moving instead of holding its end state
+                    dd = span / 2
+                    k = int(tl // dd)
+                    tl -= k * dd
+                    fa = ease_in_out(tl / 0.3) if k >= 1 else ease_in_out((dd - tl) / 0.3)
                 c.push_group()
+                if self.loop:
+                    # slow camera drift across the whole demo (zoom plus a small pan), always moving
+                    u = clamp(max(0, dt) / max(1e-3, span), 0, 1)
+                    z = 1.0 + 0.07 * ease_in_out(u)
+                    ox, oy = 14 * math.sin(u * math.pi * 1.5), 6 * math.sin(u * math.pi)
+                    for cc in (c, g):
+                        cc.save(); cc.translate(CX + ox, CY + oy); cc.scale(z, z); cc.translate(-CX, -CY)
                 try:
-                    self.fn(c, g, max(0, dt), self.outro - self.demo_start, self.P)
+                    self.fn(c, g, tl, dd, self.P)
                 except Exception:
                     traceback.print_exc()
                     raise
+                finally:
+                    if self.loop:
+                        c.restore(); g.restore()
                 c.pop_group_to_source()
-                c.paint_with_alpha(a_)
+                c.paint_with_alpha(a_ * fa)
         # ---- caption (description) in sync with the voice
         ca = ease_out((t - self.vo_at - 0.1) / 0.5) * (1 - out_k)
         if ca > 0:

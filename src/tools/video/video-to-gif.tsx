@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Film, Play, Pause } from 'lucide-react'
-import { Button, Dropzone, Label, ResultCard, Segmented, Select, Slider, ToolGrid } from '@/components/ui'
+import { Button, Dropzone, Field, Label, ResultCard, Segmented, Select, Slider, ToolGrid } from '@/components/ui'
 import { baseName } from '@/lib/files'
 import { ffRun, extFromBlob, ts } from './_media/engine'
 import { fmtTime, useMediaJob, useObjectUrl, useThumbStrip, useVideoMeta } from './_media/media'
@@ -78,14 +78,14 @@ export default function VideoToGif() {
         </>}
         side={<>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Start</Label><TimeInput value={s} max={e - 0.1} onChange={(v) => setRange([v, Math.min(e, v + MAX)])} /></div>
-            <div><Label>End</Label><TimeInput value={e} min={s + 0.1} max={Math.min(duration || Infinity, s + MAX)} onChange={(v) => setRange([s, v])} /></div>
+            <div><Label>Start</Label><TimeInput label="Start" value={s} max={e - 0.1} onChange={(v) => setRange([v, Math.min(e, v + MAX)])} /></div>
+            <div><Label>End</Label><TimeInput label="End" value={e} min={s + 0.1} max={Math.min(duration || Infinity, s + MAX)} onChange={(v) => setRange([s, v])} /></div>
           </div>
           <Slider label="Frames per second" value={fps} onChange={setFps} min={5} max={30} suffix=" fps" />
           <div><Label>Width</Label><Segmented value={width} onChange={setWidth} options={[{ value: '320', label: '320' }, { value: '480', label: '480' }, { value: '640', label: '640' }, { value: '800', label: '800' }, { value: 'original', label: 'Orig.' }]} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Loop</Label><Select value={loop} onChange={setLoop} options={[{ value: '0', label: 'Forever' }, { value: '-1', label: 'Play once' }, { value: '2', label: '3 times' }]} /></div>
-            <div><Label>Colors</Label><Select value={colors} onChange={setColors} options={[{ value: '256', label: '256 (best)' }, { value: '128', label: '128' }, { value: '64', label: '64 (small)' }]} /></div>
+            <Field label="Loop"><Select value={loop} onChange={setLoop} options={[{ value: '0', label: 'Forever' }, { value: '-1', label: 'Play once' }, { value: '2', label: '3 times' }]} /></Field>
+            <Field label="Colors"><Select value={colors} onChange={setColors} options={[{ value: '256', label: '256 (best)' }, { value: '128', label: '128' }, { value: '64', label: '64 (small)' }]} /></Field>
           </div>
           <div><Label>Dithering</Label><Segmented value={dither} onChange={setDither} options={[{ value: 'sierra2_4a', label: 'Smooth' }, { value: 'bayer', label: 'Pattern' }, { value: 'none', label: 'None' }]} /></div>
           <div className="rounded-xl bg-surface-2/60 px-3 py-2 text-xs text-muted">

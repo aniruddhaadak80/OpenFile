@@ -23,8 +23,8 @@ export default function SunriseSunset() {
   return (
     <div className="space-y-4">
       <Card className="grid gap-3 sm:grid-cols-[1fr_12rem_auto] sm:items-end">
-        <div><Label>Place (latitude, longitude)</Label><Input value={pos} onChange={(e) => setPos(e.target.value)} className="font-mono" /></div>
-        <div><Label>Date</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
+        <div><Label>Place (latitude, longitude)</Label><Input aria-label="Place (latitude, longitude)" value={pos} onChange={(e) => setPos(e.target.value)} className="font-mono" /></div>
+        <div><Label>Date</Label><Input aria-label="Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
         <Button variant="outline" icon={<LocateFixed className="size-4" />} onClick={locate}>Use my location</Button>
         <div className="flex flex-wrap gap-1.5 sm:col-span-3">{CITIES.map(([n, c]) => <button key={n} onClick={() => setPos(c)} className="rounded-lg border border-border px-2 py-0.5 text-xs text-muted hover:text-fg cursor-pointer">{n}</button>)}</div>
         {err && <p className="text-sm text-warn sm:col-span-3">{err}</p>}

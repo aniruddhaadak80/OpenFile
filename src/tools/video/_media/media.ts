@@ -193,12 +193,25 @@ export function mediaError(e: any, what = 'camera or microphone'): string {
   return e?.message || `Could not access the ${what}.`
 }
 
-/** Rough ETA string from elapsed time and progress. */
+/** Smoothed estimates per job (keyed by its start time), so the time left does not swing when one step is slower. */
+const etaState = new Map<number, { at: number; rem: number }>()
+
+/** Time left from elapsed time and progress. The raw estimate is blended in over about 8 seconds and the shown value
+ *  counts down in between, so a part that starts slowly does not make the estimate jump from 3 to 12 minutes. */
 export function eta(startedAt: number, p: number): string | null {
   if (!startedAt || p < 0.03 || p >= 1) return null
-  const el = (Date.now() - startedAt) / 1000
-  const rem = el / p - el
-  if (!Number.isFinite(rem)) return null
+  const now = Date.now()
+  const el = (now - startedAt) / 1000
+  const raw = el / p - el
+  if (!Number.isFinite(raw) || raw < 0) return null
+  const s = etaState.get(startedAt)
+  let rem = raw
+  if (s) {
+    const dt = Math.max(0, (now - s.at) / 1000)
+    const carried = Math.max(0, s.rem - dt)
+    rem = carried + (raw - carried) * Math.min(1, dt / 8)
+  } else if (etaState.size > 16) etaState.clear()
+  etaState.set(startedAt, { at: now, rem })
   return rem < 60 ? `~${Math.max(1, Math.round(rem))}s left` : `~${Math.round(rem / 60)} min left`
 }
 

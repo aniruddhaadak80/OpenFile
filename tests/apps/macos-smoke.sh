@@ -14,7 +14,14 @@ APP_SRC=$(find "$MNT" -maxdepth 1 -name '*.app' | head -n1)
 [ -n "$APP_SRC" ] || { echo "::error::No .app inside $DMG"; exit 1; }
 DEST="$HOME/Applications"; mkdir -p "$DEST"
 cp -R "$APP_SRC" "$DEST/"
-hdiutil detach "$MNT" || hdiutil detach -force "$MNT"
+# Detach can report "Resource busy" while Spotlight or diskimages-helper still holds the disk, and a second try then
+# fails because the volume is already gone. The app is copied out by now, so retry a few times and never fail on it.
+mounted() { mount | grep -qF "/$(basename "$MNT") ("; }  # macOS lists /tmp mounts under /private/tmp
+for i in 1 2 3 4 5; do
+  mounted || break
+  hdiutil detach "$MNT" 2>/dev/null || hdiutil detach -force "$MNT" 2>/dev/null || sleep 2
+done
+mounted && echo "warning: $MNT still mounted, continuing" || true
 APP="$DEST/$(basename "$APP_SRC")"
 xattr -dr com.apple.quarantine "$APP" || true
 BIN=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Contents/Info.plist")

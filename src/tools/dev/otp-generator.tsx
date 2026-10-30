@@ -76,11 +76,11 @@ export default function OtpGenerator() {
             <Label hint={<button className="text-accent hover:underline" onClick={() => OTP && setSecret(new OTP.Secret({ size: 20 }).base32)}><RefreshCw className="mr-1 inline size-3" />New secret</button>}>Secret (Base32)</Label>
             <div className="flex gap-2"><Input value={secret} onChange={(e) => setSecret(e.target.value)} className="font-mono" spellCheck={false} /><CopyButton text={secret} label="" /></div>
           </div>
-          <div><Label>Issuer</Label><Input value={issuer} onChange={(e) => setIssuer(e.target.value)} /></div>
-          <div><Label>Account</Label><Input value={label} onChange={(e) => setLabel(e.target.value)} /></div>
-          <div><Label>Algorithm</Label><Select value={algo} onChange={setAlgo} options={['SHA1', 'SHA256', 'SHA512']} /></div>
+          <div><Label>Issuer</Label><Input aria-label="Issuer" value={issuer} onChange={(e) => setIssuer(e.target.value)} /></div>
+          <div><Label>Account</Label><Input aria-label="Account" value={label} onChange={(e) => setLabel(e.target.value)} /></div>
+          <label className="block"><Label>Algorithm</Label><Select value={algo} onChange={setAlgo} options={['SHA1', 'SHA256', 'SHA512']} /></label>
           <div><Label>Digits</Label><Segmented value={digits} onChange={setDigits} options={['6', '8']} /></div>
-          {type === 'totp' ? <div><Label>Period (seconds)</Label><Input type="number" min={5} max={300} value={period} onChange={(e) => setPeriod(Math.max(5, Number(e.target.value) || 30))} /></div> : <div><Label>Counter</Label><Input type="number" min={0} value={counter} onChange={(e) => setCounter(Math.max(0, Number(e.target.value) || 0))} /></div>}
+          {type === 'totp' ? <div><Label>Period (seconds)</Label><Input aria-label="Period (seconds)" type="number" min={5} max={300} value={period} onChange={(e) => setPeriod(Math.max(5, Number(e.target.value) || 30))} /></div> : <div><Label>Counter</Label><Input aria-label="Counter" type="number" min={0} value={counter} onChange={(e) => setCounter(Math.max(0, Number(e.target.value) || 0))} /></div>}
         </div>
         <div className="rounded-2xl border border-border bg-surface p-4">
           <Label>Check a code</Label>

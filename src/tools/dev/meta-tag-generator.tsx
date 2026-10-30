@@ -39,19 +39,19 @@ export default function MetaTagGenerator() {
       <div className="space-y-3">
         <div><Label hint={<span className={tLen > 60 ? 'text-warn' : ''}>{tLen}/60</span>}>Title</Label><Input value={f.title} onChange={(e) => set('title', e.target.value)} /></div>
         <div><Label hint={<span className={dLen > 160 ? 'text-warn' : ''}>{dLen}/160</span>}>Description</Label><Textarea value={f.desc} onChange={(e) => set('desc', e.target.value)} className="min-h-20 font-sans text-sm" /></div>
-        <div><Label>Page URL</Label><Input value={f.url} onChange={(e) => set('url', e.target.value)} /></div>
-        <div><Label>Image URL (1200 × 630)</Label><Input value={f.image} onChange={(e) => set('image', e.target.value)} /></div>
+        <div><Label>Page URL</Label><Input aria-label="Page URL" value={f.url} onChange={(e) => set('url', e.target.value)} /></div>
+        <div><Label>Image URL (1200 × 630)</Label><Input aria-label="Image URL (1200 × 630)" value={f.image} onChange={(e) => set('image', e.target.value)} /></div>
         <div className="grid grid-cols-2 gap-3">
-          <div><Label>Site name</Label><Input value={f.site} onChange={(e) => set('site', e.target.value)} /></div>
-          <div><Label>Type</Label><Select value={f.type} onChange={(v) => set('type', v)} options={['website', 'article', 'product', 'profile', 'video.other', 'book']} /></div>
-          <div><Label>X handle</Label><Input value={f.twitter} onChange={(e) => set('twitter', e.target.value)} placeholder="@you" /></div>
-          <div><Label>X card</Label><Select value={f.card} onChange={(v) => set('card', v)} options={[{ value: 'summary_large_image', label: 'Large image' }, { value: 'summary', label: 'Small' }]} /></div>
-          <div><Label>Author</Label><Input value={f.author} onChange={(e) => set('author', e.target.value)} /></div>
+          <div><Label>Site name</Label><Input aria-label="Site name" value={f.site} onChange={(e) => set('site', e.target.value)} /></div>
+          <label className="block"><Label>Type</Label><Select value={f.type} onChange={(v) => set('type', v)} options={['website', 'article', 'product', 'profile', 'video.other', 'book']} /></label>
+          <div><Label>X handle</Label><Input aria-label="X handle" value={f.twitter} onChange={(e) => set('twitter', e.target.value)} placeholder="@you" /></div>
+          <label className="block"><Label>X card</Label><Select value={f.card} onChange={(v) => set('card', v)} options={[{ value: 'summary_large_image', label: 'Large image' }, { value: 'summary', label: 'Small' }]} /></label>
+          <div><Label>Author</Label><Input aria-label="Author" value={f.author} onChange={(e) => set('author', e.target.value)} /></div>
           <div><Label>Theme color</Label><div className="flex gap-2"><input type="color" value={/^#[0-9a-f]{6}$/i.test(f.theme) ? f.theme : '#000000'} onChange={(e) => set('theme', e.target.value)} className="h-10 w-12 cursor-pointer rounded-lg border border-border bg-transparent" aria-label="Theme color" /><Input value={f.theme} onChange={(e) => set('theme', e.target.value)} /></div></div>
-          <div><Label>Locale</Label><Input value={f.locale} onChange={(e) => set('locale', e.target.value)} /></div>
-          <div><Label>Robots</Label><Select value={f.robots} onChange={(v) => set('robots', v)} options={['index, follow', 'noindex, follow', 'index, nofollow', 'noindex, nofollow']} /></div>
+          <div><Label>Locale</Label><Input aria-label="Locale" value={f.locale} onChange={(e) => set('locale', e.target.value)} /></div>
+          <label className="block"><Label>Robots</Label><Select value={f.robots} onChange={(v) => set('robots', v)} options={['index, follow', 'noindex, follow', 'index, nofollow', 'noindex, nofollow']} /></label>
         </div>
-        <div><Label>Keywords</Label><Input value={f.keywords} onChange={(e) => set('keywords', e.target.value)} /></div>
+        <div><Label>Keywords</Label><Input aria-label="Keywords" value={f.keywords} onChange={(e) => set('keywords', e.target.value)} /></div>
         <Switch checked={f.canonical} onChange={(v) => set('canonical', v)} label="Add canonical link" />
       </div>
       <div className="min-w-0 space-y-4">

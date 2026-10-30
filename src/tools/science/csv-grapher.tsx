@@ -64,11 +64,11 @@ export default function CsvGrapher() {
         {fits.some(Boolean) && <Stats cols={2}>{fits.map((ft, i) => ft && <Stat key={i} label={`${series[i].name}: ${ft.kind} fit`} value={<span className="font-mono text-sm">{ft.eq}</span>} sub={`R² = ${ft.r2.toFixed(4)}`} />)}</Stats>}
       </div>
       <Card className="space-y-4 self-start">
-        <div><Label>X axis</Label><Select value={xc} onChange={setXc} options={cols} /></div>
+        <label className="block"><Label>X axis</Label><Select value={xc} onChange={setXc} options={cols} /></label>
         <div><Label>Y series</Label><div className="flex flex-wrap gap-1.5">{cols.filter((c) => c.value !== xc).map((c) => <button key={c.value} aria-pressed={ycs.includes(c.value)} onClick={() => setYcs((o) => (o.includes(c.value) ? o.filter((x) => x !== c.value) : [...o, c.value]))} className={`rounded-full border px-2.5 py-1 text-xs cursor-pointer ${ycs.includes(c.value) ? 'border-accent text-fg' : 'border-border text-muted'}`}>{c.label}</button>)}</div></div>
         <div><Label>Chart</Label><Segmented value={kind} onChange={setKind} options={[{ value: 'scatter', label: 'Scatter' }, { value: 'line', label: 'Line' }, { value: 'bar', label: 'Bar' }]} /></div>
-        <div><Label>Trend line</Label><Select value={fitK} onChange={setFitK} options={[{ value: 'none', label: 'None' }, { value: 'linear', label: 'Linear' }, { value: 'quadratic', label: 'Quadratic' }, { value: 'exponential', label: 'Exponential' }, { value: 'power', label: 'Power' }, { value: 'log', label: 'Logarithmic' }]} /></div>
-        <div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Optional" /></div>
+        <label className="block"><Label>Trend line</Label><Select value={fitK} onChange={setFitK} options={[{ value: 'none', label: 'None' }, { value: 'linear', label: 'Linear' }, { value: 'quadratic', label: 'Quadratic' }, { value: 'exponential', label: 'Exponential' }, { value: 'power', label: 'Power' }, { value: 'log', label: 'Logarithmic' }]} /></label>
+        <div><Label>Title</Label><Input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Optional" /></div>
         <Switch checked={logY} onChange={setLogY} label="Log scale Y" /><Switch checked={grid} onChange={setGrid} label="Grid lines" />
         <div className="flex gap-2"><Button className="flex-1" icon={<ImageDown className="size-4" />} onClick={exportPng} disabled={all.length < 2}>PNG</Button><Button className="flex-1" variant="outline" icon={<Download className="size-4" />} onClick={exportSvg} disabled={all.length < 2}>SVG</Button></div>
       </Card>

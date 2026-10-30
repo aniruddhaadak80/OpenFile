@@ -26,9 +26,9 @@ export default function BasicAuthGenerator() {
       {mode === 'make' ? (
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
           <div className="space-y-3">
-            <div><Label>Username</Label><Input value={user} onChange={(e) => setUser(e.target.value)} autoComplete="off" /></div>
+            <div><Label>Username</Label><Input aria-label="Username" value={user} onChange={(e) => setUser(e.target.value)} autoComplete="off" /></div>
             <div><Label>Password</Label><div className="flex gap-2"><Input type={show ? 'text' : 'password'} value={pass} onChange={(e) => setPass(e.target.value)} autoComplete="off" /><Button variant="outline" onClick={() => setShow(!show)} icon={show ? <EyeOff className="size-4" /> : <Eye className="size-4" />} aria-label={show ? 'Hide password' : 'Show password'} /></div></div>
-            <div><Label>URL for examples</Label><Input value={url} onChange={(e) => setUrl(e.target.value)} /></div>
+            <div><Label>URL for examples</Label><Input aria-label="URL for examples" value={url} onChange={(e) => setUrl(e.target.value)} /></div>
             {user.includes(':') && <Status kind="err">Usernames cannot contain a colon in Basic auth.</Status>}
           </div>
           <div className="space-y-2">

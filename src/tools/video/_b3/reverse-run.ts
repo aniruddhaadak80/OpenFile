@@ -2,6 +2,7 @@
  * Shared by Video Reverse and the video path of Audio Reverse. */
 import { concatList, forwardPieceOp, reverseJoinOp, reverseOrder, reversePieceOp, reversePlan, type ReversePlan, type ReverseSource } from '@/lib/b3/ffops'
 import { ffRun, isCancel } from '../_media/engine'
+import { progressMeter } from '../_media/progress'
 
 export type ReverseMode = 'reverse' | 'boomerang'
 type Mode = ReverseMode
@@ -20,39 +21,51 @@ export function reverseError(m: string): string {
 /** Reverse (or boomerang) in short pieces so memory stays bounded, then join the pieces last first. */
 async function runPlan(file: File, input: string, plan: ReversePlan, mode: Mode, withAudio: boolean, total: number, setProgress: (p: number) => void, setLabel: (s: string) => void, out: { output?: string; audio?: string[] } = {}): Promise<Blob> {
   const n = plan.pieces.length
-  // progress weights: each piece by its length, the forward half of a boomerang by the clip length, the join a small share
+  // progress weights: each piece by its length, the forward half of a boomerang by the clip length, the join a small
+  // share (it copies the parts and reverses only the sound, a few percent of the time)
   const lens = plan.pieces.map((p) => p.len || total || 1)
   const fwd = mode === 'boomerang' ? (total || lens.reduce((a, b) => a + b, 0)) : 0
-  const join = Math.max(0.5, (total || 1) * (withAudio ? 0.15 : 0.05))
+  const join = Math.max(0.3, (total || 1) * (withAudio ? 0.04 : 0.02))
   const all = lens.reduce((a, b) => a + b, 0) + fwd + join
-  let done = 0
-  const step = (w: number) => (p: number) => setProgress(Math.min(0.995, (done + p * w) / all))
-  const pieces: { name: string; file: Blob }[] = []
-  // pieces are made last first, so the start of the result is ready early and the order matches the join
-  for (let k = n - 1; k >= 0; k--) {
-    setLabel(n > 1 ? `Reversing part ${n - k} of ${n}` : 'Reversing')
-    const op = reversePieceOp(input, plan, k)
-    const blob = await ffRun({ inputs: [{ name: input, file }], args: op.args, output: op.output, duration: lens[k], onProgress: step(lens[k]) })
-    pieces.push({ name: op.output, file: blob })
-    done += lens[k]
+  const meter = progressMeter(all, setProgress)
+  const timer = setInterval(meter.tick, 500)
+  try {
+    const pieces: { name: string; file: Blob }[] = []
+    // pieces are made last first, so the start of the result is ready early and the order matches the join
+    for (let k = n - 1; k >= 0; k--) {
+      setLabel(n > 1 ? `Reversing part ${n - k} of ${n}` : 'Reversing')
+      const op = reversePieceOp(input, plan, k)
+      meter.start(lens[k])
+      const blob = await ffRun({ inputs: [{ name: input, file }], args: op.args, output: op.output, duration: lens[k], onProgress: meter.report })
+      meter.end()
+      pieces.push({ name: op.output, file: blob })
+    }
+    if (mode === 'boomerang') {
+      setLabel('Adding the forward half')
+      const op = forwardPieceOp(input, plan)
+      meter.start(fwd)
+      const blob = await ffRun({ inputs: [{ name: input, file }], args: op.args, output: op.output, duration: fwd, onProgress: meter.report })
+      meter.end()
+      pieces.push({ name: op.output, file: blob })
+    }
+    setLabel(withAudio ? 'Joining the parts and reversing the sound' : 'Joining the parts')
+    const list = new TextEncoder().encode(concatList(reverseOrder(plan, mode)))
+    const op = reverseJoinOp('list.txt', withAudio ? input : undefined, out.output, out.audio)
+    const inputs: { name: string; file: Blob | Uint8Array }[] = [...pieces, { name: 'list.txt', file: list }, ...(withAudio ? [{ name: input, file }] : [])]
+    meter.start(join, false)
+    const res = await ffRun({ inputs, args: op.args, output: op.output, duration: (mode === 'boomerang' ? 2 : 1) * (total || 0) || undefined, onProgress: meter.report })
+    meter.end()
+    return res
+  } finally {
+    clearInterval(timer)
   }
-  if (mode === 'boomerang') {
-    setLabel('Adding the forward half')
-    const op = forwardPieceOp(input, plan)
-    const blob = await ffRun({ inputs: [{ name: input, file }], args: op.args, output: op.output, duration: fwd, onProgress: step(fwd) })
-    pieces.push({ name: op.output, file: blob })
-    done += fwd
-  }
-  setLabel(withAudio ? 'Joining the parts and reversing the sound' : 'Joining the parts')
-  const list = new TextEncoder().encode(concatList(reverseOrder(plan, mode)))
-  const op = reverseJoinOp('list.txt', withAudio ? input : undefined, out.output, out.audio)
-  const inputs: { name: string; file: Blob | Uint8Array }[] = [...pieces, { name: 'list.txt', file: list }, ...(withAudio ? [{ name: input, file }] : [])]
-  return ffRun({ inputs, args: op.args, output: op.output, duration: (mode === 'boomerang' ? 2 : 1) * (total || 0) || undefined, onProgress: step(join) })
 }
 
 /** Reverse with the normal plan; when the browser runs out of memory, retry once with smaller parts at most 1280 px. */
 export async function reverseChunked(file: File, input: string, src: ReverseSource, mode: Mode, withAudio: boolean, setProgress: (p: number) => void, setLabel: (s: string) => void, out: { output?: string; audio?: string[] } = {}): Promise<Blob> {
   const total = src.duration || 0
+  // the source bitrate lets the parts stay near the source size
+  if (!src.kbps && total > 0) src = { ...src, kbps: (file.size * 8) / total / 1000 }
   try {
     return await runPlan(file, input, reversePlan(src), mode, withAudio, total, setProgress, setLabel, out)
   } catch (e: any) {

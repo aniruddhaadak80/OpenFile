@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FileDown, AlertTriangle, Eye, FileCheck2 } from 'lucide-react'
-import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Tabs, Badge, useJob } from '@/components/ui'
+import { Button, Dropzone, ToolGrid, Label, Select, Segmented, Slider, Switch, Progress, ErrorNote, ResultCard, Tabs, Badge, useJob, Field } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { baseName } from '@/lib/files'
 import { FileBar, FramePreview, PdfPreview, Reveal, Stat, pageDims, mm, type PageSizeKey } from './_conv/shared'
@@ -96,11 +96,11 @@ export default function WordToPdf() {
         side={<>
           <div className="grid grid-cols-3 gap-2"><Stat label="Words" value={stats.words.toLocaleString()} /><Stat label="Images" value={stats.images} /><Stat label="Tables" value={stats.tables} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Page size</Label><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a5', label: 'A5' }]} /></div>
+            <Field label="Page size"><Select value={size} onChange={setSize} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }, { value: 'legal', label: 'Legal' }, { value: 'a5', label: 'A5' }]} /></Field>
             <div><Label>Orientation</Label><Segmented value={orient} onChange={setOrient} options={[{ value: 'portrait', label: 'Port.' }, { value: 'landscape', label: 'Land.' }]} /></div>
           </div>
           <Slider label="Margins" value={marginMm} onChange={setMarginMm} min={5} max={40} suffix=" mm" />
-          <div><Label>Font</Label><Select value={font} onChange={setFont} options={(Object.keys(FONTS) as FontKey[]).map((k) => ({ value: k, label: FONTS[k].label }))} /></div>
+          <Field label="Font"><Select value={font} onChange={setFont} options={(Object.keys(FONTS) as FontKey[]).map((k) => ({ value: k, label: FONTS[k].label }))} /></Field>
           <Slider label="Base font size" value={fontSize} onChange={setFontSize} min={8} max={16} step={0.5} suffix=" pt" />
           <Switch checked={numbers} onChange={setNumbers} label="Page numbers in footer" />
           {conv.busy && <Progress value={conv.progress} label="Rendering pages" />}

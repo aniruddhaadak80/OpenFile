@@ -19,13 +19,13 @@ export default function SecurityTxtGenerator() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <Card className="space-y-3">
-        <div><Label>How to reach you (email, URL or phone, one per line)</Label><Textarea value={contacts} onChange={(e) => setContacts(e.target.value)} className="min-h-16" /></div>
-        <div><Label>Expires (required)</Label><Input type="date" value={expires} onChange={(e) => setExpires(e.target.value)} />{far && <p className="mt-1 text-xs text-warn">The standard suggests less than a year, so the file is reviewed often.</p>}</div>
-        <div><Label>Public key URL (optional)</Label><Input value={enc} onChange={(e) => setEnc(e.target.value)} placeholder="https://example.com/pgp-key.txt" /></div>
-        <div><Label>Disclosure policy</Label><Input value={policy} onChange={(e) => setPolicy(e.target.value)} /></div>
-        <div><Label>Thanks page (optional)</Label><Input value={ack} onChange={(e) => setAck(e.target.value)} /></div>
-        <div><Label>Security jobs (optional)</Label><Input value={hiring} onChange={(e) => setHiring(e.target.value)} /></div>
-        <div className="grid grid-cols-2 gap-2"><div><Label>Languages</Label><Input value={langs} onChange={(e) => setLangs(e.target.value)} /></div><div><Label>Canonical URL</Label><Input value={canonical} onChange={(e) => setCanonical(e.target.value)} /></div></div>
+        <div><Label>How to reach you (email, URL or phone, one per line)</Label><Textarea aria-label="How to reach you (email, URL or phone, one per line)" value={contacts} onChange={(e) => setContacts(e.target.value)} className="min-h-16" /></div>
+        <div><Label>Expires (required)</Label><Input aria-label="Expires (required)" type="date" value={expires} onChange={(e) => setExpires(e.target.value)} />{far && <p className="mt-1 text-xs text-warn">The standard suggests less than a year, so the file is reviewed often.</p>}</div>
+        <div><Label>Public key URL (optional)</Label><Input aria-label="Public key URL (optional)" value={enc} onChange={(e) => setEnc(e.target.value)} placeholder="https://example.com/pgp-key.txt" /></div>
+        <div><Label>Disclosure policy</Label><Input aria-label="Disclosure policy" value={policy} onChange={(e) => setPolicy(e.target.value)} /></div>
+        <div><Label>Thanks page (optional)</Label><Input aria-label="Thanks page (optional)" value={ack} onChange={(e) => setAck(e.target.value)} /></div>
+        <div><Label>Security jobs (optional)</Label><Input aria-label="Security jobs (optional)" value={hiring} onChange={(e) => setHiring(e.target.value)} /></div>
+        <div className="grid grid-cols-2 gap-2"><div><Label>Languages</Label><Input aria-label="Languages" value={langs} onChange={(e) => setLangs(e.target.value)} /></div><div><Label>Canonical URL</Label><Input aria-label="Canonical URL" value={canonical} onChange={(e) => setCanonical(e.target.value)} /></div></div>
       </Card>
       <div className="space-y-3"><OutBox title="security.txt" text={out} filename="security.txt" rows={12} /><p className="text-xs text-muted">Serve it at /.well-known/security.txt so researchers know where to report problems (RFC 9116). Renew it before the expiry date.</p></div>
     </div>

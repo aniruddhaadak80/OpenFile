@@ -16,7 +16,7 @@ function Tile({ it, i, selected, active, onToggle, onShow, onDelay }: { it: Item
   return (
     <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn('group relative overflow-hidden rounded-xl border bg-surface-2/40 transition', isDragging ? 'z-10 shadow-2xl ring-2 ring-accent' : selected ? 'border-accent ring-1 ring-accent/50' : active ? 'border-accent/60' : 'border-border')}>
-      <div {...attributes} {...listeners} onClick={(e) => { onShow(); if (e.shiftKey || e.metaKey || e.ctrlKey) onToggle(e) }} className="checker grid aspect-square cursor-grab place-items-center active:cursor-grabbing">
+      <div {...attributes} {...listeners} aria-label={`Frame ${i + 1}, drag to reorder`} onClick={(e) => { onShow(); if (e.shiftKey || e.metaKey || e.ctrlKey) onToggle(e) }} className="checker grid aspect-square cursor-grab place-items-center active:cursor-grabbing">
         <img src={it.thumb} alt={`Frame ${i + 1}`} draggable={false} className="max-h-full max-w-full object-contain" />
       </div>
       <button type="button" aria-label={selected ? `Unselect frame ${i + 1}` : `Select frame ${i + 1}`} onClick={onToggle} className="absolute left-1.5 top-1.5 rounded-md bg-black/55 p-0.5 text-white cursor-pointer">

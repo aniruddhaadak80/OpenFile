@@ -24,8 +24,8 @@ export default function WordSearchMaker() {
         {ws.skipped.length > 0 && <p className="text-sm text-warn">Did not fit: {ws.skipped.join(', ')}. Make the grid bigger.</p>}
       </Card>
       <Card className="space-y-4 self-start">
-        <div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-        <div><Label hint={`${list.length}`}>Words, one per line</Label><Textarea value={words} onChange={(e) => setWords(e.target.value)} className="min-h-40 font-sans" /></div>
+        <div><Label>Title</Label><Input aria-label="Title" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+        <div><Label hint={`${list.length}`}>Words, one per line</Label><Textarea aria-label="Words, one per line" value={words} onChange={(e) => setWords(e.target.value)} className="min-h-40 font-sans" /></div>
         <Slider label="Grid size" value={size} onChange={setSize} min={8} max={24} />
         <Switch checked={diag} onChange={setDiag} label="Diagonal words" /><Switch checked={back} onChange={setBack} label="Backwards words (harder)" /><Switch checked={show} onChange={setShow} label="Show answers" />
         <div><Label>Paper</Label><Segmented value={paper} onChange={setPaper} options={[{ value: 'a4', label: 'A4' }, { value: 'letter', label: 'Letter' }]} /></div>

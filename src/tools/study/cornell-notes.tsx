@@ -17,10 +17,10 @@ export default function CornellNotes() {
       <Card className="space-y-3">
         <div className="grid gap-2 sm:grid-cols-[1fr_10rem_10rem]"><Input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="Title" className="font-semibold" /><Input value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Subject" /><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Date" /></div>
         <div className="grid gap-3 md:grid-cols-[0.42fr_1fr]">
-          <div><Label>Cues and questions</Label><Textarea value={cues} onChange={(e) => setCues(e.target.value)} className="min-h-72 font-sans text-sm" /></div>
-          <div><Label>Notes</Label><Textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="min-h-72 font-sans text-sm" /></div>
+          <div><Label>Cues and questions</Label><Textarea aria-label="Cues and questions" value={cues} onChange={(e) => setCues(e.target.value)} className="min-h-72 font-sans text-sm" /></div>
+          <div><Label>Notes</Label><Textarea aria-label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} className="min-h-72 font-sans text-sm" /></div>
         </div>
-        <div><Label>Summary</Label><Textarea value={summary} onChange={(e) => setSummary(e.target.value)} className="min-h-20 font-sans text-sm" /></div>
+        <div><Label>Summary</Label><Textarea aria-label="Summary" value={summary} onChange={(e) => setSummary(e.target.value)} className="min-h-20 font-sans text-sm" /></div>
       </Card>
       <Card className="space-y-4 self-start">
         <p className="text-sm text-muted">Take notes on the right during class. After class, write questions on the left and a short summary at the bottom. Cover the notes and answer the questions to review.</p>

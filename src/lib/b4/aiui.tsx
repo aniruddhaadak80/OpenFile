@@ -25,7 +25,7 @@ export function useAiState(models: ModelInfo[]) {
   const device: 'wasm' | 'webgpu' = gpu && gpuOk ? 'webgpu' : 'wasm'
   const callbacks = (extra: AiCallbacks = {}): AiCallbacks => ({
     onLoad: (l, t) => { setPhase('loading'); setLoad({ loaded: l, total: t }) },
-    onStatus: (s) => setStatus(s),
+    onStatus: (s) => { setStatus(s); if (s.startsWith('Preparing')) setLoad(null) },
     onReady: () => { setPhase('running'); setLoad(null) },
     ...extra,
   })
