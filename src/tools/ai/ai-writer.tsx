@@ -18,6 +18,14 @@ const TASKS = [
   { value: 'custom', label: 'Your own instruction', prompt: '' },
 ]
 
+/** Small models often wrap the answer in quotes or the prompt's triple quotes, or add a "Here is..." line. Strip those. */
+function cleanOut(raw: string, src: string): string {
+  let o = raw.trim().replace(/^"""\s*|\s*"""$/g, '').trim()
+  o = o.replace(/^(here is|here's|sure)[^\n]{0,80}:\s*\n+/i, '')
+  if (/^["\u201c][\s\S]*["\u201d]$/.test(o) && !/^["\u201c]/.test(src.trim()) && !o.slice(1, -1).includes('"')) o = o.slice(1, -1).trim()
+  return o
+}
+
 export default function AiWriter() {
   const [text, setText] = useState('hi team, the meeting tomorow is moved to 3pm becuase the client cant make it in the morning. pls update ur calenders and let me know if any problem')
   const [task, setTask] = useState('grammar')
@@ -34,7 +42,7 @@ export default function AiWriter() {
     let acc = ''
     const msgs = [{ role: 'system', content: 'You are a careful writing assistant. Follow the instruction exactly and output only the requested text, with no preface or notes.' }, { role: 'user', content: `${instruction}\n\nText:\n"""\n${text.trim().slice(0, 6000)}\n"""` }]
     const r = await withCpuFallback(ai.device, (d) => { acc = ''; return aiRun<string>('text-generation', ai.info, d, msgs, { max }, ai.callbacks({ onReady: () => ai.setStatus('Writing'), onToken: (tok) => { acc += tok; setOut(acc) } })) }, (m) => ai.setStatus(m))
-    setOut(String(r).trim().replace(/^"""\s*|\s*"""$/g, ''))
+    setOut(cleanOut(String(r), text))
   })
   return (
     <ToolGrid

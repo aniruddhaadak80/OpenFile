@@ -129,6 +129,12 @@ export function BarPair({ data, a, b, labelA, labelB, height = 160 }: { data: { 
 }
 
 /** Line chart for one or more series over a shared x axis. */
+/** Indexes of finite values split into unbroken runs, so gaps (missing samples) leave a break instead of a NaN point. */
+function runs(values: number[]): number[][] {
+  const out: number[][] = [[]]
+  values.forEach((v, i) => { if (Number.isFinite(v)) out[out.length - 1].push(i); else if (out[out.length - 1].length) out.push([]) })
+  return out.filter((r) => r.length > 1)
+}
 export function Lines({ series, height = 180, xLabels, label }: { series: { name: string; color: string; values: number[] }[]; height?: number; xLabels?: string[]; label: string }) {
   const n = Math.max(...series.map((s) => s.values.length), 2)
   const all = series.flatMap((s) => s.values).filter(isFinite)
@@ -139,7 +145,7 @@ export function Lines({ series, height = 180, xLabels, label }: { series: { name
     <figure className="rounded-2xl border border-border bg-surface p-3">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img" aria-label={label}>
         {[0, 0.5, 1].map((f) => <line key={f} x1="30" x2={W - 10} y1={8 + f * (H - 28)} y2={8 + f * (H - 28)} stroke="currentColor" strokeOpacity=".1" />)}
-        {series.map((s) => <polyline key={s.name} fill="none" stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" points={s.values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')} />)}
+        {series.flatMap((s) => runs(s.values).map((r, k) => <polyline key={`${s.name}-${k}`} fill="none" stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" points={r.map((i) => `${x(i).toFixed(1)},${y(s.values[i]).toFixed(1)}`).join(' ')} />))}
         {xLabels && xLabels.map((l, i) => (i % Math.ceil(xLabels.length / 8) === 0 || i === xLabels.length - 1) && <text key={i} x={x(i)} y={H - 4} fontSize="10" textAnchor="middle" fill="currentColor" opacity=".6">{l}</text>)}
       </svg>
       <figcaption className="mt-1 flex flex-wrap gap-4 text-xs text-muted">{series.map((s) => <span key={s.name} className="inline-flex items-center gap-1.5"><span className="h-0.5 w-4 rounded" style={{ background: s.color }} />{s.name}</span>)}</figcaption>
