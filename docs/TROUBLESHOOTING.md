@@ -54,5 +54,5 @@ The desktop installers and the Android APK are not signed with a paid certificat
 Open an [issue](https://github.com/aniruddhaadak80/OpenFile/issues) with your browser and system, what you did, and what the Status page shows.
 
 <!-- gen:counts:start -->
-OpenFile has **427 tools in 23 categories**. PDF Tools 58, Convert 31, Image 55, Video 36, Audio 21, Developer 60, Text & Data 42, Design 16, Data 11, AI 17, 3D 5, Archives 4, eBooks 4, Fonts 3, CAD 2, Subtitles 5, Security & Privacy 8, Maps & GPS 9, Office & Sheets 9, Science & Education 8, Creator Studio 7, Money & Finance 10, Health & Fitness 6.
+OpenFile has **501 tools in 26 categories**. PDF Tools 58, Convert 31, Image 55, Video 36, Audio 21, Developer 60, Text & Data 42, Design 16, Data 11, AI 17, 3D 5, Archives 4, eBooks 4, Fonts 3, CAD 2, Subtitles 5, Security & Privacy 15, Maps & GPS 15, Office & Sheets 19, Science & Education 15, Creator Studio 14, Study & Classroom 12, Web & SEO 13, Calendar & Time 12, Money & Finance 10, Health & Fitness 6.
 <!-- gen:counts:end -->

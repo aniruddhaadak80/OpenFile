@@ -99,4 +99,16 @@ export const QUIZZES: Record<string, QuizQ[]> = {
     { q: 'Why does the scanner turn the photo grey and stretch the contrast first?', options: ['OCR reads dark text on a light background more accurately', 'To make the file prettier', 'To hide the shop name'], a: 0, why: 'Faded thermal paper reads much better after a contrast stretch.' },
     { q: 'Where does the OCR model run?', options: ['In a Web Worker on your device, no GPU needed', 'On a cloud server', 'Only on phones with a GPU'], a: 0, why: 'Tesseract runs as WebAssembly in a background worker on the CPU.' },
   ],
+  'make-flashcards-and-quizzes-that-stick': [
+    { q: 'In the Leitner system, what happens to a card you get wrong?', options: ['It goes back to box 1, so it comes back soon', 'It moves up a box', 'It is deleted from the deck'], a: 0, why: 'Missed cards return to the first box, which is reviewed most often.' },
+    { q: 'Why does testing yourself beat rereading?', options: ['Recalling an answer rebuilds the memory and makes it stronger', 'Rereading takes longer', 'Tests are always shorter'], a: 0, why: 'The effort of recall is what strengthens the memory. This is the testing effect.' },
+  ],
+  'robots-txt-sitemaps-and-redirects': [
+    { q: 'A robots.txt has Disallow: /admin/ and Allow: /admin/help. Is /admin/help allowed?', options: ['Yes, the longest matching rule wins', 'No, Disallow always wins', 'Only if Allow comes first in the file'], a: 0, why: 'Under RFC 9309 the longest match decides, and order in the file does not matter.' },
+    { q: 'Which redirect code should you use for a page that moved for good?', options: ['301', '302', '404'], a: 0, why: 'A 301 is a permanent move, so search engines carry the old page over to the new address.' },
+  ],
+  'calendar-files-and-repeat-rules': [
+    { q: 'What does BYDAY=-1FR mean in a monthly repeat rule?', options: ['The last Friday of the month', 'Every Friday except the first', 'The day before Friday'], a: 0, why: 'A negative number counts from the end of the month, so -1FR is the last Friday.' },
+    { q: 'Why do calendar files store times in UTC?', options: ['So everyone sees the event in their own local time', 'Because UTC files are smaller', 'Only Outlook needs it'], a: 0, why: 'A time ending in Z is UTC, and each calendar app converts it to the reader\'s time zone.' },
+  ],
 }

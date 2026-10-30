@@ -117,10 +117,10 @@ async function loadCatalog() {
 const EMOJI = {
   pdf: '📄', convert: '🔄', image: '🖼️', video: '🎬', audio: '🎧', dev: '🧑‍💻', text: '📝', design: '🖌️',
   data: '📊', ai: '🤖', '3d': '🧊', archive: '🗜️', ebook: '📚', font: '🔤', cad: '📐', subtitle: '💬',
-  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️', finance: '💰', health: '❤️',
+  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️', study: '🎓', web: '🌐', time: '📅', finance: '💰', health: '❤️',
 }
 // Short labels for the orbit and mindmap where the full name is too long.
-const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator', finance: 'Money', health: 'Health' }
+const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator', study: 'Study', web: 'Web', time: 'Calendar', finance: 'Money', health: 'Health' }
 
 // Colors that must never appear (brand rule). Anything in this range is swapped for gold.
 function safeColor(hex) {
@@ -197,6 +197,13 @@ function whatsNew() {
   }
   const L = []
   L.push(`OpenFile now has **${TOTAL} tools in ${NCAT} studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.`)
+  L.push('')
+  L.push('**Study & Classroom, Web & SEO and Calendar & Time**')
+  L.push('')
+  L.push(`- 🎓 ${catLine('study')}: ${tl('flashcard-maker')}, ${tl('notes-to-flashcards')}, ${tl('quiz-maker')}, ${tl('citation-generator')}, ${tl('crossword-maker')} and more.`)
+  L.push(`- 🌐 ${catLine('web')}: ${tl('robots-txt-generator')}, ${tl('schema-generator')}, ${tl('redirect-generator')}, ${tl('meta-description-writer')}, ${tl('llms-txt-generator')} and more.`)
+  L.push(`- 📅 ${catLine('time')}: ${tl('ics-creator')}, ${tl('csv-to-ics')}, ${tl('shift-rota-planner')}, ${tl('timesheet-calculator')}, ${tl('printable-calendar')} and more.`)
+  L.push(`- ➕ Security & Privacy, Maps & GPS, Office & Sheets, Science & Education and Creator Studio each grew to 14 tools or more, with ${tl('leak-checker')}, ${tl('geotag-photos')}, ${tl('docx-merger')}, ${tl('csv-grapher')} and ${tl('caption-styler')}.`)
   L.push('')
   L.push('**Money & Finance and Health & Fitness (v2.3.0)**')
   L.push('')

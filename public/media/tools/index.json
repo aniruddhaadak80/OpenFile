@@ -3414,5 +3414,597 @@
     "voice": "bf_lily 80% + bf_alice 20%",
     "bytes": 253740,
     "music": "A# 96 bpm kalimba"
+  },
+  "secret-link": {
+    "video": "media/tools/secret-link.mp4",
+    "poster": "media/tools/secret-link.jpg",
+    "duration": 9.0,
+    "voice": "bm_daniel 80% + bm_lewis 20%",
+    "bytes": 205100,
+    "music": "E 99 bpm rhodes"
+  },
+  "media-metadata-remover": {
+    "video": "media/tools/media-metadata-remover.mp4",
+    "poster": "media/tools/media-metadata-remover.jpg",
+    "duration": 10.57,
+    "voice": "af_kore 60% + af_sarah 40%",
+    "bytes": 270430,
+    "music": "C# 101 bpm piano"
+  },
+  "url-tracking-cleaner": {
+    "video": "media/tools/url-tracking-cleaner.mp4",
+    "poster": "media/tools/url-tracking-cleaner.jpg",
+    "duration": 9.57,
+    "voice": "af_alloy 80% + af_nicole 20%",
+    "bytes": 225015,
+    "music": "B 99 bpm bell"
+  },
+  "leak-checker": {
+    "video": "media/tools/leak-checker.mp4",
+    "poster": "media/tools/leak-checker.jpg",
+    "duration": 8.33,
+    "voice": "af_sarah 60% + af_kore 40%",
+    "bytes": 210000,
+    "music": "F# 89 bpm bell"
+  },
+  "csv-anonymizer": {
+    "video": "media/tools/csv-anonymizer.mp4",
+    "poster": "media/tools/csv-anonymizer.jpg",
+    "duration": 10.6,
+    "voice": "af_sky 80% + af_nicole 20%",
+    "bytes": 243506,
+    "music": "A# 88 bpm kalimba"
+  },
+  "voice-anonymizer": {
+    "video": "media/tools/voice-anonymizer.mp4",
+    "poster": "media/tools/voice-anonymizer.jpg",
+    "duration": 9.37,
+    "voice": "af_jessica 80% + af_nicole 20%",
+    "bytes": 243998,
+    "music": "E 81 bpm bell"
+  },
+  "email-header-analyzer": {
+    "video": "media/tools/email-header-analyzer.mp4",
+    "poster": "media/tools/email-header-analyzer.jpg",
+    "duration": 10.1,
+    "voice": "af_river 80% + af_nicole 20%",
+    "bytes": 228691,
+    "music": "C 94 bpm harp"
+  },
+  "distance-bearing-calculator": {
+    "video": "media/tools/distance-bearing-calculator.mp4",
+    "poster": "media/tools/distance-bearing-calculator.jpg",
+    "duration": 10.73,
+    "voice": "af_heart 80% + af_kore 20%",
+    "bytes": 266692,
+    "music": "A 81 bpm harp"
+  },
+  "geotag-photos": {
+    "video": "media/tools/geotag-photos.mp4",
+    "poster": "media/tools/geotag-photos.jpg",
+    "duration": 12.0,
+    "voice": "am_michael 80% + am_eric 20%",
+    "bytes": 289954,
+    "music": "D# 88 bpm marimba"
+  },
+  "csv-to-map": {
+    "video": "media/tools/csv-to-map.mp4",
+    "poster": "media/tools/csv-to-map.jpg",
+    "duration": 11.33,
+    "voice": "af_bella 80% + af_kore 20%",
+    "bytes": 256379,
+    "music": "F 90 bpm kalimba"
+  },
+  "gpx-editor": {
+    "video": "media/tools/gpx-editor.mp4",
+    "poster": "media/tools/gpx-editor.jpg",
+    "duration": 8.0,
+    "voice": "am_fenrir 80% + am_eric 20%",
+    "bytes": 188963,
+    "music": "A 101 bpm harp"
+  },
+  "gpx-compare": {
+    "video": "media/tools/gpx-compare.mp4",
+    "poster": "media/tools/gpx-compare.jpg",
+    "duration": 10.5,
+    "voice": "af_nicole 80% + af_kore 20%",
+    "bytes": 246657,
+    "music": "C 94 bpm bell"
+  },
+  "geofence-checker": {
+    "video": "media/tools/geofence-checker.mp4",
+    "poster": "media/tools/geofence-checker.jpg",
+    "duration": 10.7,
+    "voice": "am_puck 80% + am_eric 20%",
+    "bytes": 254746,
+    "music": "E 95 bpm marimba"
+  },
+  "sheet-to-csv-json": {
+    "video": "media/tools/sheet-to-csv-json.mp4",
+    "poster": "media/tools/sheet-to-csv-json.jpg",
+    "duration": 11.9,
+    "voice": "af_aoede 80% + af_kore 20%",
+    "bytes": 276911,
+    "music": "G# 83 bpm bell"
+  },
+  "csv-to-excel": {
+    "video": "media/tools/csv-to-excel.mp4",
+    "poster": "media/tools/csv-to-excel.jpg",
+    "duration": 10.27,
+    "voice": "am_echo 80% + am_eric 20%",
+    "bytes": 237021,
+    "music": "B 96 bpm rhodes"
+  },
+  "remove-duplicate-rows": {
+    "video": "media/tools/remove-duplicate-rows.mp4",
+    "poster": "media/tools/remove-duplicate-rows.jpg",
+    "duration": 10.57,
+    "voice": "af_kore 80% + af_aoede 20%",
+    "bytes": 240123,
+    "music": "D# 73 bpm bell"
+  },
+  "sort-filter-rows": {
+    "video": "media/tools/sort-filter-rows.mp4",
+    "poster": "media/tools/sort-filter-rows.jpg",
+    "duration": 9.47,
+    "voice": "am_eric 80% + am_echo 20%",
+    "bytes": 237808,
+    "music": "C 76 bpm glass"
+  },
+  "csv-splitter": {
+    "video": "media/tools/csv-splitter.mp4",
+    "poster": "media/tools/csv-splitter.jpg",
+    "duration": 10.03,
+    "voice": "af_aoede 60% + af_nova 40%",
+    "bytes": 219684,
+    "music": "B 107 bpm glass"
+  },
+  "docx-merger": {
+    "video": "media/tools/docx-merger.mp4",
+    "poster": "media/tools/docx-merger.jpg",
+    "duration": 10.27,
+    "voice": "am_echo 60% + am_onyx 40%",
+    "bytes": 260414,
+    "music": "F 96 bpm harp"
+  },
+  "pptx-to-images": {
+    "video": "media/tools/pptx-to-images.mp4",
+    "poster": "media/tools/pptx-to-images.jpg",
+    "duration": 10.7,
+    "voice": "af_kore 60% + af_nova 40%",
+    "bytes": 250013,
+    "music": "A 101 bpm glass"
+  },
+  "sheet-cleaner": {
+    "video": "media/tools/sheet-cleaner.mp4",
+    "poster": "media/tools/sheet-cleaner.jpg",
+    "duration": 10.1,
+    "voice": "af_sarah 80% + af_aoede 20%",
+    "bytes": 228548,
+    "music": "E 72 bpm rhodes"
+  },
+  "sheet-join": {
+    "video": "media/tools/sheet-join.mp4",
+    "poster": "media/tools/sheet-join.jpg",
+    "duration": 8.83,
+    "voice": "af_sarah 60% + af_nova 40%",
+    "bytes": 207176,
+    "music": "F 79 bpm piano"
+  },
+  "column-splitter": {
+    "video": "media/tools/column-splitter.mp4",
+    "poster": "media/tools/column-splitter.jpg",
+    "duration": 10.73,
+    "voice": "am_liam 80% + am_echo 20%",
+    "bytes": 245078,
+    "music": "E 104 bpm kalimba"
+  },
+  "significant-figures": {
+    "video": "media/tools/significant-figures.mp4",
+    "poster": "media/tools/significant-figures.jpg",
+    "duration": 8.5,
+    "voice": "af_nova 60% + af_sarah 40%",
+    "bytes": 212189,
+    "music": "G 99 bpm rhodes"
+  },
+  "scientific-notation": {
+    "video": "media/tools/scientific-notation.mp4",
+    "poster": "media/tools/scientific-notation.jpg",
+    "duration": 10.77,
+    "voice": "af_nova 80% + af_aoede 20%",
+    "bytes": 260724,
+    "music": "B 104 bpm glass"
+  },
+  "physics-formula-solver": {
+    "video": "media/tools/physics-formula-solver.mp4",
+    "poster": "media/tools/physics-formula-solver.jpg",
+    "duration": 8.0,
+    "voice": "af_alloy 60% + af_sarah 40%",
+    "bytes": 191217,
+    "music": "F 91 bpm harp"
+  },
+  "ph-calculator": {
+    "video": "media/tools/ph-calculator.mp4",
+    "poster": "media/tools/ph-calculator.jpg",
+    "duration": 9.97,
+    "voice": "am_onyx 80% + am_echo 20%",
+    "bytes": 228747,
+    "music": "F 88 bpm bell"
+  },
+  "solution-calculator": {
+    "video": "media/tools/solution-calculator.mp4",
+    "poster": "media/tools/solution-calculator.jpg",
+    "duration": 11.17,
+    "voice": "af_alloy 80% + af_aoede 20%",
+    "bytes": 272133,
+    "music": "A 90 bpm bell"
+  },
+  "half-life-calculator": {
+    "video": "media/tools/half-life-calculator.mp4",
+    "poster": "media/tools/half-life-calculator.jpg",
+    "duration": 9.3,
+    "voice": "af_sky 80% + af_aoede 20%",
+    "bytes": 215515,
+    "music": "E 89 bpm harp"
+  },
+  "csv-grapher": {
+    "video": "media/tools/csv-grapher.mp4",
+    "poster": "media/tools/csv-grapher.jpg",
+    "duration": 9.93,
+    "voice": "af_jessica 80% + af_aoede 20%",
+    "bytes": 230857,
+    "music": "B 94 bpm harp"
+  },
+  "caption-styler": {
+    "video": "media/tools/caption-styler.mp4",
+    "poster": "media/tools/caption-styler.jpg",
+    "duration": 8.0,
+    "voice": "af_river 80% + af_aoede 20%",
+    "bytes": 197006,
+    "music": "D# 106 bpm harp"
+  },
+  "hashtag-generator": {
+    "video": "media/tools/hashtag-generator.mp4",
+    "poster": "media/tools/hashtag-generator.jpg",
+    "duration": 10.6,
+    "voice": "af_heart 80% + af_sarah 20%",
+    "bytes": 256828,
+    "music": "B 94 bpm kalimba"
+  },
+  "quote-card-maker": {
+    "video": "media/tools/quote-card-maker.mp4",
+    "poster": "media/tools/quote-card-maker.jpg",
+    "duration": 10.17,
+    "voice": "am_michael 80% + am_liam 20%",
+    "bytes": 231906,
+    "music": "F# 75 bpm marimba"
+  },
+  "safe-zone-checker": {
+    "video": "media/tools/safe-zone-checker.mp4",
+    "poster": "media/tools/safe-zone-checker.jpg",
+    "duration": 10.47,
+    "voice": "af_kore 60% + af_alloy 40%",
+    "bytes": 241510,
+    "music": "G 84 bpm marimba"
+  },
+  "youtube-preview": {
+    "video": "media/tools/youtube-preview.mp4",
+    "poster": "media/tools/youtube-preview.jpg",
+    "duration": 9.43,
+    "voice": "af_sarah 60% + af_alloy 40%",
+    "bytes": 230530,
+    "music": "B 91 bpm rhodes"
+  },
+  "giveaway-picker": {
+    "video": "media/tools/giveaway-picker.mp4",
+    "poster": "media/tools/giveaway-picker.jpg",
+    "duration": 9.87,
+    "voice": "af_nova 60% + af_alloy 40%",
+    "bytes": 228369,
+    "music": "D 105 bpm harp"
+  },
+  "content-calendar": {
+    "video": "media/tools/content-calendar.mp4",
+    "poster": "media/tools/content-calendar.jpg",
+    "duration": 9.4,
+    "voice": "af_alloy 60% + af_nova 40%",
+    "bytes": 230112,
+    "music": "D 103 bpm rhodes"
+  },
+  "flashcard-maker": {
+    "video": "media/tools/flashcard-maker.mp4",
+    "poster": "media/tools/flashcard-maker.jpg",
+    "duration": 9.03,
+    "voice": "af_sky 60% + af_nova 40%",
+    "bytes": 207789,
+    "music": "C 79 bpm bell"
+  },
+  "notes-to-flashcards": {
+    "video": "media/tools/notes-to-flashcards.mp4",
+    "poster": "media/tools/notes-to-flashcards.jpg",
+    "duration": 9.97,
+    "voice": "af_bella 80% + af_sarah 20%",
+    "bytes": 226265,
+    "music": "C 101 bpm piano"
+  },
+  "quiz-maker": {
+    "video": "media/tools/quiz-maker.mp4",
+    "poster": "media/tools/quiz-maker.jpg",
+    "duration": 10.17,
+    "voice": "am_fenrir 80% + am_liam 20%",
+    "bytes": 225752,
+    "music": "D# 77 bpm bell"
+  },
+  "math-worksheet": {
+    "video": "media/tools/math-worksheet.mp4",
+    "poster": "media/tools/math-worksheet.jpg",
+    "duration": 11.0,
+    "voice": "af_nicole 80% + af_sarah 20%",
+    "bytes": 252466,
+    "music": "B 73 bpm rhodes"
+  },
+  "word-search-maker": {
+    "video": "media/tools/word-search-maker.mp4",
+    "poster": "media/tools/word-search-maker.jpg",
+    "duration": 9.67,
+    "voice": "am_puck 80% + am_liam 20%",
+    "bytes": 262372,
+    "music": "B 100 bpm piano"
+  },
+  "crossword-maker": {
+    "video": "media/tools/crossword-maker.mp4",
+    "poster": "media/tools/crossword-maker.jpg",
+    "duration": 9.13,
+    "voice": "af_aoede 80% + af_sarah 20%",
+    "bytes": 210836,
+    "music": "G# 93 bpm rhodes"
+  },
+  "citation-generator": {
+    "video": "media/tools/citation-generator.mp4",
+    "poster": "media/tools/citation-generator.jpg",
+    "duration": 10.27,
+    "voice": "am_echo 80% + am_liam 20%",
+    "bytes": 234444,
+    "music": "A 76 bpm glass"
+  },
+  "bibliography-converter": {
+    "video": "media/tools/bibliography-converter.mp4",
+    "poster": "media/tools/bibliography-converter.jpg",
+    "duration": 12.0,
+    "voice": "af_kore 80% + af_sarah 20%",
+    "bytes": 276554,
+    "music": "G# 96 bpm glass"
+  },
+  "gpa-calculator": {
+    "video": "media/tools/gpa-calculator.mp4",
+    "poster": "media/tools/gpa-calculator.jpg",
+    "duration": 10.8,
+    "voice": "af_sarah 60% + af_sky 40%",
+    "bytes": 252157,
+    "music": "C# 93 bpm harp"
+  },
+  "grade-calculator": {
+    "video": "media/tools/grade-calculator.mp4",
+    "poster": "media/tools/grade-calculator.jpg",
+    "duration": 10.33,
+    "voice": "af_nova 60% + af_sky 40%",
+    "bytes": 258848,
+    "music": "C 97 bpm kalimba"
+  },
+  "typing-test": {
+    "video": "media/tools/typing-test.mp4",
+    "poster": "media/tools/typing-test.jpg",
+    "duration": 9.1,
+    "voice": "af_alloy 60% + af_sky 40%",
+    "bytes": 212091,
+    "music": "A 107 bpm bell"
+  },
+  "cornell-notes": {
+    "video": "media/tools/cornell-notes.mp4",
+    "poster": "media/tools/cornell-notes.jpg",
+    "duration": 10.57,
+    "voice": "af_sky 60% + af_alloy 40%",
+    "bytes": 240929,
+    "music": "D 74 bpm piano"
+  },
+  "robots-txt-generator": {
+    "video": "media/tools/robots-txt-generator.mp4",
+    "poster": "media/tools/robots-txt-generator.jpg",
+    "duration": 10.27,
+    "voice": "af_jessica 60% + af_alloy 40%",
+    "bytes": 239063,
+    "music": "F 99 bpm bell"
+  },
+  "sitemap-generator": {
+    "video": "media/tools/sitemap-generator.mp4",
+    "poster": "media/tools/sitemap-generator.jpg",
+    "duration": 10.93,
+    "voice": "am_eric 80% + am_liam 20%",
+    "bytes": 254567,
+    "music": "G 81 bpm rhodes"
+  },
+  "sitemap-checker": {
+    "video": "media/tools/sitemap-checker.mp4",
+    "poster": "media/tools/sitemap-checker.jpg",
+    "duration": 8.57,
+    "voice": "af_sarah 80% + af_kore 20%",
+    "bytes": 211358,
+    "music": "C# 105 bpm bell"
+  },
+  "redirect-generator": {
+    "video": "media/tools/redirect-generator.mp4",
+    "poster": "media/tools/redirect-generator.jpg",
+    "duration": 10.1,
+    "voice": "am_liam 80% + am_eric 20%",
+    "bytes": 229750,
+    "music": "A# 95 bpm harp"
+  },
+  "hreflang-generator": {
+    "video": "media/tools/hreflang-generator.mp4",
+    "poster": "media/tools/hreflang-generator.jpg",
+    "duration": 9.47,
+    "voice": "af_nova 80% + af_kore 20%",
+    "bytes": 220697,
+    "music": "C# 106 bpm marimba"
+  },
+  "security-headers-generator": {
+    "video": "media/tools/security-headers-generator.mp4",
+    "poster": "media/tools/security-headers-generator.jpg",
+    "duration": 10.67,
+    "voice": "am_onyx 80% + am_eric 20%",
+    "bytes": 254248,
+    "music": "D 86 bpm bell"
+  },
+  "utm-builder": {
+    "video": "media/tools/utm-builder.mp4",
+    "poster": "media/tools/utm-builder.jpg",
+    "duration": 10.6,
+    "voice": "af_alloy 80% + af_kore 20%",
+    "bytes": 247498,
+    "music": "D# 102 bpm glass"
+  },
+  "schema-generator": {
+    "video": "media/tools/schema-generator.mp4",
+    "poster": "media/tools/schema-generator.jpg",
+    "duration": 10.73,
+    "voice": "af_sky 80% + af_kore 20%",
+    "bytes": 255815,
+    "music": "G 102 bpm piano"
+  },
+  "llms-txt-generator": {
+    "video": "media/tools/llms-txt-generator.mp4",
+    "poster": "media/tools/llms-txt-generator.jpg",
+    "duration": 10.53,
+    "voice": "af_nova 60% + af_jessica 40%",
+    "bytes": 239236,
+    "music": "B 89 bpm marimba"
+  },
+  "seo-audit": {
+    "video": "media/tools/seo-audit.mp4",
+    "poster": "media/tools/seo-audit.jpg",
+    "duration": 8.47,
+    "voice": "af_alloy 60% + af_jessica 40%",
+    "bytes": 213233,
+    "music": "C 103 bpm rhodes"
+  },
+  "meta-description-writer": {
+    "video": "media/tools/meta-description-writer.mp4",
+    "poster": "media/tools/meta-description-writer.jpg",
+    "duration": 10.73,
+    "voice": "af_sky 60% + af_jessica 40%",
+    "bytes": 251266,
+    "music": "D# 85 bpm marimba"
+  },
+  "link-extractor": {
+    "video": "media/tools/link-extractor.mp4",
+    "poster": "media/tools/link-extractor.jpg",
+    "duration": 8.33,
+    "voice": "af_jessica 60% + af_sky 40%",
+    "bytes": 200844,
+    "music": "C# 92 bpm harp"
+  },
+  "security-txt-generator": {
+    "video": "media/tools/security-txt-generator.mp4",
+    "poster": "media/tools/security-txt-generator.jpg",
+    "duration": 11.0,
+    "voice": "af_river 60% + af_sky 40%",
+    "bytes": 252757,
+    "music": "D 73 bpm glass"
+  },
+  "ics-creator": {
+    "video": "media/tools/ics-creator.mp4",
+    "poster": "media/tools/ics-creator.jpg",
+    "duration": 9.47,
+    "voice": "af_heart 60% + af_river 40%",
+    "bytes": 237801,
+    "music": "F 83 bpm marimba"
+  },
+  "ics-merger": {
+    "video": "media/tools/ics-merger.mp4",
+    "poster": "media/tools/ics-merger.jpg",
+    "duration": 10.63,
+    "voice": "af_jessica 80% + af_kore 20%",
+    "bytes": 257426,
+    "music": "A# 85 bpm marimba"
+  },
+  "csv-to-ics": {
+    "video": "media/tools/csv-to-ics.mp4",
+    "poster": "media/tools/csv-to-ics.jpg",
+    "duration": 10.63,
+    "voice": "af_river 80% + af_kore 20%",
+    "bytes": 252631,
+    "music": "C# 78 bpm glass"
+  },
+  "recurring-dates": {
+    "video": "media/tools/recurring-dates.mp4",
+    "poster": "media/tools/recurring-dates.jpg",
+    "duration": 10.57,
+    "voice": "af_heart 80% + af_alloy 20%",
+    "bytes": 253610,
+    "music": "D 97 bpm glass"
+  },
+  "age-calculator": {
+    "video": "media/tools/age-calculator.mp4",
+    "poster": "media/tools/age-calculator.jpg",
+    "duration": 9.03,
+    "voice": "af_bella 80% + af_alloy 20%",
+    "bytes": 202764,
+    "music": "E 73 bpm harp"
+  },
+  "week-number": {
+    "video": "media/tools/week-number.mp4",
+    "poster": "media/tools/week-number.jpg",
+    "duration": 11.27,
+    "voice": "af_nicole 80% + af_alloy 20%",
+    "bytes": 257286,
+    "music": "F 90 bpm marimba"
+  },
+  "sunrise-sunset": {
+    "video": "media/tools/sunrise-sunset.mp4",
+    "poster": "media/tools/sunrise-sunset.jpg",
+    "duration": 10.33,
+    "voice": "af_aoede 80% + af_alloy 20%",
+    "bytes": 244026,
+    "music": "B 102 bpm piano"
+  },
+  "timesheet-calculator": {
+    "video": "media/tools/timesheet-calculator.mp4",
+    "poster": "media/tools/timesheet-calculator.jpg",
+    "duration": 9.63,
+    "voice": "af_alloy 60% + af_river 40%",
+    "bytes": 225796,
+    "music": "C# 106 bpm bell"
+  },
+  "shift-rota-planner": {
+    "video": "media/tools/shift-rota-planner.mp4",
+    "poster": "media/tools/shift-rota-planner.jpg",
+    "duration": 8.0,
+    "voice": "af_sky 60% + af_river 40%",
+    "bytes": 219769,
+    "music": "G# 94 bpm bell"
+  },
+  "printable-calendar": {
+    "video": "media/tools/printable-calendar.mp4",
+    "poster": "media/tools/printable-calendar.jpg",
+    "duration": 8.27,
+    "voice": "af_jessica 60% + af_river 40%",
+    "bytes": 208059,
+    "music": "C# 102 bpm marimba"
+  },
+  "printable-planner": {
+    "video": "media/tools/printable-planner.mp4",
+    "poster": "media/tools/printable-planner.jpg",
+    "duration": 8.83,
+    "voice": "af_river 60% + af_jessica 40%",
+    "bytes": 199155,
+    "music": "C 106 bpm piano"
+  },
+  "duration-calculator": {
+    "video": "media/tools/duration-calculator.mp4",
+    "poster": "media/tools/duration-calculator.jpg",
+    "duration": 10.8,
+    "voice": "af_heart 50% + af_bella 50%",
+    "bytes": 244860,
+    "music": "D# 103 bpm piano"
   }
 }

@@ -77,6 +77,19 @@ const CAT_DEFAULTS: Partial<Record<Category, { steps: (t: ToolMeta) => string[];
     steps: (t) => [`Open ${t.name} and add your media or text.`, 'Pick a size, style and colours.', 'Preview the result.', 'Download it and post it.'],
     tips: ['Video tools encode on your device, so short clips finish much faster.', 'Square and 4:5 sizes take the most space in feeds. 9:16 is for stories, reels and shorts.'],
   },
+  study: {
+    steps: (t) => [`Open ${t.name} and type or paste your content, or pick an example.`, 'Adjust the options in the side panel.', 'Check the preview.', 'Download the PDF or file, or study right on the page.'],
+    tips: ['Printables are real PDFs sized for A4 or US Letter, so they print sharp at home or school.', 'Cards, quizzes and notes stay in your browser. Nothing is sent to a server.'],
+  },
+  web: {
+    steps: (t) => [`Open ${t.name} and fill in your site details, or paste your page source.`, 'Check the warnings and the live output.', 'Pick the server or format you use.', 'Copy or download the file and put it on your site.'],
+    tips: ['Nothing is fetched from your site, so these tools also work for staging sites and pages behind a login.', 'Test changes on a staging copy of your site first.'],
+  },
+  time: {
+    steps: (t) => [`Open ${t.name} and enter your dates, times or schedule.`, 'Adjust the options in the side panel.', 'Check the result.', 'Download the calendar file, PDF or CSV.'],
+    tips: ['Times use your device time zone. Calendar files store times in UTC, so everyone sees their own local time.', 'ICS files open in Google Calendar, Apple Calendar and Outlook.'],
+    inputs: ['ICS', 'CSV', 'XLSX'],
+  },
   finance: {
     steps: (t) => [`Open ${t.name} and drop your bank file, receipt or numbers.`, 'Check what was read and fix any column or value.', 'Pick the output you want.', 'Download it. Nothing was uploaded.'],
     tips: ['Bank files hold account numbers, so tools that run on your device are the safe choice.', 'Always compare totals with the original statement before you file anything.', 'OFX and QIF files import into most money apps.'],

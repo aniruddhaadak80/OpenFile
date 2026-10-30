@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:06.425
+robots.txt, sitemaps and redirects: the small files that steer search engines.
+
+2
+00:00:07.925 --> 00:00:12.533
+What each file tells a crawler, the rules that trip people up, how to block
+
+3
+00:00:12.533 --> 00:00:16.096
+AI crawlers, and how to move pages without losing traffic.
+
+4
+00:00:17.496 --> 00:00:21.039
+robots.txt: a polite request to crawlers.
+
+5
+00:00:21.039 --> 00:00:27.693
+robots.txt sits at the root of your site, for example example.com/robots.txt.
+
+6
+00:00:28.993 --> 00:00:31.883
+Sitemaps: a list of pages you want found.
+
+7
+00:00:31.883 --> 00:00:37.099
+An XML sitemap lists the pages you want search engines to know about, each
+
+8
+00:00:37.099 --> 00:00:40.129
+in a loc tag with an optional lastmod date.
+
+9
+00:00:41.429 --> 00:00:44.316
+Redirects: moving pages without losing visitors.
+
+10
+00:00:44.316 --> 00:00:48.586
+When a page moves, the old address should answer with a redirect to the
+
+11
+00:00:48.586 --> 00:00:49.067
+new one.
+
+12
+00:00:50.367 --> 00:00:54.356
+Check the page itself. Once the files are in place, check the pages.
+
+13
+00:00:55.656 --> 00:00:59.860
+To try it, open robots.txt Generator & Tester in OpenFile.
+
+14
+00:00:59.860 --> 00:01:03.991
+Drop in a file, adjust the settings and press the button.
+
+15
+00:01:03.991 --> 00:01:07.688
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:09.388 --> 00:01:12.993
+Read the full post, with live demos, on the OpenFile blog.

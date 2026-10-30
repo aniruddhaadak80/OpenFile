@@ -56,13 +56,13 @@ CAT_COLORS = {
     'pdf': GOLD, 'convert': SKY, 'image': EMERALD, 'video': CYAN,
     'audio': TEAL, 'dev': CYAN, 'text': GOLD, 'design': SKY,
     'data': SKY, 'ai': GOLD, '3d': CYAN, 'archive': GOLD, 'ebook': EMERALD, 'font': GOLD, 'cad': SKY, 'subtitle': TEAL,
-    'privacy': EMERALD, 'geo': SKY, 'office': GOLD, 'science': hexrgb('#A3E635'), 'creator': hexrgb('#FB923C'), 'finance': hexrgb('#BEF264'), 'health': hexrgb('#5EEAD4'),
+    'privacy': EMERALD, 'geo': SKY, 'office': GOLD, 'science': hexrgb('#A3E635'), 'creator': hexrgb('#FB923C'), 'study': hexrgb('#FDE68A'), 'web': hexrgb('#06B6D4'), 'time': hexrgb('#86EFAC'), 'finance': hexrgb('#BEF264'), 'health': hexrgb('#5EEAD4'),
 }
 CAT_NAMES = {
     'pdf': 'PDF', 'convert': 'Convert', 'image': 'Image', 'video': 'Video', 'audio': 'Audio',
     'dev': 'Developer', 'text': 'Text & Data', 'design': 'Design',
     'data': 'Data', 'ai': 'AI', '3d': '3D', 'archive': 'Archives', 'ebook': 'eBooks', 'font': 'Fonts', 'cad': 'CAD', 'subtitle': 'Subtitles',
-    'privacy': 'Security & Privacy', 'geo': 'Maps & GPS', 'office': 'Office & Sheets', 'science': 'Science & Education', 'creator': 'Creator Studio', 'finance': 'Money & Finance', 'health': 'Health & Fitness',
+    'privacy': 'Security & Privacy', 'geo': 'Maps & GPS', 'office': 'Office & Sheets', 'science': 'Science & Education', 'creator': 'Creator Studio', 'study': 'Study & Classroom', 'web': 'Web & SEO', 'time': 'Calendar & Time', 'finance': 'Money & Finance', 'health': 'Health & Fitness',
 }
 
 

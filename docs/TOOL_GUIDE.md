@@ -5,7 +5,7 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 
 ## Categories
 <!-- categories:start -->
-23 categories, 427 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
+26 categories, 501 tools. The `category` field of a tool must be one of these ids, and the tool file goes in `src/tools/<id>/<slug>.tsx`.
 
 | Id | Studio | Tools | What it covers |
 |---|---|--:|---|
@@ -25,11 +25,14 @@ The registry (`src/tools/registry.ts`) already lists name/description/icon; the 
 | `font` | 🔤 Fonts | 3 | Convert, inspect and subset TTF, OTF, WOFF |
 | `cad` | 📐 CAD | 2 | View and convert DXF and other drawings |
 | `subtitle` | 💬 Subtitles | 5 | Convert, sync and edit SRT, VTT, ASS |
-| `privacy` | 🔐 Security & Privacy | 8 | Scrub metadata, lock files, hide messages, redact personal data |
-| `geo` | 🗺️ Maps & GPS | 9 | GPX elevation, splits, heatmaps, privacy zones and location codes |
-| `office` | 🗂️ Office & Sheets | 9 | Merge, split, compare and pivot spreadsheets, clean Word files |
-| `science` | 🧪 Science & Education | 8 | Equations, graphs, chemistry, matrices, logic and primes |
-| `creator` | 🎙️ Creator Studio | 7 | Audiograms, vertical video, carousels, word clouds and chapters |
+| `privacy` | 🔐 Security & Privacy | 15 | Scrub metadata, lock files, hide messages, redact personal data |
+| `geo` | 🗺️ Maps & GPS | 15 | GPX elevation, splits, heatmaps, privacy zones and location codes |
+| `office` | 🗂️ Office & Sheets | 19 | Merge, split, compare and pivot spreadsheets, clean Word files |
+| `science` | 🧪 Science & Education | 15 | Equations, graphs, chemistry, matrices, logic and primes |
+| `creator` | 🎙️ Creator Studio | 14 | Audiograms, vertical video, carousels, word clouds and chapters |
+| `study` | 🎓 Study & Classroom | 12 | Flashcards, quizzes, worksheets, puzzles, citations and grades |
+| `web` | 🌐 Web & SEO | 13 | robots.txt, sitemaps, redirects, schema, headers and on-page checks |
+| `time` | 📅 Calendar & Time | 12 | Calendar files, repeat rules, rotas, timesheets and printable planners |
 | `finance` | 💰 Money & Finance | 10 | Bank statements, receipts, loans, tax and shared expenses |
 | `health` | ❤️ Health & Fitness | 6 | FIT workouts, heart rate zones, Apple Health data, pace and body measures |
 <!-- categories:end -->

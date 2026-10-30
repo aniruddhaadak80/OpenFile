@@ -2,7 +2,7 @@
 // with a regex to pre-render /blog/<slug>, add the posts to sitemap.xml and write /blog/rss.xml.
 // Post bodies: the first nine live in src/blog/posts.tsx, newer ones in src/blog/posts/<slug>.tsx, all registered in POST_BODIES.
 export type CoverKind = 'privacy' | 'pdf' | 'image' | 'video' | 'pipeline' | 'sketch' | 'formats' | 'dev' | 'voice'
-  | 'install' | 'ai' | 'mail' | 'photo' | 'gif' | 'signature' | 'ebook' | 'cad' | 'medical' | 'midi' | 'data' | 'subtitle' | 'money' | 'fitness'
+  | 'install' | 'ai' | 'mail' | 'photo' | 'gif' | 'signature' | 'ebook' | 'cad' | 'medical' | 'midi' | 'data' | 'subtitle' | 'money' | 'fitness' | 'study' | 'web' | 'calendar'
 
 export interface PostMeta {
   slug: string
@@ -17,6 +17,9 @@ export interface PostMeta {
 }
 
 export const POSTS: PostMeta[] = [
+  { slug: 'make-flashcards-and-quizzes-that-stick', title: 'Make flashcards, quizzes and worksheets that actually stick', description: 'Why spaced repetition and self testing beat rereading, how to turn notes into cards and quizzes, and the printables that save a teacher an evening.', date: '2026-10-29', tags: ['study', 'education', 'privacy'], minutes: 7, cover: 'study', tools: ['flashcard-maker', 'notes-to-flashcards', 'quiz-maker', 'grade-calculator', 'citation-generator', 'math-worksheet'] },
+  { slug: 'robots-txt-sitemaps-and-redirects', title: 'robots.txt, sitemaps and redirects: the small files that steer search engines', description: 'What each file tells a crawler, the rules that trip people up, how to block AI crawlers, and how to move pages without losing traffic.', date: '2026-10-29', tags: ['web', 'seo', 'developer'], minutes: 8, cover: 'web', tools: ['robots-txt-generator', 'sitemap-generator', 'redirect-generator', 'schema-generator', 'security-headers-generator', 'seo-audit'] },
+  { slug: 'calendar-files-and-repeat-rules', title: 'Calendar files and repeat rules, explained', description: 'What is inside an .ics file, how repeat rules like last Friday of the month work, and how to turn a spreadsheet or a shift pattern into calendar invites.', date: '2026-10-29', tags: ['calendar', 'formats', 'productivity'], minutes: 7, cover: 'calendar', tools: ['ics-creator', 'recurring-dates', 'csv-to-ics', 'shift-rota-planner', 'ics-merger', 'week-number'] },
   { slug: 'what-is-inside-a-fit-file', title: 'What is inside a FIT file from your watch', description: 'The binary format behind every Garmin, Wahoo and Coros workout, how to turn it into CSV or GPX, and how heart rate zones and training load are worked out.', date: '2026-10-29', tags: ['fitness', 'formats', 'privacy'], minutes: 7, cover: 'fitness', tools: ['fit-file-converter', 'heart-rate-zones', 'apple-health-export', 'pace-calculator'] },
   { slug: 'bank-statement-files-explained', title: 'OFX, QIF, CSV, CAMT and MT940: bank statement files explained', description: 'What each bank download format holds, which one to pick for a money app or a spreadsheet, and how to convert them without uploading your statement.', date: '2026-10-29', tags: ['finance', 'formats', 'privacy'], minutes: 7, cover: 'money', tools: ['bank-statement-converter', 'csv-to-ofx', 'statement-analyzer', 'transaction-categorizer', 'pdf-statement-to-csv'] },
   { slug: 'scan-receipts-privately', title: 'Scan receipts into a spreadsheet without uploading them', description: 'How on-device OCR reads a receipt photo, how the shop, date, tax and total are picked out, and tips for scans that come out right the first time.', date: '2026-10-29', tags: ['finance', 'ai', 'privacy'], minutes: 6, cover: 'money', tools: ['receipt-scanner', 'expense-splitter', 'ocr-pdf', 'gst-vat-calculator'] },

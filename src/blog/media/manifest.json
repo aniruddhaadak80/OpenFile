@@ -1,6 +1,273 @@
 {
  "release": "https://github.com/aniruddhaadak80/OpenFile/releases/download/media-v1/",
  "posts": {
+  "make-flashcards-and-quizzes-that-stick": {
+   "hash": "3fe2fca4d36c",
+   "loop": true,
+   "video": {
+    "dur": 71.75,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.26,
+      "label": "In this post"
+     },
+     {
+      "t": 15.56,
+      "label": "Why testing beats rereading"
+     },
+     {
+      "t": 25.14,
+      "label": "Quizzes written in plain text"
+     },
+     {
+      "t": 36.66,
+      "label": "Grades, GPA and the final exam question"
+     },
+     {
+      "t": 46.53,
+      "label": "Private by design"
+     },
+     {
+      "t": 51.84,
+      "label": "Try the tool"
+     },
+     {
+      "t": 64.84,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3011952,
+    "webm": 2262078
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 7 chapters: Why testing beats rereading; Flashcards with five Leitner boxes; Quizzes written in plain text; Printables that save an evening; Grades, GPA and the final exam question; Citations without the headache; Private by design.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Flashcard Maker, AI Notes to Flashcards, Quiz Maker, Grade & Final Exam Calculator, Citation Generator, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Flow diagram for the chapter \"Quizzes written in plain text\". Quiz Maker lets you write a quiz the way you would type it in a notes app: a question, then the options, with a star on the right answer.",
+     "caption": "From the explainer film: Quizzes written in plain text.",
+     "heading": "quizzes-written-in-plain-text"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Flow diagram for the chapter \"Private by design\". Study notes, class lists and grades are personal.",
+     "caption": "From the explainer film: Private by design.",
+     "heading": "private-by-design"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 294.71,
+     "words": 854,
+     "mp3": 1769021
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 280.16,
+     "words": 854,
+     "mp3": 1681755
+    }
+   ]
+  },
+  "robots-txt-sitemaps-and-redirects": {
+   "hash": "27aac2f17352",
+   "loop": true,
+   "video": {
+    "dur": 75.79,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 7.53,
+      "label": "In this post"
+     },
+     {
+      "t": 17.1,
+      "label": "robots.txt: a polite request to crawlers"
+     },
+     {
+      "t": 28.59,
+      "label": "Sitemaps: a list of pages you want found"
+     },
+     {
+      "t": 41.03,
+      "label": "Redirects: moving pages without losing visitors"
+     },
+     {
+      "t": 49.97,
+      "label": "Check the page itself"
+     },
+     {
+      "t": 55.26,
+      "label": "Try the tool"
+     },
+     {
+      "t": 68.89,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3029312,
+    "webm": 2126051
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: robots.txt: a polite request to crawlers; Sitemaps: a list of pages you want found; Redirects: moving pages without losing visitors; Other small files worth having; Check the page itself.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through robots.txt Generator & Tester, XML Sitemap Generator, Redirect Rules Generator, Schema Markup Generator, Security Headers Generator, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Step by step diagram for the chapter \"Sitemaps: a list of pages you want found\". An XML sitemap lists the pages you want search engines to know about, each in a loc tag with an optional lastmod date.",
+     "caption": "From the explainer film: Sitemaps: a list of pages you want found.",
+     "heading": "sitemaps-a-list-of-pages-you-want-found"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Check the page itself\". Once the files are in place, check the pages.",
+     "caption": "From the explainer film: Check the page itself.",
+     "heading": "check-the-page-itself"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 286.07,
+     "words": 774,
+     "mp3": 1717199
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 254.71,
+     "words": 774,
+     "mp3": 1528989
+    }
+   ]
+  },
+  "calendar-files-and-repeat-rules": {
+   "hash": "85cbb0ead48c",
+   "loop": true,
+   "video": {
+    "dur": 67.94,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 4.75,
+      "label": "In this post"
+     },
+     {
+      "t": 15.65,
+      "label": "What is inside an .ics file"
+     },
+     {
+      "t": 26.31,
+      "label": "Repeat rules, in plain words"
+     },
+     {
+      "t": 33.18,
+      "label": "Merging and cleaning calendars"
+     },
+     {
+      "t": 41.45,
+      "label": "Week numbers and other small questions"
+     },
+     {
+      "t": 47.68,
+      "label": "Try the tool"
+     },
+     {
+      "t": 60.7,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2772277,
+    "webm": 2017959
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: What is inside an .ics file; Repeat rules, in plain words; From a spreadsheet to a calendar; Merging and cleaning calendars; Week numbers and other small questions.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Calendar Event Maker (ICS), Recurring Dates & RRULE, Spreadsheet to Calendar, Shift Rota Planner, Merge Calendar Files, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Repeat rules, in plain words\". The RRULE line packs a lot into a short string.",
+     "caption": "From the explainer film: Repeat rules, in plain words.",
+     "heading": "repeat-rules-in-plain-words"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Key terms diagram for the chapter \"Week numbers and other small questions\". Many workplaces plan by week number.",
+     "caption": "From the explainer film: Week numbers and other small questions.",
+     "heading": "week-numbers-and-other-small-questions"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 261.62,
+     "words": 726,
+     "mp3": 1570428
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 251.6,
+     "words": 726,
+     "mp3": 1510378
+    }
+   ]
+  },
   "what-is-inside-a-fit-file": {
    "hash": "da9a3912a9b0",
    "loop": true,

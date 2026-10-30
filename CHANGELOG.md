@@ -6,6 +6,26 @@
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).
 
+## v2.4.0 (2026-10-29)
+
+Three new studios, **Study & Classroom**, **Web & SEO** and **Calendar & Time**, and 74 new tools in all. The five thinnest studios each grew to 14 tools or more, and category grids now keep every row full on phones, tablets and desktops.
+
+### Added
+
+- **Study & Classroom**: Flashcard Maker, AI Notes to Flashcards, Quiz Maker, Math Worksheet Generator, Word Search Maker, Crossword Maker, Citation Generator, BibTeX & RIS Converter, GPA Calculator, Grade & Final Exam Calculator, Typing Speed Test and Cornell Notes Template.
+- **Web & SEO**: robots.txt Generator & Tester, XML Sitemap Generator, Sitemap Checker, Redirect Rules Generator (Apache, Nginx, Netlify, Vercel, Cloudflare), Hreflang Tag Generator, Security Headers Generator, UTM Link Builder, Schema Markup Generator, llms.txt Generator, On-page SEO Checker, AI Meta Description Writer, Link Extractor and security.txt Generator.
+- **Calendar & Time**: Calendar Event Maker (ICS), Merge Calendar Files, Spreadsheet to Calendar, Recurring Dates & RRULE, Age Calculator, Week Number Calculator, Sunrise & Sunset Times, Timesheet Calculator, Shift Rota Planner, Printable Calendar Maker, Printable Planner and Time Duration Calculator.
+- **Security & Privacy**: Secret Note Link, Media Metadata Remover, Link Tracking Cleaner, Document Leak Checker, CSV Anonymizer, Voice Anonymizer and Email Header Analyzer.
+- **Maps & GPS**: Distance & Bearing Calculator, Geotag Photos from GPX, CSV to Map, GPX Editor, Compare GPX Tracks and Geofence Checker.
+- **Office & Sheets**: Excel to CSV & JSON, CSV to Excel, Remove Duplicate Rows, Sort & Filter Rows, Large CSV Splitter, Merge Word Documents, PowerPoint to Images, Spreadsheet Cleaner, Spreadsheet Lookup & Join and Split & Combine Columns.
+- **Science & Education**: Significant Figures Calculator, Scientific Notation Converter, Physics Formula Solver, pH Calculator, Molarity & Dilution Calculator, Half-life Calculator and Lab Data Grapher.
+- **Creator Studio**: Caption Styler, AI Hashtag Generator, Quote Card Maker, Safe Zone Checker, YouTube Title & Thumbnail Preview, Giveaway Winner Picker and Content Calendar Planner.
+- **blog**: three posts with films, cover loops, read aloud and quizzes, one for each new studio.
+
+### Changed
+
+- **layout**: the mega menu, footer and About page show the newer studios in their own block, 5 across on desktop and 2 across on phones, so no row is left half empty.
+
 ## v2.3.0 (2026-10-29)
 
 Two new studios, **Money & Finance** and **Health & Fitness**, with 16 new tools, three of them on-device AI. AI tools on devices without WebGPU now start in an instant mode, so the tab never stalls.

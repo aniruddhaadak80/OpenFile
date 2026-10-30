@@ -11,6 +11,7 @@ import { Toaster } from './toast'
 import { GlobalDrop } from './DropFlow'
 import { ShortcutsOverlay, OnboardingTour, OfflineIndicator, InstallPrompt, useGlobalShortcuts } from './Overlays'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
+import { catGroups, colsClass, evenCols, spanClass } from '@/lib/catgrid'
 import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
 import { cn } from './ui'
@@ -113,9 +114,13 @@ export function Layout() {
               {mega && (
                 <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} className="absolute left-0 top-full w-[min(860px,calc(100vw-2rem))] pt-2">
                   <div className="relative">
-                  <div ref={megaBox} onScroll={megaScroll} className="grid max-h-[75vh] grid-cols-3 gap-4 overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl scrollbar-thin lg:grid-cols-4">
-                    {CATEGORIES.map((c) => (
-                      <div key={c.id}>
+                  <div ref={megaBox} onScroll={megaScroll} className="max-h-[75vh] space-y-5 overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl scrollbar-thin">
+                    {catGroups(CATEGORIES).map((group, gi) => { const lay = gi === 0 ? { base: 2, md: 4 } : { base: 2, lg: evenCols(group.length, [5, 4, 3]) }; return group.length > 0 && (
+                    <div key={gi} className={gi ? 'border-t border-border pt-5' : undefined}>
+                    {gi > 0 && <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted">More categories</div>}
+                    <div className={cn('grid gap-4', colsClass(lay))}>
+                    {group.map((c, i) => (
+                      <div key={c.id} className={spanClass(i, group.length, lay)}>
                         <Link to={`/category/${c.id}`} className="mb-2 block text-xs font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.name}</Link>
                         <div className="space-y-0.5">
                           {TOOLS.filter((t) => t.category === c.id).slice(0, 6).map((t) => { const I = getIcon(t.icon); return (
@@ -124,6 +129,8 @@ export function Layout() {
                         </div>
                       </div>
                     ))}
+                    </div>
+                    </div>) })}
                   </div>
                   {!megaEnd && (
                     <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => megaBox.current?.scrollBy({ top: megaBox.current.clientHeight * 0.7, behavior: 'smooth' })}
@@ -158,7 +165,7 @@ export function Layout() {
         {mobile && (
           <motion.div id="mobile-menu" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-surface px-4 py-3 md:hidden">
             <div className="grid grid-cols-2 gap-1">{[['/tools', 'All Tools'], ['/install', 'Install app'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/history', 'History'], ['/settings', 'Settings'], ['/changelog', 'Changelog'], ['/about', 'About'], ['/privacy', 'Privacy']].map(([to, l]) => <Link key={to} to={to} className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-surface-2">{l}</Link>)}</div>
-            <div className="mt-2 grid grid-cols-2 gap-1">{CATEGORIES.map((c) => <Link key={c.id} to={`/category/${c.id}`} className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-muted hover:bg-surface-2"><span className="size-2 rounded-full" style={{ background: c.color }} />{c.name}</Link>)}</div>
+            <div className="mt-2 grid grid-cols-2 gap-1">{CATEGORIES.map((c, i) => <Link key={c.id} to={`/category/${c.id}`} className={cn(spanClass(i, CATEGORIES.length, { base: 2 }), 'flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm text-muted hover:bg-surface-2')}><span className="size-2 rounded-full" style={{ background: c.color }} />{c.name}</Link>)}</div>
           </motion.div>
         )}
       </header>
