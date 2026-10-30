@@ -319,7 +319,7 @@ export default function OcrPdf() {
           </div>
           {src.kind === 'pdf' && total > 1 && (
             <div className="space-y-3">
-              <div><Label>Pages</Label><Input value={range} onChange={(e) => setRange(e.target.value)} placeholder={`All (1-${total}) · e.g. 1-3, 5`} disabled={running} /></div>
+              <div><Label>Pages to read</Label><Input value={range} onChange={(e) => setRange(e.target.value)} placeholder={`All (1-${total}) · e.g. 1-3, 5`} disabled={running} />{range.trim() && <p className="mt-1 text-xs text-muted">Only these pages are read, and the searchable PDF holds only these pages. Leave empty to keep the whole document.</p>}</div>
               <Switch checked={skipText} onChange={setSkipText} label={<span className="text-sm">Skip pages that already have text</span>} />
             </div>
           )}

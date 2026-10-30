@@ -20,6 +20,23 @@ function luhn(digits: string) {
   return sum % 10 === 0
 }
 
+export function isPhone(m: string) {
+  const t = m.trim(), d = t.replace(/\D/g, '')
+  if (d.length < 8 || d.length > 15) return false
+  if (/^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}$/.test(t) || /^\d{4}[./-]\d{1,2}[./-]\d{1,2}$/.test(t)) return false
+  const plus = t.startsWith('+')
+  const groups = t.replace(/^\+/, '').split(/[^\d]+/).filter(Boolean)
+  if (groups.length > 5) return false
+  // a lone digit is only a country or trunk code at the start, never in the middle or end ("8 64 0.1" in a table)
+  if (groups.some((g, i) => g.length === 1 && i > 0)) return false
+  if (!plus && groups.length > 1 && groups[0].length === 1 && d.length < 11) return false
+  // "2014 2015 2016" or "512 512 512": equal-length groups in a row read as data, not a number to dial
+  if (groups.length >= 3 && groups.every((g) => g.length === groups[0].length)) return false
+  // decimals such as "4.92" or "25.7" in tables
+  if (!plus && /\d\.\d/.test(t) && groups.length > 1 && !/^\d{2,4}\.\d{3}\.\d{4}$/.test(t)) return false
+  return true
+}
+
 // order matters: more specific patterns first so later ones skip overlaps
 const RX: Record<PresetId, { re: RegExp; ok?: (m: string) => boolean }> = {
   email: { re: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g },
@@ -30,7 +47,9 @@ const RX: Record<PresetId, { re: RegExp; ok?: (m: string) => boolean }> = {
   aadhaar: { re: /\b[2-9]\d{3}[ -]?\d{4}[ -]?\d{4}\b/g },
   pan: { re: /\b[A-Z]{3}[ABCFGHLJPTK][A-Z]\d{4}[A-Z]\b/g },
   ip: { re: /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/g },
-  phone: { re: /(?:\+\d{1,3}[\s.-]?)?(?:\(\d{1,4}\)[\s.-]?)?\d[\d\s.-]{6,14}\d/g, ok: (m) => { const d = m.replace(/\D/g, ''); return d.length >= 8 && d.length <= 15 && !/^\d{1,2}[./-]\d{1,2}[./-]\d{2,4}$/.test(m.trim()) } },
+  // One line only, single separators between digit groups. isPhone() then drops table rows,
+  // decimals, years and dates, which the bare pattern would otherwise mark (a numbers table is not a phone list).
+  phone: { re: /(?:\+\d{1,3}[ .-]?)?(?:\(\d{1,4}\)[ .-]?)?\d(?:\d|[ .-](?=\d)){6,16}\d/g, ok: isPhone },
 }
 const ORDER: PresetId[] = ['email', 'url', 'card', 'iban', 'ssn', 'aadhaar', 'pan', 'ip', 'phone']
 

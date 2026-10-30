@@ -126,7 +126,7 @@ export async function convert(file: File): Promise<Blob> {
 
 ## Images
 
-![Placeholder](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='640' height='200'><defs><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%236d4aff'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='640' height='200' rx='16' fill='url(%23g)'/><text x='320' y='112' font-family='Arial' font-size='34' fill='white' text-anchor='middle'>OpenFile</text></svg>)
+![Placeholder](data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='640'%20height='200'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20x2='1'%3E%3Cstop%20offset='0'%20stop-color='%230ea5e9'/%3E%3Cstop%20offset='1'%20stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='640'%20height='200'%20rx='16'%20fill='url%28%23g%29'/%3E%3Ctext%20x='320'%20y='112'%20font-family='Arial'%20font-size='34'%20fill='white'%20text-anchor='middle'%3EOpenFile%3C/text%3E%3C/svg%3E)
 
 \\pagebreak
 

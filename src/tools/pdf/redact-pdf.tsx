@@ -99,10 +99,15 @@ export default function RedactPdf() {
       const outDoc = await PDFDocument.create()
       const scale = +dpi / 72
       const n = src.numPages
+      // Pages without boxes are copied in ONE copyPages call, so fonts and images they share are stored once.
+      const keepIdx = srcLib ? Array.from({ length: n }, (_, i) => i).filter((i) => !(items[i] ?? []).length) : []
+      const keptList = keepIdx.length && srcLib ? await outDoc.copyPages(srcLib, keepIdx) : []
+      const kept = new Map(keepIdx.map((i, k) => [i, keptList[k]]))
       for (let i = 0; i < n; i++) {
         const boxes = items[i] ?? []
-        if (onlyMarked && !boxes.length && srcLib) {
-          const [cp] = await outDoc.copyPages(srcLib, [i]); outDoc.addPage(cp)
+        const cp = kept.get(i)
+        if (cp) {
+          outDoc.addPage(cp)
         } else {
           const page = await src.getPage(i + 1)
           const vp = page.getViewport({ scale: 1 })

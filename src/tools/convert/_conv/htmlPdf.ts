@@ -30,6 +30,59 @@ export interface HtmlPdfOptions {
   inspect?: (doc: Document, pageOf: (y: number) => number) => void
   /** lay the HTML out at this CSS width (e.g. 1280 for desktop pages) and scale it down to the page */
   viewportWidth?: number
+  /** add invisible text under each page image so the PDF can be searched and copied (default true) */
+  textLayer?: boolean
+}
+
+interface Word { text: string; x: number; y: number; w: number; h: number }
+// Latin-1 only: the built-in PDF fonts cannot encode other scripts, so those words are left out of the text layer.
+const LATIN1 = /^[\u0020-\u007e\u00a0-\u00ff]+$/
+const TYPO: Record<string, string> = { '\u2018': "'", '\u2019': "'", '\u201c': '"', '\u201d': '"', '\u2013': '-', '\u2014': '-', '\u2026': '...', '\u2022': '-' }
+
+/** Every visible word of the laid-out document with its box in CSS px (document coordinates). */
+function collectWords(doc: Document, limit = 150_000): Word[] {
+  const out: Word[] = []
+  if (!doc.body) return out
+  const win = doc.defaultView!
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT)
+  const range = doc.createRange()
+  for (let n = walker.nextNode(); n && out.length < limit; n = walker.nextNode()) {
+    const t = n.nodeValue ?? ''
+    if (!t.trim()) continue
+    const el = n.parentElement
+    if (!el || /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|TITLE)$/.test(el.tagName)) continue
+    const cs = win.getComputedStyle(el)
+    if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) continue
+    const re = /\S+/g
+    let m: RegExpExecArray | null
+    while ((m = re.exec(t)) && out.length < limit) {
+      range.setStart(n, m.index); range.setEnd(n, m.index + m[0].length)
+      const r = range.getBoundingClientRect()
+      if (r.width < 0.5 || r.height < 0.5) continue
+      const text = m[0].replace(/[\u2018\u2019\u201c\u201d\u2013\u2014\u2026\u2022]/g, (c) => TYPO[c])
+      if (LATIN1.test(text)) out.push({ text, x: r.left, y: r.top, w: r.width, h: r.height })
+    }
+  }
+  range.detach()
+  return out
+}
+
+/** Invisible text for one page slice [a, b) of the document, placed over the page image. */
+function drawTextLayer(pdf: JsPDF, words: Word[], a: number, b: number, left: number, top: number, pxPerPt: number) {
+  const size0 = pdf.getFontSize()
+  pdf.setFont('helvetica', 'normal')
+  for (const w of words) {
+    const cy = w.y + w.h / 2
+    if (cy < a || cy >= b) continue
+    const size = Math.max(1, (w.h / pxPerPt) * 0.8)
+    pdf.setFontSize(size)
+    const natural = pdf.getTextWidth(w.text)
+    const target = w.w / pxPerPt
+    const x = left + w.x / pxPerPt
+    const y = top + (w.y - a + w.h * 0.78) / pxPerPt
+    pdf.text(w.text, x, y, { renderingMode: 'invisible', horizontalScale: natural > 0 ? Math.min(4, Math.max(0.25, target / natural)) : 1 })
+  }
+  pdf.setFontSize(size0)
 }
 
 export interface HtmlPdfResult { pdf: JsPDF; pages: number; firstPage: number; anchors: { id: string; page: number }[] }
@@ -193,6 +246,8 @@ export async function renderHtmlToPdf(html: string, opts: HtmlPdfOptions): Promi
       const c = chunks[chunks.length - 1]
       if (c && p[1] - c.y0 <= maxChunk) { c.y1 = p[1]; c.pages.push(p) } else chunks.push({ y0: p[0], y1: p[1], pages: [p] })
     }
+    let words: Word[] = []
+    if (opts.textLayer !== false) { try { words = collectWords(doc) } catch { words = [] } }
     const bg = doc.defaultView!.getComputedStyle(doc.body).backgroundColor
     const bgColor = bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent' ? bg : '#ffffff'
     let done = 0
@@ -215,6 +270,7 @@ export async function renderHtmlToPdf(html: string, opts: HtmlPdfOptions): Promi
         const isPng = quality >= 1
         const data = pc.toDataURL(isPng ? 'image/png' : 'image/jpeg', quality)
         pdf.addImage(data, isPng ? 'PNG' : 'JPEG', m.left, m.top, contentWpt, (b - a) / pxPerPt, undefined, 'FAST')
+        if (words.length) drawTextLayer(pdf, words, a, b, m.left, m.top, pxPerPt)
         done++
         opts.onProgress?.(0.05 + 0.95 * (done / pages.length), `Rendering page ${done} of ${pages.length}`)
       }

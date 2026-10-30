@@ -142,11 +142,18 @@ export async function resizePages(bytes: Bytes, o: ResizeOpts) {
   const out = await PDFDocument.create()
   const n = src.getPageCount()
   const target = new Set(o.pages ?? Array.from({ length: n }, (_, i) => i))
-  const emb = await embedPages(out, src, Array.from({ length: n }, (_, i) => i))
+  // Embed only the pages being resized, and copy the rest in ONE copyPages call, so fonts and
+  // images shared between pages are stored once instead of once per page.
+  const all = Array.from({ length: n }, (_, i) => i)
+  const tIdx = all.filter((i) => target.has(i)), kIdx = all.filter((i) => !target.has(i))
+  const embList = tIdx.length ? await embedPages(out, src, tIdx) : []
+  const keptList = kIdx.length ? await out.copyPages(src, kIdx) : []
+  const emb: Record<number, (typeof embList)[number]> = {}, kept: Record<number, (typeof keptList)[number]> = {}
+  tIdx.forEach((i, k) => { emb[i] = embList[k] }); kIdx.forEach((i, k) => { kept[i] = keptList[k] })
   for (let i = 0; i < n; i++) {
     const sp = src.getPage(i)
     const [vw, vh] = visualSize(sp)
-    if (!target.has(i)) { const [p] = await out.copyPages(src, [i]); out.addPage(p); continue }
+    if (!target.has(i)) { out.addPage(kept[i]); continue }
     let [W, H] = o.size
     const land = o.orientation === 'landscape' || (o.orientation === 'auto' && vw > vh)
     if (land ? W < H : W > H) [W, H] = [H, W]

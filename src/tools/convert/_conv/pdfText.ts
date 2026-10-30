@@ -135,13 +135,15 @@ export function buildBlocks(lines: Line[], body: number, headingSizes: number[],
       // continuation line: join, de-hyphenating words split across lines
       const lastRun = cur.runs[cur.runs.length - 1]
       const add = l.runs.map((r) => ({ ...r }))
-      if (lastRun && /[a-z]-$/.test(lastRun.text) && /^[a-z]/.test(add[0]?.text ?? '')) lastRun.text = lastRun.text.slice(0, -1)
+      const hyph = !!lastRun && /[a-z]-$/.test(lastRun.text) && /^[a-z]/.test(add[0]?.text ?? '')
+      if (hyph) lastRun.text = lastRun.text.slice(0, -1)
       else if (add[0]) add[0].text = ' ' + add[0].text
       for (const r of add) {
         const lr = cur.runs[cur.runs.length - 1]
         if (lr && lr.bold === r.bold && lr.italic === r.italic) lr.text += r.text; else cur.runs.push(r)
       }
-      cur.text += ' ' + l.text
+      // keep the plain text in step with the runs, so "transduc-" + "tion" reads "transduction" in text output too
+      if (hyph) { const t = cur.text.trimEnd(); cur.text = (t.endsWith('-') ? t.slice(0, -1) : t) + l.text } else cur.text += ' ' + l.text
       if (cur.align === 'center' && !centered) cur.align = 'left'
     }
     prevLine = l

@@ -125,7 +125,7 @@ export default function TextToPdf() {
             onDragOver={(e) => e.preventDefault()} onDrop={(e) => { const f = e.dataTransfer.files[0]; if (f) { e.preventDefault(); onFile(f) } }}
             className={cn('h-72 w-full resize-y bg-transparent p-4 text-[13px] leading-relaxed text-fg outline-none scrollbar-thin', font === 'courier' ? 'font-mono' : font === 'times' ? 'font-serif' : 'font-sans')} />
         </div>
-        {unicode && <div className="flex items-start gap-2 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-sm"><Languages className="mt-0.5 size-4 shrink-0 text-accent" /><div>Non-Latin characters detected, this text will be rendered with your system fonts for full Unicode support (pages are images, not selectable text).</div></div>}
+        {unicode && <div className="flex items-start gap-2 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-sm"><Languages className="mt-0.5 size-4 shrink-0 text-accent" /><div>Non-Latin characters detected, this text will be rendered with your system fonts for full Unicode support (pages are images; words in Latin script can still be searched and copied).</div></div>}
         {result ? <>
           <ResultCard blob={result.blob} filename={outName} title={`${result.pages} page${result.pages > 1 ? 's' : ''}`} />
           <PdfPreview blob={result.blob} height={620} />

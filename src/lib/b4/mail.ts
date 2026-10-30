@@ -31,7 +31,10 @@ export async function parseEml(data: ArrayBuffer | string): Promise<Mail> {
 }
 
 export async function parseMsg(buf: ArrayBuffer): Promise<Mail> {
-  const MsgReader = (await import('@kenjiuno/msgreader')).default
+  // The package is CommonJS with exports.default; depending on bundler interop the class sits at .default or .default.default.
+  const mod: any = await import('@kenjiuno/msgreader')
+  const MsgReader = [mod?.default?.default, mod?.default, mod].find((c) => typeof c === 'function')
+  if (!MsgReader) throw new Error('The Outlook MSG reader could not be loaded.')
   const r = new MsgReader(buf)
   const d: any = r.getFileData()
   if (d.error) throw new Error('This MSG file could not be read.')
