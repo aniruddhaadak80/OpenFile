@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { safeBlobUrl } from '@/lib/safe'
 import { Crop } from 'lucide-react'
 import { Button, Dropzone, Label, Segmented, Slider, ToolGrid, ResultCard } from '@/components/ui'
 import { baseName } from '@/lib/files'
@@ -48,7 +49,7 @@ export default function VideoReframe() {
       main={
         <div className="space-y-3">
           <FileBar file={file} onReset={() => { if (job.busy) job.cancel(); setFile(null); setOut(null) }} extra={meta?.duration ? <span className="font-mono text-xs text-muted">{meta.width}×{meta.height} · {fmtTime(meta.duration, 0)}</span> : null} />
-          {out && outUrl ? <ResultCard blob={out.blob} filename={`${baseName(file.name)}-${out.ratio.replace(':', 'x')}.mp4`} originalSize={file.size} title={`Reframed to ${out.ratio}`}><video src={outUrl} controls playsInline className="mx-auto max-h-[480px] rounded-xl bg-black" /></ResultCard> : (
+          {out && outUrl ? <ResultCard blob={out.blob} filename={`${baseName(file.name)}-${out.ratio.replace(':', 'x')}.mp4`} originalSize={file.size} title={`Reframed to ${out.ratio}`}><video src={safeBlobUrl(outUrl)} controls playsInline className="mx-auto max-h-[480px] rounded-xl bg-black" /></ResultCard> : (
             <div className="grid gap-3 sm:grid-cols-2">
               <VideoStage src={url} playable={meta?.playable !== false} />
               <div className="relative mx-auto max-h-[420px] w-full overflow-hidden rounded-2xl border border-border" style={{ aspectRatio: prevAspect, maxWidth: rw < rh ? 240 : undefined, background: fill === 'color' ? color : '#000' }} aria-label="Frame preview">
