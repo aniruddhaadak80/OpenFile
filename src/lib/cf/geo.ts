@@ -172,3 +172,18 @@ export function timeGapByDistance(a: Pt[], b: Pt[], every = 1000) {
   const a0 = a.find((p) => p.time != null)?.time ?? 0, b0 = b.find((p) => p.time != null)?.time ?? 0
   return ma.slice(0, mb.length).map((t, i) => ({ km: ((i + 1) * every) / 1000, gap: ((t - a0) - (mb[i] - b0)) / 1000 }))
 }
+
+/** Parse KML or other XML text into an XML Document without handing it to an HTML-capable parser:
+ * the text is loaded as an XML response from a local blob URL, so no markup is ever interpreted as HTML. */
+export function xmlDocument(text: string): Promise<Document> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/xml' }))
+    const x = new XMLHttpRequest()
+    x.open('GET', url)
+    x.overrideMimeType('application/xml')
+    x.responseType = 'document'
+    x.onload = () => { URL.revokeObjectURL(url); if (x.responseXML) resolve(x.responseXML); else reject(new Error('This file is not valid XML.')) }
+    x.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read this file.')) }
+    x.send()
+  })
+}

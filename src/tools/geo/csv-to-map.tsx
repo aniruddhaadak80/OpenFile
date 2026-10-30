@@ -34,7 +34,7 @@ export default function CsvToMap() {
         <RowsTable rows={rows} max={60} />
       </div>
       <Card className="space-y-4 self-start">
-        {!s.book ? <div><Label hint={<label className="cursor-pointer text-accent">or open a file<input type="file" hidden accept=".csv,.tsv,.txt,.xlsx,.xls,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f) }} /></label>}>CSV with coordinates</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-32" /></div>
+        {!s.book ? <div><Label hint={<label className="cursor-pointer text-accent focus-within:underline">or open a file<input type="file" className="sr-only" accept=".csv,.tsv,.txt,.xlsx,.xls,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f) }} /></label>}>CSV with coordinates</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-32" /></div>
           : <div className="flex items-center justify-between text-sm"><span className="truncate">{s.file?.name}</span><Button size="sm" variant="ghost" onClick={s.reset}>Clear</Button></div>}
         <div className="grid grid-cols-2 gap-2"><div><Label>Latitude</Label><Select value={String(L)} onChange={setLat} options={[{ value: '-1', label: 'Pick' }, ...opts]} /></div><div><Label>Longitude</Label><Select value={String(O)} onChange={setLon} options={[{ value: '-1', label: 'Pick' }, ...opts]} /></div></div>
         <div><Label>Name</Label><Select value={String(N)} onChange={setNm} options={[{ value: '-1', label: 'None' }, ...opts]} /></div>

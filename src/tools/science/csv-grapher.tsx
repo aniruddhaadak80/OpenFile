@@ -40,7 +40,7 @@ export default function CsvGrapher() {
       <div className="space-y-3">
         {!s.book ? <div><Label hint={<button className="text-accent cursor-pointer" onClick={() => document.getElementById('csvg-file')?.click()}>or open a file</button>}>Data (CSV, first row is the header)</Label>
           <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-40" />
-          <input id="csvg-file" type="file" hidden accept=".csv,.tsv,.txt,.xlsx,.xls,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f); e.target.value = '' }} /></div>
+          <input id="csvg-file" type="file" className="sr-only" accept=".csv,.tsv,.txt,.xlsx,.xls,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f); e.target.value = '' }} /></div>
           : <div className="flex items-center gap-2 text-sm"><span className="truncate">{s.file?.name}</span><Button size="sm" variant="ghost" onClick={s.reset}>Use pasted data</Button></div>}
         <ErrorNote error={s.error} />
         <Card className="p-2">

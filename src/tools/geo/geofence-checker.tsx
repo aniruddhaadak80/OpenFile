@@ -3,7 +3,7 @@ import { Download } from 'lucide-react'
 import { Button, Card, Dropzone, Label, Segmented, Select, Textarea } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
 import { TrackMap } from '@/lib/bcat/geoui'
-import { circleZone, guessLatLonCols, parseLatLon, pointInGeometry, rowsToPoints, zonesFromGeoJSON, type Zone } from '@/lib/cf/geo'
+import { circleZone, xmlDocument, guessLatLonCols, parseLatLon, pointInGeometry, rowsToPoints, zonesFromGeoJSON, type Zone } from '@/lib/cf/geo'
 import { sniffDelimiter, str, toCsvText } from '@/lib/cf/sheet'
 import { csvSplit } from '@/lib/cf/study'
 import { useSheet, useColOptions, RowsTable, Stat, Stats, NumBox } from '@/lib/cf/ui'
@@ -28,7 +28,7 @@ export default function GeofenceChecker() {
   const tagged = useMemo(() => pts.map((p) => ({ ...p, zones: allZones.filter((z) => pointInGeometry(p.lon, p.lat, z.geometry)).map((z) => z.name) })), [pts, allZones])
   const outRows = useMemo(() => [[...(rows[0] ?? []), 'zone', 'inside'], ...rows.slice(1).map((r, i) => { const t = tagged.find((x) => x.row === i); return [...r, t?.zones.join('; ') ?? '', t ? (t.zones.length ? 'yes' : 'no') : 'no coordinates'] })], [rows, tagged])
   const inside = tagged.filter((t) => t.zones.length).length
-  const loadZones = async (f: File) => { setZerr(null); try { let gj: any; if (/\.km[lz]$/i.test(f.name)) { const tg = await import('@tmcw/togeojson'); let xml = await f.text(); if (/\.kmz$/i.test(f.name)) { const { unzipSync, strFromU8 } = await import('fflate'); const z = unzipSync(new Uint8Array(await f.arrayBuffer())); const k = Object.keys(z).find((p) => p.endsWith('.kml')); if (!k) throw new Error('No KML in this KMZ.'); xml = strFromU8(z[k]) } gj = tg.kml(new DOMParser().parseFromString(xml, 'text/xml')) } else gj = JSON.parse(await f.text()); const z = zonesFromGeoJSON(gj); if (!z.length) throw new Error('No polygons found in this file.'); setZones(z) } catch (e: any) { setZerr(e.message) } }
+  const loadZones = async (f: File) => { setZerr(null); try { let gj: any; if (/\.km[lz]$/i.test(f.name)) { const tg = await import('@tmcw/togeojson'); let xml = await f.text(); if (/\.kmz$/i.test(f.name)) { const { unzipSync, strFromU8 } = await import('fflate'); const z = unzipSync(new Uint8Array(await f.arrayBuffer())); const k = Object.keys(z).find((p) => p.endsWith('.kml')); if (!k) throw new Error('No KML in this KMZ.'); xml = strFromU8(z[k]) } gj = tg.kml(await xmlDocument(xml)) } else gj = JSON.parse(await f.text()); const z = zonesFromGeoJSON(gj); if (!z.length) throw new Error('No polygons found in this file.'); setZones(z) } catch (e: any) { setZerr(e.message) } }
   const ring = (z: Zone) => { const g2 = z.geometry.type === 'Polygon' ? z.geometry.coordinates[0] : z.geometry.coordinates[0][0]; return g2.map(([x, y]: number[]) => ({ lat: y, lon: x })) }
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
@@ -38,7 +38,7 @@ export default function GeofenceChecker() {
         <RowsTable rows={outRows} max={100} />
       </div>
       <Card className="space-y-4 self-start">
-        {!s.book ? <div><Label hint={<label className="cursor-pointer text-accent">or open a file<input type="file" hidden accept=".csv,.tsv,.txt,.xlsx,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f) }} /></label>}>Points (CSV)</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-28" /></div> : <div className="flex justify-between text-sm"><span className="truncate">{s.file?.name}</span><Button size="sm" variant="ghost" onClick={s.reset}>Clear</Button></div>}
+        {!s.book ? <div><Label hint={<label className="cursor-pointer text-accent focus-within:underline">or open a file<input type="file" className="sr-only" accept=".csv,.tsv,.txt,.xlsx,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f) }} /></label>}>Points (CSV)</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-28" /></div> : <div className="flex justify-between text-sm"><span className="truncate">{s.file?.name}</span><Button size="sm" variant="ghost" onClick={s.reset}>Clear</Button></div>}
         <div className="grid grid-cols-2 gap-2"><div><Label>Latitude</Label><Select value={String(L)} onChange={setLat} options={[{ value: '-1', label: 'Pick' }, ...opts]} /></div><div><Label>Longitude</Label><Select value={String(O)} onChange={setLon} options={[{ value: '-1', label: 'Pick' }, ...opts]} /></div></div>
         <div><Label>Zones</Label><Segmented value={zmode} onChange={setZmode} options={[{ value: 'circle', label: 'Distance from a point' }, { value: 'file', label: 'Polygons file' }]} /></div>
         {zmode === 'circle' ? <div className="grid grid-cols-[1fr_6rem] gap-2"><div><Label>Centre</Label><input value={center} onChange={(e) => setCenter(e.target.value)} className="of-field h-10 w-full rounded-xl border border-border bg-surface-2/60 px-3 font-mono text-sm" /></div><NumBox label="Radius" unit="km" value={radius} onChange={setRadius} /></div>

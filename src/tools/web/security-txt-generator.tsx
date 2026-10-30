@@ -5,7 +5,7 @@ import { OutBox } from '@/lib/cf/ui'
 export function buildSecurityTxt(o: { contacts: string[]; expires: string; encryption?: string; ack?: string; policy?: string; hiring?: string; langs?: string; canonical?: string }) {
   const out: string[] = []
   for (const c of o.contacts) { const v = c.trim(); if (v) out.push(`Contact: ${/^[^:]+@[^:]+$/.test(v) ? 'mailto:' + v : /^\+?[\d\s-]+$/.test(v) ? 'tel:' + v.replace(/\s/g, '') : v}`) }
-  if (o.expires) out.push(`Expires: ${new Date(o.expires + 'T23:59:59Z').toISOString().replace('.000', '')}`)
+  const exp = o.expires ? new Date(o.expires + 'T23:59:59Z') : null; if (exp && !isNaN(exp.getTime())) out.push(`Expires: ${exp.toISOString().replace('.000', '')}`)
   for (const [k, v] of [['Encryption', o.encryption], ['Acknowledgments', o.ack], ['Policy', o.policy], ['Hiring', o.hiring], ['Preferred-Languages', o.langs], ['Canonical', o.canonical]] as const) if (v?.trim()) out.push(`${k}: ${v.trim()}`)
   return out.join('\n') + '\n'
 }

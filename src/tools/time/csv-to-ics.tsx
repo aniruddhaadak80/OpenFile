@@ -13,6 +13,9 @@ function parseDate(v: string): Date | null {
   m = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})/); if (m) { const y = +m[3] < 100 ? 2000 + +m[3] : +m[3]; const [d, mo] = +m[1] > 12 ? [+m[1], +m[2]] : [+m[2], +m[1]]; return new Date(y, mo - 1, d) }
   const t = Date.parse(s); return isNaN(t) ? null : new Date(t)
 }
+/** Spreadsheet cells can arrive as Excel serial numbers (dates), day fractions (times) or "1899-12-30 10:00:00" strings. */
+const cellDate = (v: string) => { const t = v.trim(); if (/^\d{5}(\.\d+)?$/.test(t)) { const d = new Date(Math.round((+t - 25569) * 864e5)); return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}` } return t }
+const cellClock = (v: string) => { const t = v.trim(); if (/^0?\.\d+$/.test(t)) { const m = Math.round(+t * 1440); return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}` } const m = t.match(/^\d{4}-\d{2}-\d{2}[ T](\d{1,2}:\d{2})/); return m ? m[1] : t }
 const guess = (head: string[], re: RegExp) => head.findIndex((h) => re.test(h.toLowerCase()))
 
 export default function CsvToIcs() {
@@ -26,8 +29,8 @@ export default function CsvToIcs() {
   const { events, bad } = useMemo(() => {
     const ev: CalEvent[] = [], bad: number[] = []
     rows.slice(1).forEach((r, i) => {
-      const d = C.date >= 0 ? parseDate(r[C.date] ?? '') : null; if (!d || !(r[C.title] ?? '').trim()) { bad.push(i + 2); return }
-      const a = C.start >= 0 ? parseClock(r[C.start] ?? '') : null, b = C.end >= 0 ? parseClock(r[C.end] ?? '') : null
+      const d = C.date >= 0 ? parseDate(cellDate(r[C.date] ?? '')) : null; if (!d || !(r[C.title] ?? '').trim()) { bad.push(i + 2); return }
+      const a = C.start >= 0 ? parseClock(cellClock(r[C.start] ?? '')) : null, b = C.end >= 0 ? parseClock(cellClock(r[C.end] ?? '')) : null
       const start = new Date(d), allDay = a == null
       if (!allDay) start.setHours(Math.floor(a! / 60), a! % 60)
       let end: Date | undefined; if (!allDay) { end = new Date(d); const bb = b ?? a! + 60; end.setHours(Math.floor(bb / 60), bb % 60); if (end <= start) end.setDate(end.getDate() + 1) }
@@ -39,7 +42,7 @@ export default function CsvToIcs() {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="min-w-0 space-y-3">
-        {!s.book ? <div><Label hint={<label className="cursor-pointer text-accent">or open a file<input type="file" hidden accept=".csv,.tsv,.xlsx,.xls,.ods" onChange={(e) => { const f = e.target.files?.[0]; if (f) s.open(f) }} /></label>}>Schedule (CSV, first row is the header)</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-40" /></div>
+        {!s.book ? <div><Label hint={<label className="cursor-pointer text-accent focus-within:underline">or open a file<input type="file" className="sr-only" accept=".csv,.tsv,.xlsx,.xls,.ods" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; if (/\.(csv|tsv|txt)$/i.test(f.name)) { s.reset(); setText(await f.text()) } else s.open(f) }} /></label>}>Schedule (CSV, first row is the header)</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-40" /></div>
           : <div className="flex justify-between text-sm"><span className="truncate">{s.file?.name}</span><Button size="sm" variant="ghost" onClick={s.reset}>Use pasted data</Button></div>}
         <Stats><Stat label="Events" value={events.length} tone="good" /><Stat label="All day" value={events.filter((e) => e.allDay).length} /><Stat label="Rows skipped" value={bad.length} sub={bad.length ? `rows ${bad.slice(0, 6).join(', ')}` : 'none'} tone={bad.length ? 'warn' : undefined} /></Stats>
         <RowsTable rows={rows} max={60} />

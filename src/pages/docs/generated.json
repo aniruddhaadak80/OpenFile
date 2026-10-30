@@ -868,6 +868,7 @@
     "scripts/tests/b3/ffops.test.ts",
     "scripts/tests/b3/gif-inspect.test.ts",
     "scripts/tests/b3/motion.test.ts",
+    "scripts/tests/b3/reverse.test.ts",
     "scripts/tests/b3/sprite-bitmap.test.ts",
     "scripts/tests/b4/ai.test.mjs",
     "scripts/tests/b4/archive.test.mjs",
