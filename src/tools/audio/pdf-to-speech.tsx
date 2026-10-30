@@ -5,7 +5,7 @@ import { downloadBlob, formatBytes } from '@/lib/files'
 import { encodeWav } from '@/tools/video/_media/audio'
 import { useObjectUrl } from '@/tools/video/_media/media'
 import { useDocInput, DocInput } from '@/lib/b4/aiui'
-import { loadNeural } from './_tts/neural'
+import { loadSpeech } from './_tts/neural'
 import { speechLength } from '@/lib/speech-length'
 import { Note } from '@/tools/video/_media/ui'
 
@@ -62,8 +62,8 @@ export default function PdfToSpeech() {
     const my = ++run.current
     setBusy(true); setError(null); setWav(null); setP(0)
     try {
-      // same on-page Kokoro engine as Text to Speech (the worker version stalled at 0% in some browsers)
-      const tts = await loadNeural((x) => { if (my === run.current) setLoad(x.total ? { l: x.loaded, t: x.total } : null) })
+      // Kokoro in a background worker, with the on-page engine as the fallback when the worker stays silent
+      const tts = await loadSpeech((x) => { if (my === run.current) setLoad(x.total ? { l: x.loaded, t: x.total } : null) })
       if (my !== run.current) return
       setLoad(null)
       const parts: Float32Array[] = []; let sr = 24000

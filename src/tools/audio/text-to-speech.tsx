@@ -3,7 +3,7 @@ import { Play, Pause, Square, Volume2, Search, Info, Pencil, Star, Download, Cpu
 import { motion } from 'framer-motion'
 import { Button, Label, Select, Slider, Textarea, ToolGrid, Input, Progress, Segmented, cn } from '@/components/ui'
 import { downloadBlob, formatBytes } from '@/lib/files'
-import { NEURAL_VOICES, loadNeural, neuralDevice, encodeWav, concatFloat, type LoadProgress } from './_tts/neural'
+import { NEURAL_VOICES, loadSpeech, neuralDevice, encodeWav, concatFloat, type LoadProgress } from './_tts/neural'
 
 type State = 'idle' | 'loading' | 'speaking' | 'paused'
 type Engine = 'system' | 'neural'
@@ -97,7 +97,7 @@ export default function TextToSpeech() {
   const ensureNeural = async () => {
     setNeuralErr(null)
     try {
-      const m = await loadNeural((p) => setLoad(p))
+      const m = await loadSpeech((p) => setLoad(p.status === 'ready' ? null : p))
       setNeuralReady(true); setLoad(null)
       return m
     } catch (e: any) {

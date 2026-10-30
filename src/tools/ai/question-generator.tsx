@@ -51,9 +51,11 @@ export default function QuestionGenerator() {
       const before = kind === 'cards' ? allC.length : allM.length
       ai.setStatus(chunks.length > 1 ? `Writing questions from part ${i + 1} of ${chunks.length}` : 'Writing questions'); ai.setProgress(before / count)
       const want = Math.min(per, count - (kind === 'cards' ? allC.length : allM.length))
+      // the text goes first and the example holds no placeholder words: with the instruction first and a
+      // {"q":"question"} example, SmolLM2 on a CPU copied the example or replied with an empty [] (live, Oct 2026)
       const prompt = kind === 'cards'
-        ? `Create ${want} flashcards that test the most important facts in the text below. Reply with only a JSON array like [{"q":"question","a":"short answer"}].\n\nText:\n${chunks[i]}`
-        : `Create ${want} multiple-choice questions about the most important facts in the text below. Each has 4 options and exactly one correct answer. Reply with only a JSON array like [{"q":"question","options":["A","B","C","D"],"answer":0,"explain":"why"}] where answer is the index of the correct option.\n\nText:\n${chunks[i]}`
+        ? `Text:\n${chunks[i]}\n\nWrite ${want} flashcards that test the most important facts in the text above. Ask what, when, who, how many or why, not yes or no questions. Each flashcard is a JSON object with a question "q" and a short answer "a" taken from the text. Reply with only a JSON array of ${want} objects, like [{"q":"...","a":"..."}].`
+        : `Text:\n${chunks[i]}\n\nWrite ${want} multiple-choice questions about the most important facts in the text above. Each is a JSON object with a question "q", 4 options in "options", the index of the one correct option in "answer" (0 to 3) and a short reason in "explain". Only use facts from the text. Reply with only a JSON array of ${want} objects, like [{"q":"...","options":["...","...","...","..."],"answer":0,"explain":"..."}].`
       // cards appear one by one while the model writes; the raw JSON is never shown
       let txt = '', shown = 0
       const have = () => (kind === 'cards' ? allC.length : allM.length)
@@ -71,7 +73,16 @@ export default function QuestionGenerator() {
       const r: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text. Output valid JSON only.' }, { role: 'user', content: prompt }], { max: want * 90 + 60 }, ai.callbacks({ onToken }))
       const j = extractJson(r), objs = jsonObjects(r)
       const pickBest = <T,>(a: T[], b: T[]) => (b.length > a.length ? b : a)
-      if (kind === 'cards') { const c = pickBest(j ? normCards(j) : [], normCards(objs)); allC.push(...(c.length ? c : parseQa(r)).slice(0, count - allC.length)); setCards([...allC]) }
+      if (kind === 'cards') {
+        let c = pickBest(j ? normCards(j) : [], normCards(objs)); if (!c.length) c = parseQa(r)
+        if (!c.length) {
+          // one plain-text retry: small models that will not write JSON still follow "Q: / A:" lines
+          ai.setStatus('Trying again in plain text')
+          const r2: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text.' }, { role: 'user', content: `Text:\n${chunks[i]}\n\nWrite ${want} questions about the text above, each with a short answer. Use this format:\nQ: question\nA: answer` }], { max: want * 70 + 40 }, ai.callbacks())
+          c = parseQa(r2)
+        }
+        allC.push(...c.slice(0, count - allC.length)); setCards([...allC])
+      }
       else { const m = pickBest(j ? normMcq(j) : [], normMcq(objs)); allM.push(...m.slice(0, count - allM.length)); setMcqs([...allM]) }
     }
     if (!(kind === 'cards' ? allC.length : allM.length)) throw new Error('The model did not return usable questions. Try the larger model, or a shorter, clearer text.')

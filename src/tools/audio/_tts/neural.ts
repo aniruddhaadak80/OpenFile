@@ -60,7 +60,64 @@ export function loadNeural(onProgress?: (p: LoadProgress) => void): Promise<Koko
   return modelPromise
 }
 
-export const neuralLoaded = () => modelPromise !== null
+export const neuralLoaded = () => modelPromise !== null || speechPromise !== null
+
+/** What the tools call: one sentence in, mono samples out. */
+export type SpeechEngine = { generate: (text: string, o: { voice: any; speed?: number }) => Promise<{ audio: Float32Array; sampling_rate: number }> }
+
+let speechPromise: Promise<SpeechEngine> | null = null
+let workerBroken = false
+/** How long a new speech worker may stay silent before the on-page engine takes over. */
+export const WORKER_SILENT_MS = 25000
+
+/** Kokoro in a background worker, so a long text does not freeze the page (on a CPU one sentence blocked the page
+ *  for 30 s or more when it ran here). Some browsers once left that worker silent at 0%, so if it says nothing
+ *  within WORKER_SILENT_MS, or fails to start, this falls back to the on-page engine for the rest of the session. */
+export function loadSpeech(onProgress?: (p: LoadProgress) => void): Promise<SpeechEngine> {
+  if (workerBroken || typeof Worker === 'undefined') return loadNeural(onProgress)
+  if (speechPromise) return speechPromise
+  speechPromise = (async (): Promise<SpeechEngine> => {
+    const gpu = await hasWebGPU()
+    const device = gpu ? 'webgpu' : 'wasm'
+    const { makeTtsWorker } = await import('@/lib/b4/tts')
+    let w: Worker
+    try { w = makeTtsWorker() } catch { workerBroken = true; return loadNeural(onProgress) }
+    const handlers = new Map<number, (m: any) => void>()
+    let seq = 0
+    w.onmessage = (e) => handlers.get(e.data?.id)?.(e.data)
+    const fail = (why: string) => { for (const h of handlers.values()) h({ type: 'error', message: why }) }
+    w.onerror = (e) => { e.preventDefault?.(); workerBroken = true; fail('the speech worker stopped') }
+    // warm up: load the model with no text, so a stall shows up before any sentence is queued
+    const warm = await new Promise<boolean>((resolve) => {
+      const id = ++seq
+      let timer = setTimeout(() => resolve(false), WORKER_SILENT_MS)
+      handlers.set(id, (m) => {
+        clearTimeout(timer); timer = setTimeout(() => resolve(false), WORKER_SILENT_MS * 6)
+        if (m.type === 'load') onProgress?.({ loaded: m.loaded, total: m.total, status: 'downloading' })
+        else if (m.type === 'ready') onProgress?.({ loaded: 0, total: 0, status: 'ready' })
+        else if (m.type === 'done') { clearTimeout(timer); handlers.delete(id); resolve(true) }
+        else if (m.type === 'error') { clearTimeout(timer); handlers.delete(id); resolve(false) }
+      })
+      w.postMessage({ id, texts: [], voice: 'af_heart', speed: 1, device })
+    })
+    if (!warm) { w.terminate(); workerBroken = true; return loadNeural(onProgress) }
+    deviceUsed = device
+    return {
+      generate: (text, o) => new Promise((resolve, reject) => {
+        const id = ++seq
+        let out: { audio: Float32Array; sampling_rate: number } | null = null
+        handlers.set(id, (m) => {
+          if (m.type === 'chunk') out = { audio: m.pcm, sampling_rate: m.sr }
+          else if (m.type === 'done') { handlers.delete(id); out ? resolve(out) : reject(new Error('No audio came back for this sentence.')) }
+          else if (m.type === 'error') { handlers.delete(id); if (workerBroken) speechPromise = null; reject(new Error(m.message)) }
+        })
+        w.postMessage({ id, texts: [text], voice: o.voice, speed: o.speed ?? 1, device })
+      }),
+    }
+  })()
+  speechPromise.catch(() => { speechPromise = null })
+  return speechPromise
+}
 
 /** Encode mono float samples as a 16-bit PCM WAV file. */
 export function encodeWav(samples: Float32Array, sampleRate: number): Blob {
