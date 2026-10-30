@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, FileArchive, Loader2, X, Check, AlertCircle, Smartphone, Maximize2 } from 'lucide-react'
 import { Button, Dropzone, ToolGrid, Label, Segmented, Slider, Switch, Progress, ErrorNote, Badge, useJob, cn } from '@/components/ui'
@@ -18,7 +18,9 @@ export default function HeicConverter() {
   const [view, setView] = useState<number | null>(null)
   const { busy, progress, error, run } = useJob()
 
-  useEffect(() => () => items.forEach((i) => i.out?.forEach((o) => URL.revokeObjectURL(o.url))), []) // eslint-disable-line
+  // revoke on unmount from a ref: the [] closure would only see the first (empty) list
+  const itemsRef = useRef(items); itemsRef.current = items
+  useEffect(() => () => itemsRef.current.forEach((i) => i.out?.forEach((o) => URL.revokeObjectURL(o.url))), [])
 
   const add = (files: File[]) => setItems((s) => [...s, ...files.map((file) => ({ id: `h${++uid}`, file, status: 'queued' as const }))])
   const remove = (id: string) => setItems((s) => s.filter((i) => i.id !== id))

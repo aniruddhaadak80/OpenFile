@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Download, Images, Maximize2, FileArchive, CheckSquare, Square } from 'lucide-react'
 import { Button, Dropzone, ToolGrid, Field, Input, Segmented, Slider, Progress, ErrorNote, Label, Badge, Empty, useJob } from '@/components/ui'
@@ -34,9 +34,17 @@ export default function PdfToImage() {
     openPdfJs(file).then((d) => d.getPage(1)).then((p) => { if (!off) { const v = p.getViewport({ scale: 1 }); setPageSize({ w: v.width, h: v.height }) } }).catch(() => {})
     return () => { off = true }
   }, [file])
-  useEffect(() => () => outs.forEach((o) => URL.revokeObjectURL(o.url)), [outs])
+  // Keep every preview URL alive while it is shown. Revoke only URLs that left the list, and all of them on unmount.
+  // (Revoking on every outs change broke the lightbox for multi-page PDFs: earlier pages pointed at dead blob URLs.)
+  const liveUrls = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    const now = new Set(outs.map((o) => o.url))
+    liveUrls.current.forEach((u) => { if (!now.has(u)) URL.revokeObjectURL(u) })
+    liveUrls.current = now
+  }, [outs])
+  useEffect(() => () => liveUrls.current.forEach((u) => URL.revokeObjectURL(u)), [])
 
-  const reset = () => { setFile(null); setOuts([]); setSelected(new Set()); setRange(''); setPageSize(null) }
+  const reset = () => { setFile(null); setOuts([]); setView(null); setSelected(new Set()); setRange(''); setPageSize(null) }
   const toggle = useCallback((i: number) => setSelected((s) => { const n = new Set(s); n.has(i) ? n.delete(i) : n.add(i); return n }), [])
   const applyRange = () => { const idx = parsePageRanges(range, numPages); if (!idx.length) return toast('No valid pages in that range', 'error'); setSelected(new Set(idx)) }
 
@@ -45,7 +53,7 @@ export default function PdfToImage() {
 
   const convert = () => run(async (setP) => {
     if (!file || !order.length) throw new Error('Select at least one page.')
-    outs.forEach((o) => URL.revokeObjectURL(o.url)); setOuts([])
+    setOuts([])
     const doc = await openPdfJs(file).catch((e) => { throw new Error(pdfError(e)) })
     const res: Out[] = []
     for (let k = 0; k < order.length; k++) {

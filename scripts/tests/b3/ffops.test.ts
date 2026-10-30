@@ -22,8 +22,9 @@ const cases: [string, F.Op][] = [
   ['resize fit color', F.resizeOp('in.mp4', 720, 1280, 'fit', 'color', '#101010', true)],
   ['resize fit blur', F.resizeOp('in.mp4', 360, 640, 'fit', 'blur', '#000', true)],
   ['resize fill', F.resizeOp('in.mp4', 200, 200, 'fill', 'color', '#000', true)],
-  ['reverse with audio', F.reverseOp('in.mp4', 'reverse', true, true)],
-  ['boomerang', F.reverseOp('in.mp4', 'boomerang', true, false)],
+  // reverse and boomerang are built from pieces; scripts/tests/b3/reverse.test.ts runs the whole chain
+  ['reverse piece', F.reversePieceOp('in.mp4', F.reversePlan({ duration: 3, width: 320, height: 240, fps: 25 }), 0)],
+  ['boomerang forward half', F.forwardPieceOp('in.mp4', F.reversePlan({ duration: 3, width: 320, height: 240, fps: 25 }))],
   ['loop x3', F.loopOp('in.mp4', 3, true)],
   ['loop to 7s', F.loopToDurationOp('in.mp4', 7, true)],
   ['fps convert', F.fpsOp('in.mp4', 'convert', 15, 1, true)],

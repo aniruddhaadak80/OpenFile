@@ -79,6 +79,11 @@ export function useDebounced<T>(value: T, ms = 250) {
 
 /** Full-screen image viewer with prev/next (keyboard ← → Esc). */
 export function Lightbox({ items, index, onClose, onIndex, actions }: { items: { src: string; caption?: string }[]; index: number | null; onClose: () => void; onIndex: (i: number) => void; actions?: (i: number) => React.ReactNode }) {
+  // fit: whole image inside the viewport. actual: natural size, scroll to pan (tall pages, small text).
+  const [zoom, setZoom] = useState<'fit' | 'actual'>('fit')
+  const [failed, setFailed] = useState<string | null>(null)
+  const src = index !== null ? items[index]?.src : undefined
+  useEffect(() => { setZoom('fit'); setFailed(null) }, [src])
   useEffect(() => {
     if (index === null) return
     const h = (e: KeyboardEvent) => {
@@ -92,12 +97,22 @@ export function Lightbox({ items, index, onClose, onIndex, actions }: { items: {
   return (
     <AnimatePresence>
       {index !== null && items[index] && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-black/80 p-4 backdrop-blur-sm">
-          <motion.img key={index} initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} src={items[index].src} alt={items[index].caption ?? ''} onClick={(e) => e.stopPropagation()} className="max-h-[80vh] max-w-full rounded-lg bg-white shadow-2xl" />
-          <div onClick={(e) => e.stopPropagation()} className="flex flex-wrap items-center justify-center gap-2 text-sm text-white/90">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} role="dialog" aria-modal="true" aria-label={items[index].caption ?? 'Image preview'} className="fixed inset-0 z-[100] flex flex-col items-center gap-3 bg-black/80 p-3 backdrop-blur-sm sm:p-4">
+          <div className={cn('flex min-h-0 w-full flex-1', zoom === 'fit' ? 'items-center justify-center overflow-hidden' : 'items-start justify-start overflow-auto overscroll-contain')}>
+            {failed === items[index].src ? (
+              <div onClick={(e) => e.stopPropagation()} className="m-auto rounded-xl bg-surface px-5 py-4 text-sm text-fg shadow-2xl">This preview could not be shown. The file itself can still be downloaded.</div>
+            ) : (
+              <motion.img key={items[index].src} initial={{ scale: 0.97, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} src={items[index].src} alt={items[index].caption ?? ''}
+                onError={() => setFailed(items[index].src)}
+                onClick={(e) => { e.stopPropagation(); setZoom((z) => (z === 'fit' ? 'actual' : 'fit')) }}
+                className={cn('rounded-lg bg-white shadow-2xl', zoom === 'fit' ? 'max-h-full max-w-full cursor-zoom-in object-contain' : 'm-auto max-w-none cursor-zoom-out')} />
+            )}
+          </div>
+          <div onClick={(e) => e.stopPropagation()} className="flex shrink-0 flex-wrap items-center justify-center gap-2 text-sm text-white/90">
             <Button size="sm" variant="secondary" disabled={index === 0} onClick={() => onIndex(index - 1)}>← Prev</Button>
             <span className="px-2 font-mono">{items[index].caption ?? `${index + 1} / ${items.length}`}</span>
             <Button size="sm" variant="secondary" disabled={index === items.length - 1} onClick={() => onIndex(index + 1)}>Next →</Button>
+            <Button size="sm" variant="secondary" onClick={() => setZoom((z) => (z === 'fit' ? 'actual' : 'fit'))}>{zoom === 'fit' ? 'Actual size' : 'Fit to screen'}</Button>
             {actions?.(index)}
             <Button size="sm" variant="secondary" onClick={onClose}>Close</Button>
           </div>

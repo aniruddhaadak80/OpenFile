@@ -52,12 +52,100 @@ export function resizeOp(input: string, w: number, h: number, mode: FillMode, pa
 
 /* ------------------------------------------------------------------ time */
 
-export function reverseOp(input: string, mode: 'reverse' | 'boomerang', hasAudio: boolean, reverseAudio: boolean): Op {
-  if (mode === 'boomerang') {
-    const fc = `[0:v]split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0,${EVEN}[v]`
-    return { output: 'out.mp4', args: ['-i', input, '-filter_complex', fc, '-map', '[v]', '-an', ...H264(), ...FASTSTART, 'out.mp4'] }
+/* Reverse and boomerang.
+ * The reverse filter keeps every decoded frame in memory until the input ends, so a long or large clip
+ * runs ffmpeg.wasm out of memory (seen as "Error while opening encoder" or an out of memory error).
+ * Instead the clip is cut into short pieces, each piece is reversed on its own (bounded memory), and the
+ * pieces are joined last piece first with a stream copy. Every piece uses the same constant frame rate,
+ * size and encoder settings, so the copy join is seamless. The sound is reversed in one pass at the end
+ * (audio is small). */
+
+export interface ReverseSource { duration: number; width?: number; height?: number; fps?: number }
+export interface ReversePlan {
+  /** constant output frame rate */
+  fps: number
+  /** size factor (1 = keep size), applied before reversing so stored frames are small */
+  scale: number
+  /** frames per piece */
+  frames: number
+  /** pieces in source order; start and length in seconds. One piece with len 0 means "whole file, no seeking". */
+  pieces: { start: number; len: number }[]
+}
+
+const STD_FPS = [23.976, 24, 25, 29.97, 30, 48, 50, 59.94, 60]
+/** Probed fps (often the tbr of a variable frame rate file) to a sane constant rate. Fallback 30, at most 60. */
+export function outFps(fps?: number): number {
+  if (!fps || !Number.isFinite(fps) || fps < 1 || fps > 1000) return 30
+  const near = STD_FPS.reduce((a, b) => (Math.abs(b - fps) < Math.abs(a - fps) ? b : a))
+  if (Math.abs(near - fps) / near < 0.02) return near
+  return Math.min(60, Math.max(1, Math.round(fps)))
+}
+
+/** Split a clip into pieces whose decoded frames fit in `budgetMB` (yuv420p, 1.5 bytes per pixel).
+ *  Inputs whose long side is over `maxSide` are scaled down so they fit (default: 4K and up go to 1920). */
+export function reversePlan(src: ReverseSource, opts: { budgetMB?: number; maxSide?: number; scaleAbove?: number } = {}): ReversePlan {
+  const budget = (opts.budgetMB ?? 160) * 1024 * 1024
+  const maxSide = opts.maxSide ?? 1920
+  const scaleAbove = opts.scaleAbove ?? 2560
+  const fps = outFps(src.fps)
+  const w = src.width || 1920, h = src.height || 1080
+  const long = Math.max(w, h)
+  // default: only 4K class inputs shrink; an explicit maxSide (the low memory retry) always applies
+  const limit = opts.maxSide ? maxSide : Math.max(scaleAbove, maxSide)
+  const scale = long > limit ? maxSide / long : 1
+  const frameBytes = Math.max(1, w * scale * h * scale * 1.5)
+  // between 0.5 s and 5 s of frames per piece, fewer if the frames are big
+  const frames = Math.max(Math.ceil(fps * 0.5), Math.min(Math.round(fps * 5), Math.floor(budget / frameBytes)))
+  const dur = src.duration > 0 && Number.isFinite(src.duration) ? src.duration : 0
+  if (!dur) return { fps, scale, frames, pieces: [{ start: 0, len: 0 }] }
+  const total = Math.max(1, Math.ceil(dur * fps - 0.01))
+  const pieces: { start: number; len: number }[] = []
+  for (let f = 0; f < total; f += frames) pieces.push({ start: f / fps, len: Math.min(frames, total - f) / fps })
+  return { fps, scale, frames, pieces }
+}
+
+const fpsStr = (fps: number) => (Math.round(fps * 1000) / 1000).toString()
+/** Same picture pipeline for every piece: constant rate, even size (optionally smaller), 8 bit 4:2:0. */
+function picture(plan: ReversePlan, frames?: number) {
+  const k = plan.scale
+  const size = k === 1 ? EVEN : `scale=trunc(iw*${f3(k)}/2)*2:trunc(ih*${f3(k)}/2)*2`
+  return [`fps=${fpsStr(plan.fps)}`, ...(frames ? [`trim=end_frame=${frames}`, 'setpts=PTS-STARTPTS'] : []), size, 'format=yuv420p'].join(',')
+}
+const CFR = (plan: ReversePlan) => ['-r', fpsStr(plan.fps), '-fps_mode', 'cfr', '-video_track_timescale', '90000']
+
+export const pieceName = (i: number) => `r${String(i).padStart(4, '0')}.mp4`
+
+/** Reverse one piece of the video (no sound). */
+export function reversePieceOp(input: string, plan: ReversePlan, i: number): Op {
+  const p = plan.pieces[i]
+  const frames = p.len ? Math.round(p.len * plan.fps) : 0
+  // read one extra frame of input so rounding never drops the last frame, then trim to the exact count
+  const seek = p.len ? ['-ss', f3(p.start), '-t', f3(p.len + 1 / plan.fps), '-i', input] : ['-i', input]
+  const out = pieceName(i)
+  return { output: out, args: [...seek, '-map', '0:v:0', '-vf', `${picture(plan, frames)},reverse`, '-an', '-sn', '-dn', ...H264(), ...CFR(plan), out] }
+}
+
+/** The clip played forward with the same settings as the pieces (first half of a boomerang). */
+export function forwardPieceOp(input: string, plan: ReversePlan): Op {
+  return { output: 'fwd.mp4', args: ['-i', input, '-map', '0:v:0', '-vf', picture(plan), '-an', '-sn', '-dn', ...H264(), ...CFR(plan), 'fwd.mp4'] }
+}
+
+/** concat demuxer list: names in play order */
+export const concatList = (names: string[]) => names.map((n) => `file '${n}'`).join('\n') + '\n'
+
+/** Order the pieces for playback: last piece first. Boomerang starts with the forward clip. */
+export function reverseOrder(plan: ReversePlan, mode: 'reverse' | 'boomerang'): string[] {
+  const rev = plan.pieces.map((_, i) => pieceName(i)).reverse()
+  return mode === 'boomerang' ? ['fwd.mp4', ...rev] : rev
+}
+
+/** Join the pieces with a stream copy. With `audioFrom`, the sound of that input is added, reversed. */
+export function reverseJoinOp(list: string, audioFrom?: string): Op {
+  return {
+    output: 'out.mp4',
+    args: ['-f', 'concat', '-safe', '0', '-i', list, ...(audioFrom ? ['-i', audioFrom] : []), '-map', '0:v:0',
+      ...(audioFrom ? ['-map', '1:a:0', '-af', 'areverse', ...AAC] : ['-an']), '-c:v', 'copy', ...FASTSTART, 'out.mp4'],
   }
-  return mp4(['-i', input], `reverse,${EVEN}`, hasAudio ? (reverseAudio ? ['-af', 'areverse', ...AAC] : 'none') : 'none')
 }
 
 export function loopOp(input: string, times: number, hasAudio: boolean, ext = 'mp4'): Op {
