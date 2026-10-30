@@ -42,16 +42,49 @@ function softwareGraphics(): boolean {
   } catch { return false }
 }
 
+/** Count animation frames and 100 ms timer ticks over `ms`. Timers ticking while frames stall means the main thread
+ * was free but the page could not be drawn. */
+function probeFrames(ms: number, done: (frames: number, ticks: number) => void): () => void {
+  let frames = 0, ticks = 0, on = true
+  const t0 = performance.now()
+  const f = () => { if (!on) return; frames++; if (performance.now() - t0 < ms) requestAnimationFrame(f) }
+  requestAnimationFrame(f)
+  const iv = window.setInterval(() => { ticks++ }, 100)
+  const t = window.setTimeout(() => { clearInterval(iv); if (on) done(frames, ticks) }, ms + 50)
+  return () => { on = false; clearInterval(iv); clearTimeout(t) }
+}
+const stalled = (frames: number, ticks: number, ms: number): boolean => document.visibilityState === 'visible' && ticks >= Math.floor(ms / 100) - 3 && frames < 3
+
+/** Switch to the lite look for this session. While the page is still starting, also load it once more so the lite look
+ * is in place before the first frame: an engine that has stopped drawing never draws a class added afterwards. */
+function goLite(reload: boolean) {
+  const root = document.documentElement
+  root.classList.add('of-lite')
+  try {
+    sessionStorage.setItem(LITE_KEY, '1')
+    if (!reload || sessionStorage.getItem(RELOAD_KEY)) return
+    sessionStorage.setItem(RELOAD_KEY, '1')
+  } catch { return }
+  // after the load event, so a navigation that is still loading is not cut off
+  if (document.readyState === 'complete') location.reload()
+  else window.addEventListener('load', () => location.reload(), { once: true })
+}
+
 /* Called from main.tsx before the first render. The lite look has to be in place before the first frame: once WebKit
- * without a GPU starts drawing the full home page it stops producing frames, and a class added later is never drawn.
- * Phones (under 640 px) get it up front when the device says it is slow: Save-Data, 2 GB of memory or less, or no GPU
- * graphics. CPU core counts are not used (Safari reports 4 on every iPhone). Desktop sizes keep the full look. */
+ * without a GPU starts drawing the full home page it stops producing frames, and a class added later is never drawn
+ * (CI diagnostics, Oct 2026: lite before the first frame kept the page drawing and taps worked; lite added later left
+ * it at 0 frames and taps timed out). WebKit reports no GPU details (always "Apple GPU") and no memory size, so phones
+ * (under 640 px) start lite unless the device shows it has headroom: more than 4 CPU cores and more than 4 GB of memory
+ * when reported, a hardware renderer and no Save-Data. Safari reports 4 cores on every iPhone, so iPhones get the lite
+ * look; 8-core Android phones keep the full (already lighter) phone hero. Tablet and desktop sizes always start full,
+ * and the frame watchdog below still switches them to lite if they stall. */
 export function applyLiteBeforePaint(): void {
   const root = document.documentElement
   try { if (sessionStorage.getItem(LITE_KEY) === '1') { root.classList.add('of-lite'); return } } catch { /* storage blocked */ }
   if (typeof matchMedia === 'undefined' || !matchMedia('(max-width: 639px)').matches) return
   const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } }
-  if (nav.connection?.saveData || (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) || softwareGraphics()) root.classList.add('of-lite')
+  const slow = !!nav.connection?.saveData || (nav.deviceMemory !== undefined && nav.deviceMemory <= 4) || (nav.hardwareConcurrency || 0) <= 4 || softwareGraphics()
+  if (slow) root.classList.add('of-lite')
 }
 
 export function startFrameWatchdog(): () => void {
@@ -61,33 +94,20 @@ export function startFrameWatchdog(): () => void {
   try { if (sessionStorage.getItem(LITE_KEY) === '1') { root.classList.add('of-lite'); return () => {} } } catch { /* storage blocked */ }
   let stopped = false
   let timer = 0
+  let cancel = () => {}
   const probe = () => {
-    if (stopped || root.classList.contains('of-lite')) return
+    if (stopped) return
+    if (root.classList.contains('of-lite')) return
     if (document.visibilityState !== 'visible') { timer = window.setTimeout(probe, 2000); return }
-    let frames = 0, ticks = 0
-    const t0 = performance.now()
-    const f = () => { frames++; if (performance.now() - t0 < 1200) requestAnimationFrame(f) }
-    requestAnimationFrame(f)
-    const iv = window.setInterval(() => { ticks++ }, 100)
-    timer = window.setTimeout(() => {
-      clearInterval(iv)
-      if (stopped) return
-      // timers kept running (the main thread was free) yet frames all but stopped, while the page stayed visible
-      if (document.visibilityState === 'visible' && ticks >= 8 && frames < 3) {
-        root.classList.add('of-lite')
-        try {
-          sessionStorage.setItem(LITE_KEY, '1')
-          // Tripped while the page was still starting: the engine may never draw the class change, so load the page
-          // again once with the lite look applied before the first frame (applyLiteBeforePaint reads the flag).
-          if (performance.now() < 6000 && !sessionStorage.getItem(RELOAD_KEY)) { sessionStorage.setItem(RELOAD_KEY, '1'); location.reload() }
-        } catch { /* storage blocked */ }
-        return
-      }
+    cancel = probeFrames(1200, (frames, ticks) => {
+      if (stopped || root.classList.contains('of-lite')) return
+      // still starting (first 6 s): reload once with the lite look; later on, just switch for the rest of the session
+      if (stalled(frames, ticks, 1200)) return goLite(performance.now() < 6000)
       timer = window.setTimeout(probe, 4000)
-    }, 1250)
+    })
   }
-  // first check once the page has had a moment to settle, then every few seconds while things look fine
+  // first check once the page has had a moment to settle, then every few seconds for the first minute
   timer = window.setTimeout(probe, 600)
   const stopAfter = window.setTimeout(() => { stopped = true }, 60_000)
-  return () => { stopped = true; clearTimeout(timer); clearTimeout(stopAfter) }
+  return () => { stopped = true; cancel(); clearTimeout(timer); clearTimeout(stopAfter) }
 }

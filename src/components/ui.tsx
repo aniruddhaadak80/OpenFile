@@ -43,11 +43,24 @@ export function Label({ children, hint, className }: { children: React.ReactNode
   return <div className={cn('mb-1.5 flex items-center justify-between text-xs font-medium uppercase tracking-wide text-muted', className)}><span>{children}</span>{hint && <span className="normal-case tracking-normal font-mono text-fg/80">{hint}</span>}</div>
 }
 
+/** Plain text of a React node (for accessible names of buttons whose label is markup). */
+export function nodeText(n: React.ReactNode): string {
+  if (n == null || typeof n === 'boolean') return ''
+  if (typeof n === 'string' || typeof n === 'number') return String(n)
+  if (Array.isArray(n)) return n.map(nodeText).join(' ').replace(/\s+/g, ' ').trim()
+  if (React.isValidElement(n)) { const p = n.props as { children?: React.ReactNode; 'aria-label'?: string; title?: string }; return (p['aria-label'] ?? nodeText(p.children) ?? '').trim() || (p.title ?? '') }
+  return ''
+}
+/** True when a Segmented control sits in these children (directly, in a fragment, or one wrapper element down). */
+function hasSegmented(children: React.ReactNode, depth = 0): boolean {
+  return React.Children.toArray(children).some((c) => React.isValidElement(c) && (c.type === Segmented || (depth < 1 && hasSegmented((c.props as { children?: React.ReactNode }).children, depth + 1))))
+}
+
 export function Field({ label, hint, children, className }: { label: React.ReactNode; hint?: React.ReactNode; children: React.ReactNode; className?: string }) {
   const id = React.useId()
   // A <label> around a row of buttons names only the first button with the whole field label (and a click on the
   // label text presses it). A Segmented control gets a labelled group instead, so each button keeps its own name.
-  if (React.isValidElement(children) && children.type === Segmented) return <div role="group" aria-labelledby={id} className={cn('block', className)}><Label hint={hint}><span id={id}>{label}</span></Label>{children}</div>
+  if (hasSegmented(children)) return <div role="group" aria-labelledby={id} className={cn('block', className)}><Label hint={hint}><span id={id}>{label}</span></Label>{children}</div>
   return <label className={cn('block', className)}><Label hint={hint}>{label}</Label>{children}</label>
 }
 
@@ -89,7 +102,7 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
     <div className={cn('inline-flex flex-wrap gap-1 rounded-xl border border-border bg-surface-2/60 p-1', className)}>
       {options.map((o) => {
         const v = typeof o === 'string' ? o : o.value; const l = typeof o === 'string' ? o : o.label
-        return <button key={v} type="button" aria-pressed={value === v} aria-label={typeof l === 'string' ? l : undefined} onClick={() => onChange(v)} className={cn('rounded-lg px-3 py-1.5 text-xs font-medium transition cursor-pointer', value === v ? 'bg-surface text-fg shadow-sm ring-1 ring-border' : 'text-muted hover:text-fg')}>{l}</button>
+        return <button key={v} type="button" aria-pressed={value === v} aria-label={(typeof l === 'string' ? l : nodeText(l)) || v} onClick={() => onChange(v)} className={cn('rounded-lg px-3 py-1.5 text-xs font-medium transition cursor-pointer', value === v ? 'bg-surface text-fg shadow-sm ring-1 ring-border' : 'text-muted hover:text-fg')}>{l}</button>
       })}
     </div>
   )

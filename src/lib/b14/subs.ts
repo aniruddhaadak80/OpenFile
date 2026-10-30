@@ -131,12 +131,27 @@ export function splitAt(cues: Cue[], times: number[], rebase: boolean): Cue[][] 
   }
   return parts
 }
+/** Where to cut between cue i-1 and cue i: the end of the earlier cue when it ends before the next starts,
+ * so no line is cut short and a later join (gap 0) puts every line back at its own time. */
+function boundary(cues: Cue[], i: number): number {
+  const prevEnd = cues.slice(0, i).reduce((m, c) => Math.max(m, c.end), 0)
+  return prevEnd <= cues[i].start ? prevEnd : cues[i].start
+}
 /** Even split into n parts by cue count. */
 export function splitCount(cues: Cue[], n: number, rebase: boolean): Cue[][] {
   const per = Math.ceil(cues.length / Math.max(1, n))
   const times: number[] = []
-  for (let i = per; i < cues.length; i += per) times.push(cues[i].start)
+  for (let i = per; i < cues.length; i += per) times.push(boundary(cues, i))
   return splitAt(cues, times, rebase)
+}
+/** A default cut for short files: the cue boundary closest to the middle, so no line is cut in two. */
+export function middleCut(cues: Cue[]): number | null {
+  const sorted = [...cues].sort((a, b) => a.start - b.start)
+  if (sorted.length < 2) return null
+  const end = sorted.reduce((m, c) => Math.max(m, c.end), 0)
+  let best: number | null = null
+  for (let i = 1; i < sorted.length; i++) { const t = boundary(sorted, i); if (t > 0 && (best === null || Math.abs(t - end / 2) < Math.abs(best - end / 2))) best = t }
+  return best
 }
 /** Join tracks one after another. offsets[i] is where file i starts; when missing, it starts after the previous last cue plus gap. */
 export function joinTracks(tracks: Cue[][], offsets: (number | null)[], gap = 1): Cue[] {

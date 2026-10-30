@@ -4,7 +4,7 @@ import { Button, Dropzone, Field, Input, Segmented, Switch, Tabs, ToolGrid, Sele
 import { baseName, downloadBlob, zipFiles } from '@/lib/files'
 import { writeSubtitles, fmtClock, parseClock, SUB_ACCEPT, SUB_FORMATS, subExt, subMime, type SubDoc, type SubFormat } from '@/lib/b4/subtitles'
 import { TopBar } from '@/lib/b4/ui'
-import { splitAt, splitCount, joinTracks } from '@/lib/b14/subs'
+import { middleCut, splitAt, splitCount, joinTracks } from '@/lib/b14/subs'
 import { CueList, readSubs, attempt, OpenButton } from '@/lib/b14/ui'
 
 type Item = { f: File; d: SubDoc; offset: string }
@@ -27,7 +27,7 @@ function Split() {
   const [parts, setParts] = useState(2)
   const [rebase, setRebase] = useState(true)
   const [out, setOut] = useState<SubFormat>('srt')
-  const open = async (f: File) => { const d = await attempt(() => readSubs(f), 'Could not read this subtitle file.'); if (d) { setFile(f); setDoc(d); setOut(d.format === 'txt' ? 'srt' : d.format); const end = d.cues.reduce((a, c) => Math.max(a, c.end), 0); if (end > 0 && end <= 45 * 60) setTimes(fmtClock(Math.round(end / 2), '.').replace(/\.\d+$/, '')) } }
+  const open = async (f: File) => { const d = await attempt(() => readSubs(f), 'Could not read this subtitle file.'); if (d) { setFile(f); setDoc(d); setOut(d.format === 'txt' ? 'srt' : d.format); const end = d.cues.reduce((a, c) => Math.max(a, c.end), 0); const mid = middleCut(d.cues); if (end > 0 && end <= 45 * 60 && mid) setTimes(fmtClock(mid, '.').replace(/\.000$/, '')) } }
   const pieces = useMemo(() => {
     if (!doc) return []
     if (mode === 'parts') return splitCount(doc.cues, parts, rebase)
