@@ -20,14 +20,15 @@ export function watchStaleChunks() {
   window.addEventListener('unhandledrejection', (e) => { const r = e.reason; if (r instanceof Error && isChunkError(r)) reloadOnceForStaleChunk() })
   window.addEventListener('error', (e) => { if (e.error instanceof Error && isChunkError(e.error)) reloadOnceForStaleChunk() })
 }
-export class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err: Error | null }> {
+/** title: the card heading. onError: called when the card is shown (Layout uses it to end the boot splash). */
+export class ErrorBoundary extends React.Component<{ children: React.ReactNode; title?: string; onError?: () => void }, { err: Error | null }> {
   state = { err: null as Error | null }
   static getDerivedStateFromError(err: Error) { return { err } }
-  componentDidCatch(e: Error) { if (isChunkError(e) && reloadOnceForStaleChunk()) return; console.error(e) }
+  componentDidCatch(e: Error) { if (isChunkError(e) && reloadOnceForStaleChunk()) return; console.error(e); this.props.onError?.() }
   render() {
     if (this.state.err) return (
       <div className="rounded-2xl border border-danger/30 bg-danger/5 p-8 text-center">
-        <div className="font-semibold text-danger">Something went wrong in this tool.</div>
+        <div className="font-semibold text-danger">{this.props.title ?? 'Something went wrong in this tool.'}</div>
         <div className="mt-2 font-mono text-xs text-muted">{this.state.err.message}</div>
         <button onClick={() => (isChunkError(this.state.err!) ? location.reload() : this.setState({ err: null }))} className="mt-4 rounded-lg border border-border px-4 py-2 text-sm cursor-pointer">Try again</button>
       </div>

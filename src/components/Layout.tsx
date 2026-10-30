@@ -16,6 +16,7 @@ import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
 import { cn } from './ui'
 import { bootDone } from '@/lib/boot'
+import { ErrorBoundary } from './ErrorBoundary'
 import { UpdateBar, HeaderInstall } from './app/AppStatus'
 import { startFrameWatchdog, startOffscreenMotion } from '@/lib/offscreenMotion'
 
@@ -173,7 +174,7 @@ export function Layout() {
         )}
       </header>
       <RouteWipe k={loc.pathname} />
-      <main id="main" tabIndex={-1} className="flex-1 outline-none"><AnimatePresence mode="wait" initial={false}><PageTransition key={loc.pathname} k={loc.pathname}><Suspense fallback={<RouteSkeleton />}><Outlet /><BootDone /></Suspense></PageTransition></AnimatePresence></main>
+      <main id="main" tabIndex={-1} className="flex-1 outline-none"><AnimatePresence mode="wait" initial={false}><PageTransition key={loc.pathname} k={loc.pathname}><ErrorBoundary title="This page could not load." onError={bootDone}><Suspense fallback={<RouteSkeleton />}><Outlet /><BootDone /></Suspense></ErrorBoundary></PageTransition></AnimatePresence></main>
       <Footer />
       <CommandPalette open={palette} onClose={() => setPalette(false)} />
       <ShortcutsOverlay open={help} onClose={() => setHelp(false)} />

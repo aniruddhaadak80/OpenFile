@@ -309,6 +309,8 @@ svg .hr-spin { transform-box: view-box; transform-origin: 100px 100px; }
 /* lite look, set by the frame watchdog in src/lib/offscreenMotion.ts when the device cannot keep up */
 .of-lite *, .of-lite *::before, .of-lite *::after { animation: none !important; transition: none !important; filter: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; will-change: auto !important; }
 .of-lite canvas.pointer-events-none.absolute, .of-lite .hr-stream, .of-lite .hr-comet { display: none !important; }
+/* without the backdrop blur a 72% glass lets text behind toasts, the scrolled header and menus show through */
+.of-lite .glass { background: color-mix(in oklab, var(--bg) 96%, transparent); }
 /* phones: fewer light particles, no float or backdrop blur on the ring icons, so a phone without much GPU keeps up */
 @media (max-width: 639px) {
   .hr-stream:nth-child(n+9) { display: none; }
