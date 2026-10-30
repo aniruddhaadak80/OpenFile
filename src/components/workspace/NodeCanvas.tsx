@@ -238,7 +238,8 @@ export default function NodeCanvas(p: CanvasProps) {
                   <div className="truncate text-[11px] text-muted">{summary(n)}</div>
                 </div>
                 {!special && !n.enabled && <Power className="size-3.5 shrink-0 text-muted" aria-hidden="true" />}
-                {n.id !== OUT && <span data-port-out title="Drag to another step to link" className="absolute -right-2 top-1/2 grid size-4 -translate-y-1/2 cursor-crosshair place-items-center rounded-full border-2 border-surface transition group-hover:scale-125" style={{ background: col }} />}
+                {/* the visible dot stays 16 px; the transparent span around it is the hit area (32 px, 44 px on touch screens) */}
+                {n.id !== OUT && <span data-port-out title="Drag to another step to link" className="absolute right-0 top-1/2 grid size-8 -translate-y-1/2 translate-x-1/2 cursor-crosshair place-items-center rounded-full pointer-coarse:size-11"><span className="size-4 rounded-full border-2 border-surface transition group-hover:scale-125" style={{ background: col }} /></span>}
               </div>
             )
           })}

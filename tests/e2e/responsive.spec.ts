@@ -79,12 +79,16 @@ async function checkHeaderAndFooter(page: Page, width: number) {
     // WebKit on Linux has reported this header button as never "stable" (its box changes between frames), which made
     // a normal click wait forever. Sample the box for a few frames first so a real layout shift shows up in the log,
     // then fall back to a forced click; the checks below still prove the menu opens and works.
+    // The sampling gives up after 2 s: when the engine stops firing requestAnimationFrame it must log that, not hang.
     const boxes = await btn.evaluate((el) => new Promise<string[]>((done) => {
       const out: string[] = []
-      const step = () => { const r = el.getBoundingClientRect(); out.push(`${r.x.toFixed(1)},${r.y.toFixed(1)},${r.width.toFixed(1)}x${r.height.toFixed(1)}`); if (out.length < 8) requestAnimationFrame(step); else done(out) }
+      const box = () => { const r = el.getBoundingClientRect(); return `${r.x.toFixed(1)},${r.y.toFixed(1)},${r.width.toFixed(1)}x${r.height.toFixed(1)}` }
+      const step = () => { out.push(box()); if (out.length < 8) requestAnimationFrame(step); else done(out) }
       requestAnimationFrame(step)
+      setTimeout(() => done(out.length ? out : [box(), 'no animation frame within 2 s']), 2000)
     }))
-    if (new Set(boxes).size > 1) console.log(`[${page.url()}] Open menu button moved between frames: ${boxes.join(' | ')}`)
+    if (boxes.includes('no animation frame within 2 s')) console.log(`[${page.url()}] requestAnimationFrame did not fire within 2 s`)
+    else if (new Set(boxes).size > 1) console.log(`[${page.url()}] Open menu button moved between frames: ${boxes.join(' | ')}`)
     await btn.click({ timeout: 8000 }).catch(async () => { console.log(`[${page.url()}] Open menu click was not actionable, forcing it`); await btn.click({ force: true }) })
     const menu = page.locator('#mobile-menu')
     await expect(menu).toBeVisible()
@@ -103,12 +107,13 @@ async function checkHeaderAndFooter(page: Page, width: number) {
     await expect(page.locator('header').getByRole('link', { name: /^All \d+ tools$/ }).first()).toBeHidden()
   }
   const footer = page.locator('footer')
-  await footer.scrollIntoViewIfNeeded()
+  // scrollIntoViewIfNeeded waits for the element to be stable across animation frames; never hang on that
+  await footer.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(async () => { console.log(`[${page.url()}] footer scroll was not stable, scrolling directly`); await footer.evaluate((el) => el.scrollIntoView()) })
   await expect(footer).toBeVisible()
   expect(await footer.locator('a[href]').count(), 'footer has links').toBeGreaterThan(10)
   // the privacy policy link, not the footer category grid's /category/privacy link (hidden in a scroller at 360px)
   const link = footer.locator('a[href$="/privacy"]:not([href*="/category/"])').first()
-  await link.scrollIntoViewIfNeeded()
+  await link.scrollIntoViewIfNeeded({ timeout: 10_000 }).catch(() => link.evaluate((el) => el.scrollIntoView({ block: 'center' })))
   await expect(link).toBeInViewport()
 }
 
@@ -169,7 +174,8 @@ test.describe('blog navigation', () => {
     expect(n, 'search finds several posts').toBeGreaterThan(1)
     const target = cards.nth(Math.min(n - 1, 3))
     await target.scrollIntoViewIfNeeded()
-    await page.mouse.wheel(0, 200)
+    // mouse.wheel is not supported in mobile WebKit; scroll the page itself
+    await page.evaluate(() => window.scrollBy(0, 200))
     await page.waitForTimeout(400)
     const before = await page.evaluate(() => window.scrollY)
     const href = await target.getAttribute('href')
@@ -193,6 +199,10 @@ test.describe('blog navigation', () => {
     for (const [from, to] of [['/sketch', '/sketch-board'], ['/ppt-to-pdf', '/powerpoint-to-pdf'], ['/docs/tools/images', '/docs/tools/image']]) {
       await page.goto(from)
       await expect(page, `${from} goes to ${to}`).toHaveURL(new RegExp(`${to}/?$`))
+      // let the redirect target finish loading before the next goto, so it cannot interrupt that navigation
+      await expect(page.locator('main#main')).toBeVisible()
+      await page.waitForLoadState('load')
+      await page.waitForTimeout(500)
     }
   })
 })

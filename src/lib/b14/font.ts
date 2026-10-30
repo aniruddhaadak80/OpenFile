@@ -1,5 +1,5 @@
 /* Font helpers for round 14: load any font into opentype.js, SVG path normalising for icon fonts, bitmap atlas packing. */
-import { sanitizeMarkup } from '@/lib/safe'
+import { sanitizeMarkup } from '../safe.ts'
 import { flattenPath, parseTransform, mul, IDENT, shapeToPath, type Mat } from './cad.ts'
 
 /** Open TTF, OTF, WOFF, WOFF2 or EOT with opentype.js (WOFF2 and EOT go through fonteditor-core first). */

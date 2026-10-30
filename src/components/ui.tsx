@@ -1,5 +1,5 @@
 /* OpenFile UI kit, every tool composes these primitives for a consistent look. */
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Upload, Download, Copy, Check, X, Loader2, FileIcon } from 'lucide-react'
 import { formatBytes, downloadBlob, copyText } from '@/lib/files'
 import { toast } from './toast'
@@ -44,6 +44,10 @@ export function Label({ children, hint, className }: { children: React.ReactNode
 }
 
 export function Field({ label, hint, children, className }: { label: React.ReactNode; hint?: React.ReactNode; children: React.ReactNode; className?: string }) {
+  const id = React.useId()
+  // A <label> around a row of buttons names only the first button with the whole field label (and a click on the
+  // label text presses it). A Segmented control gets a labelled group instead, so each button keeps its own name.
+  if (React.isValidElement(children) && children.type === Segmented) return <div role="group" aria-labelledby={id} className={cn('block', className)}><Label hint={hint}><span id={id}>{label}</span></Label>{children}</div>
   return <label className={cn('block', className)}><Label hint={hint}>{label}</Label>{children}</label>
 }
 
@@ -85,7 +89,7 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
     <div className={cn('inline-flex flex-wrap gap-1 rounded-xl border border-border bg-surface-2/60 p-1', className)}>
       {options.map((o) => {
         const v = typeof o === 'string' ? o : o.value; const l = typeof o === 'string' ? o : o.label
-        return <button key={v} type="button" onClick={() => onChange(v)} className={cn('rounded-lg px-3 py-1.5 text-xs font-medium transition cursor-pointer', value === v ? 'bg-surface text-fg shadow-sm ring-1 ring-border' : 'text-muted hover:text-fg')}>{l}</button>
+        return <button key={v} type="button" aria-pressed={value === v} aria-label={typeof l === 'string' ? l : undefined} onClick={() => onChange(v)} className={cn('rounded-lg px-3 py-1.5 text-xs font-medium transition cursor-pointer', value === v ? 'bg-surface text-fg shadow-sm ring-1 ring-border' : 'text-muted hover:text-fg')}>{l}</button>
       })}
     </div>
   )
@@ -171,11 +175,32 @@ export function FileChip({ file, onRemove, extra }: { file: File | { name: strin
   )
 }
 
+/** True when another visible "Start over" button is already on the tool page (for example in the file bar above a
+ * result card), so the card can leave its own out instead of showing the same action twice. */
+export function useOtherStartOver(ref: React.RefObject<HTMLElement | null>) {
+  const [other, setOther] = useState(false)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const check = () => {
+      const scope = el.closest('main') ?? document.body
+      const found = [...scope.querySelectorAll<HTMLButtonElement>('button')].some((b) => !el.contains(b) && !b.hasAttribute('data-card-reset') && b.offsetParent !== null && b.textContent?.trim() === 'Start over')
+      setOther((v) => (v === found ? v : found))
+    }
+    check()
+    const t = window.setTimeout(check, 60)
+    return () => window.clearTimeout(t)
+  })
+  return other
+}
+
 /** Success panel with download + size comparison */
 export function ResultCard({ blob, filename, originalSize, title = 'Your file is ready', children, onReset }: { blob: Blob; filename: string; originalSize?: number; title?: string; children?: React.ReactNode; onReset?: () => void }) {
   const saved = originalSize ? 1 - blob.size / originalSize : 0
+  const box = useRef<HTMLDivElement>(null)
+  const other = useOtherStartOver(box)
   return (
-    <div className="rounded-2xl border border-success/30 bg-success/5 p-5">
+    <div ref={box} className="rounded-2xl border border-success/30 bg-success/5 p-5">
       <div className="flex flex-wrap items-center gap-4">
         <div className="grid size-12 place-items-center rounded-xl bg-success/15 text-success"><Check className="size-6" /></div>
         <div className="min-w-0 flex-1">
@@ -185,7 +210,7 @@ export function ResultCard({ blob, filename, originalSize, title = 'Your file is
           </div>
         </div>
         <div className="flex gap-2">
-          {onReset && <Button variant="ghost" onClick={onReset}>Start over</Button>}
+          {onReset && !other && <Button variant="ghost" data-card-reset="" onClick={onReset}>Start over</Button>}
           <Button icon={<Download className="size-4" />} onClick={() => downloadBlob(blob, filename)}>Download</Button>
         </div>
       </div>

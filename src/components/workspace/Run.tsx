@@ -82,7 +82,12 @@ export function Results({ outputs, inputs, running }: { outputs: Item[]; inputs:
   const [zipping, setZipping] = useState(false)
   const [f, setF] = useState<'all' | 'smaller' | 'bigger' | 'kept'>('all')
   const m = useMotion()
-  const totIn = useMemo(() => { const seen = new Set<string>(); let s = 0; outputs.forEach((o) => { const i = inputs.get(o.src); if (i && !seen.has(o.src)) { seen.add(o.src); s += i.blob.size } }); return s }, [outputs, inputs])
+  // A merged or batch output (Photo kit, PDF pack, ZIP repack) has src '@batch', not one input, so it was counted as
+  // 0 B in. When any output comes from the whole set, count every input file once.
+  const totIn = useMemo(() => {
+    if (outputs.some((o) => !inputs.has(o.src))) { let s = 0; inputs.forEach((i) => { s += i.blob.size }); return s }
+    const seen = new Set<string>(); let s = 0; outputs.forEach((o) => { const i = inputs.get(o.src); if (i && !seen.has(o.src)) { seen.add(o.src); s += i.blob.size } }); return s
+  }, [outputs, inputs])
   const totOut = outputs.reduce((a, o) => a + o.blob.size, 0)
   const shown = outputs.filter((o) => { const i = inputs.get(o.src); if (f === 'kept') return o.kept; if (!i) return f === 'all'; if (f === 'smaller') return o.blob.size < i.blob.size; if (f === 'bigger') return o.blob.size > i.blob.size; return true })
   if (running && !outputs.length) return <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="aspect-[4/3]" />)}</div>

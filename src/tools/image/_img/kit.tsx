@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, Plus, X, ImageIcon, Package, Check, Loader2, AlertCircle } from 'lucide-react'
-import { Button, Dropzone, cn } from '@/components/ui'
+import { Button, Dropzone, cn, useOtherStartOver } from '@/components/ui'
 import { downloadBlob, formatBytes, zipFiles, baseName } from '@/lib/files'
 import { toast } from '@/components/toast'
 
@@ -455,6 +455,7 @@ export function BatchResults({ results, zipName = 'openfile-images.zip', onReset
     const r = el.getBoundingClientRect()
     if (r.top > window.innerHeight - 96 || r.bottom < 64) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' })
   }, [])
+  const other = useOtherStartOver(box)
   const zipAll = async () => { setZipping(true); try { downloadBlob(await zipFiles(results.map((r) => ({ name: r.name, data: r.blob }))), zipName) } finally { setZipping(false) } }
   return (
     <motion.div ref={box} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="scroll-mt-24 rounded-2xl border border-success/30 bg-success/5 p-5">
@@ -466,7 +467,7 @@ export function BatchResults({ results, zipName = 'openfile-images.zip', onReset
           {results.length === 1 && results[0].note && <div className="mt-0.5 text-xs text-muted">{results[0].note.charAt(0).toUpperCase() + results[0].note.slice(1)}{/original kept/.test(results[0].note) ? '. Making it smaller would only lose quality, so you get the same file back.' : ''}</div>}
         </div>
         <div className="flex flex-wrap gap-2">
-          {onReset && <Button variant="ghost" onClick={onReset}>Start over</Button>}
+          {onReset && !other && <Button variant="ghost" data-card-reset="" onClick={onReset}>Start over</Button>}
           {results.length > 1
             ? <Button icon={<Package className="size-4" />} loading={zipping} onClick={zipAll}>Download all (ZIP)</Button>
             : results[0] && <Button icon={<Download className="size-4" />} onClick={() => downloadBlob(results[0].blob, results[0].name)}>Download</Button>}

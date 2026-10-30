@@ -1,11 +1,29 @@
 import React from 'react'
 // A tool chunk that fails to load (usually a deploy replaced the hashed files while this tab was open) stays failed:
 // React.lazy keeps the rejected import, so remounting cannot recover. Reloading fetches the current build.
-const isChunkError = (e: Error) => /dynamically imported module|Importing a module script failed|error loading dynamically imported|Loading chunk/i.test(e.message)
+export const isChunkError = (e: Error) => /dynamically imported module|Importing a module script failed|error loading dynamically imported|Loading chunk/i.test(e.message)
+const RELOAD_KEY = 'of:chunk-reload'
+/** Reload once to pick up the current build. A second failure within a minute shows the error card instead of looping. */
+export function reloadOnceForStaleChunk(): boolean {
+  try {
+    const last = Number(sessionStorage.getItem(RELOAD_KEY) || 0)
+    if (Date.now() - last < 60_000) return false
+    sessionStorage.setItem(RELOAD_KEY, String(Date.now()))
+  } catch { return false }
+  location.reload()
+  return true
+}
+/** Called once from main.tsx: stale chunks outside a tool page (lazy routes, preloads) reload once too. */
+export function watchStaleChunks() {
+  // Vite fires vite:preloadError when a lazy chunk or its preload fails (old hashed file gone after a deploy).
+  window.addEventListener('vite:preloadError', (e) => { if (reloadOnceForStaleChunk()) e.preventDefault() })
+  window.addEventListener('unhandledrejection', (e) => { const r = e.reason; if (r instanceof Error && isChunkError(r)) reloadOnceForStaleChunk() })
+  window.addEventListener('error', (e) => { if (e.error instanceof Error && isChunkError(e.error)) reloadOnceForStaleChunk() })
+}
 export class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err: Error | null }> {
   state = { err: null as Error | null }
   static getDerivedStateFromError(err: Error) { return { err } }
-  componentDidCatch(e: Error) { console.error(e) }
+  componentDidCatch(e: Error) { if (isChunkError(e) && reloadOnceForStaleChunk()) return; console.error(e) }
   render() {
     if (this.state.err) return (
       <div className="rounded-2xl border border-danger/30 bg-danger/5 p-8 text-center">

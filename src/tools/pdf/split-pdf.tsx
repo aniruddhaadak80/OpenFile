@@ -166,7 +166,7 @@ export default function SplitPdf() {
       <FileBar file={file} pages={numPages} onReset={reset} />
       {results ? (
         results.length === 1
-          ? <ResultCard blob={results[0].blob} filename={results[0].name} title={`${results[0].pages} pages extracted`} onReset={reset} />
+          ? <ResultCard blob={results[0].blob} filename={results[0].name} title={`${results[0].pages} page${results[0].pages === 1 ? '' : 's'} extracted`} onReset={reset} />
           : <MultiResult files={results} zipName={`${baseName(file.name)}-split.zip`} onReset={reset} originalSize={file.size} title={`Split into ${results.length} files`} />
       ) : null}
       <ToolGrid

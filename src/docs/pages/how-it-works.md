@@ -65,7 +65,7 @@ Small engines ship with the app. Four large engines are downloaded **the first t
 
 | Engine | Size (approx.) | Downloaded from | Tools |
 | --- | --- | --- | --- |
-| ffmpeg.wasm core | ~30 MB | jsDelivr CDN | Video tools, most audio tools |
+| ffmpeg.wasm core | ~30 MB | OpenFile itself (jsDelivr or unpkg only as a fallback) | Video tools, most audio tools |
 | Tesseract OCR | engine + a few MB per language | jsDelivr / tessdata CDN | OCR PDF |
 | Background removal model | ~40 MB | IMG.LY CDN | Background Remover |
 | Whisper (tiny / base) | ~40 MB / ~80 MB | Hugging Face Hub | Audio Transcriber |

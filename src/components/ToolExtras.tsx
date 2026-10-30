@@ -52,6 +52,15 @@ export function WhatNext({ slug }: { slug: string }) {
     setEv({ ...e, format, tools })
   }), [slug])
   useEffect(() => setEv(null), [slug])
+  // A new file dropped or picked means the saved file named here is no longer the one being worked on (and the new
+  // one may be unreadable), so hide the suggestions until the next save.
+  useEffect(() => {
+    if (!ev) return
+    const clear = (e: Event) => { const t = e.target; if (e.type === 'drop' || (t instanceof HTMLInputElement && t.type === 'file')) setEv(null) }
+    window.addEventListener('drop', clear, true)
+    window.addEventListener('change', clear, true)
+    return () => { window.removeEventListener('drop', clear, true); window.removeEventListener('change', clear, true) }
+  }, [ev])
   const go = async (t: ToolMeta) => {
     if (!ev) return
     let blob = ev.blob

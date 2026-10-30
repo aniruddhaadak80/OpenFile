@@ -17,6 +17,7 @@ import { useReducedMotion } from '@/lib/store'
 import { cn } from './ui'
 import { bootDone } from '@/lib/boot'
 import { UpdateBar, HeaderInstall } from './app/AppStatus'
+import { startFrameWatchdog, startOffscreenMotion } from '@/lib/offscreenMotion'
 
 export const REPO_URL = 'https://github.com/aniruddhaadak80/OpenFile'
 
@@ -90,6 +91,7 @@ export function Layout() {
   const [megaEnd, setMegaEnd] = useState(true)
   const megaScroll = useCallback(() => { const el = megaBox.current; if (el) setMegaEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 8) }, [])
   useEffect(() => { if (mega) requestAnimationFrame(megaScroll) }, [mega, megaScroll])
+  useEffect(() => { const a = startOffscreenMotion(), b = startFrameWatchdog(); return () => { a(); b() } }, [])
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPalette((p) => !p) } }
     const s = () => setScrolled(window.scrollY > 8)
@@ -103,13 +105,13 @@ export function Layout() {
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-on-accent">Skip to content</a>
       <header className={cn('sticky top-0 z-50 transition-all duration-300', scrolled ? 'glass border-b border-border' : 'border-b border-transparent bg-transparent')}>
         <motion.div className="absolute inset-x-0 bottom-0 h-px origin-left bg-gradient-brand" style={{ scaleX: progress, opacity: scrolled ? 1 : 0 }} aria-hidden="true" />
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 md:gap-2 lg:gap-4">
           <Link to="/" className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight">
-            <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline">v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
+            <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline md:hidden lg:inline">v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
           </Link>
-          <nav className="ml-4 hidden items-center gap-1 text-sm md:flex">
+          <nav className="ml-1 hidden items-center gap-0.5 whitespace-nowrap text-sm md:flex lg:ml-4 lg:gap-1">
             <div ref={megaWrap} className="relative" onPointerEnter={(e) => { if (e.pointerType === 'mouse') { hoverAt.current = Date.now(); setMega(true) } }} onPointerLeave={(e) => { if (e.pointerType === 'mouse') setMega(false) }} onKeyDown={(e) => { if (e.key === 'Escape') setMega(false) }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMega(false) }}>
-              <button onClick={() => { if (Date.now() - hoverAt.current < 500) setMega(true); else setMega((v) => !v) }} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-3 py-2 text-muted hover:text-fg cursor-pointer">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
+              <button onClick={() => { if (Date.now() - hoverAt.current < 500) setMega(true); else setMega((v) => !v) }} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-2 py-2 text-muted hover:text-fg cursor-pointer lg:px-3">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
               <AnimatePresence>
               {mega && (
                 <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} className="absolute left-0 top-full w-[min(860px,calc(100vw-2rem))] pt-2">
@@ -143,22 +145,23 @@ export function Layout() {
               )}
               </AnimatePresence>
             </div>
-            {[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/install', 'Install'], ['/about', 'About']].map(([to, l]) => (
-              <NavLink key={to} to={to} className={({ isActive }) => cn('nav-pill relative rounded-lg px-3 py-2 transition-colors hover:text-fg', isActive ? 'text-fg' : 'text-muted')}>
-                {({ isActive }) => <>{l}{isActive && <motion.span layoutId="nav-underline" className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-accent" />}</>}
+            {/* Install and About wait for xl: below 1280 px the full row crowded the header (768 px wrapped, 1024 px overflowed); both stay in the footer */}
+            {[['/tools', 'All Tools'], ['/workspace', 'Workspace'], ['/docs', 'Docs'], ['/blog', 'Blog'], ['/install', 'Install', 'xl'], ['/about', 'About', 'xl']].map(([to, l, bp]) => (
+              <NavLink key={to} to={to} className={({ isActive }) => cn('nav-pill relative whitespace-nowrap rounded-lg px-2 py-2 transition-colors hover:text-fg lg:px-3', bp && 'hidden xl:block', isActive ? 'text-fg' : 'text-muted')}>
+                {({ isActive }) => <>{l}{isActive && <motion.span layoutId="nav-underline" className="absolute inset-x-2 -bottom-px lg:inset-x-3 h-0.5 rounded-full bg-accent" />}</>}
               </NavLink>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
-            <button data-tour="search" onClick={() => setPalette(true)} className="hidden h-9 items-center gap-2 rounded-xl border border-border bg-surface-2/60 px-3 text-sm text-muted hover:text-fg sm:flex cursor-pointer">
-              <Search className="size-4" /> Search tools <kbd className="ml-4 rounded border border-border px-1.5 font-mono text-[10px]">Ctrl K</kbd>
+            <button data-tour="search" onClick={() => setPalette(true)} aria-label="Search tools" className="hidden h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-xl border border-border bg-surface-2/60 px-3 text-sm text-muted hover:text-fg sm:flex cursor-pointer">
+              <Search className="size-4" /><span className="md:sr-only xl:not-sr-only">Search tools</span> <kbd className="ml-4 rounded border border-border px-1.5 font-mono text-[10px] md:hidden xl:inline">Ctrl K</kbd>
             </button>
             <button onClick={() => setPalette(true)} className="grid size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 sm:hidden" aria-label="Search"><Search className="size-4" /></button>
             <HeaderInstall />
             <Link to="/history" className="hidden size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg md:grid" aria-label="History" title="History"><HistoryIcon className="size-4" /></Link>
             <Link to="/settings" className="hidden size-9 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg md:grid" aria-label="Settings" title="Settings"><SettingsIcon className="size-4" /></Link>
             <span data-tour="theme" className="inline-flex rounded-xl"><ThemeSwitcher /></span>
-            <a href={REPO_URL} target="_blank" rel="noreferrer" className="hidden size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg sm:grid md:size-9" aria-label="GitHub"><Github className="size-4" /></a>
+            <a href={REPO_URL} target="_blank" rel="noreferrer" className="hidden size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-fg sm:grid md:hidden xl:grid xl:size-9" aria-label="GitHub"><Github className="size-4" /></a>
             <button onClick={() => setMobile(!mobile)} className="grid size-11 place-items-center rounded-xl text-muted hover:bg-surface-2 md:hidden" aria-label={mobile ? 'Close menu' : 'Open menu'} aria-expanded={mobile} aria-controls="mobile-menu">{mobile ? <X className="size-5" /> : <Menu className="size-5" />}</button>
           </div>
         </div>

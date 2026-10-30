@@ -304,6 +304,17 @@ svg .hr-spin { transform-box: view-box; transform-origin: 100px 100px; }
 .hr-stream { animation-name: hr-stream; animation-timing-function: cubic-bezier(.55,0,.9,.6); animation-iteration-count: infinite; transform: rotate(var(--a)) translateX(var(--r)); opacity: 0; }
 @keyframes hr-stream { 0% { transform: rotate(var(--a)) translateX(var(--r)) scale(1); opacity: 0 } 15% { opacity: 1 } 85% { opacity: .9 } 100% { transform: rotate(var(--a)) translateX(0) scale(.2); opacity: 0 } }
 .reduce-motion .hr-stream { display: none; }
+/* off-screen sections (src/lib/offscreenMotion.ts) keep their frame but stop animating */
+[data-offscreen], [data-offscreen] *, [data-offscreen] *::before, [data-offscreen] *::after { animation-play-state: paused !important; }
+/* lite look, set by the frame watchdog in src/lib/offscreenMotion.ts when the device cannot keep up */
+.of-lite *, .of-lite *::before, .of-lite *::after { animation: none !important; transition: none !important; filter: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; will-change: auto !important; }
+.of-lite canvas.pointer-events-none.absolute, .of-lite .hr-stream, .of-lite .hr-comet { display: none !important; }
+/* phones: fewer light particles, no float or backdrop blur on the ring icons, so a phone without much GPU keeps up */
+@media (max-width: 639px) {
+  .hr-stream:nth-child(n+9) { display: none; }
+  .hr-root .animate-float { animation: none; }
+  .hr-root .hr-cat { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
 
 /* safe area for the sticky mobile action bar */
 .pb-safe-bar { padding-bottom: calc(env(safe-area-inset-bottom) + 6rem); }

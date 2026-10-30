@@ -66,7 +66,9 @@ export default function ChatPdf() {
       await aiRun('text-generation', ai.info, ai.device, [
         { role: 'system', content: `You answer questions about a document using only the excerpts given. Cite the ${pdf ? 'page' : 'part'} numbers like [${pdf ? 'page' : 'part'} 3]. If the excerpts do not contain the answer, say you could not find it in the document. Keep answers short and plain.` },
         ...prior,
-        { role: 'user', content: `Excerpts:\n${context}\n\nQuestion: ${question}` },
+        // Question last, after the quoted excerpts, with a plain instruction: small CPU models (SmolLM2 360M) copied the
+        // excerpts back or said they had no information when the message ended on "Question: ..." after "Excerpts:".
+        { role: 'user', content: `Document excerpts:\n"""\n${context}\n"""\n\nAnswer this question in one or two sentences, using the excerpts: ${question}` },
       ], { max: 400 }, ai.callbacks({ onToken: (t) => { out += t; setMsgs((m) => { const n = [...m]; n[n.length - 1] = { role: 'assistant', content: out, sources: hits }; return n }) } }))
     }).then((r) => { if (r === undefined) setMsgs((m) => (m.at(-1)?.content ? m : m.slice(0, -2))) })
   }

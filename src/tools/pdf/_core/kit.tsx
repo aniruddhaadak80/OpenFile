@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, ChevronLeft, ChevronRight, Download, FileText, RefreshCw, RotateCw, Archive, Eye, Loader2 } from 'lucide-react'
-import { Button, Input, Spinner, cn, Badge } from '@/components/ui'
+import { Button, Input, Spinner, cn, Badge, useOtherStartOver } from '@/components/ui'
 import { openPdfJs, renderPage, type PdfJsDoc } from '@/lib/pdf'
 import { downloadBlob, formatBytes, parsePageRanges, zipFiles } from '@/lib/files'
 
@@ -211,8 +211,10 @@ export type OutFile = { name: string; blob: Blob; pages?: number; note?: string 
 export function MultiResult({ files, zipName, onReset, originalSize, title }: { files: OutFile[]; zipName: string; onReset: () => void; originalSize?: number; title?: string }) {
   const [zipping, setZipping] = useState(false)
   const total = files.reduce((a, f) => a + f.blob.size, 0)
+  const box = useRef<HTMLDivElement>(null)
+  const other = useOtherStartOver(box)
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-success/30 bg-success/5 p-5">
+    <motion.div ref={box} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-success/30 bg-success/5 p-5">
       <div className="flex flex-wrap items-center gap-4">
         <div className="grid size-12 place-items-center rounded-xl bg-success/15 text-success"><Check className="size-6" /></div>
         <div className="min-w-0 flex-1">
@@ -220,7 +222,7 @@ export function MultiResult({ files, zipName, onReset, originalSize, title }: { 
           <div className="text-sm text-muted">{formatBytes(total)} total{originalSize ? ` · from ${formatBytes(originalSize)}` : ''}</div>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" onClick={onReset}>Start over</Button>
+          {!other && <Button variant="ghost" data-card-reset="" onClick={onReset}>Start over</Button>}
           <Button icon={<Archive className="size-4" />} loading={zipping} onClick={async () => { setZipping(true); try { downloadBlob(await zipFiles(files.map((f) => ({ name: f.name, data: f.blob }))), zipName) } finally { setZipping(false) } }}>Download ZIP</Button>
         </div>
       </div>
