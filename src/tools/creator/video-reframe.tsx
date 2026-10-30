@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { safeBlobUrl } from '@/lib/safe'
 import { Crop } from 'lucide-react'
 import { Button, Dropzone, Label, Segmented, Slider, ToolGrid, ResultCard } from '@/components/ui'
 import { baseName } from '@/lib/files'
