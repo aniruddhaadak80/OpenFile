@@ -27,7 +27,7 @@ function Split() {
   const [parts, setParts] = useState(2)
   const [rebase, setRebase] = useState(true)
   const [out, setOut] = useState<SubFormat>('srt')
-  const open = async (f: File) => { const d = await attempt(() => readSubs(f), 'Could not read this subtitle file.'); if (d) { setFile(f); setDoc(d); setOut(d.format === 'txt' ? 'srt' : d.format) } }
+  const open = async (f: File) => { const d = await attempt(() => readSubs(f), 'Could not read this subtitle file.'); if (d) { setFile(f); setDoc(d); setOut(d.format === 'txt' ? 'srt' : d.format); const end = d.cues.reduce((a, c) => Math.max(a, c.end), 0); if (end > 0 && end <= 45 * 60) setTimes(fmtClock(Math.round(end / 2), '.').replace(/\.\d+$/, '')) } }
   const pieces = useMemo(() => {
     if (!doc) return []
     if (mode === 'parts') return splitCount(doc.cues, parts, rebase)
@@ -60,7 +60,7 @@ function Split() {
 
 function Join() {
   const [items, setItems] = useState<Item[]>([])
-  const [gap, setGap] = useState(1)
+  const [gap, setGap] = useState(0)
   const [out, setOut] = useState<SubFormat>('srt')
   const add = async (fs: File[]) => { const next: Item[] = []; for (const f of fs) { const d = await attempt(() => readSubs(f), `Could not read ${f.name}`); if (d) next.push({ f, d, offset: '' }) } setItems((p) => [...p, ...next].sort((a, b) => a.f.name.localeCompare(b.f.name, undefined, { numeric: true }))) }
   const joined = useMemo(() => joinTracks(items.map((i) => i.d.cues), items.map((i) => { const v = i.offset.trim(); if (!v) return null; const n = parseClock(v); return Number.isFinite(n) ? n : null }), gap), [items, gap])

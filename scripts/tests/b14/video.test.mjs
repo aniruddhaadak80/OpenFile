@@ -14,3 +14,7 @@ for (const e of V.EFFECTS) assert.ok(V.effectFilter(e.id, 0.5, 640, 360).length 
 assert.equal(V.countdownLabel(0, 5), '5'); assert.equal(V.countdownLabel(0.99, 5), '5'); assert.equal(V.countdownLabel(1, 5), '4'); assert.equal(V.countdownLabel(4.5, 5), '1'); assert.equal(V.countdownLabel(5, 5, 'Go'), 'Go')
 const wav = V.beepTrack(3, 4, 8000); assert.equal(wav.length, 44 + 32000 * 2); assert.equal(String.fromCharCode(...wav.slice(0, 4)), 'RIFF')
 console.log('b14 video ok')
+// anamorphic 1280x720 shown as 1280x967 (SAR 67:90): crop maps back into coded pixels
+{ const c = V.cropToCoded({ x: 0, y: 122, w: 1280, h: 722 }, 1280, 967, 1280, 720); assert.equal(c.y + c.h <= 720, true); assert.equal(c.y, 90); assert.equal(c.h % 2, 0); assert.equal(c.w, 1280) }
+assert.deepEqual(V.cropToCoded({ x: 0, y: 140, w: 1280, h: 440 }, 1280, 720, 1280, 720), { x: 0, y: 140, w: 1280, h: 440 })
+assert.deepEqual(V.cropToCoded({ x: 0, y: 140, w: 720, h: 1000 }, 720, 1280, 1280, 720, -90), { x: 0, y: 140, w: 720, h: 1000 })

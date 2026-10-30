@@ -55,31 +55,33 @@ export default function ExtrudeTo3d() {
       const { SVGLoader } = await import('three/examples/jsm/loaders/SVGLoader.js')
       const { mergeGeometries } = await import('three/examples/jsm/utils/BufferGeometryUtils.js')
       const data = new SVGLoader().parse(svg)
-      const groups = new Map<string, any[]>()
-      let shapes = 0
+      const found: { color: string; sh: any }[] = []
       for (const p of data.paths) {
         const style: any = (p as any).userData?.style ?? {}
-        if (style.fill === 'none' && !(p as any).subPaths?.length) continue
         if (style.fill === 'none') continue
         const color = keepColor && style.fill && style.fill !== 'none' ? new THREE.Color().setStyle(style.fill).getHexString() : 'f5a524'
-        for (const sh of SVGLoader.createShapes(p)) {
-          shapes++
-          const g = new THREE.ExtrudeGeometry(sh, { depth: 1, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2, curveSegments: smooth })
-          if (!groups.has(color)) groups.set(color, [])
-          groups.get(color)!.push(g)
-        }
+        for (const sh of SVGLoader.createShapes(p)) found.push({ color, sh })
       }
+      const shapes = found.length
       if (!shapes) throw new Error('No filled shapes found. Outlines without fill cannot be extruded, so fill them or use a picture.')
-      // size: scale the outline to the chosen width, then set the real depth
-      const all = new THREE.Box3()
-      groups.forEach((gs) => gs.forEach((g) => { g.computeBoundingBox(); all.union(g.boundingBox!) }))
-      const sz = all.getSize(new THREE.Vector3()), k = width / Math.max(1e-6, sz.x)
+      // size: measure the outline first, so thickness and rounded edge can be given in real millimetres
+      // (extruding at depth 1 and scaling z by the thickness also stretched the rounded edge, a 5 mm part came out 9 mm)
+      const all = new THREE.Box2()
+      for (const f of found) for (const v of f.sh.extractPoints(smooth).shape) all.expandByPoint(v)
+      const sz = all.getSize(new THREE.Vector2()), k = width / Math.max(1e-6, sz.x)
+      const cx = all.min.x + sz.x / 2, cy = all.min.y + sz.y / 2
+      const groups = new Map<string, any[]>()
+      for (const f of found) {
+        const g = new THREE.ExtrudeGeometry(f.sh, { depth: depth / k, bevelEnabled: bevel > 0, bevelThickness: bevel / k, bevelSize: bevel / k, bevelSegments: 2, curveSegments: smooth })
+        if (!groups.has(f.color)) groups.set(f.color, [])
+        groups.get(f.color)!.push(g)
+      }
       const root = new THREE.Group(); root.name = 'extruded'
       let tris = 0
       groups.forEach((gs, color) => {
         const merged = mergeGeometries(gs.map((g) => g.toNonIndexed ? g.toNonIndexed() : g), false)!
-        merged.translate(-(all.min.x + sz.x / 2), -(all.min.y + sz.y / 2), 0)
-        merged.scale(k, -k, depth) // SVG y goes down
+        merged.translate(-cx, -cy, bevel > 0 ? bevel / k : 0) // bottom of the rounded edge sits on z 0
+        merged.scale(k, -k, k) // SVG y goes down
         merged.computeVertexNormals()
         tris += merged.attributes.position.count / 3
         // flipping y mirrors the winding, so flip faces back
@@ -96,7 +98,7 @@ export default function ExtrudeTo3d() {
         tris += 12
       }
       root.rotation.x = -Math.PI / 2
-      if (!dead) { setObj(root); setStats({ tris: Math.round(tris), w: sz.x * k, h: sz.y * k, d: depth + base + bevel * 2, shapes }) }
+      if (!dead) { setObj(root); setStats({ tris: Math.round(tris), w: sz.x * k + bevel * 2, h: sz.y * k + bevel * 2, d: depth + base + bevel * 2, shapes }) }
     })().catch((e) => { if (!dead) run(async () => { throw e }) })
     return () => { dead = true }
   }, [svg, depth, width, bevel, base, smooth, keepColor])

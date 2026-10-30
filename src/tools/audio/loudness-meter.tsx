@@ -32,7 +32,7 @@ export default function LoudnessMeter() {
     if (!buf || !file) return
     const g = Math.pow(10, gain / 20)
     const chans = Array.from({ length: buf.numberOfChannels }, (_, i) => { const c = buf.getChannelData(i), o = new Float32Array(c.length); for (let k = 0; k < c.length; k++) o[k] = c[k] * g; return o })
-    downloadBlob(new Blob([wav16(chans, buf.sampleRate) as BlobPart], { type: 'audio/wav' }), `${baseName(file.name)}-${plat.lufs}LUFS.wav`)
+    downloadBlob(new Blob([wav16(chans, buf.sampleRate) as BlobPart], { type: 'audio/wav' }), `${baseName(file.name)}-${res && Number.isFinite(res.integrated) ? Math.round((res.integrated + gain) * 10) / 10 : plat.lufs}LUFS.wav`)
   }
   if (!file) return <Dropzone accept="audio/*,video/*,.mp3,.wav,.flac,.m4a,.ogg,.opus,.aac" onFiles={(f) => open(f[0])} label="Drop a song, podcast or video" sub="Measures integrated LUFS, true peak and loudness range (EBU R128), then shows what Spotify, YouTube and Apple Music will do to it." />
   const short = res?.short ?? []

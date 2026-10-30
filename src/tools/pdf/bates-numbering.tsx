@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Hash, ArrowUp, ArrowDown, X } from 'lucide-react'
-import { Button, Dropzone, Field, Input, Select, Slider, Switch, ToolGrid, Progress, ErrorNote, useJob, Label } from '@/components/ui'
+import { Button, Dropzone, Field, ResultCard, Input, Select, Slider, Switch, ToolGrid, Progress, ErrorNote, useJob, Label } from '@/components/ui'
 import { pdfBlob } from '@/lib/pdf'
 import { baseName, formatBytes } from '@/lib/files'
 import { ColorInput, PositionPicker, LivePreview, PDF_ACCEPT, readBytes, usePdfDoc, FONTS_LIST, MultiResult, type OutFile } from './_core/kit'
@@ -40,7 +40,8 @@ export default function BatesNumbering() {
   if (!files.length) return <Dropzone multiple accept={PDF_ACCEPT} onFiles={setFiles} label="Drop one or more PDFs" sub="Every page gets a unique number like ABC000001, continuing from one file to the next, for legal discovery, audits and archives." />
   return (
     <div className="space-y-4">
-      {out && <MultiResult files={out.files} zipName="bates-numbered.zip" onReset={() => setOut(null)} title={`Numbered ${out.ranges.reduce((a, r) => a + r.pages, 0)} pages in ${out.files.length} files`} />}
+      {out && out.files.length === 1 && <ResultCard blob={out.files[0].blob} filename={out.files[0].name} title={`Numbered ${out.ranges[0].pages} page${out.ranges[0].pages === 1 ? '' : 's'}`} onReset={() => setOut(null)} />}
+      {out && out.files.length > 1 && <MultiResult files={out.files} zipName="bates-numbered.zip" onReset={() => setOut(null)} title={`Numbered ${out.ranges.reduce((a, r) => a + r.pages, 0)} pages in ${out.files.length} files`} />}
       <ToolGrid
         main={<>
           <div className="space-y-1.5">{files.map((f, i) => <div key={i} className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-sm"><span className="w-6 text-xs text-muted">{i + 1}</span><span className="min-w-0 flex-1 truncate">{f.name}</span><span className="text-xs text-muted">{formatBytes(f.size)}</span><Button size="sm" variant="ghost" aria-label="Move up" onClick={() => move(i, -1)}><ArrowUp className="size-4" /></Button><Button size="sm" variant="ghost" aria-label="Move down" onClick={() => move(i, 1)}><ArrowDown className="size-4" /></Button><Button size="sm" variant="ghost" aria-label="Remove" onClick={() => setFiles(files.filter((_, k) => k !== i))}><X className="size-4" /></Button></div>)}

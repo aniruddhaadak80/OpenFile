@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Image as ImageIcon, Trash2 } from 'lucide-react'
 import { Button, Dropzone, Field, Progress, Select, Slider, Switch, ToolGrid, cn, useJob } from '@/components/ui'
 import { baseName, downloadBlob, formatBytes, zipFiles } from '@/lib/files'
@@ -57,7 +57,9 @@ async function toPdf(svg: string, w: number, h: number): Promise<Blob> {
 }
 
 function Thumb({ item, active, onClick }: { item: Item; active: boolean; onClick: () => void }) {
-  const url = useBlobUrl(item.svg ? new Blob([item.svg], { type: 'image/svg+xml' }) : null)
+  // memoised: a new Blob on every render made a new URL and revoked the one the picture was still loading
+  const blob = useMemo(() => (item.svg ? new Blob([item.svg], { type: 'image/svg+xml' }) : null), [item.svg])
+  const url = useBlobUrl(blob)
   return (
     <button onClick={onClick} className={cn('flex cursor-pointer flex-col gap-1 rounded-xl border p-2 text-left text-xs', active ? 'border-accent bg-accent/10' : 'border-border bg-surface hover:bg-surface-2')}>
       <div className="grid h-20 place-items-center rounded-lg bg-white">{url ? <img src={safeBlobUrl(url)} alt="" className="max-h-full max-w-full" /> : <span className="text-danger">{item.error ? 'error' : '...'}</span>}</div>
@@ -83,11 +85,14 @@ export default function EmfWmfConverter() {
     }
   })
   const cur = items[sel]
-  const url = useBlobUrl(cur?.svg ? new Blob([cur.svg], { type: 'image/svg+xml' }) : null)
+  const curBlob = useMemo(() => (cur?.svg ? new Blob([cur.svg], { type: 'image/svg+xml' }) : null), [cur?.svg])
+  const url = useBlobUrl(curBlob)
   useEffect(() => { if (sel >= items.length) setSel(0) }, [items.length])
   const one = async (it: Item): Promise<{ name: string; data: Blob }> => {
     if (!it.svg) throw new Error(it.error)
-    const name = baseName(it.file.name)
+    // sample.emf and sample.wmf would both become sample.png, so keep the source type in the name when base names clash
+    const base = baseName(it.file.name)
+    const name = items.filter((x) => x.svg && baseName(x.file.name).toLowerCase() === base.toLowerCase()).length > 1 ? `${base}-${(it.file.name.split('.').pop() || it.info?.kind || 'file').toLowerCase()}` : base
     if (out === 'svg') return { name: name + '.svg', data: new Blob([it.svg], { type: 'image/svg+xml' }) }
     if (out === 'pdf') return { name: name + '.pdf', data: await toPdf(it.svg, it.w, it.h) }
     return { name: `${name}.${out}`, data: await rasterize(it.svg, it.w, it.h, scale, out === 'png' ? 'image/png' : 'image/jpeg', bgOn ? '#ffffff' : null) }

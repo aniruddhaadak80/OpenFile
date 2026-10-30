@@ -5,6 +5,11 @@ import { randomBytes } from 'node:crypto'
 
 // readability
 const r = T.readability('The cat sat on the mat. It was a sunny day. Everyone was happy.')
+// sentence ends before curly or straight closing quotes and brackets
+{
+  const s = T.splitSentences('\u2018Oh dear! I shall be late!\u2019 (when she thought it over.) \u201CWho are you?\u201D said the Caterpillar. \u201CI hardly know, sir.\u201D Alice replied. "Fine." She left.')
+  assert.deepEqual(s, ['\u2018Oh dear!', 'I shall be late!\u2019', '(when she thought it over.)', '\u201CWho are you?\u201D said the Caterpillar.', '\u201CI hardly know, sir.\u201D', 'Alice replied.', '"Fine."', 'She left.'])
+}
 assert.equal(r.sentences, 3); assert.equal(r.words, 14); assert.ok(r.fleschEase > 80, String(r.fleschEase))
 assert.ok(T.bionic('Hello world').includes('<b>Hel</b>lo'))
 // keywords

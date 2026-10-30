@@ -10,6 +10,10 @@ import { Bars, toCsv, DlButton } from '@/lib/bcat/kit'
 
 interface Ch { title: string; words: number; text: string }
 
+/** Books use curly quotes and close dialogue after the stop ('Oh dear!' she said), which the sentence splitter does not see as an end.
+ * Straighten quotes and move closing quotes before the stop, so sentences are counted right (Alice went from grade 17.9 to 7.7). */
+const sentenceFriendly = (s: string) => s.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/([.?!])(['")\]]+)(?=\s)/g, '$2$1')
+
 export default function EbookStats() {
   const [file, setFile] = useState<File | null>(null)
   const [book, setBook] = useState<{ title: string; author: string; chapters: Ch[] } | null>(null)
@@ -25,7 +29,7 @@ export default function EbookStats() {
     const all = book.chapters.map((c) => c.text).join('\n\n')
     const words = book.chapters.reduce((a, c) => a + c.words, 0)
     const sample = all.length > 400000 ? all.slice(0, 400000) : all
-    return { words, chars: all.replace(/\s/g, '').length, unique: uniqueWords(all), top: topWords(all, 20), read: readability(sample), pages: Math.ceil(words / 275), longest: [...book.chapters].sort((a, b) => b.words - a.words)[0] }
+    return { words, chars: all.replace(/\s/g, '').length, unique: uniqueWords(all), top: topWords(all, 20), read: readability(sentenceFriendly(sample)), pages: Math.ceil(words / 275), longest: [...book.chapters].sort((a, b) => b.words - a.words)[0] }
   }, [book])
   if (!file) return <Dropzone accept={EBOOK_ACCEPT} onFiles={(f) => open(f[0])} label="Drop a book" sub="EPUB, MOBI, AZW3, FB2, DOCX, PDF or TXT. Get word count, reading time, chapter lengths, vocabulary and reading level." />
   return (

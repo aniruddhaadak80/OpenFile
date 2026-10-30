@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Download, ImageDown, Maximize2 } from 'lucide-react'
 import { Button, Field, Segmented, Select, Textarea, ToolGrid, CopyButton } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -52,16 +52,21 @@ export default function DiagramRenderer() {
     }, 350)
     return () => { dead = true; clearTimeout(id) }
   }, [code, theme])
-  const url = useBlobUrl(svg ? new Blob([svg], { type: 'image/svg+xml' }) : null)
+  // memoised: a new Blob per render looped through new object URLs and revoked the one the picture was loading
+  const svgBlob = useMemo(() => (svg ? new Blob([svg], { type: 'image/svg+xml' }) : null), [svg])
+  const url = useBlobUrl(svgBlob)
   const png = async (type: 'image/png' | 'image/jpeg') => {
-    if (!url) return
-    const img = new Image(); img.src = url; await img.decode()
+    if (!svgBlob) return
+    const u = URL.createObjectURL(svgBlob)
+    const img = new Image()
+    try { img.src = u; await img.decode() } catch { URL.revokeObjectURL(u); toast('Could not draw the picture.', 'error'); return }
     const vb = svg.match(/viewBox="([-\d.\s]+)"/)?.[1]?.split(/\s+/).map(Number)
     const w = (vb?.[2] || img.naturalWidth || 800), h = (vb?.[3] || img.naturalHeight || 600)
     const c = document.createElement('canvas'); c.width = Math.round(w * scale); c.height = Math.round(h * scale)
     const ctx = c.getContext('2d')!
     if (type === 'image/jpeg' || theme === 'gold') { ctx.fillStyle = THEMES[theme].background; ctx.fillRect(0, 0, c.width, c.height) }
     ctx.drawImage(img, 0, 0, c.width, c.height)
+    URL.revokeObjectURL(u)
     c.toBlob((b) => (b ? downloadBlob(b, `diagram.${type === 'image/png' ? 'png' : 'jpg'}`) : toast('Could not save the picture.', 'error')), type, 0.93)
   }
   return (

@@ -7,13 +7,13 @@ import { ffProbe, ffRun } from './_media/engine'
 import { captureFrames, useMediaJob, useObjectUrl, useVideoMeta } from './_media/media'
 import { FileBar, JobPanel, Note } from './_media/ui'
 import { VIDEO_ACCEPT, inName } from './_b3/shell'
-import { detectBars, mergeCrops, parseCropdetect, sampleTimes, type Crop } from '@/lib/b14/video'
+import { cropToCoded, detectBars, mergeCrops, parseCropdetect, sampleTimes, type Crop } from '@/lib/b14/video'
 import { safeBlobUrl } from '../../lib/safe'
 
 export default function RemoveBlackBars() {
   const [file, setFile] = useState<File | null>(null)
   const { url, meta } = useVideoMeta(file)
-  const [size, setSize] = useState<{ w: number; h: number } | null>(null)
+  const [size, setSize] = useState<{ w: number; h: number; frames?: boolean } | null>(null)
   const [crop, setCrop] = useState<Crop | null>(null)
   const [auto, setAuto] = useState<Crop | null>(null)
   const [still, setStill] = useState<string | null>(null)
@@ -42,7 +42,7 @@ export default function RemoveBlackBars() {
         bmp.close()
       }
       const m = mergeCrops(crops, w, h)
-      setSize({ w, h }); setAuto(m); setCrop(m)
+      setSize({ w, h, frames: true }); setAuto(m); setCrop(m)
       if (best) setStill(URL.createObjectURL(best.b))
     } else {
       const p = await ffProbe(file, inName(file))
@@ -60,7 +60,7 @@ export default function RemoveBlackBars() {
     if (!file || !crop) return
     setLabel('Cropping')
     const p = await ffProbe(file, inName(file))
-    const op = cropOp(inName(file), crop, p.hasAudio)
+    const op = cropOp(inName(file), size?.frames ? cropToCoded(crop, size.w, size.h, p.width, p.height, p.rotation) : crop, p.hasAudio)
     if ((reencodeAudio || !/\.(mp4|m4v|mov)$/i.test(file.name)) && p.hasAudio) { const i = op.args.indexOf('copy'); if (i > 0) op.args.splice(i, 1, 'aac') }
     setRes(await ffRun({ inputs: [{ name: inName(file), file }], args: op.args, output: op.output, duration: p.duration, onProgress: setProgress }))
   })

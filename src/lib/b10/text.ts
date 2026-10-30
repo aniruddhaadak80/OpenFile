@@ -11,8 +11,10 @@ export function countSyllables(word: string): number {
   return Math.max(1, m ? m.length : 1)
 }
 
+/** A sentence ends at . ? or ! even when closing quotes or brackets follow it ('late!’ (when', 'know, sir.” Alice'),
+ * and the next one may open with a curly quote or a bracket. */
 export function splitSentences(text: string): string[] {
-  return text.replace(/\s+/g, ' ').split(/(?<=[.?!])\s+(?=[A-Z0-9"'(])/).map((s) => s.trim()).filter((s) => /[A-Za-z0-9]/.test(s))
+  return text.replace(/\s+/g, ' ').split(/(?<=[.?!]['"\u2019\u201D)\]]*)\s+(?=[A-Z0-9"'(\[\u2018\u201C])/).map((s) => s.trim()).filter((s) => /[A-Za-z0-9]/.test(s))
 }
 
 export function words(text: string): string[] {

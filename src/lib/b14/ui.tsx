@@ -1,5 +1,5 @@
 /* Shared UI bits for the round 14 tools. */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FolderOpen } from 'lucide-react'
 import { Button, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
@@ -65,6 +65,8 @@ export function Tile({ label, value, sub }: { label: React.ReactNode; value: Rea
 
 /** Preview an SVG string we generated ourselves (numbers only) through an <img>, never as live markup. */
 export function SvgPreview({ svg, className, label = 'Drawing preview', dark }: { svg: string; className?: string; label?: string; dark?: boolean }) {
-  const url = useBlobUrl(svg ? new Blob([svg], { type: 'image/svg+xml' }) : null)
+  // memoised: a new Blob per render looped through new object URLs and revoked the one the picture was loading
+  const blob = useMemo(() => (svg ? new Blob([svg], { type: 'image/svg+xml' }) : null), [svg])
+  const url = useBlobUrl(blob)
   return <div className={cn('grid min-h-60 place-items-center overflow-hidden rounded-2xl border border-border p-3', dark ? 'bg-surface-2' : 'bg-white', className)}>{url ? <img src={safeBlobUrl(url)} alt={label} className="max-h-[65vh] max-w-full" /> : null}</div>
 }

@@ -53,6 +53,21 @@ export function mergeCrops(crops: Crop[], w: number, h: number, minShare = 0.25)
   return { x: x0, y: y0, w: cw, h: ch }
 }
 
+/** Map a crop found on display sized frames (browsers stretch non square pixel video to its display aspect) to the coded pixels ffmpeg crops.
+ * `rotation` is the display matrix rotation: ffmpeg rotates before filters, so 90 and 270 swap the coded sides. */
+export function cropToCoded(c: Crop, shownW: number, shownH: number, codedW?: number, codedH?: number, rotation = 0): Crop {
+  if (!codedW || !codedH || !shownW || !shownH) return c
+  let cw = codedW, ch = codedH
+  if (Math.abs(rotation) % 180 === 90) { cw = codedH; ch = codedW }
+  if (cw === shownW && ch === shownH) return c
+  const sx = cw / shownW, sy = ch / shownH
+  let x = Math.round(c.x * sx), y = Math.round(c.y * sy), w = Math.round(c.w * sx), h = Math.round(c.h * sy)
+  x -= x % 2; y -= y % 2
+  w = Math.min(w, cw - x); h = Math.min(h, ch - y)
+  w -= w % 2; h -= h % 2
+  return { x, y, w: Math.max(2, w), h: Math.max(2, h) }
+}
+
 /** Parse ffmpeg cropdetect log lines and pick the most common crop. */
 export function parseCropdetect(log: string): Crop | null {
   const counts = new Map<string, number>()
