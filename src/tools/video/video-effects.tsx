@@ -7,6 +7,7 @@ import { useMediaJob, useObjectUrl, useVideoMeta } from './_media/media'
 import { FileBar, JobPanel, VideoStage } from './_media/ui'
 import { VIDEO_ACCEPT, inName } from './_b3/shell'
 import { EFFECTS, effectFilter, type EffectId } from '@/lib/b14/video'
+import { safeBlobUrl } from '../../lib/safe'
 
 export default function VideoEffects() {
   const [file, setFile] = useState<File | null>(null)
@@ -50,7 +51,7 @@ export default function VideoEffects() {
           <FileBar file={file} onReset={() => { if (job.busy) job.cancel(); setFile(null); setPreview(null); setRes(null) }} />
           <div className="grid gap-3 sm:grid-cols-2">
             <div><p className="mb-1 text-xs text-muted">Original (quick look{cur.css ? ' with a rough effect' : ''})</p><VideoStage ref={video} src={url} playable={meta?.playable !== false} style={cur.css ? { filter: cur.css } : undefined} /></div>
-            <div><p className="mb-1 text-xs text-muted">Real effect preview</p>{pUrl ? <video src={pUrl} autoPlay loop muted playsInline controls className="aspect-video w-full rounded-2xl bg-black object-contain" /> : <div className="grid aspect-video place-items-center rounded-2xl border border-dashed border-border p-4 text-center text-xs text-muted">Press Preview to render 3 seconds from where the left video is paused.</div>}</div>
+            <div><p className="mb-1 text-xs text-muted">Real effect preview</p>{pUrl ? <video src={safeBlobUrl(pUrl)} autoPlay loop muted playsInline controls className="aspect-video w-full rounded-2xl bg-black object-contain" /> : <div className="grid aspect-video place-items-center rounded-2xl border border-dashed border-border p-4 text-center text-xs text-muted">Press Preview to render 3 seconds from where the left video is paused.</div>}</div>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {EFFECTS.map((e) => (
@@ -72,7 +73,7 @@ export default function VideoEffects() {
       />
       {res && rUrl && (
         <ResultCard blob={res} filename={`${baseName(file.name)}-${fx}.mp4`} originalSize={file.size} title={`${cur.name} applied`} onReset={() => setRes(null)}>
-          <video src={rUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" />
+          <video src={safeBlobUrl(rUrl)} controls playsInline className="max-h-80 w-full rounded-xl bg-black" />
         </ResultCard>
       )}
     </div>

@@ -2,7 +2,7 @@
  * Pure TypeScript, unit tested in Node (scripts/tests/b14/convert.test.mjs). */
 
 /* ---------------- Markdown bits ---------------- */
-const mdCell = (v: unknown) => String(v ?? '').replace(/\r?\n/g, ' ').replace(/\|/g, '\\|').trim()
+const mdCell = (v: unknown) => String(v ?? '').replace(/\r?\n/g, ' ').replace(/[\\|]/g, '\\$&').trim()
 
 /** A list of rows to a GitHub flavoured Markdown table (first row is the header). */
 export function tableToMd(rows: unknown[][], maxRows = 5000): string {

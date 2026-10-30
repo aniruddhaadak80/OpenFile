@@ -6,6 +6,7 @@ import { fmtClock, parseSubtitles, writeSubtitles } from '@/lib/b4/subtitles'
 import { toLrc, lyricsToCues } from '@/lib/b14/subs'
 import { useBlobUrl, OpenButton } from '@/lib/b14/ui'
 import { toast } from '@/components/toast'
+import { safeBlobUrl } from '../../lib/safe'
 
 type Line = { text: string; time: number | null }
 const SAMPLE = 'Paste your lyrics here, one line per row\nPress Play, then tap Stamp (or the Space key)\nevery time a new line starts\nYou can fix any time by hand later'
@@ -36,7 +37,7 @@ export default function LrcEditor() {
   useEffect(() => { listRef.current?.querySelector(`[data-i="${Math.max(0, active)}"]`)?.scrollIntoView({ block: 'nearest' }) }, [active])
   const openLyrics = async (f: File) => {
     const t = await f.text()
-    if (/^\s*\[\d+:\d+/m.test(t) || /-->/.test(t)) {
+    if (/^\s*\[\d+:\d+/m.test(t) || /--!?>/.test(t)) {
       try { const d = parseSubtitles(t, { name: f.name }); const ls = d.cues.map((c) => ({ text: c.text.replace(/\n/g, ' '), time: c.start })); setRaw(ls.map((l) => l.text).join('\n')); setLines(ls); setCur(ls.length); setStep('sync'); return } catch { /* fall back to plain */ }
     }
     setRaw(t)
@@ -49,7 +50,7 @@ export default function LrcEditor() {
     <ToolGrid
       main={<>
         <div className="rounded-2xl border border-border bg-surface p-3">
-          <audio ref={el} src={url ?? undefined} controls className="w-full" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
+          <audio ref={el} src={safeBlobUrl(url) || undefined} controls className="w-full" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
           <div className="mt-2 flex items-center justify-between text-xs text-muted"><span className="truncate">{audio.name}</span><span className="font-mono">{fmtClock(now, '.')}</span></div>
         </div>
         {step === 'lyrics' ? (

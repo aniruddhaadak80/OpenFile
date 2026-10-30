@@ -4,6 +4,7 @@ import { Button, Field, Segmented, Select, Textarea, ToolGrid, CopyButton } from
 import { downloadBlob } from '@/lib/files'
 import { toast } from '@/components/toast'
 import { OpenButton, useBlobUrl } from '@/lib/b14/ui'
+import { safeBlobUrl } from '../../lib/safe'
 
 const TEMPLATES: Record<string, { label: string; code: string }> = {
   flow: { label: 'Flowchart', code: 'flowchart TD\n  A[Drop a file] --> B{Is it a PDF?}\n  B -- Yes --> C[Open PDF tools]\n  B -- No --> D[Pick a converter]\n  C --> E[Download result]\n  D --> E' },
@@ -67,7 +68,7 @@ export default function DiagramRenderer() {
     <ToolGrid
       main={<>
         <div ref={box} className="grid min-h-80 place-items-center overflow-auto rounded-2xl border border-border p-4" style={{ background: THEMES[theme].background }}>
-          {url && <img src={url} alt="Diagram" className="max-h-[60vh] max-w-full" />}
+          {url && <img src={safeBlobUrl(url)} alt="Diagram" className="max-h-[60vh] max-w-full" />}
           {!url && !err && <span className="text-sm text-muted">Drawing</span>}
         </div>
         {err && <pre className="whitespace-pre-wrap rounded-xl border border-danger/40 bg-danger/5 p-3 text-xs text-danger">{err}</pre>}

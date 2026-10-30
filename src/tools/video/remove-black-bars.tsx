@@ -8,6 +8,7 @@ import { captureFrames, useMediaJob, useObjectUrl, useVideoMeta } from './_media
 import { FileBar, JobPanel, Note } from './_media/ui'
 import { VIDEO_ACCEPT, inName } from './_b3/shell'
 import { detectBars, mergeCrops, parseCropdetect, sampleTimes, type Crop } from '@/lib/b14/video'
+import { safeBlobUrl } from '../../lib/safe'
 
 export default function RemoveBlackBars() {
   const [file, setFile] = useState<File | null>(null)
@@ -101,7 +102,7 @@ export default function RemoveBlackBars() {
       />
       {res && rUrl && (
         <ResultCard blob={res} filename={`${baseName(file.name)}-no-bars.mp4`} originalSize={file.size} title="Bars removed" onReset={() => setRes(null)}>
-          <video src={rUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" />
+          <video src={safeBlobUrl(rUrl)} controls playsInline className="max-h-80 w-full rounded-xl bg-black" />
         </ResultCard>
       )}
     </div>

@@ -9,6 +9,7 @@ import { ffRun } from '@/tools/video/_media/engine'
 import { useMediaJob, useObjectUrl } from '@/tools/video/_media/media'
 import { JobPanel } from '@/tools/video/_media/ui'
 import { orbitPos } from '@/lib/b14/d3'
+import { safeBlobUrl } from '../../lib/safe'
 
 type Out = 'mp4' | 'gif' | 'webm' | 'png'
 const SIZES = [{ value: '1080x1080', label: 'Square 1080' }, { value: '1920x1080', label: 'Wide 1920 x 1080' }, { value: '1080x1920', label: 'Vertical 1080 x 1920' }, { value: '720x720', label: 'Square 720' }, { value: '1280x720', label: 'Wide 1280 x 720' }]
@@ -111,7 +112,7 @@ export default function Turntable3d() {
       />
       {res && resUrl && (
         <ResultCard blob={res.blob} filename={res.name} title="Turntable ready" onReset={() => setRes(null)}>
-          {res.name.endsWith('.gif') ? <img src={resUrl} alt="Turntable" className="max-h-80 rounded-xl" /> : res.name.endsWith('.zip') ? null : <video src={resUrl} controls autoPlay loop muted playsInline className="max-h-80 w-full rounded-xl bg-black" />}
+          {res.name.endsWith('.gif') ? <img src={safeBlobUrl(resUrl)} alt="Turntable" className="max-h-80 rounded-xl" /> : res.name.endsWith('.zip') ? null : <video src={safeBlobUrl(resUrl)} controls autoPlay loop muted playsInline className="max-h-80 w-full rounded-xl bg-black" />}
         </ResultCard>
       )}
     </div>

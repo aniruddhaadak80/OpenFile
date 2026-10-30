@@ -1,4 +1,5 @@
 /* Font helpers for round 14: load any font into opentype.js, SVG path normalising for icon fonts, bitmap atlas packing. */
+import { sanitizeMarkup } from '@/lib/safe'
 import { flattenPath, parseTransform, mul, IDENT, shapeToPath, type Mat } from './cad.ts'
 
 /** Open TTF, OTF, WOFF, WOFF2 or EOT with opentype.js (WOFF2 and EOT go through fonteditor-core first). */
@@ -53,7 +54,7 @@ export function normalizePath(d: string, m: Mat = IDENT): Cmd[] {
 export interface IconGlyph { name: string; cmds: Cmd[]; width: number }
 /** Read an SVG icon and fit it into a font em box (units per em, y up). */
 export function svgIconToGlyph(svgText: string, name: string, em = 1000, ascent = 850): IconGlyph {
-  const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml')
+  const doc = new DOMParser().parseFromString(sanitizeMarkup(svgText, 'image/svg+xml'), 'image/svg+xml')
   if (doc.getElementsByTagName('parsererror')[0]) throw new Error(`${name}: not a valid SVG`)
   const root = doc.documentElement
   let vb = root.getAttribute('viewBox')?.split(/[\s,]+/).map(Number)

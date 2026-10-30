@@ -1,3 +1,4 @@
+import { safeBlobUrl } from '../../lib/safe'
 import { useEffect, useState } from 'react'
 import { GalleryVertical, Download } from 'lucide-react'
 import { Button, Dropzone, Field, Segmented, Slider, ToolGrid, Progress, ErrorNote, useJob, ResultCard, Input } from '@/components/ui'
@@ -49,7 +50,7 @@ export default function PdfToLongImage() {
       <FileBar file={file} pages={numPages} onReset={() => { setFile(null); setOut(null) }} />
       {out && (out.blobs.length === 1 ? <ResultCard blob={out.blobs[0]} filename={name(0)} originalSize={file.size} title="Long page ready" /> : <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-success/30 bg-success/5 p-4"><span className="flex-1 text-sm">Too tall for one file, split into {out.blobs.length} parts.</span><Button icon={<Download className="size-4" />} onClick={async () => downloadBlob(await zipFiles(out.blobs.map((b, i) => ({ name: name(i), data: b }))), `${baseName(file.name)}-long.zip`)}>Download ZIP</Button></div>)}
       <ToolGrid
-        main={error ? <div className="text-sm text-danger">{error}</div> : out && preview && out.ext !== 'pdf' ? <div className="scrollbar-thin max-h-[75vh] overflow-auto rounded-2xl border border-border bg-surface-2/40 p-3"><img src={preview} alt="Long image preview" className="mx-auto w-full max-w-md" /></div>
+        main={error ? <div className="text-sm text-danger">{error}</div> : out && preview && out.ext !== 'pdf' ? <div className="scrollbar-thin max-h-[75vh] overflow-auto rounded-2xl border border-border bg-surface-2/40 p-3"><img src={safeBlobUrl(preview)} alt="Long image preview" className="mx-auto w-full max-w-md" /></div>
           : <div className="grid min-h-60 place-items-center rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted">{numPages} pages will be joined top to bottom. Press the button to build it.</div>}
         side={<>
           <Field label="Output"><Segmented value={mode} onChange={setMode} options={[{ value: 'image', label: 'Long image' }, { value: 'pdf', label: 'One page PDF' }]} /></Field>

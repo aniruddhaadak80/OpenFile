@@ -8,6 +8,7 @@ import { ffRun, ffProbe, extFromBlob, isCancel, X264, VP8 } from './_media/engin
 import { fmtTime, useMediaJob, useObjectUrl, useVideoMeta } from './_media/media'
 import { FileBar, JobPanel, Note, Reveal, ToolLink, VideoStage } from './_media/ui'
 import { capToSource, sourceRate } from './_media/bitrate'
+import { safeBlobUrl } from '../../lib/safe'
 
 type Fmt = 'mp4' | 'webm' | 'mov' | 'mkv' | 'avi' | 'm4v' | '3gp' | 'flv' | 'wmv' | 'asf' | 'mpg' | 'ts' | 'vob' | 'ogv' | 'divx' | 'prores'
 type Q = 'high' | 'medium' | 'low'
@@ -160,7 +161,7 @@ export default function VideoConverter() {
         <Reveal k={resultUrl}>
           <ResultCard blob={result.blob} filename={result.name} originalSize={file.size} title={result.copied ? 'Converted (lossless remux)' : 'Converted'} onReset={reset}>
             {result.blob.size > file.size * 1.05 && <Note>This copy is {Math.round((result.blob.size / file.size - 1) * 100)}% bigger than the original ({FORMATS[result.fmt].label} {['prores', 'avi', 'divx', 'mpg', 'vob', 'wmv', 'asf'].includes(result.fmt) ? 'uses an older or editing codec that needs more space' : 'needed more data at this quality'}). Pick Small for a lighter file, or use Video Compressor.</Note>}
-            {PLAYABLE.includes(result.fmt) ? <video src={resultUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" /> : <Note>Browsers can't play {FORMATS[result.fmt].label} inline, but the file opens in VLC, your OS player and editors.</Note>}
+            {PLAYABLE.includes(result.fmt) ? <video src={safeBlobUrl(resultUrl)} controls playsInline className="max-h-80 w-full rounded-xl bg-black" /> : <Note>Browsers can't play {FORMATS[result.fmt].label} inline, but the file opens in VLC, your OS player and editors.</Note>}
           </ResultCard>
         </Reveal>
       )}

@@ -4,6 +4,7 @@ import { Button, Dropzone, Field, Progress, Select, Slider, Switch, ToolGrid, cn
 import { baseName, downloadBlob, formatBytes, zipFiles } from '@/lib/files'
 import { metafileInfo, type MetaInfo } from '@/lib/b14/convert'
 import { useBlobUrl } from '@/lib/b14/ui'
+import { safeBlobUrl } from '../../lib/safe'
 
 type Out = 'svg' | 'png' | 'jpg' | 'pdf'
 interface Item { file: File; info?: MetaInfo; svg?: string; w: number; h: number; error?: string }
@@ -59,7 +60,7 @@ function Thumb({ item, active, onClick }: { item: Item; active: boolean; onClick
   const url = useBlobUrl(item.svg ? new Blob([item.svg], { type: 'image/svg+xml' }) : null)
   return (
     <button onClick={onClick} className={cn('flex cursor-pointer flex-col gap-1 rounded-xl border p-2 text-left text-xs', active ? 'border-accent bg-accent/10' : 'border-border bg-surface hover:bg-surface-2')}>
-      <div className="grid h-20 place-items-center rounded-lg bg-white">{url ? <img src={url} alt="" className="max-h-full max-w-full" /> : <span className="text-danger">{item.error ? 'error' : '...'}</span>}</div>
+      <div className="grid h-20 place-items-center rounded-lg bg-white">{url ? <img src={safeBlobUrl(url)} alt="" className="max-h-full max-w-full" /> : <span className="text-danger">{item.error ? 'error' : '...'}</span>}</div>
       <span className="truncate">{item.file.name}</span>
     </button>
   )
@@ -103,7 +104,7 @@ export default function EmfWmfConverter() {
     <ToolGrid
       main={<>
         <div className="grid min-h-72 place-items-center overflow-hidden rounded-2xl border border-border bg-white p-4 checker">
-          {cur?.error ? <p className="max-w-md text-center text-sm text-danger">{cur.error}</p> : url ? <img src={url} alt={cur?.file.name} className="max-h-[60vh] max-w-full" /> : <span className="text-sm text-muted">Drawing</span>}
+          {cur?.error ? <p className="max-w-md text-center text-sm text-danger">{cur.error}</p> : url ? <img src={safeBlobUrl(url)} alt={cur?.file.name} className="max-h-[60vh] max-w-full" /> : <span className="text-sm text-muted">Drawing</span>}
         </div>
         {cur?.info && <p className="text-xs text-muted">{cur.info.kind.toUpperCase()} · {formatBytes(cur.file.size)} · {cur.w} x {cur.h} px{cur.info.mmWidth ? ` · ${cur.info.mmWidth.toFixed(1)} x ${cur.info.mmHeight!.toFixed(1)} mm` : ''}{cur.info.records ? ` · ${cur.info.records} records` : ''}</p>}
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">{items.map((it, i) => <Thumb key={i} item={it} active={i === sel} onClick={() => setSel(i)} />)}</div>

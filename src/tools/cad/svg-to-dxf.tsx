@@ -1,3 +1,4 @@
+import { sanitizeMarkup } from '@/lib/safe'
 import { useMemo, useState } from 'react'
 import { FileOutput, Download } from 'lucide-react'
 import { Button, Dropzone, Field, Input, Select, Slider, Switch, ToolGrid, ErrorNote } from '@/components/ui'
@@ -9,7 +10,7 @@ import { SvgPreview, Tile } from '@/lib/b14/ui'
 type Scale = 'auto' | 'px96' | 'px72' | 'mm'
 
 function svgToPolys(text: string, tol: number): { polys: Poly[]; mmPerUnit: number | null; skipped: number } {
-  const doc = new DOMParser().parseFromString(text, 'image/svg+xml')
+  const doc = new DOMParser().parseFromString(sanitizeMarkup(text, 'image/svg+xml'), 'image/svg+xml')
   if (doc.getElementsByTagName('parsererror')[0]) throw new Error('This SVG could not be read. It may be damaged or not an SVG.')
   const root = doc.documentElement
   if (root.nodeName.toLowerCase() !== 'svg') throw new Error('This file does not contain an <svg> element.')

@@ -5,6 +5,7 @@ import { ffRun } from './_media/engine'
 import { useMediaJob, useObjectUrl } from './_media/media'
 import { JobPanel } from './_media/ui'
 import { beepTrack, countdownLabel } from '@/lib/b14/video'
+import { safeBlobUrl } from '../../lib/safe'
 
 type Style = 'ring' | 'leader' | 'bar' | 'minimal' | 'dots'
 type Out = 'mp4' | 'webm' | 'gif'
@@ -157,7 +158,7 @@ export default function CountdownVideo() {
       />
       {res && resUrl && (
         <ResultCard blob={res.blob} filename={res.name} title="Countdown ready" onReset={() => setRes(null)}>
-          {res.name.endsWith('.gif') ? <img src={resUrl} alt="Countdown GIF" className="max-h-80 rounded-xl" /> : <video src={resUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" />}
+          {res.name.endsWith('.gif') ? <img src={safeBlobUrl(resUrl)} alt="Countdown GIF" className="max-h-80 rounded-xl" /> : <video src={safeBlobUrl(resUrl)} controls playsInline className="max-h-80 w-full rounded-xl bg-black" />}
         </ResultCard>
       )}
     </div>

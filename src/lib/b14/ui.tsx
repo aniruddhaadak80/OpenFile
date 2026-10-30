@@ -5,6 +5,7 @@ import { Button, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { fmtClock, plainText, parseSubtitles, type Cue, type SubDoc } from '@/lib/b4/subtitles'
 import { readTextFile } from '@/lib/b4/text'
+import { safeBlobUrl } from '@/lib/safe'
 
 /** Scrollable cue list with times, used as a live preview. */
 export function CueList({ cues, max = 400, className, highlight }: { cues: Cue[]; max?: number; className?: string; highlight?: number }) {
@@ -65,5 +66,5 @@ export function Tile({ label, value, sub }: { label: React.ReactNode; value: Rea
 /** Preview an SVG string we generated ourselves (numbers only) through an <img>, never as live markup. */
 export function SvgPreview({ svg, className, label = 'Drawing preview', dark }: { svg: string; className?: string; label?: string; dark?: boolean }) {
   const url = useBlobUrl(svg ? new Blob([svg], { type: 'image/svg+xml' }) : null)
-  return <div className={cn('grid min-h-60 place-items-center overflow-hidden rounded-2xl border border-border p-3', dark ? 'bg-surface-2' : 'bg-white', className)}>{url ? <img src={url} alt={label} className="max-h-[65vh] max-w-full" /> : null}</div>
+  return <div className={cn('grid min-h-60 place-items-center overflow-hidden rounded-2xl border border-border p-3', dark ? 'bg-surface-2' : 'bg-white', className)}>{url ? <img src={safeBlobUrl(url)} alt={label} className="max-h-[65vh] max-w-full" /> : null}</div>
 }

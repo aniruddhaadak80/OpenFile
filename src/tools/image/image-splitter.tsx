@@ -4,6 +4,7 @@ import { Grid3x3, Download, Package } from 'lucide-react'
 import { Button, ErrorNote, Field, Input, Label, Progress, Segmented, Switch, ToolGrid, cn, useJob } from '@/components/ui'
 import { downloadBlob, zipFiles, baseName, formatBytes } from '@/lib/files'
 import { ImageDrop, canvas, decode, exportCanvas } from './_img/kit'
+import { safeBlobUrl } from '../../lib/safe'
 
 const PRESETS: { label: string; r: number; c: number; crop?: number }[] = [
   ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({ label: `1×${n}`, r: 1, c: n })),
@@ -83,7 +84,7 @@ export default function ImageSplitter() {
                 <div className="flex gap-2"><Button variant="ghost" onClick={reset}>Start over</Button><Button icon={<Package className="size-4" />} onClick={zip}>Download ZIP</Button></div>
               </div>
               <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${Math.min(cols, 10)}, minmax(0, 1fr))` }}>
-                {tiles.map((t) => <button key={t.name} onClick={() => downloadBlob(t.blob, t.name)} title={`Download ${t.name}`} className="group relative overflow-hidden rounded-md cursor-pointer"><img src={t.url} alt="" className="w-full" /><span className="absolute inset-0 grid place-items-center bg-black/50 text-white opacity-0 transition group-hover:opacity-100"><Download className="size-4" /></span></button>)}
+                {tiles.map((t) => <button key={t.name} onClick={() => downloadBlob(t.blob, t.name)} title={`Download ${t.name}`} className="group relative overflow-hidden rounded-md cursor-pointer"><img src={safeBlobUrl(t.url)} alt="" className="w-full" /><span className="absolute inset-0 grid place-items-center bg-black/50 text-white opacity-0 transition group-hover:opacity-100"><Download className="size-4" /></span></button>)}
               </div>
             </motion.div>
           )}
