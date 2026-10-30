@@ -206,21 +206,29 @@ export async function splitHalves(bytes: Bytes, o: HalvesOpts) {
   const src = await open(bytes); assertNotEncrypted(src)
   const out = await PDFDocument.create()
   const n = src.getPageCount()
+  // Plan every output page first, then copy them all in ONE copyPages call. pdf-lib shares
+  // fonts, images and content streams between pages copied in the same call, so the two halves
+  // of a page (and pages that share a font) are stored once instead of once per copy.
+  const plan: { i: number; box?: Box }[] = []
   for (let i = 0; i < n; i++) {
     const sp = src.getPage(i)
     const [vw, vh] = visualSize(sp)
     const skip = (o.skipFirst && i === 0) || (o.skipLast && i === n - 1 && n > 1) || (o.onlyLandscape && (o.dir === 'vertical' ? vw <= vh : vh <= vw))
-    if (skip) { const [p] = await out.copyPages(src, [i]); out.addPage(p); continue }
+    if (skip) { plan.push({ i }); continue }
     let [a, b] = halves(cropBox(sp), rotOf(sp), o.dir, o.ratio ?? 0.5)
     if (o.rtl && o.dir === 'vertical') [a, b] = [b, a]
-    for (const box of [a, b]) {
-      const [p] = await out.copyPages(src, [i])
+    plan.push({ i, box: a }, { i, box: b })
+  }
+  const copied = await out.copyPages(src, plan.map((x) => x.i))
+  plan.forEach(({ box }, k) => {
+    const p = copied[k]
+    if (box) {
       p.setMediaBox(box.x0, box.y0, box.x1 - box.x0, box.y1 - box.y0)
       p.setCropBox(box.x0, box.y0, box.x1 - box.x0, box.y1 - box.y0)
       p.node.delete(N('TrimBox')); p.node.delete(N('BleedBox')); p.node.delete(N('ArtBox'))
-      out.addPage(p)
     }
-  }
+    out.addPage(p)
+  })
   copyInfo(src, out)
   return out.save()
 }
@@ -382,7 +390,10 @@ export async function alternateMix(sources: MixSource[], o: { chunk: number[]; l
     }
     if (!progressed) break
   }
-  for (const [k, i] of plan) { const [p] = await out.copyPages(docs[k], [i]); out.addPage(p) }
+  // One copyPages call per source document, so fonts and images shared by its pages are stored once.
+  const copied = await Promise.all(docs.map((d, k) => out.copyPages(d, plan.filter(([kk]) => kk === k).map(([, i]) => i))))
+  const next = docs.map(() => 0)
+  for (const [k] of plan) out.addPage(copied[k][next[k]++])
   out.setProducer('OpenFile')
   return { bytes: await out.save(), plan }
 }

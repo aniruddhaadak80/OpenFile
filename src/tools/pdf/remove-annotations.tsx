@@ -29,6 +29,8 @@ export default function RemoveAnnotations() {
   }, [file]) // eslint-disable-line
 
   const counts = useMemo(() => { const m: Record<string, number> = {}; for (const a of annots ?? []) { const g = groupOf(a.subtype); m[g] = (m[g] ?? 0) + 1 } return m }, [annots])
+  // How many annotations the ticked types cover, so the button never runs a no-op that reports "Removed 0".
+  const picked = useMemo(() => (annots ?? []).filter((a) => groups.has(groupOf(a.subtype))).length, [annots, groups])
   const onPage = useMemo(() => (annots ?? []).filter((a) => a.page === page), [annots, page])
   const toggle = (id: string) => { const s = new Set(groups); s.has(id) ? s.delete(id) : s.add(id); setGroups(s); setResult(null) }
 
@@ -70,7 +72,8 @@ export default function RemoveAnnotations() {
           <Note>Only the annotation layer is removed. Page text and images are not touched. Removing form fields also drops the form itself.</Note>
           {job.busy && <Progress value={job.progress} label="Removing…" />}
           <ErrorNote error={job.error} />
-          <Button className="w-full" size="lg" icon={<MessageSquareOff className="size-5" />} loading={job.busy} disabled={!annots || !groups.size} onClick={run}>Remove annotations</Button>
+          {annots && !picked && <div className="text-xs text-muted">{annots.length ? 'None of the ticked types are in this PDF. Tick the types you want to remove above.' : 'This PDF has no annotations to remove.'}</div>}
+          <Button className="w-full" size="lg" icon={<MessageSquareOff className="size-5" />} loading={job.busy} disabled={!annots || !groups.size || !picked} onClick={run}>Remove annotations</Button>
         </>}
       />
     </div>

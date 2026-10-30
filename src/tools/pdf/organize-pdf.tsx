@@ -18,6 +18,8 @@ export default function OrganizePdf() {
   const { items, past, future } = hist
   const [sel, setSel] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState<string | null>(null)
+  // True only while a PDF is being opened, before its pages are in the list. Thumbnails keep rendering after that, and saving does not need them.
+  const [opening, setOpening] = useState(false)
   const [result, setResult] = useState<Blob | null>(null)
   const srcCount = useRef(0)
   const job = useJob()
@@ -32,12 +34,14 @@ export default function OrganizePdf() {
   const addFile = useCallback(async (files: File[]) => {
     for (const file of files) {
       setLoading(`Reading ${file.name}…`)
+      setOpening(true)
       try {
         const d = await openPdfJs(file)
         const srcIdx = srcCount.current++
         setSources((s) => [...s, { file, thumbs: [], sizes: [], pages: d.numPages, hue: [40, 199, 152, 20, 175][srcIdx % 5] }])
         const newItems: Item[] = Array.from({ length: d.numPages }, (_, i) => ({ id: nid(), kind: 'page', src: srcIdx, page: i, rotate: 0 }))
         if (srcIdx === 0) setHist({ items: newItems, past: [], future: [] }); else commit((cur) => [...cur, ...newItems])
+        setOpening(false)
         const thumbs: string[] = [], sizes: [number, number][] = []
         for (let i = 1; i <= d.numPages; i++) {
           const p = await d.getPage(i); const vp = p.getViewport({ scale: 1 })
@@ -48,6 +52,7 @@ export default function OrganizePdf() {
         }
         closeDoc(d)
       } catch (e) { toast(`${file.name}: ${friendly(e)}`, 'error') }
+      setOpening(false)
     }
     setLoading(null)
   }, [commit])
@@ -157,7 +162,7 @@ export default function OrganizePdf() {
           <Dropzone compact accept={PDF_ACCEPT} onFiles={addFile} label={<span className="inline-flex items-center gap-1.5"><Plus className="size-4" />Add pages from a PDF</span>} sub="Appended at the end" />
           {job.busy && <Progress value={job.progress} label="Building PDF…" />}
           <ErrorNote error={job.error} />
-          <Button className="w-full" size="lg" icon={<FileStack className="size-5" />} loading={job.busy} disabled={!items.length || !!loading} onClick={save}>Save PDF</Button>
+          <Button className="w-full" size="lg" icon={<FileStack className="size-5" />} loading={job.busy} disabled={!items.length || opening} onClick={save}>Save PDF</Button>
         </>}
       />
     </div>

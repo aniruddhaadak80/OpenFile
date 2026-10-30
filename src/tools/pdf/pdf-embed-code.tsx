@@ -8,8 +8,10 @@ type Kind = 'iframe' | 'object' | 'viewer'
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 const PDFJS_VERSION = '4.10.38'
 
+const EXAMPLE_URL = 'https://example.com/files/brochure.pdf'
+
 export default function PdfEmbedCode() {
-  const [url, setUrl] = useState('https://example.com/files/brochure.pdf')
+  const [url, setUrl] = useState(EXAMPLE_URL)
   const [title, setTitle] = useState('PDF document')
   const [kind, setKind] = useState<Kind>('viewer')
   const [width, setWidth] = useState(100), [unit, setUnit] = useState<'%' | 'px'>('%')
@@ -61,7 +63,8 @@ export default function PdfEmbedCode() {
   }, [kind, url, frag, title, style, download, page, zoom, id])
 
   // Only web addresses and paths are previewed in the frame, so a javascript: or data: address typed here never runs in the app.
-  const previewSrc = local ? local.url + frag : /^\s*(https?:\/\/|\/)/i.test(url) ? url + frag : 'about:blank'
+  // The sample address only fills the code snippet; previewing it would just request a page that does not exist.
+  const previewSrc = local ? local.url + frag : url.trim() !== EXAMPLE_URL && /^\s*(https?:\/\/|\/)/i.test(url) ? url + frag : 'about:blank'
   return (
     <ToolGrid
       main={<div className="space-y-3">

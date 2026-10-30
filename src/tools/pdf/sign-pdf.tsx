@@ -17,6 +17,7 @@ const LS = 'openfile.sign.saved.v1'
 const loadSaved = (): Saved[] => { try { return JSON.parse(localStorage.getItem(LS) || '[]') } catch { return [] } }
 const storeSaved = (s: Saved[]) => { try { localStorage.setItem(LS, JSON.stringify(s)) } catch { toast('Could not save to this device (storage full?)', 'error') } }
 
+// Labels are only fallbacks; the picker shows each format with today's date, the same text the Date button stamps.
 const DATE_FORMATS = [
   { value: 'dmy', label: '28/10/2026' }, { value: 'mdy', label: '10/28/2026' }, { value: 'iso', label: '2026-10-28' },
   { value: 'long', label: '28 October 2026' }, { value: 'us-long', label: 'October 28, 2026' },
@@ -211,7 +212,7 @@ export default function SignPdf() {
             <div className="space-y-2">
               <Label>Date & text stamps</Label>
               <div className="flex gap-2">
-                <Select value={dateFmt} onChange={setDateFmt} options={DATE_FORMATS.map((d) => ({ value: d.value, label: d.label }))} className="flex-1" />
+                <Select value={dateFmt} onChange={setDateFmt} options={DATE_FORMATS.map((d) => ({ value: d.value, label: fmtDate(new Date(), d.value) }))} className="flex-1" />
                 <Button variant="outline" icon={<CalendarDays className="size-4" />} onClick={() => armText(fmtDate(new Date(), dateFmt), 'date')}>Date</Button>
               </div>
               <div className="flex gap-2">

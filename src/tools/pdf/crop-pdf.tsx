@@ -45,16 +45,17 @@ export default function CropPdf() {
   const reset = () => { setFile(null); setResult(null); setM(ZERO); setPage(0) }
 
   const vw = img?.w ?? 1, vh = img?.h ?? 1
-  const setMargins = (n: M) => {
+  // bw/bh: page size in points. Auto-detect passes the real page size, so it works even before the preview image has loaded.
+  const setMargins = (n: M, bw = vw, bh = vh) => {
     const c = (v: number, max: number) => Math.max(0, Math.min(max, v))
-    const l = c(n.l, vw - 10), r = c(n.r, vw - 10 - l), t = c(n.t, vh - 10), b = c(n.b, vh - 10 - t)
+    const l = c(n.l, bw - 10), r = c(n.r, bw - 10 - l), t = c(n.t, bh - 10), b = c(n.b, bh - 10 - t)
     setM({ l, t, r, b }); setResult(null)
   }
 
   const auto = async () => {
     if (!doc) return
     setDetecting(true)
-    try { const d = await detect(doc, page + 1); if (d) setMargins(d); else toast('This page looks blank, nothing to trim', 'info') } finally { setDetecting(false) }
+    try { const d = await detect(doc, page + 1); const v = (await doc.getPage(page + 1)).getViewport({ scale: 1 }); if (d) setMargins(d, v.width, v.height); else toast('This page looks blank, nothing to trim', 'info') } finally { setDetecting(false) }
   }
 
   const run = () => job.run(async (setP) => {

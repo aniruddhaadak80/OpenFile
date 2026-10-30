@@ -24,7 +24,7 @@ export default function PdfToPdfa() {
     ;(async () => {
       const m = await import('./_b1/pdfa'); const C = await import('./_b1/core')
       const b = await readBytes(file)
-      const d = await C.open(b); setTitle(d.getTitle() ?? baseName(file.name)); setAuthor(d.getAuthor() ?? '')
+      const d = await C.open(b); setTitle(d.getTitle() || baseName(file.name)); setAuthor(d.getAuthor() || '')
       const f = await m.validatePdfa(b, level)
       setBefore(f)
       if (f.some((x) => /not embedded|transparency/i.test(x.title) && x.level === 'fail')) setStrict(true)
