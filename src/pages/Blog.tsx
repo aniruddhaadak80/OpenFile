@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { rememberBlogList } from '@/blog/listReturn'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Rss, ArrowRight, Film, X, Hash, Timer, Headphones, ListChecks, SlidersHorizontal } from 'lucide-react'
 import { POSTS, ALL_TAGS, type PostMeta } from '@/blog/meta'
@@ -23,6 +24,8 @@ export default function Blog() {
   useEffect(() => { setPageMeta('Blog | OpenFile', 'Guides, tips and behind the scenes notes on private, in-browser file tools.') }, [])
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
+  const { search: locSearch } = useLocation()
+  useEffect(() => { rememberBlogList(locSearch) }, [locSearch])
   const qParam = params.get('q') || ''
   const tag = params.get('tag') || ''
   const kind = (KINDS.some(([k]) => k === params.get('kind')) ? params.get('kind') : 'all') as Kind

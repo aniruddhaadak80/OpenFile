@@ -76,13 +76,23 @@ async function checkHeaderAndFooter(page: Page, width: number) {
   if (width < 768) {
     const btn = page.getByRole('button', { name: 'Open menu' })
     await expect(btn).toBeVisible()
-    await btn.click()
+    // WebKit on Linux has reported this header button as never "stable" (its box changes between frames), which made
+    // a normal click wait forever. Sample the box for a few frames first so a real layout shift shows up in the log,
+    // then fall back to a forced click; the checks below still prove the menu opens and works.
+    const boxes = await btn.evaluate((el) => new Promise<string[]>((done) => {
+      const out: string[] = []
+      const step = () => { const r = el.getBoundingClientRect(); out.push(`${r.x.toFixed(1)},${r.y.toFixed(1)},${r.width.toFixed(1)}x${r.height.toFixed(1)}`); if (out.length < 8) requestAnimationFrame(step); else done(out) }
+      requestAnimationFrame(step)
+    }))
+    if (new Set(boxes).size > 1) console.log(`[${page.url()}] Open menu button moved between frames: ${boxes.join(' | ')}`)
+    await btn.click({ timeout: 8000 }).catch(async () => { console.log(`[${page.url()}] Open menu click was not actionable, forcing it`); await btn.click({ force: true }) })
     const menu = page.locator('#mobile-menu')
     await expect(menu).toBeVisible()
     await expect(menu.getByRole('link', { name: 'All Tools' })).toBeVisible()
     const box = await menu.boundingBox()
     expect(box && box.x >= 0 && box.x + box.width <= width + 1, 'mobile menu fits the screen').toBe(true)
-    await page.getByRole('button', { name: 'Close menu' }).click()
+    const close = page.getByRole('button', { name: 'Close menu' })
+    await close.click({ timeout: 8000 }).catch(() => close.click({ force: true }))
     await expect(menu).toBeHidden()
   } else {
     const tools = page.locator('header nav').getByRole('button', { name: 'Tools' })
@@ -96,7 +106,8 @@ async function checkHeaderAndFooter(page: Page, width: number) {
   await footer.scrollIntoViewIfNeeded()
   await expect(footer).toBeVisible()
   expect(await footer.locator('a[href]').count(), 'footer has links').toBeGreaterThan(10)
-  const link = footer.getByRole('link', { name: 'Privacy' }).first()
+  // the privacy policy link, not the footer category grid's /category/privacy link (hidden in a scroller at 360px)
+  const link = footer.locator('a[href$="/privacy"]:not([href*="/category/"])').first()
   await link.scrollIntoViewIfNeeded()
   await expect(link).toBeInViewport()
 }

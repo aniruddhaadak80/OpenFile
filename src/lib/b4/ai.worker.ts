@@ -21,6 +21,9 @@ async function get(task: string, model: string, device: string, dtype: string | 
     progress_callback: (e: any) => {
       if (e.status === 'progress' && e.file) { files.set(e.file, { loaded: e.loaded ?? 0, total: e.total ?? 0 }); let l = 0, t = 0; files.forEach((f) => { l += f.loaded; t += f.total }); const now = Date.now(); if (now - last < 200 && l < t) return; last = now; post({ id, type: 'load', loaded: l, total: t, file: e.file }) }
       else if (e.status === 'initiate') post({ id, type: 'status', text: `Downloading ${e.file}` })
+      // after the last file arrives ONNX Runtime still has to build the model, which takes a while on a CPU; say so instead of
+      // leaving the last "Downloading <file>" line on screen
+      else if (e.status === 'done') post({ id, type: 'status', text: 'Preparing the model. On a CPU this can take a minute or two.' })
     },
   })
   cache.set(key, p)

@@ -320,6 +320,9 @@ export function HeroRing({ className, style }: { className?: string; style?: Rec
   })
 
   const shownTool = toolBySlug(shown)
+  // the caption names whatever is hovered or focused (a chip, a category, the flying chip) and goes back to the
+  // showcase in the core when nothing is
+  const caption = hover && hover.key !== 'core' ? { key: hover.key, title: hover.title, href: hover.href } : shownTool ? { key: shownTool.slug, title: shownTool.name, href: '/' + shownTool.slug } : null
   return (
     <motion.div style={style} className={cn('relative mx-auto w-full max-w-[460px]', className)}>
       <div ref={root}
@@ -343,9 +346,9 @@ export function HeroRing({ className, style }: { className?: string; style?: Rec
         <HoverCard info={hover} ringW={w} reduce={reduce} touch={touch} />
       </div>
       <p className="mt-3 flex h-5 items-center justify-center gap-1.5 text-xs text-muted">
-        {shownTool && <><span className="relative flex size-1.5"><span className="hr-live absolute inline-flex size-full rounded-full bg-accent" /><span className="relative inline-flex size-1.5 rounded-full bg-accent" /></span>
+        {caption && <><span className="relative flex size-1.5"><span className="hr-live absolute inline-flex size-full rounded-full bg-accent" /><span className="relative inline-flex size-1.5 rounded-full bg-accent" /></span>
           <span>Now showing</span>
-          <Link key={shownTool.slug} to={'/' + shownTool.slug} className="hr-caption font-medium text-fg underline decoration-accent/40 underline-offset-4 transition hover:text-accent hover:decoration-accent focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">{shownTool.name}</Link></>}
+          <Link key={caption.key} to={caption.href} className="hr-caption inline-block max-w-[60vw] truncate font-medium text-fg underline decoration-accent/40 underline-offset-4 transition hover:text-accent hover:decoration-accent focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">{caption.title}</Link></>}
       </p>
     </motion.div>
   )

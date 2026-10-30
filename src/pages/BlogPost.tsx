@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { blogListHref, cameFromBlogList } from '@/blog/listReturn'
 import { motion, useScroll, useSpring } from 'framer-motion'
 import { ArrowLeft, Clock, Calendar, Share2, Check, Film, PlayCircle } from 'lucide-react'
 import { POSTS, postBySlug, formatDate } from '@/blog/meta'
@@ -20,6 +21,9 @@ import NotFound from './NotFound'
 
 export default function BlogPost() {
   const { slug = '' } = useParams()
+  const navigate = useNavigate()
+  // opened from the blog index in this tab: All posts goes back to that same list (search, filters, scroll)
+  const [fromList] = useState(cameFromBlogList)
   const post = postBySlug(slug)
   const Body = POST_BODIES[slug]
   const articleRef = useRef<HTMLElement>(null)
@@ -70,7 +74,7 @@ export default function BlogPost() {
       <motion.div className="fixed inset-x-0 top-16 z-40 h-0.5 origin-left bg-gradient-brand" style={{ scaleX: progress }} aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-96" style={{ background: 'radial-gradient(700px 260px at 50% 0%, color-mix(in oklab, var(--accent) 12%, transparent), transparent)' }} />
       <div className="relative mx-auto max-w-6xl px-4 pt-10 sm:px-6">
-        <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-fg"><ArrowLeft className="size-4" /> All posts</Link>
+        <Link to={blogListHref()} onClick={(e) => { if (fromList && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) { e.preventDefault(); navigate(-1) } }} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-fg"><ArrowLeft className="size-4" /> All posts</Link>
         <header className="mx-auto mt-6 max-w-3xl text-center">
           <div className="flex flex-wrap justify-center gap-1.5">{post.tags.map((t) => <Link key={t} to={`/blog?tag=${t}`} className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted hover:border-accent hover:text-accent">#{t}</Link>)}</div>
           <motion.h1 ref={titleRef} data-read-title="" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-4 font-display text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">{post.title}</motion.h1>

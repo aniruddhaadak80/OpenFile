@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Keyboard, X, WifiOff, Wifi, Download, Share, ArrowRight, ArrowLeft, Compass } from 'lucide-react'
 import { flag, setFlag, isTyping, overlayBus, useInstall, useOnline } from '@/lib/ux'
 import { useRecent } from '@/lib/store'
+import { usePwa } from '@/lib/app/pwa'
 import { toast } from './toast'
 import { Button, cn } from './ui'
 
@@ -165,16 +166,41 @@ export function OnlineDot() {
 
 /* ---------------- install prompt ---------------- */
 const DISMISS_KEY = 'of:install-dismissed'
+const SESSION_KEY = 'of:install-seen'
+/** Small install card for phones and tablets. Wide screens already have the Install button in the header, so the
+ *  card never covers page content there. On small screens it waits a few seconds, goes away by itself after a while
+ *  or once the reader scrolls, and stays away for the rest of the visit, so it never sits on top of what they read. */
 export function InstallPrompt() {
   const { canPrompt, installed, prompt, iosHint } = useInstall()
   const { recent } = useRecent()
-  const [hidden, setHidden] = useState(() => { try { const t = Number(localStorage.getItem(DISMISS_KEY) || 0); return Date.now() - t < 30 * 864e5 } catch { return false } })
-  const eligible = !installed && !hidden && (canPrompt || iosHint) && (recent.length >= 1 || flag('tour-done'))
+  const { waiting } = usePwa()
+  const [hidden, setHidden] = useState(() => { try { const t = Number(localStorage.getItem(DISMISS_KEY) || 0); return Date.now() - t < 30 * 864e5 || sessionStorage.getItem(SESSION_KEY) === '1' } catch { return false } })
+  const [wide, setWide] = useState(() => typeof matchMedia === 'function' && matchMedia('(min-width: 1024px)').matches)
+  const [due, setDue] = useState(false)
+  useEffect(() => {
+    if (typeof matchMedia !== 'function') return
+    const m = matchMedia('(min-width: 1024px)'); const f = () => setWide(m.matches)
+    m.addEventListener('change', f); return () => m.removeEventListener('change', f)
+  }, [])
+  // the update bar uses the same spot on phones; it wins
+  const eligible = !installed && !hidden && !wide && !waiting && (canPrompt || iosHint) && (recent.length >= 1 || flag('tour-done'))
+  // wait a moment after load, so it never lands on top of the first thing the reader looks at
+  useEffect(() => { if (!eligible) return; const t = setTimeout(() => setDue(true), 4000); return () => clearTimeout(t) }, [eligible])
+  const shown = eligible && due
+  const snooze = () => { try { sessionStorage.setItem(SESSION_KEY, '1') } catch { /* ignore */ } setHidden(true) }
+  useEffect(() => {
+    if (!shown) return
+    const y0 = window.scrollY
+    const onScroll = () => { if (Math.abs(window.scrollY - y0) > 160) snooze() }
+    const t = setTimeout(snooze, 15000)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => { clearTimeout(t); window.removeEventListener('scroll', onScroll) }
+  }, [shown])
   const dismiss = () => { try { localStorage.setItem(DISMISS_KEY, String(Date.now())) } catch { /* ignore */ } setHidden(true) }
   return (
     <AnimatePresence>
-      {eligible && (
-        <motion.div role="dialog" aria-label="Install OpenFile" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className="fixed bottom-4 left-3 right-3 z-[66] mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur sm:left-6 sm:right-auto sm:mx-0">
+      {shown && (
+        <motion.div role="dialog" aria-label="Install OpenFile" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 30 }} className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-3 right-3 z-[66] mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-border bg-surface/95 p-3 shadow-2xl backdrop-blur sm:left-6 sm:right-auto sm:mx-0">
           <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-brand">{iosHint ? <Share className="size-5" /> : <Download className="size-5" />}</div>
           <div className="min-w-0 flex-1 text-sm"><div className="font-semibold">Install OpenFile</div><div className="text-xs text-muted">{iosHint ? 'Tap Share, then Add to Home Screen.' : 'Open it like an app, offline too.'}</div></div>
           {!iosHint && <Button size="sm" onClick={async () => { const r = await prompt(); if (r === 'accepted') toast('Installed. Find OpenFile with your apps.'); dismiss() }}>Install</Button>}

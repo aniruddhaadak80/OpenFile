@@ -45,7 +45,7 @@ export function ToolCard({ tool, compact, view = 'grid' }: { tool: ToolMeta; com
       style={{ ['--c' as string]: cat.color }}>
       <span className="sweep" aria-hidden="true" />
       <span className="glow-trail" aria-hidden="true" />
-      {hoverable && <HoverPreview slug={tool.slug} active={hover} />}
+      {hoverable && <HoverPreview slug={tool.slug} active={hover} name={tool.name} />}
       <div className="relative z-10 flex items-start justify-between">
         <div data-cat={tool.category} className="icon-anim grid size-11 place-items-center rounded-xl transition duration-300 group-hover:scale-110 group-hover:rotate-[-4deg]" style={{ background: cat.color + '1a', color: cat.color, boxShadow: `inset 0 0 0 1px ${cat.color}22` }}><Icon className="size-5" /></div>
         <div className="flex items-center gap-1.5">

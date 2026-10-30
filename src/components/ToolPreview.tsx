@@ -90,8 +90,10 @@ export function WatchPreview({ slug, name, className }: { slug: string; name: st
   )
 }
 
-/** Muted hover preview for tool cards (desktop pointers only). Renders nothing without media. */
-export function HoverPreview({ slug, active }: { slug: string; active: boolean }) {
+/** Muted hover preview for tool cards (desktop pointers only). Renders nothing without media.
+ *  While it plays it covers the whole card on an opaque backdrop: the clip is shown whole (contain, so its own labels
+ *  are never cut at the card edges) and the tool name sits in a bar under it, so no card text shows through the video. */
+export function HoverPreview({ slug, active, name }: { slug: string; active: boolean; name?: string }) {
   const media = useToolMedia(active ? slug : undefined)
   const ref = useRef<HTMLVideoElement>(null)
   const [ready, setReady] = useState(false)
@@ -101,10 +103,13 @@ export function HoverPreview({ slug, active }: { slug: string; active: boolean }
     if (active) { v.currentTime = 0; void v.play().catch(() => {}) } else { v.pause(); setReady(false) }
   }, [active, media])
   if (!media) return null
+  const on = active && ready
   return (
-    <div className={cn('pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit] transition-opacity duration-300', active && ready ? 'opacity-100' : 'opacity-0')} aria-hidden="true">
-      <video ref={ref} src={active ? media.video : undefined} poster={media.poster} muted playsInline loop preload="none" onPlaying={() => setReady(true)} className="size-full object-cover" />
-      <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/70 to-bg/10" />
+    <div data-on={on || undefined} className={cn('pointer-events-none absolute inset-0 z-20 flex flex-col overflow-hidden rounded-[inherit] bg-black transition-opacity duration-300', on ? 'opacity-100' : 'opacity-0')} aria-hidden="true">
+      <div className="relative min-h-0 flex-1">
+        <video ref={ref} src={active ? media.video : undefined} poster={media.poster} muted playsInline loop preload="none" onPlaying={() => setReady(true)} className="absolute inset-0 size-full object-contain" />
+      </div>
+      {name && <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/10 bg-black/90 px-4 py-2 text-sm font-semibold text-white"><span className="truncate">{name}</span><Play className="size-3.5 shrink-0 fill-current opacity-70" /></div>}
     </div>
   )
 }

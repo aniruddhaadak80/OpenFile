@@ -12,7 +12,8 @@ export const MODELS = {
   chat: [
     // wasm uses q8 (488 MB): Qwen's q4 file keeps the embeddings in fp32 and is 749 MB, which crashed CPU-only tabs while loading
     { id: 'onnx-community/Qwen2.5-0.5B-Instruct', label: 'Qwen2.5 0.5B (better answers)', size: 'about 500 MB', dtype: { wasm: 'q8', webgpu: 'q4f16' } },
-    { id: 'HuggingFaceTB/SmolLM2-135M-Instruct', label: 'SmolLM2 135M (lightest, best without a GPU)', size: 'about 130 MB', dtype: { wasm: 'q8', webgpu: 'fp16' }, cpuDefault: true, note: 'Short, simple answers. Pick Qwen2.5 for better ones if your device has the memory.' },
+    // CPU default: in a local check on an invoice it answered correctly where the 135M model looped and made up amounts
+    { id: 'HuggingFaceTB/SmolLM2-360M-Instruct', label: 'SmolLM2 360M (light, best without a GPU)', size: 'about 350 MB', dtype: { wasm: 'q8', webgpu: 'fp16' }, cpuDefault: true, note: 'Short, plain answers in English.' },
     { id: 'onnx-community/Qwen2.5-1.5B-Instruct', label: 'Qwen2.5 1.5B (smarter, needs WebGPU)', size: 'about 1.3 GB', dtype: { wasm: 'q4', webgpu: 'q4f16' } },
   ],
   embed: [{ id: 'Xenova/all-MiniLM-L6-v2', label: 'MiniLM embeddings', size: 'about 25 MB', dtype: { wasm: 'q8', webgpu: 'fp32' } }],

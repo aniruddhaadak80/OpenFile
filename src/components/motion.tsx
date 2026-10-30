@@ -125,7 +125,8 @@ export function Aurora({ className, density = 46 }: { className?: string; densit
     if (!ctx) return
     let raf = 0, visible = true, onScreen = true, t = 0
     let [a1, a2, a3] = readAccent()
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+    // soft glows need no retina pixels: 1x is enough and keeps the per-frame fill cost low on phones
+    const dpr = Math.min(window.devicePixelRatio || 1, 1)
     let w = 0, h = 0
     const parts = Array.from({ length: density }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.6 + 0.4, vx: (Math.random() - 0.5) * 0.00018, vy: -Math.random() * 0.00035 - 0.00005, a: Math.random() * 0.6 + 0.2 }))
     const resize = () => { const r = canvas.getBoundingClientRect(); w = r.width; h = r.height; canvas.width = Math.max(1, w * dpr); canvas.height = Math.max(1, h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0) }
@@ -145,7 +146,7 @@ export function Aurora({ className, density = 46 }: { className?: string; densit
       blob(w * (0.55 + Math.sin(t * 0.00013) * 0.15), h * (0.7 + Math.cos(t * 0.00011) * 0.08), s * 0.4, hex(a3), 0.06)
       ctx.globalCompositeOperation = 'source-over'
       for (const p of parts) {
-        p.x += p.vx; p.y += p.vy
+        p.x += p.vx * 2; p.y += p.vy * 2
         if (p.y < -0.02) { p.y = 1.02; p.x = Math.random() }
         if (p.x < -0.02) p.x = 1.02; else if (p.x > 1.02) p.x = -0.02
         ctx.globalAlpha = p.a * (0.6 + 0.4 * Math.sin(t * 0.002 + p.x * 10))
@@ -154,7 +155,9 @@ export function Aurora({ className, density = 46 }: { className?: string; densit
       }
       ctx.globalAlpha = 1
     }
-    const loop = (now: number) => { t = now; draw(); if (visible && onScreen && !resolvedReduceMotion()) raf = requestAnimationFrame(loop) }
+    // about 30 frames a second is plenty for slow drifting light, and halves the work on 60 and 120 Hz screens
+    let last = 0
+    const loop = (now: number) => { if (now - last >= 32) { last = now; t = now; draw() } if (visible && onScreen && !resolvedReduceMotion()) raf = requestAnimationFrame(loop) }
     const start = () => { cancelAnimationFrame(raf); if (resolvedReduceMotion()) { draw(); return } raf = requestAnimationFrame(loop) }
     resize(); start()
     const ro = new ResizeObserver(() => { resize(); if (resolvedReduceMotion()) draw() }); ro.observe(canvas)
