@@ -56,7 +56,7 @@ export default function GeotagPhotos() {
         {out && <ResultCard blob={out} filename="geotagged-photos.zip" title={`${ok.length} photos geotagged`} />}
       </div>
       <Card className="space-y-4 self-start">
-        <div><Label>Camera clock time zone</Label><Select value={String(offset)} onChange={(v) => setOffset(+v)} options={OFFSETS.map((m) => ({ value: String(m), label: fmtOff(m) }))} /><p className="mt-1 text-xs text-muted">Photos store local time without a zone. Pick the zone the camera clock was set to.</p></div>
+        <div><Label>Camera clock time zone</Label><Select aria-label="Camera clock time zone" value={String(offset)} onChange={(v) => setOffset(+v)} options={OFFSETS.map((m) => ({ value: String(m), label: fmtOff(m) }))} /><p className="mt-1 text-xs text-muted">Photos store local time without a zone. Pick the zone the camera clock was set to.</p></div>
         <Slider label="Camera clock was off by" value={camShift} onChange={setCamShift} min={-3600} max={3600} step={5} suffix=" s" />
         <Slider label="Max distance in time from the track" value={maxGap} onChange={setMaxGap} min={30} max={3600} step={30} suffix=" s" />
         <Switch checked={overwrite} onChange={setOverwrite} label="Replace GPS that photos already have" />

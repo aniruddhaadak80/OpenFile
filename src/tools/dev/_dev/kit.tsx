@@ -95,11 +95,27 @@ export function CodeArea({ value, onChange, placeholder, readOnly, className, li
 }
 
 /** Small file-open button that reads text. */
+/** True when the bytes look like a binary file (NUL bytes or many control characters), not text. */
+export function looksBinary(b: Uint8Array) {
+  if ((b[0] === 0xff && b[1] === 0xfe) || (b[0] === 0xfe && b[1] === 0xff)) return false // UTF-16 text with a BOM
+  const n = Math.min(b.length, 8192); let ctrl = 0
+  for (let i = 0; i < n; i++) { const c = b[i]; if (c === 0) return true; if (c < 9 || (c > 13 && c < 32)) ctrl++ }
+  return n > 0 && ctrl / n > 0.1
+}
+/** Read a file as text, or show a plain message and return null when it is not a text file. */
+export async function readTextFile(f: File): Promise<string | null> {
+  const b = new Uint8Array(await f.arrayBuffer())
+  if (looksBinary(b)) { toast(`${f.name} is not a text file, so it was not opened. Choose a text file such as .json, .csv or .txt.`, 'error'); return null }
+  if (b[0] === 0xff && b[1] === 0xfe) return new TextDecoder('utf-16le').decode(b)
+  if (b[0] === 0xfe && b[1] === 0xff) return new TextDecoder('utf-16be').decode(b)
+  return new TextDecoder().decode(b)
+}
+
 export function OpenFileButton({ onText, onFile, accept, label = 'Open', size = 'sm' }: { onText?: (t: string, name: string) => void; onFile?: (f: File) => void; accept?: string; label?: string; size?: 'sm' | 'md' }) {
   const ref = useRef<HTMLInputElement>(null)
   return (
     <>
-      <input ref={ref} type="file" hidden accept={accept} onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; onFile?.(f); if (onText) onText(await f.text(), f.name) }} />
+      <input ref={ref} type="file" hidden accept={accept} onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; onFile?.(f); if (onText) { const t = await readTextFile(f); if (t != null) onText(t, f.name) } }} />
       <Button size={size} variant="ghost" icon={<Upload className="size-4" />} onClick={() => ref.current?.click()}>{label}</Button>
     </>
   )
@@ -117,7 +133,7 @@ export function useTextDrop(onText: (t: string, name: string) => void) {
     props: {
       onDragOver: (e: React.DragEvent) => { e.preventDefault(); setOver(true) },
       onDragLeave: () => setOver(false),
-      onDrop: async (e: React.DragEvent) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files?.[0]; if (f) onText(await f.text(), f.name) },
+      onDrop: async (e: React.DragEvent) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files?.[0]; if (!f) return; const t = await readTextFile(f); if (t != null) onText(t, f.name) },
     },
   }
 }

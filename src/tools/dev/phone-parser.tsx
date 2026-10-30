@@ -29,7 +29,7 @@ export default function PhoneParser() {
       <Bar>
         <Segmented value={mode} onChange={setMode} options={[{ value: 'one', label: 'Parse a number' }, { value: 'bulk', label: 'Bulk validate' }, { value: 'find', label: 'Find in text' }]} />
         <span className="text-xs text-muted">Default country for numbers without +</span>
-        <Select value={country} onChange={setCountry} options={countries.length ? countries : [{ value: country, label: country }]} className="w-64" />
+        <Select aria-label="Default country" value={country} onChange={setCountry} options={countries.length ? countries : [{ value: country, label: country }]} className="w-64" />
       </Bar>
       {!lib && <Status kind="info">Loading phone metadata…</Status>}
       {lib && mode === 'one' && <>

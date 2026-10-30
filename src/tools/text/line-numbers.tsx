@@ -19,7 +19,7 @@ export default function LineNumbers() {
       <Bar>
         <Segmented value={mode} onChange={setMode} options={[{ value: 'add', label: 'Add numbers' }, { value: 'remove', label: 'Remove numbers' }]} />
         {mode === 'add' && <>
-          <Select value={format} onChange={setFormat} options={FORMATS} className="w-40" />
+          <Select aria-label="Number format" value={format} onChange={setFormat} options={FORMATS} className="w-40" />
           <label className="flex items-center gap-1.5 text-sm"><span className="text-muted">Custom</span><Input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Line {n}: " className="h-9 w-32 font-mono" /></label>
           <label className="flex items-center gap-1.5 text-sm"><span className="text-muted">Start</span><Input type="number" value={start} onChange={(e) => setStart(Number(e.target.value) || 0)} className="h-9 w-20" /></label>
           <label className="flex items-center gap-1.5 text-sm"><span className="text-muted">Step</span><Input type="number" value={step} onChange={(e) => setStep(Number(e.target.value) || 1)} className="h-9 w-20" /></label>

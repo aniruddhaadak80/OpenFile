@@ -46,13 +46,13 @@ export default function GifToBitmap() {
         <details className="rounded-xl border border-border p-3 text-sm"><summary className="cursor-pointer font-medium">Example sketch</summary><pre className="mt-2 overflow-auto font-mono text-[11px]">{arduinoSketch(name, order)}</pre></details>
       </>}
       side={<>
-        <div><Label>Display size</Label><Select value={size} onChange={setSize} options={SIZES} /></div>
+        <div><Label>Display size</Label><Select aria-label="Display size" value={size} onChange={setSize} options={SIZES} /></div>
         {size === 'custom' && <div className="grid grid-cols-2 gap-2"><Input type="number" min={8} max={512} value={cw} onChange={(e) => setCw(Math.max(8, +e.target.value || 8))} aria-label="Width" /><Input type="number" min={8} max={512} value={ch} onChange={(e) => setCh(Math.max(8, +e.target.value || 8))} aria-label="Height" /></div>}
         <div><Label>Fit</Label><Segmented value={fit} onChange={setFit} options={[{ value: 'contain', label: 'Fit' }, { value: 'cover', label: 'Fill' }, { value: 'stretch', label: 'Stretch' }]} /></div>
         <Slider label="Threshold" value={threshold} onChange={setThreshold} min={1} max={254} />
         <Switch checked={dither} onChange={setDither} label="Dither (shades as dots)" />
         <Switch checked={invert} onChange={setInvert} label="Invert" />
-        <div><Label>Byte layout</Label><Select value={order} onChange={(v) => setOrder(v as BitOrder)} options={[{ value: 'gfx', label: 'Adafruit GFX (horizontal, MSB)' }, { value: 'xbm', label: 'U8g2 / XBM (horizontal, LSB)' }, { value: 'ssd1306', label: 'SSD1306 buffer (vertical pages)' }]} /></div>
+        <div><Label>Byte layout</Label><Select aria-label="Byte layout" value={order} onChange={(v) => setOrder(v as BitOrder)} options={[{ value: 'gfx', label: 'Adafruit GFX (horizontal, MSB)' }, { value: 'xbm', label: 'U8g2 / XBM (horizontal, LSB)' }, { value: 'ssd1306', label: 'SSD1306 buffer (vertical pages)' }]} /></div>
         {anim.frames.length > 1 && <Slider label="Max frames" value={maxFrames} onChange={setMaxFrames} min={1} max={Math.min(200, anim.frames.length)} />}
         <p className="flex items-center gap-1.5 text-xs text-muted"><Cpu className="size-3.5" />An Arduino Uno has 32 KB of flash; keep the total small.</p>
       </>}

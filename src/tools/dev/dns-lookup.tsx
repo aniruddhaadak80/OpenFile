@@ -57,7 +57,7 @@ export default function DnsLookup() {
     <div className="space-y-4">
       <form className="flex flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); run() }}>
         <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="example.com or an IP for reverse lookup" className="h-12 min-w-64 flex-1 font-mono text-base" aria-label="Domain or IP" />
-        <Select value={resolver} onChange={setResolver} options={Object.entries(RESOLVERS).map(([k, v]) => ({ value: k as keyof typeof RESOLVERS, label: v.label }))} className="h-12 w-36" />
+        <Select aria-label="Resolver" value={resolver} onChange={setResolver} options={Object.entries(RESOLVERS).map(([k, v]) => ({ value: k as keyof typeof RESOLVERS, label: v.label }))} className="h-12 w-36" />
         <Button type="submit" loading={busy} className="h-12" icon={<Search className="size-4" />}>Look up</Button>
       </form>
       <Bar>

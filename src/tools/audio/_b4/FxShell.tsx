@@ -124,7 +124,7 @@ export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, 
         {children}
         {!isVideo && (
           <div className="space-y-3">
-            <div><Label>Output format</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'same', label: `Same as input (${(AUDIO_EXTS.includes(inExt) ? inExt : 'mp3').toUpperCase()})` }, { value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A (AAC)' }, { value: 'ogg', label: 'OGG Vorbis' }, { value: 'wav', label: 'WAV (lossless)' }, { value: 'flac', label: 'FLAC (lossless)' }]} /></div>
+            <div><Label>Output format</Label><Select aria-label="Output format" value={fmt} onChange={setFmt} options={[{ value: 'same', label: `Same as input (${(AUDIO_EXTS.includes(inExt) ? inExt : 'mp3').toUpperCase()})` }, { value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A (AAC)' }, { value: 'ogg', label: 'OGG Vorbis' }, { value: 'wav', label: 'WAV (lossless)' }, { value: 'flac', label: 'FLAC (lossless)' }]} /></div>
             {lossy && <div><Label>Bitrate (kbps)</Label><Segmented value={bitrate} onChange={setBitrate} options={[{ value: 'same', label: 'Same' }, '128', '192', '256', '320']} /><p className="mt-1 text-xs text-muted">{bitrate === 'same' ? 'Matches the original bitrate, so the file stays about the same size.' : `Encodes at ${bitrate} kb/s.`}</p></div>}
           </div>
         )}

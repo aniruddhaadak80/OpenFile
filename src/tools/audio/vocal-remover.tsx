@@ -98,7 +98,7 @@ export default function VocalRemover() {
         <Slider label="Keep bass below" value={bass} onChange={setBass} min={60} max={300} step={10} suffix=" Hz" />
         <p className="-mt-3 text-xs text-muted">Bass and kick drums are usually centered too. This keeps them in the instrumental.</p>
         <div><Label>Voice range (vocal track)</Label><Segmented value={range} onChange={setRange} options={[{ value: 'male', label: 'Low' }, { value: 'female', label: 'High' }, { value: 'wide', label: 'Wide' }]} /></div>
-        <div><Label>Format</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A' }, { value: 'ogg', label: 'OGG' }, { value: 'wav', label: 'WAV' }]} /></div>
+        <div><Label>Format</Label><Select aria-label="Format" value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A' }, { value: 'ogg', label: 'OGG' }, { value: 'wav', label: 'WAV' }]} /></div>
         <Button size="lg" className="w-full" icon={<MicOff className="size-5" />} onClick={run} loading={busy}>Remove vocals</Button>
         <Note>This uses classic center-channel cancellation, not an AI stem splitter. It works best on studio songs with vocals in the middle of the mix. Live recordings and songs with stereo reverb on the voice keep some vocal traces.</Note>
       </>}

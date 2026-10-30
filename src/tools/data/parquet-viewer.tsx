@@ -66,7 +66,7 @@ export default function ParquetViewer() {
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative"><Search className="pointer-events-none absolute left-2.5 top-2.5 size-4 text-muted" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter rows" className="w-60 pl-8" aria-label="Filter rows" /></div>
-              <Select value={col} onChange={setCol} options={[{ value: 'all', label: 'All columns' }, ...data.columns.map((c) => ({ value: c, label: c }))]} className="w-48" />
+              <Select aria-label="Search in column" value={col} onChange={setCol} options={[{ value: 'all', label: 'All columns' }, ...data.columns.map((c) => ({ value: c, label: c }))]} className="w-48" />
               {q && <span className="text-xs text-muted">{filtered.length.toLocaleString()} matching rows</span>}
             </div>
             <DataTable columns={visibleCols} rows={filtered.map((r) => visibleCols.map((c) => r[c]))} max={1000} className="max-h-[600px]" />
@@ -74,7 +74,7 @@ export default function ParquetViewer() {
           <aside className="space-y-4">
             <div className="space-y-3 rounded-2xl border border-border bg-surface p-4">
               <div className="text-xs font-semibold uppercase tracking-wide text-muted">Export {q ? 'filtered rows' : 'all rows'}</div>
-              <Select value={fmt} onChange={setFmt} options={[{ value: 'csv', label: 'CSV' }, { value: 'json', label: 'JSON' }, { value: 'ndjson', label: 'NDJSON' }, { value: 'xlsx', label: 'Excel (XLSX)' }]} />
+              <Select aria-label="Export format" value={fmt} onChange={setFmt} options={[{ value: 'csv', label: 'CSV' }, { value: 'json', label: 'JSON' }, { value: 'ndjson', label: 'NDJSON' }, { value: 'xlsx', label: 'Excel (XLSX)' }]} />
               <Button className="w-full" icon={<Download className="size-4" />} onClick={() => exportData().catch((e) => setErr(e.message))}>Download</Button>
               {err && <Status kind="err">{err}</Status>}
             </div>

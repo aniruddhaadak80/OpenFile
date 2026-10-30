@@ -67,12 +67,12 @@ export default function DataConverter() {
       <Bar>
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted">From</span>
-          <Select value={from} onChange={(v) => setFrom(v as any)} options={[{ value: 'auto', label: `Auto (${fmtLabel(effFrom)})` }, ...FORMATS.map((f) => ({ value: f.id, label: f.label }))]} className="w-44" />
+          <Select aria-label="From format" value={from} onChange={(v) => setFrom(v as any)} options={[{ value: 'auto', label: `Auto (${fmtLabel(effFrom)})` }, ...FORMATS.map((f) => ({ value: f.id, label: f.label }))]} className="w-44" />
         </div>
         <Button size="sm" variant="outline" icon={<ArrowLeftRight className="size-4" />} onClick={swap} disabled={!res || !('out' in res)} aria-label="Swap input and output">Swap</Button>
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted">To</span>
-          <Select value={to} onChange={setTo} options={FORMATS.map((f) => ({ value: f.id, label: f.label }))} className="w-40" />
+          <Select aria-label="To format" value={to} onChange={setTo} options={FORMATS.map((f) => ({ value: f.id, label: f.label }))} className="w-40" />
         </div>
         <div className="ml-auto flex gap-1">
           <Button size="sm" variant="ghost" icon={<FileCode2 className="size-4" />} onClick={() => { setBin(null); setText(SAMPLE); setFrom('auto') }}>Sample</Button>

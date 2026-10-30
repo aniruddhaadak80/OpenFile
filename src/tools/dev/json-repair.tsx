@@ -47,7 +47,7 @@ export default function JsonRepair() {
     <div className="space-y-4">
       <Bar>
         <Segmented value={mode} onChange={setMode} options={[{ value: 'repair', label: 'Repair broken JSON' }, { value: 'json5-to-json', label: 'JSON5 / JSONC to JSON' }, { value: 'json-to-json5', label: 'JSON to JSON5' }]} />
-        <Select value={indent} onChange={setIndent} options={[{ value: '2', label: '2 spaces' }, { value: '4', label: '4 spaces' }, { value: 'tab', label: 'Tabs' }, { value: '0', label: 'Minified' }]} className="w-32" />
+        <Select aria-label="Indent" value={indent} onChange={setIndent} options={[{ value: '2', label: '2 spaces' }, { value: '4', label: '4 spaces' }, { value: 'tab', label: 'Tabs' }, { value: '0', label: 'Minified' }]} className="w-32" />
         <Button size="sm" variant="ghost" className="ml-auto" icon={<ArrowLeftRight className="size-4" />} disabled={!res.out} onClick={() => setInput(res.out)}>Use result as input</Button>
       </Bar>
       {!libs && <Status kind="info">Loading the parser...</Status>}

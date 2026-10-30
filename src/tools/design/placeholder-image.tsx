@@ -98,7 +98,7 @@ export default function PlaceholderImage() {
             <button onClick={() => { setW(h); setH(w) }} className="mb-2.5 rounded-lg p-1.5 text-muted hover:text-accent cursor-pointer" title="Swap"><ArrowLeftRight className="size-4" /></button>
             <div><Label>Height</Label><Input type="number" min={1} max={8000} value={h} onChange={(e) => setH(+e.target.value)} /></div>
           </div>
-          <Select value="" onChange={(v) => { const p = PRESETS.find((x) => x[0] === v); if (p) { setW(p[1]); setH(p[2]) } }} options={[{ value: '', label: 'Size presets…' }, ...PRESETS.map(([n, a, b]) => ({ value: n, label: `${n}, ${a}×${b}` }))]} />
+          <Select aria-label="Size presets" value="" onChange={(v) => { const p = PRESETS.find((x) => x[0] === v); if (p) { setW(p[1]); setH(p[2]) } }} options={[{ value: '', label: 'Size presets…' }, ...PRESETS.map(([n, a, b]) => ({ value: n, label: `${n}, ${a}×${b}` }))]} />
           <div><Label>Pattern</Label><Segmented value={pattern} onChange={setPattern} options={['solid', 'gradient', 'stripes', 'grid', 'dots', 'cross']} /></div>
           <div className="grid grid-cols-2 gap-3">
             <ColorField label={pattern === 'gradient' ? 'From' : 'Background'} value={bg} onChange={setBg} alpha={fmt !== 'jpg'} />
@@ -107,7 +107,7 @@ export default function PlaceholderImage() {
           {pattern === 'gradient' && <ColorField label="Text" value={fg} onChange={setFg} />}
           <Button variant="secondary" size="sm" onClick={randomize} icon={<Shuffle className="size-4" />}>Random colours</Button>
           <div><Label hint="Enter = new line">Text</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={`${W} × ${H}`} className="min-h-16 font-sans text-sm" /></div>
-          <div className="grid grid-cols-2 gap-3"><div><Label>Font</Label><Select value={font} onChange={setFont} options={FONTS} /></div><div><Label>Weight</Label><Select value={String(weight)} onChange={(v) => setWeight(+v)} options={['400', '500', '600', '700', '800']} /></div></div>
+          <div className="grid grid-cols-2 gap-3"><div><Label>Font</Label><Select aria-label="Font" value={font} onChange={setFont} options={FONTS} /></div><div><Label>Weight</Label><Select aria-label="Weight" value={String(weight)} onChange={(v) => setWeight(+v)} options={['400', '500', '600', '700', '800']} /></div></div>
           <Switch checked={autoSize} onChange={setAutoSize} label="Auto-fit font size" />
           {!autoSize && <Slider label="Font size" value={size} onChange={setSize} min={8} max={400} suffix="px" />}
           <Switch checked={border} onChange={setBorder} label="Thin border" />

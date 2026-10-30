@@ -4292,7 +4292,7 @@
     "poster": "media/tools/image-to-ascii.jpg",
     "duration": 10.57,
     "voice": "af_aoede 60% + af_kore 40%",
-    "bytes": 234284,
+    "bytes": 266916,
     "music": "C 100 bpm glass"
   },
   "image-dpi-tool": {
@@ -4316,7 +4316,7 @@
     "poster": "media/tools/svg-to-dxf.jpg",
     "duration": 12.0,
     "voice": "af_nicole 70% + af_aoede 30%",
-    "bytes": 235129,
+    "bytes": 293898,
     "music": "D# 93 bpm harp"
   },
   "hpgl-viewer": {
@@ -4324,7 +4324,7 @@
     "poster": "media/tools/hpgl-viewer.jpg",
     "duration": 12.0,
     "voice": "am_puck 70% + am_echo 30%",
-    "bytes": 239082,
+    "bytes": 299858,
     "music": "G# 77 bpm piano"
   },
   "gear-generator": {
@@ -4332,7 +4332,7 @@
     "poster": "media/tools/gear-generator.jpg",
     "duration": 10.63,
     "voice": "af_aoede 70% + af_nicole 30%",
-    "bytes": 223906,
+    "bytes": 274607,
     "music": "G 95 bpm rhodes"
   },
   "laser-box-maker": {
@@ -4340,7 +4340,7 @@
     "poster": "media/tools/laser-box-maker.jpg",
     "duration": 10.27,
     "voice": "am_echo 70% + am_puck 30%",
-    "bytes": 221811,
+    "bytes": 269310,
     "music": "F# 94 bpm bell"
   },
   "text-to-svg-path": {
@@ -4388,7 +4388,7 @@
     "poster": "media/tools/sql-on-files.jpg",
     "duration": 10.8,
     "voice": "am_liam 70% + am_puck 30%",
-    "bytes": 236275,
+    "bytes": 284732,
     "music": "D# 74 bpm bell"
   },
   "json-flattener": {
@@ -4396,7 +4396,7 @@
     "poster": "media/tools/json-flattener.jpg",
     "duration": 10.8,
     "voice": "af_nova 70% + af_nicole 30%",
-    "bytes": 231113,
+    "bytes": 278795,
     "music": "G# 106 bpm marimba"
   },
   "edi-viewer": {
@@ -4404,7 +4404,7 @@
     "poster": "media/tools/edi-viewer.jpg",
     "duration": 11.5,
     "voice": "af_sarah 70% + af_nova 30%",
-    "bytes": 248745,
+    "bytes": 300222,
     "music": "D# 102 bpm kalimba"
   },
   "ai-writer": {
@@ -4436,7 +4436,7 @@
     "poster": "media/tools/toxicity-checker.jpg",
     "duration": 10.57,
     "voice": "am_michael 50% + am_fenrir 50%",
-    "bytes": 328278,
+    "bytes": 293010,
     "music": "D 101 bpm glass"
   },
   "any-to-markdown": {
@@ -4460,7 +4460,7 @@
     "poster": "media/tools/mhtml-viewer.jpg",
     "duration": 10.67,
     "voice": "bm_george 50% + bm_fable 50%",
-    "bytes": 275943,
+    "bytes": 317974,
     "music": "D 76 bpm kalimba"
   },
   "notebook-converter": {
@@ -4500,7 +4500,7 @@
     "poster": "media/tools/remove-black-bars.jpg",
     "duration": 10.53,
     "voice": "af_kore 50% + af_heart 50%",
-    "bytes": 241427,
+    "bytes": 270087,
     "music": "D 95 bpm piano"
   },
   "code-to-image": {
@@ -4540,7 +4540,7 @@
     "poster": "media/tools/chart-maker.jpg",
     "duration": 10.5,
     "voice": "am_liam 50% + am_michael 50%",
-    "bytes": 240728,
+    "bytes": 260598,
     "music": "C 90 bpm rhodes"
   },
   "gcode-viewer": {

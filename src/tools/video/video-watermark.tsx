@@ -39,7 +39,7 @@ export default function VideoWatermark() {
         <Segmented value={kind} onChange={setKind} options={[{ value: 'text', label: 'Text' }, { value: 'logo', label: 'Logo' }]} />
         {kind === 'text' ? <div className="space-y-3">
           <Input value={text} onChange={(e) => setText(e.target.value)} aria-label="Watermark text" />
-          <div className="grid grid-cols-2 gap-2"><Select value={font} onChange={setFont} options={FONTS} /><ColorInput value={color} onChange={setColor} /></div>
+          <div className="grid grid-cols-2 gap-2"><Select aria-label="Font" value={font} onChange={setFont} options={FONTS} /><ColorInput value={color} onChange={setColor} /></div>
           <Switch checked={shadow} onChange={setShadow} label="Soft shadow" />
         </div> : <FilePick file={logo} onFile={setLogo} accept="image/png,image/webp,image/svg+xml,image/jpeg" label="Drop your logo" hint="PNG with transparency works best" />}
         <div>

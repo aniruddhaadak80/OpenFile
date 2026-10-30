@@ -57,9 +57,9 @@ export default function CurrencyConverter() {
       {err && <Status kind="err">{err}</Status>}
       <div className="grid items-end gap-3 rounded-2xl border border-border bg-surface p-5 md:grid-cols-[1fr_1fr_auto_1fr]">
         <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Amount</div><Input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" className="h-12 text-xl tabular-nums" aria-label="Amount" /></div>
-        <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">From</div><Select value={from} onChange={setFrom} options={opts.length ? opts : [{ value: from, label: from }]} className="h-12" /></div>
+        <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">From</div><Select aria-label="From currency" value={from} onChange={setFrom} options={opts.length ? opts : [{ value: from, label: from }]} className="h-12" /></div>
         <Button variant="outline" className="h-12" icon={<ArrowLeftRight className="size-4" />} onClick={() => { setFrom(to); setTo(from) }} aria-label="Swap currencies" />
-        <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">To</div><Select value={to} onChange={setTo} options={opts.length ? opts : [{ value: to, label: to }]} className="h-12" /></div>
+        <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">To</div><Select aria-label="To currency" value={to} onChange={setTo} options={opts.length ? opts : [{ value: to, label: to }]} className="h-12" /></div>
       </div>
       {loading && !rates ? <Spinner label="Fetching today's rates…" /> : rate !== undefined && (
         <div className="rounded-2xl border border-border bg-surface p-6">
@@ -78,7 +78,7 @@ export default function CurrencyConverter() {
       {rates && (
         <div className="space-y-2">
           <div className="flex items-center gap-2"><span className="text-xs font-semibold uppercase tracking-wide text-muted">{fmt(amt, from)} in other currencies</span>
-            <Select value="" onChange={(v) => v && !watch.includes(v) && setWatch([...watch, v])} options={[{ value: '', label: 'Add a currency' }, ...opts.filter((o) => !watch.includes(o.value))]} className="ml-auto h-8 w-48 text-xs" /></div>
+            <Select aria-label="Add a currency" value="" onChange={(v) => v && !watch.includes(v) && setWatch([...watch, v])} options={[{ value: '', label: 'Add a currency' }, ...opts.filter((o) => !watch.includes(o.value))]} className="ml-auto h-8 w-48 text-xs" /></div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {watch.filter((c) => c !== from && rates.rates[c]).map((c) => <div key={c} className="group flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3"><div className="min-w-0 flex-1"><div className="text-xs text-muted">{names[c] ?? c}</div><div className="font-mono text-lg tabular-nums">{fmt(amt * rates.rates[c], c)}</div></div><button onClick={() => setWatch(watch.filter((x) => x !== c))} className="text-muted opacity-0 hover:text-danger group-hover:opacity-100" aria-label={`Remove ${c}`}><X className="size-4" /></button></div>)}
           </div>

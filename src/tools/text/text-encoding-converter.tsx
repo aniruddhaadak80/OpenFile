@@ -55,9 +55,9 @@ export default function TextEncodingConverter() {
         <Segmented value={mode} onChange={setMode} options={[{ value: 'files', label: 'Convert files' }, { value: 'mojibake', label: 'Fix garbled text' }]} />
         {mode === 'files' && <>
           <span className="text-sm text-muted">Save as</span>
-          <Select value={target} onChange={setTarget} options={[{ value: 'utf-8', label: 'UTF-8' }, { value: 'utf-16le', label: 'UTF-16 LE' }, { value: 'utf-16be', label: 'UTF-16 BE' }]} className="w-36" />
+          <Select aria-label="Target encoding" value={target} onChange={setTarget} options={[{ value: 'utf-8', label: 'UTF-8' }, { value: 'utf-16le', label: 'UTF-16 LE' }, { value: 'utf-16be', label: 'UTF-16 BE' }]} className="w-36" />
           <Switch checked={bom} onChange={setBom} label="Add BOM" />
-          <Select value={eol} onChange={setEol} options={[{ value: 'keep', label: 'Keep line endings' }, { value: 'lf', label: 'LF (Linux, Mac)' }, { value: 'crlf', label: 'CRLF (Windows)' }]} className="w-44" />
+          <Select aria-label="Line endings" value={eol} onChange={setEol} options={[{ value: 'keep', label: 'Keep line endings' }, { value: 'lf', label: 'LF (Linux, Mac)' }, { value: 'crlf', label: 'CRLF (Windows)' }]} className="w-44" />
         </>}
       </Bar>
       {mode === 'mojibake' ? (
@@ -87,7 +87,7 @@ export default function TextEncodingConverter() {
               </div>
               <Bar>
                 <span className="text-sm text-muted">Read this file as</span>
-                <Select value={cur.chosen} onChange={setChosen} options={opts} className="w-72" />
+                <Select aria-label="Encoding" value={cur.chosen} onChange={setChosen} options={opts} className="w-72" />
                 {cur.ranked.length > 1 && <span className="text-xs text-muted">Other likely: {cur.ranked.slice(1, 4).map((r) => LABELS[r.encoding] ?? r.encoding).join(', ')}</span>}
                 <Button className="ml-auto" onClick={downloadAll}>{items.length > 1 ? `Convert ${items.length} files (ZIP)` : 'Convert and download'}</Button>
                 <Button variant="ghost" onClick={() => setItems([])}>Start over</Button>

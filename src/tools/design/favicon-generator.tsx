@@ -218,7 +218,7 @@ export default function FaviconGenerator() {
           {o.source === 'text' && <>
             <div><Label hint="1–2 letters or an emoji">Text</Label><Input value={o.text} maxLength={4} onChange={(e) => upd({ text: e.target.value })} className="text-lg" /></div>
             <div className="flex flex-wrap gap-1">{['🚀', '⚡', '🔥', '✨', '🎨', '📦', '💡', '🌈', '🍕', '🦄'].map((e) => <button key={e} onClick={() => upd({ text: e, font: FONTS[4].value })} className="rounded-lg p-1 text-lg hover:bg-surface-2 cursor-pointer">{e}</button>)}</div>
-            <div className="grid grid-cols-2 gap-3"><div><Label>Font</Label><Select value={o.font} onChange={(font) => upd({ font })} options={FONTS} /></div><div><Label>Weight</Label><Select value={String(o.weight)} onChange={(v) => upd({ weight: +v })} options={['400', '500', '600', '700', '800', '900']} /></div></div>
+            <div className="grid grid-cols-2 gap-3"><div><Label>Font</Label><Select aria-label="Font" value={o.font} onChange={(font) => upd({ font })} options={FONTS} /></div><div><Label>Weight</Label><Select aria-label="Weight" value={String(o.weight)} onChange={(v) => upd({ weight: +v })} options={['400', '500', '600', '700', '800', '900']} /></div></div>
             <ColorField label="Text colour" value={o.textColor} onChange={(textColor) => upd({ textColor })} alpha={false} />
           </>}
           <Switch checked={!o.transparentBg} onChange={(v) => upd({ transparentBg: !v })} label="Background fill" />

@@ -24,7 +24,7 @@ export default function VideoFps() {
     <VideoOpTool
       dropLabel="Drop a video to change its frame rate" action={m.label} icon={<Timer className="size-5" />}
       side={({ meta }) => <>
-        <div><Label>Effect</Label><Select value={mode} onChange={(v) => setMode(v as FpsMode)} options={MODES.map((x) => ({ value: x.value, label: x.label }))} /></div>
+        <div><Label>Effect</Label><Select aria-label="Effect" value={mode} onChange={(v) => setMode(v as FpsMode)} options={MODES.map((x) => ({ value: x.value, label: x.label }))} /></div>
         <p className="text-xs text-muted">{m.hint}</p>
         {mode === 'stopmotion' ? <Slider label="Frames per second" value={stop} onChange={setStop} min={2} max={15} />
           : <div><Label>Output frame rate</Label><Segmented value={fps} onChange={setFps} options={['24', '25', '30', '50', '60'].map((v) => ({ value: v, label: v }))} /></div>}

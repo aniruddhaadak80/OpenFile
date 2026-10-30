@@ -23,7 +23,7 @@ export default function StringEscape() {
   return (
     <div className="space-y-4">
       <Bar>
-        <Select value={lang} onChange={setLang} options={LANGS} className="w-60" />
+        <Select aria-label="Language" value={lang} onChange={setLang} options={LANGS} className="w-60" />
         <Segmented value={dir} onChange={setDir} options={[{ value: 'esc', label: 'Escape' }, { value: 'unesc', label: 'Unescape' }]} />
         {dir === 'esc' && QUOTABLE.includes(lang) && <Switch checked={quote} onChange={setQuote} label="Wrap in quotes" />}
         {dir === 'esc' && UNI.includes(lang) && <Switch checked={uni} onChange={setUni} label="Escape non-ASCII" />}

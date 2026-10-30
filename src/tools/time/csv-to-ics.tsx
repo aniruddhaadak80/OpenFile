@@ -38,7 +38,7 @@ export default function CsvToIcs() {
     })
     return { events: ev, bad }
   }, [rows, JSON.stringify(C)])
-  const pick = (k: keyof typeof C, l: string) => <div><Label>{l}</Label><Select value={String(C[k])} onChange={(v) => setMap({ ...map, [k]: v })} options={[{ value: '-1', label: 'None' }, ...opts]} /></div>
+  const pick = (k: keyof typeof C, l: string) => <div><Label>{l}</Label><Select aria-label={l} value={String(C[k])} onChange={(v) => setMap({ ...map, [k]: v })} options={[{ value: '-1', label: 'None' }, ...opts]} /></div>
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="min-w-0 space-y-3">

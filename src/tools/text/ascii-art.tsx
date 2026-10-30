@@ -95,8 +95,8 @@ export default function AsciiArt() {
     <div className="space-y-4">
       <Input value={text} onChange={(e) => setText(e.target.value)} className="h-12 text-lg" placeholder="Type your banner text" aria-label="Banner text" maxLength={200} />
       <Bar>
-        <Select value={font} onChange={setFont} options={Object.keys(FONTS)} className="w-48" />
-        <Select value={layout} onChange={setLayout} options={[{ value: 'default', label: 'Default spacing' }, { value: 'full', label: 'Full width' }, { value: 'fitted', label: 'Fitted' }, { value: 'controlled smushing', label: 'Smushed' }]} className="w-44" />
+        <Select aria-label="Font" value={font} onChange={setFont} options={Object.keys(FONTS)} className="w-48" />
+        <Select aria-label="Layout" value={layout} onChange={setLayout} options={[{ value: 'default', label: 'Default spacing' }, { value: 'full', label: 'Full width' }, { value: 'fitted', label: 'Fitted' }, { value: 'controlled smushing', label: 'Smushed' }]} className="w-44" />
         <Slider label="Wrap at" value={width} onChange={setWidth} min={40} max={240} suffix=" cols" className="w-44" />
         <Segmented value={comment} onChange={setComment} options={[{ value: 'none', label: 'Plain' }, { value: 'hash', label: '# comment' }, { value: 'slash', label: '// comment' }, { value: 'block', label: '/* */' }]} />
         <Switch checked={all} onChange={setAll} label="Preview all fonts" />

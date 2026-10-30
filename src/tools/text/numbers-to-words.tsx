@@ -46,8 +46,8 @@ export default function NumbersToWords() {
           <Input value={num} onChange={(e) => setNum(e.target.value)} inputMode="decimal" aria-label="Number" className="h-14 font-mono text-2xl" placeholder="1234.56" />
           <div className="flex flex-wrap items-center gap-3">
             <Segmented value={mode} onChange={setMode} options={[{ value: 'plain', label: 'Plain' }, { value: 'ordinal', label: 'Ordinal' }, { value: 'currency', label: 'Currency' }, { value: 'cheque', label: 'Cheque' }, { value: 'year', label: 'Year' }]} />
-            {(mode === 'currency' || mode === 'cheque') && <Select value={cur} onChange={setCur} options={Object.entries(CURRENCIES).map(([k, v]) => ({ value: k as Cur, label: v.label }))} className="w-48" />}
-            <Select value={caps} onChange={setCaps} options={[{ value: 'sentence', label: 'Sentence case' }, { value: 'lower', label: 'lower case' }, { value: 'title', label: 'Title Case' }, { value: 'upper', label: 'UPPER CASE' }]} className="w-40" />
+            {(mode === 'currency' || mode === 'cheque') && <Select aria-label="Currency" value={cur} onChange={setCur} options={Object.entries(CURRENCIES).map(([k, v]) => ({ value: k as Cur, label: v.label }))} className="w-48" />}
+            <Select aria-label="Letter case" value={caps} onChange={setCaps} options={[{ value: 'sentence', label: 'Sentence case' }, { value: 'lower', label: 'lower case' }, { value: 'title', label: 'Title Case' }, { value: 'upper', label: 'UPPER CASE' }]} className="w-40" />
             <Switch checked={and} onChange={setAnd} label='Use "and" after hundred' />
           </div>
         </div>

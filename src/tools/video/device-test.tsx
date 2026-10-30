@@ -74,7 +74,7 @@ export default function DeviceTest() {
     <div className="grid gap-4 lg:grid-cols-3">
       <Card className="space-y-3">
         <div className="flex items-center justify-between"><div className="flex items-center gap-2 font-semibold"><Camera className="size-4 text-accent" />Camera</div><Pill s={camErr ? 'fail' : cam ? 'ok' : 'idle'} label={camErr ? 'Problem' : cam ? 'Working' : 'Not tested'} /></div>
-        {cams.devices.length > 0 && <Select value={camId} onChange={setCamId} options={[{ value: '', label: 'Default camera' }, ...cams.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} />}
+        {cams.devices.length > 0 && <Select aria-label="Camera" value={camId} onChange={setCamId} options={[{ value: '', label: 'Default camera' }, ...cams.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} />}
         <div className="grid aspect-video place-items-center overflow-hidden rounded-xl bg-black">{cam ? <video ref={video} autoPlay muted playsInline className="h-full w-full -scale-x-100 object-cover" /> : <Camera className="size-8 text-white/30" />}</div>
         {camInfo && cam && <p className="font-mono text-xs text-muted">{camInfo}</p>}
         {camErr && <p className="text-xs text-danger">{camErr}</p>}
@@ -82,7 +82,7 @@ export default function DeviceTest() {
       </Card>
       <Card className="space-y-3">
         <div className="flex items-center justify-between"><div className="flex items-center gap-2 font-semibold"><Mic className="size-4 text-accent" />Microphone</div><Pill s={micStatus} label={micErr ? 'Problem' : !mic ? 'Not tested' : peak > 0.02 ? 'Hearing you' : 'Say something'} /></div>
-        {mics.devices.length > 0 && <Select value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />}
+        {mics.devices.length > 0 && <Select aria-label="Microphone" value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />}
         <LevelMeter analyser={analyser} className="h-3" />
         {mic && <p className="text-xs text-muted">Loudest so far: {Math.round(peak * 100)}%. Speak normally; it should reach 30 to 80%.</p>}
         {micErr && <p className="text-xs text-danger">{micErr}</p>}
@@ -92,7 +92,7 @@ export default function DeviceTest() {
       </Card>
       <Card className="space-y-3">
         <div className="flex items-center justify-between"><div className="flex items-center gap-2 font-semibold"><Volume2 className="size-4 text-accent" />Speakers</div><Pill s={spk} label={spk === 'ok' ? 'Working' : spk === 'fail' ? 'Problem' : 'Not tested'} /></div>
-        {outs.devices.length > 0 && 'setSinkId' in HTMLMediaElement.prototype && <Select value={outId} onChange={setOutId} options={[{ value: '', label: 'Default output' }, ...outs.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Output ${i + 1}` }))]} />}
+        {outs.devices.length > 0 && 'setSinkId' in HTMLMediaElement.prototype && <Select aria-label="Speaker output" value={outId} onChange={setOutId} options={[{ value: '', label: 'Default output' }, ...outs.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Output ${i + 1}` }))]} />}
         <div className="grid grid-cols-3 gap-2"><Button variant="outline" onClick={() => playTone('left')}>Left</Button><Button variant="outline" onClick={() => playTone('both')}>Both</Button><Button variant="outline" onClick={() => playTone('right')}>Right</Button></div>
         <p className="text-sm">Did you hear the tones from the right sides?</p>
         <div className="flex gap-2"><Button variant="secondary" className="flex-1" onClick={() => setSpk('ok')}>Yes</Button><Button variant="ghost" className="flex-1" onClick={() => setSpk('fail')}>No</Button></div>

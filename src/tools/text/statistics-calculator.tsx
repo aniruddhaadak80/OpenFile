@@ -33,7 +33,7 @@ export default function StatisticsCalculator() {
     <div className="space-y-4">
       <Bar>
         <Segmented value={mode} onChange={setMode} options={[{ value: 'list', label: 'List of numbers' }, { value: 'table', label: 'CSV / table column' }]} />
-        {mode === 'table' && opts.length > 0 && <><span className="text-sm text-muted">Column</span><Select value={col} onChange={setCol} options={opts} className="w-40" /><span className="text-sm text-muted">Regress against</span><Select value={ycol} onChange={setYcol} options={opts} className="w-40" /></>}
+        {mode === 'table' && opts.length > 0 && <><span className="text-sm text-muted">Column</span><Select aria-label="Column" value={col} onChange={setCol} options={opts} className="w-40" /><span className="text-sm text-muted">Regress against</span><Select aria-label="Regress against" value={ycol} onChange={setYcol} options={opts} className="w-40" /></>}
         <Slider label="Bins (0 = auto)" value={bins} onChange={setBins} min={0} max={40} className="w-48" />
         {report && <CopyButton text={report} label="Copy report" />}
       </Bar>

@@ -72,12 +72,12 @@ export default function UnitConverter() {
       <Card className="space-y-4">
         <div className="grid items-end gap-3 md:grid-cols-[1fr_auto_1fr]">
           <div className="space-y-2">
-            <Select value={from} onChange={setFrom} options={C.units.map((u) => ({ value: u.id, label: `${u.name} (${u.sym})` }))} />
+            <Select aria-label="From unit" value={from} onChange={setFrom} options={C.units.map((u) => ({ value: u.id, label: `${u.name} (${u.sym})` }))} />
             <Input value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="h-16 font-display text-3xl font-semibold" />
           </div>
           <Button variant="outline" className="md:mb-3" icon={<ArrowLeftRight className="size-4" />} onClick={() => { setFrom(to); setTo(from); if (Number.isFinite(res)) setVal(String(Number(res.toPrecision(12)))) }} aria-label="Swap" />
           <div className="space-y-2">
-            <Select value={to} onChange={setTo} options={C.units.map((u) => ({ value: u.id, label: `${u.name} (${u.sym})` }))} />
+            <Select aria-label="To unit" value={to} onChange={setTo} options={C.units.map((u) => ({ value: u.id, label: `${u.name} (${u.sym})` }))} />
             <motion.div key={res + to} initial={{ opacity: 0.4 }} animate={{ opacity: 1 }} className="flex h-16 items-center gap-2 rounded-xl border border-accent/40 bg-accent/5 px-3">
               <span className="min-w-0 flex-1 truncate font-display text-3xl font-semibold text-accent">{fmt(res, P)}</span><span className="text-muted">{U(to).sym}</span>
               <CopyButton text={Number.isFinite(res) ? String(Number(res.toPrecision(P))) : ''} label="" variant="ghost" />

@@ -248,7 +248,7 @@ export default function MidiPlayer() {
         {info && <div className="grid grid-cols-3 gap-2"><Stat label="Length" value={fmtTime(info.duration, 0)} /><Stat label="Tempo" value={`${info.bpm} bpm`} /><Stat label="Tracks" value={tracks.length} /></div>}
         <Slider label="Speed" value={rate} onChange={(v) => { setRate(v); if (playing) setTimeout(() => play(), 0) }} min={0.5} max={2} step={0.05} suffix="x" />
         <Slider label="Volume" value={vol} onChange={(v) => { setVol(v); if (master.current) master.current.gain.value = v / 100 }} min={10} max={100} suffix="%" />
-        <div><Label>Save as</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'wav', label: 'WAV' }, { value: 'ogg', label: 'OGG' }]} /></div>
+        <div><Label>Save as</Label><Select aria-label="Save as" value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'wav', label: 'WAV' }, { value: 'ogg', label: 'OGG' }]} /></div>
         <Button size="lg" className="w-full" icon={<Download className="size-5" />} onClick={render} loading={busy} disabled={!info}>Render and download</Button>
         {busy && <Progress value={p} />}
         <p className="flex gap-1.5 text-xs text-muted"><Music2 className="size-4 shrink-0" />Played with a built-in synthesizer, so it sounds simpler than a full sound bank. Muted tracks are left out of the export.</p>

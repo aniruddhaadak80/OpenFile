@@ -152,7 +152,7 @@ export default function PasswordGenerator() {
                 <Switch checked={sets.symbols} onChange={(v) => setSets({ ...sets, symbols: v })} label="Symbols" />
                 <Switch checked={noAmbig} onChange={setNoAmbig} label="Exclude ambiguous (I l 1 O 0 o |)" />
               </div>
-              {sets.symbols && <Field label="Custom symbols" hint={<button className="text-accent hover:underline" onClick={() => setSymbols(DEFAULT_SYMBOLS)}>reset</button>}><Input value={symbols} onChange={(e) => setSymbols(e.target.value)} className="font-mono" /></Field>}
+              {sets.symbols && <Field label="Custom symbols" hint={<button type="button" aria-label="Reset custom symbols" className="text-accent hover:underline" onClick={() => setSymbols(DEFAULT_SYMBOLS)}>reset</button>}><Input aria-label="Custom symbols" value={symbols} onChange={(e) => setSymbols(e.target.value)} className="font-mono" /></Field>}
             </>
           ) : (
             <>

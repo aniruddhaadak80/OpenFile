@@ -161,7 +161,7 @@ export default function AudioTranscriber() {
             <Segmented value={model} onChange={setModel} options={[{ value: 'Xenova/whisper-tiny', label: 'Tiny · fast' }, { value: 'Xenova/whisper-base', label: 'Base · accurate' }]} />
             <p className="mt-1.5 text-xs text-muted">{model.endsWith('tiny') ? '~40 MB download, good for clear speech.' : '~80 MB download, better with accents & noise.'} Downloaded once, then cached.</p>
           </div>
-          <div><Label>Language</Label><Select value={lang} onChange={setLang} options={LANGS.map(([v, l]) => ({ value: v, label: l }))} /></div>
+          <div><Label>Language</Label><Select aria-label="Language" value={lang} onChange={setLang} options={LANGS.map(([v, l]) => ({ value: v, label: l }))} /></div>
           <div><Switch checked={wordMode} onChange={setWordMode} label="Word-level timing" /><p className="mt-1 text-xs text-muted">Times every single word, so you can make short, punchy captions. Uses a slightly larger model download.</p></div>
           <div><Label>Task</Label><Segmented value={task} onChange={setTask} options={[{ value: 'transcribe', label: 'Transcribe' }, { value: 'translate', label: 'Translate → English' }]} /></div>
           {hasGpu && <div><Switch checked={gpu} onChange={setGpu} label={<span className="inline-flex items-center gap-1.5"><Zap className="size-4 text-warn" />GPU acceleration (WebGPU)</span>} /><p className="mt-1 text-xs text-muted">Much faster on supported GPUs; turn off if it fails.</p></div>}

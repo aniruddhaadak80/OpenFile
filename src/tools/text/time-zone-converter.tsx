@@ -89,7 +89,7 @@ export default function TimeZoneConverter() {
       {mode === 'planner' && (
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="text-muted">Day in</span><Select value={src} onChange={setSrc} options={list} className="w-56" />
+            <span className="text-muted">Day in</span><Select aria-label="Day in time zone" value={src} onChange={setSrc} options={list} className="w-56" />
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-44" />
             <span className="flex items-center gap-3 text-xs text-muted"><span className="inline-block size-3 rounded bg-success/40" />work hours 9 to 17<span className="inline-block size-3 rounded bg-warn/30" />early or late<span className="inline-block size-3 rounded bg-surface-2" />night</span>
           </div>

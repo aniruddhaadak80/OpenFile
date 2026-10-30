@@ -185,7 +185,7 @@ export function StepDrawer({ graph, node, sample, onParam, onToggle, onDuplicate
               return (
                 <div key={p.key}>
                   <label htmlFor={id} className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted">{p.label}</label>
-                  {p.type === 'select' ? <Select value={String(node.params[p.key])} onChange={(v) => onParam(p.key, v)} options={p.options!} />
+                  {p.type === 'select' ? <Select id={id} value={String(node.params[p.key])} onChange={(v) => onParam(p.key, v)} options={p.options!} />
                     : p.type === 'bool' ? <Switch checked={!!node.params[p.key]} onChange={(v) => onParam(p.key, v)} />
                     : p.type === 'color' ? <input id={id} type="color" value={node.params[p.key]} onChange={(e) => onParam(p.key, e.target.value)} className="h-10 w-full cursor-pointer rounded-xl border border-border bg-transparent p-1" />
                     : p.type === 'number' && p.max != null && p.min != null && p.max - p.min <= 100 ? (

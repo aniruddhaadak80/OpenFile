@@ -40,7 +40,7 @@ export default function SafeZoneChecker() {
   if (!file) return (
     <div className="space-y-4">
       <Dropzone accept="image/*,video/*" onFiles={(f) => open(f[0])} label="Drop a frame, thumbnail or short video" sub="See which parts the app covers with buttons, captions and bars before you post." />
-      <Card className="flex flex-wrap items-center gap-3"><Label className="mb-0">Or check an empty frame for</Label><Select className="w-56" value={preset} onChange={(v) => { setPreset(v); setFile(new File([], 'Empty frame')) }} options={Object.entries(SAFE_ZONES).map(([k, v]) => ({ value: k, label: v.label }))} /></Card>
+      <Card className="flex flex-wrap items-center gap-3"><Label className="mb-0">Or check an empty frame for</Label><Select aria-label="Or check an empty frame for" className="w-56" value={preset} onChange={(v) => { setPreset(v); setFile(new File([], 'Empty frame')) }} options={Object.entries(SAFE_ZONES).map(([k, v]) => ({ value: k, label: v.label }))} /></Card>
     </div>
   )
   return (
@@ -51,7 +51,7 @@ export default function SafeZoneChecker() {
         {dur > 0 && <Slider label="Frame" value={t} onChange={setT} min={0} max={Math.max(0.1, dur)} step={0.1} suffix=" s" />}
       </div>
       <Card className="space-y-4 self-start">
-        <div><Label>App and format</Label><Select value={preset} onChange={setPreset} options={Object.entries(SAFE_ZONES).map(([k, v]) => ({ value: k, label: `${v.label} (${v.ratio})` }))} /></div>
+        <div><Label>App and format</Label><Select aria-label="App and format" value={preset} onChange={setPreset} options={Object.entries(SAFE_ZONES).map(([k, v]) => ({ value: k, label: `${v.label} (${v.ratio})` }))} /></div>
         <Slider label="Zone shading" value={opacity} onChange={setOpacity} min={10} max={90} suffix="%" />
         <Switch checked={labels} onChange={setLabels} label="Zone names" /><Switch checked={grid} onChange={setGrid} label="Rule of thirds" />
         <p className="text-xs text-muted">Keep faces, text and logos out of the red areas. Zones are measured from current app layouts and can shift a little between phones.</p>

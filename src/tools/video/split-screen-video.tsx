@@ -59,11 +59,11 @@ export default function SplitScreenVideo() {
         </>}
         side={<>
           <div><Label>Layout</Label><Segmented value={layout} onChange={setLayout} options={LAYOUTS.map((x) => ({ value: x.v, label: x.label }))} /></div>
-          <div><Label>Size of each tile</Label><Select value={cell} onChange={setCell} options={[{ value: '640x360', label: '640×360 (16:9)' }, { value: '960x540', label: '960×540 (16:9)' }, { value: '540x960', label: '540×960 (9:16)' }, { value: '540x540', label: '540×540 (1:1)' }, { value: '1280x720', label: '1280×720 (16:9)' }]} /></div>
+          <div><Label>Size of each tile</Label><Select aria-label="Size of each tile" value={cell} onChange={setCell} options={[{ value: '640x360', label: '640×360 (16:9)' }, { value: '960x540', label: '960×540 (16:9)' }, { value: '540x960', label: '540×960 (9:16)' }, { value: '540x540', label: '540×540 (1:1)' }, { value: '1280x720', label: '1280×720 (16:9)' }]} /></div>
           <div><Label>Fit</Label><Segmented value={fit} onChange={setFit} options={[{ value: 'fill', label: 'Fill tile' }, { value: 'fit', label: 'Show all' }]} /></div>
           <Slider label="Gap" value={gap} onChange={setGap} min={0} max={40} suffix="px" />
           <div><Label>Gap colour</Label><ColorInput value={color} onChange={setColor} /></div>
-          <div><Label>Sound</Label><Select value={audio} onChange={setAudio} options={[...files.map((f, i) => ({ value: String(i), label: `From clip ${i + 1}` })), { value: 'mix', label: 'Mix all' }, { value: 'none', label: 'No sound' }]} /></div>
+          <div><Label>Sound</Label><Select aria-label="Sound" value={audio} onChange={setAudio} options={[...files.map((f, i) => ({ value: String(i), label: `From clip ${i + 1}` })), { value: 'mix', label: 'Mix all' }, { value: 'none', label: 'No sound' }]} /></div>
           <Button size="lg" className="w-full" icon={<Columns2 className="size-5" />} onClick={go} loading={job.busy} disabled={files.length < L.min && !(layout === 'grid' && files.length >= 2)}>Create split screen</Button>
           <JobPanel job={job} onRetry={go} />
           <p className="text-xs text-muted">The result is as long as the shortest clip.</p>

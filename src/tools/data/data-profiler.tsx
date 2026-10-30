@@ -40,7 +40,7 @@ export default function DataProfiler() {
         </>}
       </>}
       side={<>
-        {tables && tables.length > 1 && <Select value={String(sel)} onChange={(v) => setSel(+v)} options={tables.map((x, i) => ({ value: String(i), label: x.name }))} />}
+        {tables && tables.length > 1 && <Select aria-label="Table" value={String(sel)} onChange={(v) => setSel(+v)} options={tables.map((x, i) => ({ value: String(i), label: x.name }))} />}
         {t && <><DlButton className="w-full" name={`${t.name}-profile.html`} mime="text/html" data={html}>Download HTML report</DlButton><DlButton className="w-full" name={`${t.name}-profile.json`} mime="application/json" data={() => JSON.stringify({ rows: t.rows.length, columns: prof, correlations: corr, issues }, null, 2)}>Download JSON</DlButton></>}
         <p className="flex gap-1.5 text-xs text-muted"><ScanSearch className="size-4 shrink-0" />Types are guessed from the values: 95% numbers makes a number column. Empty, NA, null and dash count as empty.</p>
       </>}

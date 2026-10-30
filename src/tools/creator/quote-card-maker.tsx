@@ -49,10 +49,10 @@ export default function QuoteCardMaker() {
       <Card className="space-y-4 self-start">
         <div><Label hint={`${quote.length}`}>Quote</Label><Textarea value={quote} onChange={(e) => setQuote(e.target.value)} className="min-h-24 font-sans" /></div>
         <div className="grid grid-cols-2 gap-2"><div><Label>Author</Label><Input value={author} onChange={(e) => setAuthor(e.target.value)} /></div><div><Label>Handle</Label><Input value={handle} onChange={(e) => setHandle(e.target.value)} /></div></div>
-        <div><Label>Size</Label><Select value={size as string} onChange={(v) => setSize(v as keyof typeof SIZES)} options={Object.entries(SIZES).map(([k, v]) => ({ value: k, label: v.label }))} /></div>
+        <div><Label>Size</Label><Select aria-label="Size" value={size as string} onChange={(v) => setSize(v as keyof typeof SIZES)} options={Object.entries(SIZES).map(([k, v]) => ({ value: k, label: v.label }))} /></div>
         <div><Label>Theme</Label><div className="flex flex-wrap gap-1.5">{THEMES.map((t, i) => <button key={t.name} title={t.name} aria-label={t.name} onClick={() => setTheme(i)} className={`size-8 rounded-lg border-2 cursor-pointer ${theme === i ? 'border-fg' : 'border-transparent'}`} style={{ background: `linear-gradient(135deg, ${t.bg[0]}, ${t.bg[1]})` }} />)}</div></div>
-        <div><Label>Font</Label><Select value={font} onChange={setFont} options={FONTS} /></div>
-        <div><Label>Align</Label><Select value={align} onChange={setAlign} options={[{ value: 'center', label: 'Center' }, { value: 'left', label: 'Left' }]} /></div>
+        <div><Label>Font</Label><Select aria-label="Font" value={font} onChange={setFont} options={FONTS} /></div>
+        <div><Label>Align</Label><Select aria-label="Align" value={align} onChange={setAlign} options={[{ value: 'center', label: 'Center' }, { value: 'left', label: 'Left' }]} /></div>
         <Slider label="Side margin" value={pad} onChange={setPad} min={5} max={20} suffix="%" />
         {img && <Slider label="Darken photo" value={shade} onChange={setShade} min={0} max={85} suffix="%" />}
         <Switch checked={marks} onChange={setMarks} label="Big quote mark" />

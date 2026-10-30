@@ -87,7 +87,7 @@ function Hero({ onFilm }: { onFilm: () => void }) {
             Merge, sign and compress PDFs. Remove backgrounds, trim videos, transcribe audio and format code. It all runs on your device, free, with nothing uploaded.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18, duration: 0.6 }} className="relative mx-auto mt-8 max-w-xl lg:mx-0">
-            <div className="flex items-center gap-3 of-field-wrap rounded-2xl border border-border bg-surface/90 px-4 shadow-2xl shadow-accent/10 backdrop-blur">
+            <div className="flex items-center gap-3 of-field-wrap rounded-2xl border border-border bg-surface/90 px-4 shadow-2xl shadow-accent/10 backdrop-blur focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/60">
               <Search className="size-5 shrink-0 text-muted" />
               <input value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search tools" role="combobox" aria-expanded={results.length > 0} aria-controls="hero-results" data-bare-input
                 onKeyDown={(e) => { if (e.key === 'ArrowDown') { e.preventDefault(); setSel((s) => Math.min(results.length - 1, s + 1)) } else if (e.key === 'ArrowUp') { e.preventDefault(); setSel((s) => Math.max(0, s - 1)) } else if (e.key === 'Enter' && results[sel]) nav('/' + results[sel].slug); else if (e.key === 'Escape') setQ('') }}

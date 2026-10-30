@@ -26,9 +26,9 @@ export default function AsciiTableGenerator() {
   return (
     <div className="space-y-4">
       <Bar>
-        <Select value={style} onChange={setStyle} options={STYLES} className="w-56" />
-        <Select value={delim} onChange={setDelim} options={DELIMS} className="w-48" />
-        <Select value={align} onChange={setAlign} options={[{ value: 'auto', label: 'Align: numbers right' }, { value: 'l', label: 'Align left' }, { value: 'c', label: 'Align center' }, { value: 'r', label: 'Align right' }]} className="w-48" />
+        <Select aria-label="Table style" value={style} onChange={setStyle} options={STYLES} className="w-56" />
+        <Select aria-label="Input delimiter" value={delim} onChange={setDelim} options={DELIMS} className="w-48" />
+        <Select aria-label="Alignment" value={align} onChange={setAlign} options={[{ value: 'auto', label: 'Align: numbers right' }, { value: 'l', label: 'Align left' }, { value: 'c', label: 'Align center' }, { value: 'r', label: 'Align right' }]} className="w-48" />
         <Switch checked={header} onChange={setHeader} label="First row is header" />
         {!['markdown', 'rst', 'compact'].includes(style) && <Switch checked={rowLines} onChange={setRowLines} label="Line between rows" />}
         <Slider label="Padding" value={padding} onChange={setPadding} min={0} max={4} className="w-36" />

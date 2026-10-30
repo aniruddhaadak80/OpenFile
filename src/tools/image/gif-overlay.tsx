@@ -133,8 +133,8 @@ export default function GifOverlay() {
             <div className="space-y-3">
               <textarea value={selL.text} onChange={(e) => patch({ text: e.target.value })} rows={2} aria-label="Text" className="w-full rounded-xl border border-border bg-surface-2/60 px-3 py-2 text-sm text-fg outline-none focus:border-accent" />
               <div className="grid grid-cols-2 gap-2">
-                <Select value={selL.font} onChange={(v) => patch({ font: v })} options={FONT_CHOICES} />
-                <Select value={selL.anim} onChange={(v) => patch({ anim: v as TextL['anim'] })} options={[{ value: 'none', label: 'No motion' }, { value: 'fade', label: 'Fade' }, { value: 'typewriter', label: 'Typewriter' }, { value: 'bounce', label: 'Bounce' }]} />
+                <Select aria-label="Font" value={selL.font} onChange={(v) => patch({ font: v })} options={FONT_CHOICES} />
+                <Select aria-label="Animation" value={selL.anim} onChange={(v) => patch({ anim: v as TextL['anim'] })} options={[{ value: 'none', label: 'No motion' }, { value: 'fade', label: 'Fade' }, { value: 'typewriter', label: 'Typewriter' }, { value: 'bounce', label: 'Bounce' }]} />
               </div>
               <Slider label="Size" value={selL.size} onChange={(v) => patch({ size: v })} min={8} max={200} suffix="px" />
               <div className="grid grid-cols-2 gap-2"><div><Label>Fill</Label><ColorInput value={selL.color} onChange={(v) => patch({ color: v })} /></div><div><Label>Outline</Label><ColorInput value={selL.stroke} onChange={(v) => patch({ stroke: v })} /></div></div>

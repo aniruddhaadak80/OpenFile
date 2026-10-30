@@ -40,7 +40,7 @@ export default function SqlDdlGenerator() {
       <Bar>
         <Segmented value={dialect} onChange={setDialect} options={[{ value: 'postgres', label: 'PostgreSQL' }, { value: 'mysql', label: 'MySQL' }, { value: 'sqlite', label: 'SQLite' }, { value: 'sqlserver', label: 'SQL Server' }]} />
         <Input value={table} onChange={(e) => setTable(e.target.value)} className="h-9 w-40 font-mono" aria-label="Table name" placeholder="table name" />
-        <Select value={pk} onChange={setPk} options={[{ value: 'auto', label: 'Primary key: auto' }, { value: 'none', label: 'No primary key' }, ...cols.map((c) => ({ value: c.name, label: `Primary key: ${c.name}` }))]} className="w-52" />
+        <Select aria-label="Primary key" value={pk} onChange={setPk} options={[{ value: 'auto', label: 'Primary key: auto' }, { value: 'none', label: 'No primary key' }, ...cols.map((c) => ({ value: c.name, label: `Primary key: ${c.name}` }))]} className="w-52" />
       </Bar>
       <Bar>
         <Switch checked={snakeCase} onChange={setSnake} label="snake_case names" />

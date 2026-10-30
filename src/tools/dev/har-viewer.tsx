@@ -85,7 +85,7 @@ export default function HarViewer() {
       </div>
       <Bar>
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter by URL" className="h-9 w-64" aria-label="Filter by URL" />
-        <Select value={kind} onChange={setKind} options={['All', 'Fetch/XHR', 'Doc', 'JS', 'CSS', 'Img', 'Font', 'Media', 'Other']} className="w-36" />
+        <Select aria-label="Request type" value={kind} onChange={setKind} options={['All', 'Fetch/XHR', 'Doc', 'JS', 'CSS', 'Img', 'Font', 'Media', 'Other']} className="w-36" />
         <Switch checked={errorsOnly} onChange={setErrorsOnly} label="Errors only" />
         <span className="ml-auto text-xs text-muted">{shown.length} shown</span>
       </Bar>

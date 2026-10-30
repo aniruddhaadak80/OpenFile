@@ -60,7 +60,7 @@ export default function ImageTagger() {
           <EnginePanel ai={ai} quickLabel="Quick tags" quickNote="Quick tags describe light, colour, main colours and shape from the pixels. Instant, no download, no object names." />
           {ai.engine === 'ai' && (
             <>
-              <div><Label>Label set</Label><Select value={set} onChange={(v) => { setSet(v); setLabels(SETS[v] ?? labels) }} options={[{ value: 'general', label: 'Everyday things' }, { value: 'photo', label: 'Photo type' }, { value: 'mood', label: 'Mood' }, { value: 'shop', label: 'Products' }, { value: 'custom', label: 'My own labels' }]} /></div>
+              <div><Label>Label set</Label><Select aria-label="Label set" value={set} onChange={(v) => { setSet(v); setLabels(SETS[v] ?? labels) }} options={[{ value: 'general', label: 'Everyday things' }, { value: 'photo', label: 'Photo type' }, { value: 'mood', label: 'Mood' }, { value: 'shop', label: 'Products' }, { value: 'custom', label: 'My own labels' }]} /></div>
               <div><Label hint={`${list().length}`}>Labels</Label><Textarea value={labels} onChange={(e) => { setLabels(e.target.value); setSet('custom') }} className="min-h-24 font-sans text-xs" aria-label="Labels" /></div>
               <Slider label="Show tags above" value={min} onChange={setMin} min={1} max={60} suffix="%" />
             </>

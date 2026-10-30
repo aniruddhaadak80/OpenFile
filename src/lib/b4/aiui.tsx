@@ -45,7 +45,7 @@ export function ModelPanel({ ai, models, title = 'AI model' }: { ai: AiState; mo
     <div className="space-y-3">
       <div>
         <Label>{title}</Label>
-        {models.length > 1 ? <Select value={ai.model} onChange={ai.setModel} options={models.map((m) => ({ value: m.id, label: m.label }))} /> : <div className="rounded-xl border border-border bg-surface-2/50 px-3 py-2 text-sm">{models[0].label}</div>}
+        {models.length > 1 ? <Select aria-label={typeof title === 'string' ? title : 'AI model'} value={ai.model} onChange={ai.setModel} options={models.map((m) => ({ value: m.id, label: m.label }))} /> : <div className="rounded-xl border border-border bg-surface-2/50 px-3 py-2 text-sm">{models[0].label}</div>}
         <p className="mt-1 text-xs text-muted">Download {ai.info.size}, once. After that it runs offline from your browser cache.{ai.info.note ? ' ' + ai.info.note : ''}</p>
       </div>
       {ai.gpuOk ? <Switch checked={ai.gpu} onChange={ai.setGpu} label={<span className="inline-flex items-center gap-1.5"><Zap className="size-3.5 text-accent" />Use GPU (WebGPU, faster)</span>} />

@@ -17,7 +17,7 @@ export default function PhysicsFormulaSolver() {
     <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
       <Card className="space-y-3">
         <Label>Formula</Label>
-        <Select value={id} onChange={pick} options={FORMULAS.map((x) => ({ value: x.id, label: `${x.group}: ${x.name}` }))} />
+        <Select aria-label="Formula" value={id} onChange={pick} options={FORMULAS.map((x) => ({ value: x.id, label: `${x.group}: ${x.name}` }))} />
         <div className="space-y-2 pt-2">{groups.map((g) => <div key={g}><div className="text-[11px] font-semibold uppercase tracking-wide text-muted">{g}</div><div className="mt-1 flex flex-wrap gap-1">{FORMULAS.filter((x) => x.group === g).map((x) => <button key={x.id} onClick={() => pick(x.id)} className={`rounded-lg border px-2 py-1 font-mono text-[11px] cursor-pointer ${x.id === id ? 'border-accent text-fg' : 'border-border text-muted hover:text-fg'}`}>{x.expr}</button>)}</div></div>)}</div>
       </Card>
       <Card className="space-y-4">

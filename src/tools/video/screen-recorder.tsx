@@ -265,13 +265,13 @@ export default function ScreenRecorder() {
             <Switch checked={sysAudio} onChange={setSysAudio} label={<span className="inline-flex items-center gap-1.5"><Volume2 className="size-4 text-muted" />System / tab audio</span>} />
             {sysAudio && live && <Slider label="System volume" value={sysVol} onChange={setSysVol} min={0} max={200} suffix="%" />}
             <Switch checked={micOn} onChange={setMicOn} label={<span className="inline-flex items-center gap-1.5"><Mic className="size-4 text-muted" />Microphone</span>} />
-            {micOn && !live && mics.devices.length > 1 && <Select value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />}
+            {micOn && !live && mics.devices.length > 1 && <Select aria-label="Microphone" value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />}
             {micOn && <Slider label="Mic volume" value={micVol} onChange={setMicVol} min={0} max={200} suffix="%" />}
           </div>
           <div className="space-y-3 border-t border-border pt-4">
             <Switch checked={bubble.on} onChange={(on) => setBubble({ ...bubble, on })} label={<span className="inline-flex items-center gap-1.5"><Camera className="size-4 text-muted" />Webcam bubble</span>} />
             {bubble.on && <>
-              {!live && cams.devices.length > 1 && <Select value={camId} onChange={setCamId} options={[{ value: '', label: 'Default camera' }, ...cams.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} />}
+              {!live && cams.devices.length > 1 && <Select aria-label="Camera" value={camId} onChange={setCamId} options={[{ value: '', label: 'Default camera' }, ...cams.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} />}
               <div><Label>Position</Label><Segmented value={bubble.corner} onChange={(corner) => setBubble({ ...bubble, corner })} options={[{ value: 'tl', label: '↖' }, { value: 'tr', label: '↗' }, { value: 'bl', label: '↙' }, { value: 'br', label: '↘' }]} /></div>
               <div><Label>Shape</Label><Segmented value={bubble.shape} onChange={(shape) => setBubble({ ...bubble, shape })} options={[{ value: 'circle', label: 'Circle' }, { value: 'rounded', label: 'Rounded' }]} /></div>
               <Slider label="Size" value={bubble.size} onChange={(size) => setBubble({ ...bubble, size })} min={10} max={40} suffix="%" />

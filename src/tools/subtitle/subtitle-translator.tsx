@@ -55,16 +55,16 @@ export default function SubtitleTranslator() {
       </>}
       side={<>
         <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
-          <div><Label>From</Label><Select value={src} onChange={setSrc} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
+          <div><Label>From</Label><Select aria-label="From" value={src} onChange={setSrc} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
           <Button variant="ghost" icon={<ArrowRightLeft className="size-4" />} onClick={() => { setSrc(tgt); setTgt(src) }} aria-label="Swap languages" />
-          <div><Label>To</Label><Select value={tgt} onChange={setTgt} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
+          <div><Label>To</Label><Select aria-label="To" value={tgt} onChange={setTgt} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
         </div>
         <ModelPanel ai={ai} models={MODELS.translate} />
         <Button size="lg" className="w-full" icon={<Languages className="size-5" />} onClick={go} loading={ai.busy} disabled={!doc || src === tgt}>Translate {doc ? doc.cues.length + ' lines' : ''}</Button>
         <AiProgress ai={ai} />
         {done && <>
           <Switch checked={both} onChange={setBoth} label="Keep the original line too (two languages)" />
-          <div><Label>Save as</Label><Select value={fmt} onChange={setFmt} options={SUB_FORMATS.filter((f) => f.id !== 'txt').map((f) => ({ value: f.id, label: f.label }))} /></div>
+          <div><Label>Save as</Label><Select aria-label="Save as" value={fmt} onChange={setFmt} options={SUB_FORMATS.filter((f) => f.id !== 'txt').map((f) => ({ value: f.id, label: f.label }))} /></div>
           <Button className="w-full" icon={<Download className="size-4" />} onClick={save}>Download translated subtitles</Button>
         </>}
       </>}

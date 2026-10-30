@@ -66,7 +66,7 @@ export default function CsvAnonymizer() {
       <Card className="space-y-3 self-start">
         <SheetPicker s={s} />
         <Label>What to do with each column</Label>
-        <div className="max-h-80 space-y-2 overflow-auto pr-1">{head.map((h, i) => <div key={i} className="grid grid-cols-[1fr_11rem] items-center gap-2"><span className="truncate text-sm" title={str(h)}>{str(h) || `Column ${i + 1}`}<span className="block text-[10px] uppercase text-muted">{kinds[i]}</span></span><Select className="h-9 text-xs" value={modes[i] ?? 'keep'} onChange={(v) => { setModes((m) => m.map((x, k) => (k === i ? v : x))); setOut(null) }} options={MODES} /></div>)}</div>
+        <div className="max-h-80 space-y-2 overflow-auto pr-1">{head.map((h, i) => <div key={i} className="grid grid-cols-[1fr_11rem] items-center gap-2"><span className="truncate text-sm" title={str(h)}>{str(h) || `Column ${i + 1}`}<span className="block text-[10px] uppercase text-muted">{kinds[i]}</span></span><Select aria-label={`Action for ${str(h) || `Column ${i + 1}`}`} className="h-9 text-xs" value={modes[i] ?? 'keep'} onChange={(v) => { setModes((m) => m.map((x, k) => (k === i ? v : x))); setOut(null) }} options={MODES} /></div>)}</div>
         <Slider label="Shift dates by" value={shift} onChange={setShift} min={-365} max={365} suffix=" days" />
         <Slider label="Range or rounding size" value={band} onChange={setBand} min={1} max={1000} />
         <Slider label="Hash length" value={hashLen} onChange={setHashLen} min={8} max={64} />

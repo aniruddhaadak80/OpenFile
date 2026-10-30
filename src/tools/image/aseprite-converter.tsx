@@ -45,7 +45,7 @@ export default function AsepriteConverter() {
         </div>
       </>}
       side={<>
-        {ase.tags.length > 0 && <div><Label>Animation tag</Label><Select value={tag} onChange={setTag} options={[{ value: 'all', label: 'All frames' }, ...ase.tags.map((t) => ({ value: t.name, label: `${t.name} (${t.from + 1}-${t.to + 1}, ${t.direction})` }))]} /></div>}
+        {ase.tags.length > 0 && <div><Label>Animation tag</Label><Select aria-label="Animation tag" value={tag} onChange={setTag} options={[{ value: 'all', label: 'All frames' }, ...ase.tags.map((t) => ({ value: t.name, label: `${t.name} (${t.from + 1}-${t.to + 1}, ${t.direction})` }))]} /></div>}
         <Slider label="Pixel scale" value={scale} onChange={setScale} min={1} max={12} suffix="×" />
         <p className="text-xs text-muted">Scales with sharp pixels, no blur. {ase.width}×{ase.height} becomes {ase.width * scale}×{ase.height * scale}.</p>
         <Button variant="outline" className="w-full" icon={<Download className="size-4" />} onClick={sheet}>Sprite sheet (PNG + JSON)</Button>

@@ -196,11 +196,11 @@ export default function WebcamRecorder() {
           <Button variant="outline" className="w-full" icon={<Scissors className="size-4" />} onClick={trim}>Trim in Video Trimmer</Button>
           <Button variant="ghost" className="w-full" icon={<Circle className="size-4" />} onClick={() => { setResult(null); setMp4(null); setPhase('idle') }}>Record again</Button>
         </> : <>
-          {cams.devices.length > 1 && <div><Label>Camera</Label><Select value={camId} onChange={setCamId} options={[{ value: '', label: 'Default camera' }, ...cams.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} /></div>}
+          {cams.devices.length > 1 && <div><Label>Camera</Label><Select aria-label="Camera" value={camId} onChange={setCamId} options={[{ value: '', label: 'Default camera' }, ...cams.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} /></div>}
           <div className={cn(live && 'pointer-events-none opacity-50')}><Label hint={actual || undefined}>Resolution</Label><Segmented value={res} onChange={setRes} options={[{ value: '480', label: '480p' }, { value: '720', label: '720p' }, { value: '1080', label: '1080p' }]} /></div>
           <div className={cn('space-y-3', live && 'pointer-events-none opacity-50')}>
             <Switch checked={micOn} onChange={setMicOn} label="Record microphone" />
-            {micOn && mics.devices.length > 1 && <Select value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />}
+            {micOn && mics.devices.length > 1 && <Select aria-label="Microphone" value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />}
           </div>
           <div className="space-y-3 border-t border-border pt-4">
             <Switch checked={mirror} onChange={setMirror} label="Mirror preview" />

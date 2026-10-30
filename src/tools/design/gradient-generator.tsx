@@ -221,7 +221,7 @@ export default function GradientGenerator() {
                 <span className="text-muted">×</span>
                 <Input type="number" min={16} max={8000} value={size.h} onChange={(e) => setSize((s) => ({ ...s, h: Math.max(16, Math.min(8000, +e.target.value || 16)) }))} />
               </div>
-              <Select value={`${size.w}x${size.h}`} onChange={(v) => { const [w, h] = v.split('x').map(Number); if (w) setSize({ w, h }) }} options={[{ value: `${size.w}x${size.h}`, label: 'Size presets…' }, { value: '1920x1080', label: 'Full HD 1920×1080' }, { value: '3840x2160', label: '4K 3840×2160' }, { value: '1080x1080', label: 'Instagram 1080×1080' }, { value: '1080x1920', label: 'Phone 1080×1920' }, { value: '1200x630', label: 'OG image 1200×630' }, { value: '1500x500', label: 'X header 1500×500' }, { value: '2560x1440', label: 'QHD 2560×1440' }]} />
+              <Select aria-label="Size presets" value={`${size.w}x${size.h}`} onChange={(v) => { const [w, h] = v.split('x').map(Number); if (w) setSize({ w, h }) }} options={[{ value: `${size.w}x${size.h}`, label: 'Size presets…' }, { value: '1920x1080', label: 'Full HD 1920×1080' }, { value: '3840x2160', label: '4K 3840×2160' }, { value: '1080x1080', label: 'Instagram 1080×1080' }, { value: '1080x1920', label: 'Phone 1080×1920' }, { value: '1200x630', label: 'OG image 1200×630' }, { value: '1500x500', label: 'X header 1500×500' }, { value: '2560x1440', label: 'QHD 2560×1440' }]} />
               <Button className="w-full" onClick={exportPng} icon={<Download className="size-4" />}>Download PNG</Button>
             </div>
           </Card>

@@ -183,7 +183,7 @@ export default function EditPdf() {
                 {kind && <div className="text-sm font-semibold">{selected ? `Selected: ${TYPE_LABEL[kind]}` : `New ${TYPE_LABEL[kind]?.toLowerCase()}`}</div>}
                 {kind === 'text' && (<>
                   <div className="grid grid-cols-[1fr_auto] gap-2">
-                    <Select value={val('font', style.font) as FontKey} onChange={(v) => setProp({ font: v })} options={[{ value: 'Helvetica', label: 'Helvetica (sans)' }, { value: 'Times', label: 'Times (serif)' }, { value: 'Courier', label: 'Courier (mono)' }]} />
+                    <Select aria-label="Font" value={val('font', style.font) as FontKey} onChange={(v) => setProp({ font: v })} options={[{ value: 'Helvetica', label: 'Helvetica (sans)' }, { value: 'Times', label: 'Times (serif)' }, { value: 'Courier', label: 'Courier (mono)' }]} />
                     <div className="flex gap-1">
                       <ToolBtn title="Bold" active={!!val('bold', style.bold)} onClick={() => setProp({ bold: !val('bold', style.bold) })}><Bold className="size-4" /></ToolBtn>
                       <ToolBtn title="Italic" active={!!val('italic', style.italic)} onClick={() => setProp({ italic: !val('italic', style.italic) })}><Italic className="size-4" /></ToolBtn>

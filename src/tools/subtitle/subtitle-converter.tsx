@@ -64,8 +64,8 @@ export default function SubtitleConverter() {
         {preview && <div><Label>Preview</Label><pre className="max-h-80 overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-2/50 p-3 font-mono text-xs scrollbar-thin">{preview}</pre></div>}
       </>}
       side={<>
-        <div><Label>Convert to</Label><Select value={to} onChange={setTo} options={SUB_FORMATS.map((f) => ({ value: f.id, label: f.label }))} /></div>
-        <div><Label>Text encoding of the source</Label><Select value={enc} onChange={setEnc} options={ENCODINGS} /><p className="mt-1 text-xs text-muted">Pick one if accents or letters look broken.</p></div>
+        <div><Label>Convert to</Label><Select aria-label="Convert to" value={to} onChange={setTo} options={SUB_FORMATS.map((f) => ({ value: f.id, label: f.label }))} /></div>
+        <div><Label>Text encoding of the source</Label><Select aria-label="Text encoding of the source" value={enc} onChange={setEnc} options={ENCODINGS} /><p className="mt-1 text-xs text-muted">Pick one if accents or letters look broken.</p></div>
         <div><Label hint="for MicroDVD SUB">Frame rate</Label><Input value={fps} onChange={(e) => setFps(e.target.value)} inputMode="decimal" aria-label="Frame rate" /></div>
         <Switch checked={strip} onChange={setStrip} label="Remove styling tags (italic, colors)" />
         <Button size="lg" className="w-full" icon={ok.length > 1 ? <Archive className="size-5" /> : <RefreshCw className="size-5" />} disabled={!ok.length} onClick={saveAll}>

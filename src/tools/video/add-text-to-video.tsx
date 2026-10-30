@@ -63,7 +63,7 @@ export default function AddTextToVideo() {
             <Button size="sm" variant="ghost" icon={<Crosshair className="size-4" />} onClick={() => patch({ t0: +now.toFixed(2) })}>Start at playhead ({fmtTime(now, 1)})</Button>
             <Slider label="Size" value={cur.size} onChange={(v) => patch({ size: v })} min={2} max={30} suffix="%" />
             {!cur.emoji && <>
-              <div className="grid grid-cols-2 gap-2"><Select value={cur.font} onChange={(v) => patch({ font: v })} options={FONTS} /><ColorInput value={cur.color} onChange={(v) => patch({ color: v })} /></div>
+              <div className="grid grid-cols-2 gap-2"><Select aria-label="Font" value={cur.font} onChange={(v) => patch({ font: v })} options={FONTS} /><ColorInput value={cur.color} onChange={(v) => patch({ color: v })} /></div>
               <div className="grid grid-cols-2 gap-2 items-center"><Switch checked={cur.strokeW > 0} onChange={(v) => patch({ strokeW: v ? 2 : 0 })} label="Outline" /><Switch checked={cur.box} onChange={(v) => patch({ box: v })} label="Box" /></div>
             </>}
             <p className="text-xs text-muted">Click on the video to move it there.</p>

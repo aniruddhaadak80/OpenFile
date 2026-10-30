@@ -80,9 +80,9 @@ const inputCls = 'of-field w-full min-w-0 rounded-xl border border-border bg-sur
 export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, ...p }, ref) => <input ref={ref} {...p} className={cn(inputCls, 'h-10', className)} />)
 export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(({ className, ...p }, ref) => <textarea ref={ref} {...p} className={cn(inputCls, 'min-h-32 font-mono text-[13px] leading-relaxed scrollbar-thin', className)} />)
 
-export function Select<T extends string>({ value, onChange, options, className }: { value: T; onChange: (v: T) => void; options: (T | { value: T; label: string })[]; className?: string }) {
+export function Select<T extends string>({ value, onChange, options, className, ...rest }: { value: T; onChange: (v: T) => void; options: (T | { value: T; label: string })[]; className?: string } & Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'value' | 'onChange' | 'className' | 'children'>) {
   return (
-    <select value={value} onChange={(e) => onChange(e.target.value as T)} className={cn(inputCls, 'h-10 cursor-pointer', className)}>
+    <select {...rest} value={value} onChange={(e) => onChange(e.target.value as T)} className={cn(inputCls, 'h-10 cursor-pointer', className)}>
       {options.map((o) => { const v = typeof o === 'string' ? o : o.value; const l = typeof o === 'string' ? o : o.label; return <option key={v} value={v}>{l}</option> })}
     </select>
   )
@@ -272,6 +272,15 @@ export function ErrorNote({ error }: { error: string | null }) {
 }
 
 /** Small helper hook: run an async job with busy/progress/error state + toast on failure */
+/** True for a plain Error with a short user-facing message, as tools throw for missing or wrong input. */
+export function isExpectedError(e: unknown): boolean {
+  // Built-in faults carry their own name (TypeError, RangeError, SyntaxError, DOMException names); tool errors and
+  // their small subclasses (PdfError, PasswordError, JsonError, Cancelled) keep 'Error' or a name of their own here.
+  if (!(e instanceof Error) || !/^(Error|PasswordError|JsonError|CancelledError)$/.test(e.name)) return false
+  const m = e.message.trim()
+  return m.length > 0 && m.length <= 240 && !/\n|undefined|null|is not a function|Cannot read|NaN/.test(m)
+}
+
 export function useJob() {
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -279,7 +288,11 @@ export function useJob() {
   const run = useCallback(async <T,>(fn: (setP: (p: number) => void) => Promise<T>): Promise<T | undefined> => {
     setBusy(true); setError(null); setProgress(0)
     try { return await fn(setProgress) } catch (e: any) {
-      console.error(e); const m = e?.message || String(e); setError(m); toast(m, 'error'); return undefined
+      const m = e?.message || String(e)
+      // A plain Error thrown by a tool is an expected input problem ("Choose a logo image first") that the tool
+      // already shows as a message, so it is logged quietly. Engine faults (TypeError, RangeError, DOMException...) keep console.error.
+      if (isExpectedError(e)) console.info(m); else console.error(e)
+      setError(m); toast(m, 'error'); return undefined
     } finally { setBusy(false) }
   }, [])
   return { busy, progress, error, setError, run, setProgress }

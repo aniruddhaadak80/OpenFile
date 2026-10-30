@@ -56,7 +56,10 @@ export default function MarkdownEditor() {
     const raw = libs.marked.parse(dmd, { gfm: true, breaks: false, async: false }) as string
     return libs.purify.sanitize(raw, { ADD_ATTR: ['target', 'checked', 'disabled'] }) as string
   }, [libs, dmd])
-  useEffect(() => { pv.current?.querySelectorAll('a[href^="http"]').forEach((a) => { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener') }) }, [html])
+  useEffect(() => { pv.current?.querySelectorAll('a[href^="http"]').forEach((a) => { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener') })
+    // Rendered task-list checkboxes are read-only; name each one after its task so screen readers say what it is.
+    pv.current?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach((c) => { const t = (c.closest('li')?.textContent ?? '').trim().slice(0, 120); c.setAttribute('aria-label', `${t || 'Task'} (${c.checked ? 'done' : 'not done'})`) })
+  }, [html])
 
   const stats = useMemo(() => { const w = md.trim() ? md.replace(/[#*_`>\-[\]()|~]/g, ' ').split(/\s+/).filter(Boolean).length : 0; return { w, c: md.length, l: md.split('\n').length, min: Math.max(1, Math.round(w / 238)) } }, [md])
 

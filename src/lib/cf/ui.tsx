@@ -86,7 +86,7 @@ export type SheetState = ReturnType<typeof useSheet>
 
 export function SheetPicker({ s }: { s: SheetState }) {
   if (!s.book || s.book.sheets.length < 2) return null
-  return <div><Label>Sheet</Label><Select value={String(s.sheet)} onChange={(v) => s.setSheet(+v)} options={s.book.sheets.map((x, i) => ({ value: String(i), label: `${x.name} (${Math.max(0, x.rows.length - 1)} rows)` }))} /></div>
+  return <div><Label>Sheet</Label><Select aria-label="Sheet" value={String(s.sheet)} onChange={(v) => s.setSheet(+v)} options={s.book.sheets.map((x, i) => ({ value: String(i), label: `${x.name} (${Math.max(0, x.rows.length - 1)} rows)` }))} /></div>
 }
 
 export function SheetDrop({ s, label, sub }: { s: SheetState; label: string; sub?: string }) {

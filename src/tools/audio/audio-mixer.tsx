@@ -120,7 +120,7 @@ export default function AudioMixer() {
       side={<>
         <Button variant="secondary" className="w-full" icon={playing ? <Square className="size-4" /> : <Play className="size-4" />} onClick={play} disabled={!tracks.length}>{playing ? 'Stop preview' : 'Preview mix'}</Button>
         <div><Label>Length</Label><Segmented value={len} onChange={setLen} options={[{ value: 'longest', label: 'Longest' }, { value: 'shortest', label: 'Shortest' }, { value: 'first', label: 'Track 1' }]} /></div>
-        <div><Label>Format</Label><Select value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A (AAC)' }, { value: 'ogg', label: 'OGG' }, { value: 'wav', label: 'WAV' }, { value: 'flac', label: 'FLAC' }]} /></div>
+        <div><Label>Format</Label><Select aria-label="Format" value={fmt} onChange={setFmt} options={[{ value: 'mp3', label: 'MP3' }, { value: 'm4a', label: 'M4A (AAC)' }, { value: 'ogg', label: 'OGG' }, { value: 'wav', label: 'WAV' }, { value: 'flac', label: 'FLAC' }]} /></div>
         <Button size="lg" className="w-full" icon={<Layers className="size-5" />} onClick={mix} loading={busy} disabled={tracks.length < 1 || !total}>Mix and export</Button>
         {busy && <Progress value={p} />}
         <p className="text-xs text-muted">The mix is lowered automatically if it would clip. Tip: set music to about 30 to 40% under a voice track.</p>

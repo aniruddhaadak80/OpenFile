@@ -112,7 +112,7 @@ export default function PdfToSpeech() {
       side={<>
         <div><Label>Voice engine</Label><Segmented value={engine} onChange={setEngine} options={[{ value: 'neural', label: 'Natural (AI)' }, { value: 'system', label: 'System voices' }]} /></div>
         {engine === 'neural' ? <>
-          <div><Label>Voice</Label><Select value={voice} onChange={setVoice} options={VOICES.map((v) => ({ value: v.id, label: v.label }))} /></div>
+          <div><Label>Voice</Label><Select aria-label="Voice" value={voice} onChange={setVoice} options={VOICES.map((v) => ({ value: v.id, label: v.label }))} /></div>
           <Slider label="Speed" value={speed} onChange={setSpeed} min={0.7} max={1.5} step={0.05} suffix="x" />
           <Switch checked={mp3} onChange={setMp3} label="Save as MP3 (smaller file)" />
           <Button size="lg" className="w-full" icon={<AudioLines className="size-5" />} onClick={neural} loading={busy} disabled={!doc.ready}>Create audio</Button>
@@ -120,7 +120,7 @@ export default function PdfToSpeech() {
           {busy && <Button variant="outline" className="w-full" icon={<Square className="size-4" />} onClick={stop}>Stop</Button>}
           <Note>English voices (Kokoro 82M, Apache-2.0). The model is about 90 MB and downloads once. Long books take a while: roughly real time on a laptop CPU, faster with GPU.</Note>
         </> : <>
-          <div><Label>Voice</Label><Select value={sysVoice} onChange={setSysVoice} options={sysVoices.map((v) => ({ value: v.name, label: `${v.name} (${v.lang})` }))} /></div>
+          <div><Label>Voice</Label><Select aria-label="Voice" value={sysVoice} onChange={setSysVoice} options={sysVoices.map((v) => ({ value: v.name, label: `${v.name} (${v.lang})` }))} /></div>
           <Slider label="Speed" value={speed} onChange={setSpeed} min={0.5} max={2} step={0.1} suffix="x" />
           <Button size="lg" className="w-full" icon={speaking ? <Square className="size-5" /> : <Play className="size-5" />} onClick={() => (speaking ? stop() : speakSystem())} disabled={!doc.ready}>{speaking ? 'Stop' : 'Read aloud'}</Button>
           {speaking && <Progress value={p} />}

@@ -88,7 +88,7 @@ export default function BulkFileRenamer() {
       <div className="min-w-0 space-y-3">
         <Bar>
           <Badge>{items.length} files</Badge><Badge color="#14B8A6">{changed} will change</Badge>{res.dup.size > 0 && <Badge color="#EF4444">{res.dup.size} clash</Badge>}
-          <span className="text-xs text-muted">Order</span><Select value={sort} onChange={setSort} options={[{ value: 'added', label: 'As added' }, { value: 'name', label: 'By name' }, { value: 'date', label: 'By date' }, { value: 'size', label: 'By size' }]} className="h-8 w-32 text-xs" />
+          <span className="text-xs text-muted">Order</span><Select aria-label="Order" value={sort} onChange={setSort} options={[{ value: 'added', label: 'As added' }, { value: 'name', label: 'By name' }, { value: 'date', label: 'By date' }, { value: 'size', label: 'By size' }]} className="h-8 w-32 text-xs" />
           <Button size="sm" variant="ghost" className="ml-auto" icon={<Trash2 className="size-4" />} onClick={() => setItems([])}>Clear</Button>
         </Bar>
         {res.dup.size > 0 && <Status kind="err">Some new names are the same. Add {'{n}'} to the pattern, or they will get (2), (3) added in the ZIP.</Status>}

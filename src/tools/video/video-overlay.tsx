@@ -51,7 +51,7 @@ export default function VideoOverlay() {
           {second && !isImg && <Switch checked={mix} onChange={setMix} label="Mix in its sound" />}
         </div>}
         {mode === 'background' && <div className="space-y-3">
-          <div><Label>Canvas</Label><Select value={canvas} onChange={setCanvas} options={[{ value: '1080x1920', label: 'Vertical 1080×1920' }, { value: '1080x1080', label: 'Square 1080×1080' }, { value: '1080x1350', label: 'Portrait 1080×1350' }, { value: '1920x1080', label: 'Wide 1920×1080' }]} /></div>
+          <div><Label>Canvas</Label><Select aria-label="Canvas" value={canvas} onChange={setCanvas} options={[{ value: '1080x1920', label: 'Vertical 1080×1920' }, { value: '1080x1080', label: 'Square 1080×1080' }, { value: '1080x1350', label: 'Portrait 1080×1350' }, { value: '1920x1080', label: 'Wide 1920×1080' }]} /></div>
           <Segmented value={bgKind} onChange={setBgKind} options={[{ value: 'color', label: 'Colour' }, { value: 'image', label: 'Image' }]} />
           {bgKind === 'color' ? <ColorInput value={bgColor} onChange={setBgColor} /> : <FilePick file={bgImage} onFile={setBgImage} accept="image/*" label="Drop a background image" />}
           <Slider label="Video size" value={scale} onChange={setScale} min={30} max={100} suffix="%" />

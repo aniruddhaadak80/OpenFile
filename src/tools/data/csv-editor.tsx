@@ -105,7 +105,7 @@ export default function CsvEditor() {
     <div className="space-y-4">
       <Bar>
         <div className="relative"><Search className="pointer-events-none absolute left-2.5 top-2.5 size-4 text-muted" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter rows" className="w-52 pl-8" aria-label="Filter rows" /></div>
-        <Select value={qCol} onChange={setQCol} options={[{ value: 'all', label: 'All columns' }, ...grid.headers.map((h, i) => ({ value: String(i), label: h || `Column ${i + 1}` }))]} className="w-44" />
+        <Select aria-label="Search in column" value={qCol} onChange={setQCol} options={[{ value: 'all', label: 'All columns' }, ...grid.headers.map((h, i) => ({ value: String(i), label: h || `Column ${i + 1}` }))]} className="w-44" />
         {q && <Button size="sm" variant="outline" onClick={keepFiltered}>Keep {visibleIdx.length} matching rows</Button>}
         <div className="ml-auto flex flex-wrap gap-1">
           <Button size="sm" variant="ghost" icon={<Undo2 className="size-4" />} onClick={undo} disabled={!hist.length}>Undo</Button>
@@ -186,7 +186,7 @@ export default function CsvEditor() {
               <p className="text-[11px] text-muted">Uses the column picked in the filter bar, or all columns.</p>
             </div>
             <div className="space-y-2"><Label>Export</Label>
-              <Select value={fmt} onChange={setFmt} options={[{ value: 'csv', label: 'CSV' }, { value: 'tsv', label: 'TSV' }, { value: 'xlsx', label: 'Excel (XLSX)' }, { value: 'json', label: 'JSON' }]} />
+              <Select aria-label="Export" value={fmt} onChange={setFmt} options={[{ value: 'csv', label: 'CSV' }, { value: 'tsv', label: 'TSV' }, { value: 'xlsx', label: 'Excel (XLSX)' }, { value: 'json', label: 'JSON' }]} />
               <Button className="w-full" icon={<Download className="size-4" />} onClick={exportAll}>Download table</Button>
               <Button className="w-full" size="sm" variant="outline" icon={<Sigma className="size-4" />} onClick={exportColumn}>Extract selected column</Button>
             </div>

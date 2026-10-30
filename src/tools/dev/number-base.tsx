@@ -66,7 +66,7 @@ export default function NumberBase() {
         <div className="grid gap-3 md:grid-cols-2">
           {FIELDS.map((f) => row(f))}
           <div className={cn('rounded-xl border bg-surface p-3 md:col-span-2', src.r === custom && !FIELDS.some((f) => f.r === custom) ? 'border-accent ring-2 ring-accent/15' : 'border-border')}>
-            <div className="mb-2 flex items-center gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-muted">Custom base</span><Slider value={custom} onChange={setCustom} min={2} max={64} className="flex-1" /><span className="w-8 font-mono text-sm">{custom}</span></div>
+            <div className="mb-2 flex items-center gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-muted">Custom base</span><Slider ariaLabel="Custom base" value={custom} onChange={setCustom} min={2} max={64} className="flex-1" /><span className="w-8 font-mono text-sm">{custom}</span></div>
             <input value={fieldVal(custom)} onChange={(e) => setSrc({ r: custom, text: e.target.value })} spellCheck={false} aria-label={`Base ${custom}`} className="w-full bg-transparent font-mono text-[17px] outline-none" placeholder="0" />
             {custom > 36 && <p className="mt-1 text-[11px] text-muted">Above base 36 the case matters: 0-9, A-Z, a-z{custom > 62 ? ', then + and /' : ''}.</p>}
           </div>

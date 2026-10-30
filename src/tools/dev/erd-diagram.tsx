@@ -353,7 +353,7 @@ function RefPicker({ t, c, model }: { t: Table; c: Col; model: Model }) {
   const options = [{ value: '', label: '(no reference)' }, ...model.tables.flatMap((x) => x.cols.filter((y) => y.pk || y.unique).map((y) => ({ value: `${x.id}|${y.id}`, label: `→ ${x.name}.${y.name}` })))]
   if (!ctx) return null
   return (
-    <Select value={rel ? `${rel.to.t}|${rel.to.c}` : ''} onChange={(v) => ctx((m) => {
+    <Select aria-label="Reference" value={rel ? `${rel.to.t}|${rel.to.c}` : ''} onChange={(v) => ctx((m) => {
       const rest = m.rels.filter((r) => r !== rel)
       if (!v) return { ...m, rels: rest }
       const [tt, tc] = v.split('|')
@@ -385,7 +385,7 @@ function RelEditor({ r, byId, upd, remove, close }: { r: Rel; byId: Map<string, 
       <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Cardinality</div>
         <Segmented value={r.kind} onChange={(k) => upd((x) => ({ ...x, kind: k }))} options={[{ value: '1:1', label: 'One-to-one' }, { value: '1:N', label: 'One-to-many' }, { value: 'N:M', label: 'Many-to-many' }]} /></div>
       {r.kind !== 'N:M' && <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">On delete</div>
-        <Select value={r.onDelete ?? ''} onChange={(v) => upd((x) => ({ ...x, onDelete: v || undefined }))} options={[{ value: '', label: 'Default (no action)' }, { value: 'CASCADE', label: 'CASCADE' }, { value: 'SET NULL', label: 'SET NULL' }, { value: 'RESTRICT', label: 'RESTRICT' }]} /></div>}
+        <Select aria-label="On delete" value={r.onDelete ?? ''} onChange={(v) => upd((x) => ({ ...x, onDelete: v || undefined }))} options={[{ value: '', label: 'Default (no action)' }, { value: 'CASCADE', label: 'CASCADE' }, { value: 'SET NULL', label: 'SET NULL' }, { value: 'RESTRICT', label: 'RESTRICT' }]} /></div>}
       {r.kind === 'N:M' && <p className="text-xs text-muted">Exports create a junction table automatically (SQL/Drizzle) or implicit list relations (Prisma).</p>}
       <Button variant="outline" size="sm" className="w-full" icon={<ArrowLeftRight className="size-4" />} onClick={() => upd((x) => ({ ...x, from: x.to, to: x.from }))}>Swap direction</Button>
       <Button variant="danger" size="sm" className="w-full" icon={<Trash2 className="size-4" />} onClick={remove}>Delete relation</Button>

@@ -2,8 +2,12 @@
  * sunrise and sunset, timesheets and shift rotas. Pure functions so they run in Node tests. */
 
 export const pad = (n: number, w = 2) => String(n).padStart(w, '0')
-export const ymd = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-export const parseYmd = (s: string) => { const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (!m) return null; const d = new Date(+m[1], +m[2] - 1, +m[3]); return isNaN(+d) ? null : d }
+export const ymd = (d: Date) => `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+/** Keep a year inside 1..9999 so Date math and array sizes stay valid. */
+export const clampYear = (y: number) => Math.min(9999, Math.max(1, Math.trunc(Number.isFinite(y) ? y : new Date().getFullYear()) || 1))
+/** Local date for any year 1..9999 (new Date(y, ...) maps years below 100 to 19xx). */
+export const dateOf = (y: number, m: number, d: number) => { const x = new Date(2000, 0, 1); x.setFullYear(y, m, d); return x }
+export const parseYmd = (s: string) => { const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (!m) return null; const d = dateOf(+m[1], +m[2] - 1, +m[3]); return isNaN(+d) ? null : d }
 export const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x }
 export const dayDiff = (a: Date, b: Date) => Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 864e5)
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -295,7 +299,8 @@ export function meetingSlots(day: Date, zones: { tz: string; from: number; to: n
 
 /* ---------------- month grid ---------------- */
 export function monthGrid(year: number, month: number, weekStart = 1) {
-  const first = new Date(year, month, 1), dim = new Date(year, month + 1, 0).getDate()
+  year = clampYear(year)
+  const first = dateOf(year, month, 1), dim = dateOf(year, month + 1, 0).getDate()
   const lead = (first.getDay() - weekStart + 7) % 7
   const cells: (number | null)[] = [...Array(lead).fill(null), ...Array.from({ length: dim }, (_, i) => i + 1)]
   while (cells.length % 7) cells.push(null)

@@ -243,7 +243,7 @@ function CameraScan({ onHit, setErr, formats, beep }: { onHit: (f: Found, s: 'ca
           {torch !== null && <Button variant={torch ? 'primary' : 'outline'} size="sm" icon={<Flashlight className="size-4" />} onClick={toggleTorch}>Torch</Button>}
           {devices.length > 1 && <>
             <Button variant="outline" size="sm" icon={<SwitchCamera className="size-4" />} onClick={() => { const i = devices.findIndex((d) => d.deviceId === devId); const n = devices[(i + 1) % devices.length]; setDevId(n.deviceId); start(n.deviceId) }}>Flip</Button>
-            <Select value={devId} onChange={(v) => { setDevId(v); start(v) }} options={[{ value: '', label: 'Default camera' }, ...devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} className="h-8 max-w-56 text-xs" />
+            <Select aria-label="Camera" value={devId} onChange={(v) => { setDevId(v); start(v) }} options={[{ value: '', label: 'Default camera' }, ...devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} className="h-8 max-w-56 text-xs" />
           </>}
           <span className="ml-auto flex items-center gap-1.5 text-xs text-success"><span className="size-2 animate-pulse rounded-full bg-success" />Scanning</span>
         </div>

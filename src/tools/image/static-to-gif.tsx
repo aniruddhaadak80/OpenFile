@@ -114,7 +114,7 @@ export default function StaticToGif() {
         </>}
         <Slider label={effect === 'slideshow' ? 'Fade speed' : 'Frame delay'} value={delay} onChange={setDelay} min={20} max={300} step={10} suffix=" ms" />
         <Slider label="Size" value={size} onChange={setSize} min={64} max={1024} step={8} suffix="px" />
-        {effect !== 'slideshow' && <div><Label>Background</Label><Select value={bgOn ? 'c' : 't'} onChange={(v) => setBgOn(v === 'c')} options={[{ value: 't', label: 'Transparent' }, { value: 'c', label: 'Solid colour' }]} /></div>}
+        {effect !== 'slideshow' && <div><Label>Background</Label><Select aria-label="Background" value={bgOn ? 'c' : 't'} onChange={(v) => setBgOn(v === 'c')} options={[{ value: 't', label: 'Transparent' }, { value: 'c', label: 'Solid colour' }]} /></div>}
         {(bgOn || effect === 'slideshow') && <ColorInput value={bg} onChange={setBg} />}
         <ExportPanel anim={preview.value} name={files[0] ? `${baseName(files[0].name)}-${effect}` : 'animated'} formats={['gif', 'webp', 'apng', 'mp4']} onReset={reset} />
       </>}

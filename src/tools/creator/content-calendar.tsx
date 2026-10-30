@@ -53,12 +53,12 @@ export default function ContentCalendar() {
           <div className="flex items-center justify-between"><Label className="mb-0">Post</Label><button className="text-xs text-muted hover:text-fg cursor-pointer" onClick={() => setSel(null)}>Close</button></div>
           <Input value={cur.title} onChange={(e) => upd({ title: e.target.value })} placeholder="What is the post about" aria-label="Title" autoFocus />
           <div className="grid grid-cols-2 gap-2"><Input type="date" value={cur.date} onChange={(e) => upd({ date: e.target.value })} aria-label="Date" /><Input type="time" value={cur.time} onChange={(e) => upd({ time: e.target.value })} aria-label="Time" /></div>
-          <div className="grid grid-cols-2 gap-2"><Select value={cur.platform} onChange={(v) => upd({ platform: v })} options={PLATFORMS} /><Select value={cur.status} onChange={(v) => upd({ status: v as Post['status'] })} options={Object.entries(STATUS).map(([value, label]) => ({ value, label }))} /></div>
+          <div className="grid grid-cols-2 gap-2"><Select aria-label="Platform" value={cur.platform} onChange={(v) => upd({ platform: v })} options={PLATFORMS} /><Select aria-label="Status" value={cur.status} onChange={(v) => upd({ status: v as Post['status'] })} options={Object.entries(STATUS).map(([value, label]) => ({ value, label }))} /></div>
           <Textarea value={cur.notes} onChange={(e) => upd({ notes: e.target.value })} placeholder="Hook, caption, links, hashtags" className="min-h-28 font-sans text-sm" aria-label="Notes" />
           <Button variant="ghost" size="sm" icon={<Trash2 className="size-4" />} onClick={() => { setPosts(posts.filter((p) => p.id !== sel)); setSel(null) }}>Delete post</Button>
         </> : <>
           <Button className="w-full" icon={<Plus className="size-4" />} onClick={() => add(ymd(now))}>Add a post today</Button>
-          <div><Label>Show</Label><Select value={filter} onChange={setFilter} options={[{ value: 'all', label: 'All platforms' }, ...PLATFORMS]} /></div>
+          <div><Label>Show</Label><Select aria-label="Show" value={filter} onChange={setFilter} options={[{ value: 'all', label: 'All platforms' }, ...PLATFORMS]} /></div>
           <div className="flex flex-wrap gap-2 text-[11px]">{PLATFORMS.map((p) => <span key={p} className="inline-flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: COLORS[p] }} />{p}</span>)}</div>
         </>}
         <div className="grid grid-cols-2 gap-2 border-t border-border pt-3">

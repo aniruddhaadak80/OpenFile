@@ -127,8 +127,8 @@ export default function WaveformImage() {
         {buf && <div className="checker overflow-hidden rounded-2xl border border-border"><canvas ref={canvas} className="block h-auto w-full" style={{ aspectRatio: `${W}/${H}` }} /></div>}
       </>}
       side={<>
-        <div><Label>Style</Label><Select value={style} onChange={setStyle} options={[{ value: 'mirror', label: 'Mirrored bars' }, { value: 'bars', label: 'Bars from bottom' }, { value: 'line', label: 'Smooth shape' }, { value: 'spectrogram', label: 'Spectrogram' }]} /></div>
-        <div><Label>Size</Label><Select value={size} onChange={setSize} options={[{ value: 'wide', label: 'Wide 1600x400' }, { value: 'banner', label: 'Banner 1500x500' }, { value: 'square', label: 'Square 1080x1080' }, { value: 'story', label: 'Story 1080x1920' }, { value: 'hd', label: 'HD 1920x1080' }]} /></div>
+        <div><Label>Style</Label><Select aria-label="Style" value={style} onChange={setStyle} options={[{ value: 'mirror', label: 'Mirrored bars' }, { value: 'bars', label: 'Bars from bottom' }, { value: 'line', label: 'Smooth shape' }, { value: 'spectrogram', label: 'Spectrogram' }]} /></div>
+        <div><Label>Size</Label><Select aria-label="Size" value={size} onChange={setSize} options={[{ value: 'wide', label: 'Wide 1600x400' }, { value: 'banner', label: 'Banner 1500x500' }, { value: 'square', label: 'Square 1080x1080' }, { value: 'story', label: 'Story 1080x1920' }, { value: 'hd', label: 'HD 1920x1080' }]} /></div>
         {style !== 'spectrogram' && <>
           {style !== 'line' && <><Slider label="Bar width" value={bar} onChange={setBar} min={1} max={30} suffix=" px" /><Slider label="Gap" value={gap} onChange={setGap} min={0} max={20} suffix=" px" /><Switch checked={round} onChange={setRound} label="Rounded bars" /></>}
           <div className="grid grid-cols-2 gap-2">

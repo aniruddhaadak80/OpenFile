@@ -47,7 +47,7 @@ export function TextInput({ s, splits = ['lines', 'paragraphs', 'whole'], placeh
       {s.csv ? (
         <div className="space-y-2 rounded-xl border border-border bg-surface-2/40 p-3">
           <Label hint={`${s.csv.rows.length} rows`}>Column to read</Label>
-          <Select value={s.csv.col} onChange={(col) => s.setCsv({ ...s.csv!, col })} options={s.csv.head} />
+          <Select aria-label="Column to read" value={s.csv.col} onChange={(col) => s.setCsv({ ...s.csv!, col })} options={s.csv.head} />
           <Button variant="ghost" size="sm" onClick={() => s.setCsv(null)}>Use typed text instead</Button>
         </div>
       ) : <Textarea value={s.text} onChange={(e) => s.setText(e.target.value)} placeholder={placeholder} className="min-h-48 font-sans text-sm" aria-label="Text" />}

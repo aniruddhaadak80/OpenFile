@@ -86,7 +86,7 @@ export default function MusicVisualizer() {
         {result && resultUrl && <ResultCard blob={result} filename={`${baseName(file.name)}-visualizer.mp4`} onReset={() => setResult(null)}><video src={resultUrl} controls className="mx-auto max-h-[55vh] rounded-xl bg-black" /></ResultCard>}
       </>}
       side={<>
-        <div><Label>Animation</Label><Select value={viz} onChange={setViz} options={[{ value: 'waves', label: 'Waveform' }, { value: 'line', label: 'Thin line' }, { value: 'bars', label: 'Frequency bars' }, { value: 'spectrum', label: 'Scrolling spectrum' }, { value: 'circle', label: 'Stereo scope' }]} /></div>
+        <div><Label>Animation</Label><Select aria-label="Animation" value={viz} onChange={setViz} options={[{ value: 'waves', label: 'Waveform' }, { value: 'line', label: 'Thin line' }, { value: 'bars', label: 'Frequency bars' }, { value: 'spectrum', label: 'Scrolling spectrum' }, { value: 'circle', label: 'Stereo scope' }]} /></div>
         <div><Label>Shape</Label><Segmented value={size} onChange={setSize} options={[{ value: 'square', label: 'Square' }, { value: 'landscape', label: '16:9' }, { value: 'portrait', label: '9:16' }]} /></div>
         <label className="flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border px-2 py-2 text-sm font-medium hover:border-accent"><ImagePlus className="size-4" />{cover ? 'Change cover image' : 'Add cover image'}<input type="file" hidden accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) setCover(f); e.target.value = '' }} /></label>
         <div><Label>Title</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="Title" /></div>

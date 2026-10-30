@@ -151,7 +151,7 @@ export default function HashGenerator() {
             ))}
             {files.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
-                <Select value={sumAlgo} onChange={setSumAlgo} options={ordered.length ? ordered : ['SHA-256']} className="w-40" />
+                <Select aria-label="Checksum algorithm" value={sumAlgo} onChange={setSumAlgo} options={ordered.length ? ordered : ['SHA-256']} className="w-40" />
                 <Button variant="outline" icon={<Download className="size-4" />} onClick={exportSums} disabled={!files.some((f) => f.res?.[sumAlgo]?.hex)}>Save checksum file</Button>
                 <Button variant="ghost" onClick={() => { runId.current++; setBusy(null); setFiles([]) }}>Clear all</Button>
               </div>

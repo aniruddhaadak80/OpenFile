@@ -121,8 +121,8 @@ export default function TextCleaner() {
           <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Join and split</div>
           <div className="grid grid-cols-[1fr_auto_auto] gap-2">
             <Input value={joinWith} onChange={(e) => setJoinWith(e.target.value)} placeholder="Delimiter" aria-label="Delimiter" className="font-mono text-xs" title="Use \n for a new line and \t for a tab" />
-            <Select value={joinQuote} onChange={setJoinQuote} options={[{ value: '', label: 'No quotes' }, { value: "'", label: "'a'" }, { value: '"', label: '"a"' }, { value: '`', label: '`a`' }]} className="w-24" />
-            <Select value={joinWrap} onChange={setJoinWrap} options={[{ value: 'none', label: 'No wrap' }, { value: '[]', label: '[ ]' }, { value: '()', label: '( )' }, { value: '{}', label: '{ }' }]} className="w-24" />
+            <Select aria-label="Quotes" value={joinQuote} onChange={setJoinQuote} options={[{ value: '', label: 'No quotes' }, { value: "'", label: "'a'" }, { value: '"', label: '"a"' }, { value: '`', label: '`a`' }]} className="w-24" />
+            <Select aria-label="Wrap" value={joinWrap} onChange={setJoinWrap} options={[{ value: 'none', label: 'No wrap' }, { value: '[]', label: '[ ]' }, { value: '()', label: '( )' }, { value: '{}', label: '{ }' }]} className="w-24" />
           </div>
           <div className="flex flex-wrap gap-1.5">{[[', ', 'comma'], ['\\t', 'tab'], [' | ', 'pipe'], [';', 'semicolon'], [' ', 'space'], ['', 'nothing']].map(([d, l]) => <button key={l} onClick={() => setJoinWith(d)} className={cn('rounded-md border px-2 py-0.5 text-[11px]', joinWith === d ? 'border-accent text-accent' : 'border-border text-muted hover:text-fg')}>{l}</button>)}</div>
           <div className="grid grid-cols-2 gap-2">

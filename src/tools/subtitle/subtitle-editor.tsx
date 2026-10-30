@@ -101,7 +101,7 @@ export default function SubtitleEditor() {
         </div>
         <div className="space-y-3 rounded-xl border border-border bg-surface p-3">
           <div className="flex items-end gap-2">
-            <div className="flex-1"><Label>Save as</Label><Select value={out} onChange={setOut} options={SUB_FORMATS.filter((f) => f.id !== 'txt').map((f) => ({ value: f.id, label: f.label }))} /></div>
+            <div className="flex-1"><Label>Save as</Label><Select aria-label="Save as" value={out} onChange={setOut} options={SUB_FORMATS.filter((f) => f.id !== 'txt').map((f) => ({ value: f.id, label: f.label }))} /></div>
             <Button icon={<Download className="size-4" />} onClick={save} disabled={!sorted.length}>Download</Button>
           </div>
           <div className="flex flex-wrap gap-2"><Button size="sm" variant="ghost" icon={<Wand2 className="size-4" />} onClick={() => setRows((l) => fixOverlaps(l ?? []).map((c) => ({ ...c, id: (c as Row).id ?? rid() })))}>Fix overlaps</Button><Switch checked={follow} onChange={setFollow} label="Follow playback" /></div>

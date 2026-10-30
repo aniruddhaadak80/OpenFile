@@ -50,7 +50,7 @@ export default function TransactionCategorizer() {
         <StatementDrop st={st} label="Drop a bank statement to label" sub="OFX, QIF, CAMT, MT940 or CSV. Each payment gets a category on your device. Nothing is uploaded." />
         {txns.length > 0 ? <>
           {cats && totals.length > 0 && <div className="rounded-2xl border border-border bg-surface p-4"><Label>Spending by category</Label><Bars items={totals} /></div>}
-          <TxnTable txns={labelled} currency={st.stmt?.currency} extra={{ head: 'Category', cell: (t, i) => cats ? <Select className="h-8 min-w-36 text-xs" value={t.category ?? 'Other'} onChange={(v) => setCats((c) => c && c.map((x, j) => (j === i ? v : x)))} options={[...new Set([...list, 'Other'])]} /> : <span className="text-xs text-muted">{conf.length ? '' : 'Press Label'}</span> }} />
+          <TxnTable txns={labelled} currency={st.stmt?.currency} extra={{ head: 'Category', cell: (t, i) => cats ? <Select aria-label="Category" className="h-8 min-w-36 text-xs" value={t.category ?? 'Other'} onChange={(v) => setCats((c) => c && c.map((x, j) => (j === i ? v : x)))} options={[...new Set([...list, 'Other'])]} /> : <span className="text-xs text-muted">{conf.length ? '' : 'Press Label'}</span> }} />
         </> : st.file && !st.error && <Empty>No transactions yet. Check the columns on the right.</Empty>}
       </>}
       side={<>

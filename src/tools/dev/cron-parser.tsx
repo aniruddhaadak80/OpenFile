@@ -178,13 +178,13 @@ function CronBuilder({ expr, onChange }: { expr: string; onChange: (s: string) =
               Every
               <input type="number" min={1} max={spec.max} value={f.step} onChange={(e) => setField(spec.key, { step: Math.max(1, Math.min(spec.max, Number(e.target.value) || 1)) })} aria-label="Step" className="h-9 w-20 rounded-lg border border-border bg-surface-2 px-2 font-mono" />
               {UNIT[spec.key]}, starting at
-              <Select value={String(f.from)} onChange={(v) => setField(spec.key, { from: Number(v) })} options={opts} className="w-28" />
+              <Select aria-label="Starting at" value={String(f.from)} onChange={(v) => setField(spec.key, { from: Number(v) })} options={opts} className="w-28" />
             </div>
           )}
           {f.mode === 'range' && (
             <div className="flex flex-wrap items-center gap-2 text-sm">
-              From <Select value={String(f.from)} onChange={(v) => setField(spec.key, { from: Number(v) })} options={opts} className="w-28" />
-              to <Select value={String(f.to)} onChange={(v) => setField(spec.key, { to: Number(v) })} options={opts} className="w-28" />
+              From <Select aria-label="From" value={String(f.from)} onChange={(v) => setField(spec.key, { from: Number(v) })} options={opts} className="w-28" />
+              to <Select aria-label="To" value={String(f.to)} onChange={(v) => setField(spec.key, { to: Number(v) })} options={opts} className="w-28" />
             </div>
           )}
           {f.mode === 'specific' && (

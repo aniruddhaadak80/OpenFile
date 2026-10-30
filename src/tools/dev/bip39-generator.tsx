@@ -38,7 +38,7 @@ export default function Bip39Generator() {
     <div className="space-y-4">
       <Bar>
         <Segmented value={mode} onChange={setMode} options={[{ value: 'gen', label: 'Generate' }, { value: 'check', label: 'Validate a phrase' }]} />
-        <Select value={lang} onChange={setLang} options={Object.entries(LANGS).map(([value, label]) => ({ value: value as Lang, label }))} className="w-52" />
+        <Select aria-label="Word list language" value={lang} onChange={setLang} options={Object.entries(LANGS).map(([value, label]) => ({ value: value as Lang, label }))} className="w-52" />
         {mode === 'gen' && <><Segmented value={words} onChange={setWords} options={['12', '15', '18', '21', '24'].map((w) => ({ value: w as '12', label: `${w} words` }))} /><Button size="sm" icon={<RefreshCw className="size-4" />} onClick={make}>New phrase</Button></>}
       </Bar>
       <div className="flex items-start gap-2 rounded-xl border border-warn/30 bg-warn/10 px-4 py-2.5 text-sm text-warn"><WifiOff className="mt-0.5 size-4 shrink-0" />For a real wallet, disconnect from the internet first and write the words on paper. Anyone who sees this phrase can take the funds. Words are generated with your browser's secure random generator and never sent anywhere.</div>

@@ -131,10 +131,10 @@ export default function AudioConverter() {
           </div>
         </div>
         <button className="-mt-3 cursor-pointer text-xs font-medium text-accent hover:underline" onClick={() => setMore(!more)}>{more ? 'Fewer formats' : 'More formats: OPUS, AIFF, ALAC, WMA, AC3, CAF, M4B, M4R and more'}</button>
-        {!FORMATS[fmt].lossless && <div><Label>Quality</Label><Select value={br} onChange={setBr} options={PRESETS.map((p) => ({ value: p.br, label: p.label }))} /><p className="mt-1 text-xs text-muted">Lower bitrates make smaller files. 96k is fine for speech, 192k for music.</p></div>}
+        {!FORMATS[fmt].lossless && <div><Label>Quality</Label><Select aria-label="Quality" value={br} onChange={setBr} options={PRESETS.map((p) => ({ value: p.br, label: p.label }))} /><p className="mt-1 text-xs text-muted">Lower bitrates make smaller files. 96k is fine for speech, 192k for music.</p></div>}
         <div className="grid grid-cols-2 gap-3">
-          <div><Label>Sample rate</Label><Select value={sr} onChange={setSr} options={[{ value: 'original', label: 'Original' }, { value: '48000', label: '48 kHz' }, { value: '44100', label: '44.1 kHz' }, { value: '32000', label: '32 kHz' }, { value: '22050', label: '22 kHz' }, { value: '16000', label: '16 kHz' }]} /></div>
-          <div><Label>Channels</Label><Select value={ch} onChange={setCh} options={[{ value: 'original', label: 'Original' }, { value: '2', label: 'Stereo' }, { value: '1', label: 'Mono' }]} /></div>
+          <div><Label>Sample rate</Label><Select aria-label="Sample rate" value={sr} onChange={setSr} options={[{ value: 'original', label: 'Original' }, { value: '48000', label: '48 kHz' }, { value: '44100', label: '44.1 kHz' }, { value: '32000', label: '32 kHz' }, { value: '22050', label: '22 kHz' }, { value: '16000', label: '16 kHz' }]} /></div>
+          <div><Label>Channels</Label><Select aria-label="Channels" value={ch} onChange={setCh} options={[{ value: 'original', label: 'Original' }, { value: '2', label: 'Stereo' }, { value: '1', label: 'Mono' }]} /></div>
         </div>
         {FORMATS[fmt].lossless && <Note>Lossless output can't restore quality already lost in an MP3, it just stops further loss.</Note>}
         <Button size="lg" className="w-full" icon={<RefreshCw className="size-5" />} onClick={convert} loading={job.busy}>Convert {items.length > 1 ? `${items.length} files` : ''} to {FORMATS[fmt].label}</Button>

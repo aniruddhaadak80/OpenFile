@@ -193,7 +193,7 @@ export default function VoiceRecorder() {
       side={<>
         <div className={cn(live && 'pointer-events-none opacity-50')}>
           <Label>Microphone</Label>
-          <Select value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />
+          <Select aria-label="Microphone" value={micId} onChange={setMicId} options={[{ value: '', label: 'Default microphone' }, ...mics.devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Microphone ${i + 1}` }))]} />
           {!mics.devices.some((d) => d.label) && <p className="mt-1.5 text-xs text-muted">Device names appear after you allow microphone access.</p>}
         </div>
         <div className={cn('space-y-3', live && 'pointer-events-none opacity-50')}>

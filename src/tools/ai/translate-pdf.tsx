@@ -72,9 +72,9 @@ export default function TranslatePdf() {
       </>}
       side={<>
         <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
-          <div><Label>From</Label><Select value={src} onChange={setSrc} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
+          <div><Label>From</Label><Select aria-label="From" value={src} onChange={setSrc} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
           <Button variant="ghost" size="md" icon={<ArrowRightLeft className="size-4" />} onClick={swap} aria-label="Swap languages" />
-          <div><Label>To</Label><Select value={tgt} onChange={setTgt} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
+          <div><Label>To</Label><Select aria-label="To" value={tgt} onChange={setTgt} options={NLLB_LANGS.map((l) => ({ value: l.code, label: l.name }))} /></div>
         </div>
         <ModelPanel ai={ai} models={MODELS.translate} />
         <Button size="lg" className="w-full" icon={<Languages className="size-5" />} onClick={go} loading={ai.busy} disabled={!doc.ready || src === tgt}>Translate to {tgtName}</Button>

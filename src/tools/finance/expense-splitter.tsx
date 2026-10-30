@@ -29,7 +29,7 @@ export default function ExpenseSplitter() {
           {exps.map((e, i) => (
             <div key={i} className="grid grid-cols-[1fr_7rem] gap-2 rounded-2xl border border-border bg-surface p-3 sm:grid-cols-[1.4fr_1fr_7rem_1.6fr_auto]">
               <Input aria-label="What was it" placeholder="What" value={e.note ?? ''} onChange={(ev) => upd(i, { note: ev.target.value })} />
-              <Select value={e.payer} onChange={(v) => upd(i, { payer: v })} options={people} />
+              <Select aria-label="Paid by" value={e.payer} onChange={(v) => upd(i, { payer: v })} options={people} />
               <Input aria-label="Amount" inputMode="decimal" value={isFinite(e.amount) ? String(e.amount) : ''} onChange={(ev) => upd(i, { amount: parseMoney(ev.target.value) })} />
               <div className="col-span-2 flex flex-wrap gap-1 sm:col-span-1">{people.map((p) => { const on = !e.for.length || e.for.includes(p); return <button key={p} type="button" aria-pressed={on} onClick={() => { const cur = e.for.length ? e.for : people; const next = on ? cur.filter((x) => x !== p) : [...cur, p]; upd(i, { for: next.length === people.length ? [] : next }) }} className={`rounded-full border px-2 py-0.5 text-[11px] cursor-pointer ${on ? 'border-accent bg-accent/10' : 'border-border text-muted line-through'}`}>{p}</button> })}</div>
               <button type="button" aria-label="Remove expense" className="justify-self-end rounded p-1 text-muted hover:text-danger cursor-pointer" onClick={() => setExps((x) => x.filter((_, j) => j !== i))}><Trash2 className="size-4" /></button>

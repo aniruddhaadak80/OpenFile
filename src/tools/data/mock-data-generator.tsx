@@ -116,7 +116,7 @@ export default function MockDataGenerator() {
           {cols.map((c, i) => (
             <div key={c.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface p-2">
               <Input value={c.name} onChange={(e) => set(c.id, { name: e.target.value })} className="h-9 w-40 font-mono text-xs" aria-label="Column name" />
-              <Select value={c.type} onChange={(v) => set(c.id, { type: v })} options={typeOptions} className="h-9 min-w-44 flex-1" />
+              <Select aria-label="Column type" value={c.type} onChange={(v) => set(c.id, { type: v })} options={typeOptions} className="h-9 min-w-44 flex-1" />
               <label className="flex items-center gap-1 text-[11px] text-muted">Blank %<Input type="number" min={0} max={100} value={c.blank} onChange={(e) => set(c.id, { blank: Math.max(0, Math.min(100, Number(e.target.value))) })} className="h-9 w-16" /></label>
               <button onClick={() => move(i, -1)} aria-label="Move up" className="rounded p-1 text-muted hover:text-fg cursor-pointer"><ArrowUp className="size-4" /></button>
               <button onClick={() => move(i, 1)} aria-label="Move down" className="rounded p-1 text-muted hover:text-fg cursor-pointer"><ArrowDown className="size-4" /></button>

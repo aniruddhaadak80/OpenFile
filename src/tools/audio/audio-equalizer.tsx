@@ -63,7 +63,7 @@ export default function AudioEqualizer() {
     <FxShell allowVideo accept={AV_ACCEPT} dropLabel="Drop audio to equalize" dropSub="10-band equalizer with bass boost, vocal and treble presets, and a live preview." actionLabel="Apply EQ and export" actionIcon={<SlidersVertical className="size-5" />} suffix="eq"
       main={(file) => <LivePlayer file={file} gains={gains} preamp={preamp} bypass={bypass} />}
       process={(ctx) => runAudioFilter(ctx, eqFilter(gains, preamp))}>
-      <div><Label>Preset</Label><Select value={preset} onChange={(p) => { setPreset(p); if (PRESETS[p]) setGains(PRESETS[p]) }} options={[...Object.keys(PRESETS), ...(preset === 'Custom' ? ['Custom'] : [])]} /></div>
+      <div><Label>Preset</Label><Select aria-label="Preset" value={preset} onChange={(p) => { setPreset(p); if (PRESETS[p]) setGains(PRESETS[p]) }} options={[...Object.keys(PRESETS), ...(preset === 'Custom' ? ['Custom'] : [])]} /></div>
       <div>
         <Label hint={<button className="inline-flex cursor-pointer items-center gap-1 text-muted hover:text-fg" onClick={() => { setGains(PRESETS.Flat); setPreset('Flat') }}><RotateCcw className="size-3" />Reset</button>}>Bands (dB)</Label>
         <div className="flex h-44 items-stretch justify-between gap-1">

@@ -86,7 +86,7 @@ export default function ExtractSubtitles() {
         {ready[0] && <div><Label>Preview of {label(ready[0])}</Label><pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-2/50 p-3 font-mono text-xs scrollbar-thin">{text(ready[0]).slice(0, 4000)}</pre></div>}
       </>}
       side={<>
-        <div><Label>Save as</Label><Select value={fmt} onChange={setFmt} options={SUB_FORMATS.map((f) => ({ value: f.id, label: f.label }))} /></div>
+        <div><Label>Save as</Label><Select aria-label="Save as" value={fmt} onChange={setFmt} options={SUB_FORMATS.map((f) => ({ value: f.id, label: f.label }))} /></div>
         {ready.length > 1 && <Button size="lg" className="w-full" icon={<Archive className="size-5" />} onClick={async () => downloadBlob(await zipFiles(ready.map((s) => ({ name: fileName(s), data: text(s) }))), `${baseName(file.name)}-subtitles.zip`)}>Download all {ready.length} as ZIP</Button>}
         <JobPanel job={job} onRetry={() => scan(file)} />
         <p className="text-xs text-muted">The video is read on your device with ffmpeg. Large files need enough free memory in the browser.</p>

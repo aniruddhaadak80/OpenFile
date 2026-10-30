@@ -94,7 +94,7 @@ export default function RouteHeatmap() {
           <div><Label>Colour</Label><Segmented value={theme} onChange={setTheme} options={[{ value: 'gold', label: 'Gold' }, { value: 'teal', label: 'Teal' }, { value: 'fire', label: 'Ember' }]} /></div>
           {groups.length > 1 && (
             <div><Label>Area</Label>
-              <Select value={String(ai)} onChange={(v) => setAreaIdx(Number(v))} className="w-full" options={groups.map((g, i) => ({ value: String(i), label: `${areaName(g)} (${g.length} ${g.length === 1 ? 'route' : 'routes'})` }))} />
+              <Select aria-label="Area" value={String(ai)} onChange={(v) => setAreaIdx(Number(v))} className="w-full" options={groups.map((g, i) => ({ value: String(i), label: `${areaName(g)} (${g.length} ${g.length === 1 ? 'route' : 'routes'})` }))} />
               <p className="mt-1 text-xs text-muted">Your routes are in {groups.length} places far apart. The poster shows one place at a time.</p>
             </div>
           )}

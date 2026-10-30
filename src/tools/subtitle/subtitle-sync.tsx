@@ -88,18 +88,18 @@ export default function SubtitleSync() {
         </>}
         {mode === 'fps' && <>
           <div className="grid grid-cols-2 gap-2">
-            <div><Label>Made for</Label><Select value={fpsFrom} onChange={setFpsFrom} options={FPS} /></div>
-            <div><Label>Video is</Label><Select value={fpsTo} onChange={setFpsTo} options={FPS} /></div>
+            <div><Label>Made for</Label><Select aria-label="Made for" value={fpsFrom} onChange={setFpsFrom} options={FPS} /></div>
+            <div><Label>Video is</Label><Select aria-label="Video is" value={fpsTo} onChange={setFpsTo} options={FPS} /></div>
           </div>
           <p className="text-xs text-muted">Pick this when lines start in sync but drift further off over time. 25 to 23.976 is the common PAL fix.</p>
         </>}
         {mode === 'two' && doc && <>
-          <div className="space-y-1.5"><Label>First reference line</Label><Select value={String(a)} onChange={(v) => { setA(+v); setAT(doc.cues[+v].start) }} options={cueOpts} /><TimeField label="Correct time for first line" value={aT} onChange={setAT} /></div>
-          <div className="space-y-1.5"><Label>Second reference line</Label><Select value={String(b)} onChange={(v) => { setB(+v); setBT(doc.cues[+v].start) }} options={cueOpts} /><TimeField label="Correct time for second line" value={bT} onChange={setBT} /></div>
+          <div className="space-y-1.5"><Label>First reference line</Label><Select aria-label="First reference line" value={String(a)} onChange={(v) => { setA(+v); setAT(doc.cues[+v].start) }} options={cueOpts} /><TimeField label="Correct time for first line" value={aT} onChange={setAT} /></div>
+          <div className="space-y-1.5"><Label>Second reference line</Label><Select aria-label="Second reference line" value={String(b)} onChange={(v) => { setB(+v); setBT(doc.cues[+v].start) }} options={cueOpts} /><TimeField label="Correct time for second line" value={bT} onChange={setBT} /></div>
           <p className="text-xs text-muted">Play the video, note when these two lines are actually spoken, and type those times. Everything in between is stretched to fit.</p>
         </>}
         <Switch checked={fix} onChange={setFix} label="Fix overlapping lines" />
-        <div><Label>Save as</Label><Select value={out} onChange={setOut} options={SUB_FORMATS.filter((f) => f.id !== 'txt').map((f) => ({ value: f.id, label: f.label }))} /></div>
+        <div><Label>Save as</Label><Select aria-label="Save as" value={out} onChange={setOut} options={SUB_FORMATS.filter((f) => f.id !== 'txt').map((f) => ({ value: f.id, label: f.label }))} /></div>
         <Button size="lg" className="w-full" icon={<Download className="size-5" />} onClick={save} disabled={!doc}>Download synced file</Button>
         <p className="flex gap-1.5 text-xs text-muted"><Timer className="size-4 shrink-0" />The table shows the new start times live as you change settings.</p>
       </>}

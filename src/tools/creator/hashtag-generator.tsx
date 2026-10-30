@@ -66,7 +66,7 @@ export default function HashtagGenerator() {
       </div>
       <Card className="space-y-4 self-start">
         <EnginePanel ai={ai} quickLabel="Word list" quickNote="Word list mode picks tags from your most used words and a built-in topic list. Instant and needs no download." />
-        <div><Label>Platform</Label><Select value={platform} onChange={(v) => { setPlatform(v); setCount(Math.min(PLATFORM_TAG_LIMITS[v].max, Math.max(PLATFORM_TAG_LIMITS[v].best, 3))) }} options={Object.entries(PLATFORM_TAG_LIMITS).map(([k, v]) => ({ value: k, label: v.label }))} /><p className="mt-1 text-xs text-muted">{lim.note}</p></div>
+        <div><Label>Platform</Label><Select aria-label="Platform" value={platform} onChange={(v) => { setPlatform(v); setCount(Math.min(PLATFORM_TAG_LIMITS[v].max, Math.max(PLATFORM_TAG_LIMITS[v].best, 3))) }} options={Object.entries(PLATFORM_TAG_LIMITS).map(([k, v]) => ({ value: k, label: v.label }))} /><p className="mt-1 text-xs text-muted">{lim.note}</p></div>
         <Slider label="How many" value={count} onChange={setCount} min={1} max={Math.min(30, lim.max)} />
         <div><Label>Style</Label><Segmented value={style} onChange={setStyle} options={[{ value: 'pascal', label: '#HikingTips' }, { value: 'lower', label: '#hikingtips' }, { value: 'camel', label: '#hikingTips' }]} /></div>
         <p className="text-xs text-muted">Capitalised words are easier to read and work better with screen readers.</p>

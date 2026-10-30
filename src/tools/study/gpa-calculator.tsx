@@ -25,7 +25,7 @@ export default function GpaCalculator() {
         {rows.map((x, i) => <div key={i} className="grid grid-cols-[1fr_6rem_8rem_2rem] items-center gap-2">
           <Input value={x.name} onChange={(e) => upd(i, { name: e.target.value })} aria-label="Course" />
           <Input inputMode="decimal" value={x.credits ?? ''} onChange={(e) => upd(i, { credits: e.target.value === '' ? null : +e.target.value })} aria-label="Credits" />
-          {scale === 'pct' ? <Input inputMode="decimal" value={x.grade} onChange={(e) => upd(i, { grade: e.target.value })} aria-label="Percent" /> : <Select value={x.grade} onChange={(v) => upd(i, { grade: v })} options={[{ value: '', label: 'Pick' }, ...S.grades.map(([k, v]) => ({ value: k, label: `${k} (${v})` }))]} />}
+          {scale === 'pct' ? <Input inputMode="decimal" value={x.grade} onChange={(e) => upd(i, { grade: e.target.value })} aria-label="Percent" /> : <Select aria-label="Grade" value={x.grade} onChange={(v) => upd(i, { grade: v })} options={[{ value: '', label: 'Pick' }, ...S.grades.map(([k, v]) => ({ value: k, label: `${k} (${v})` }))]} />}
           <button aria-label="Remove course" onClick={() => setRows(rows.filter((_, k) => k !== i))} className="text-muted hover:text-danger cursor-pointer"><X className="size-4" /></button></div>)}
         <Button variant="outline" size="sm" icon={<Plus className="size-4" />} onClick={() => setRows([...rows, { name: '', credits: 3, grade: '' }])}>Add course</Button>
       </Card>

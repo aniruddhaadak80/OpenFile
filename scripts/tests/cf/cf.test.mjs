@@ -94,6 +94,12 @@ t('days/age/week/sun', () => {
   const s = T.sunTimes(new Date(2026, 5, 21), 51.4779, 0); const h = s.rise.getUTCHours() + s.rise.getUTCMinutes() / 60; assert.ok(h > 3.6 && h < 3.9, String(h))
   assert.equal(T.sunTimes(new Date(2026, 5, 21), 78, 15).polar, 'day')
 })
+t('monthGrid year clamp', () => {
+  assert.equal(T.clampYear(999999), 9999); assert.equal(T.clampYear(-5), 1); assert.equal(T.clampYear(2027.6), 2027)
+  const g = T.monthGrid(999999, 1); assert.ok(g.length % 7 === 0 && g.filter(Boolean).length >= 28)
+  assert.equal(T.ymd(T.dateOf(50, 0, 1)), '0050-01-01'); assert.equal(T.ymd(T.parseYmd('0050-03-04')), '0050-03-04')
+  assert.equal(T.monthGrid(2026, 1, 1).filter(Boolean).length, 28)
+})
 t('timesheet/rota/meeting', () => {
   assert.equal(T.parseClock('5:15 pm'), 17 * 60 + 15); assert.equal(T.parseClock('0930'), 570); assert.equal(T.parseClock('12am'), 0)
   const tt = T.timesheetTotals([{ start: '9', end: '17:30', breakMin: 30 }, { start: '22:00', end: '06:00', breakMin: 0 }], { dailyOt: 8, rate: 10 })

@@ -62,7 +62,7 @@ export default function HtmlToMarkdown() {
   return (
     <div className="space-y-4">
       <Bar>
-        <Select value={heading} onChange={setHeading} options={[{ value: 'atx', label: '# Headings' }, { value: 'setext', label: 'Underlined headings' }]} className="h-9 w-48" />
+        <Select aria-label="Heading style" value={heading} onChange={setHeading} options={[{ value: 'atx', label: '# Headings' }, { value: 'setext', label: 'Underlined headings' }]} className="h-9 w-48" />
         <Segmented value={bullet} onChange={setBullet} options={['-', '*', '+']} />
         <Segmented value={strong} onChange={setStrong} options={[{ value: '**', label: '**bold**' }, { value: '__', label: '__bold__' }]} />
         <Segmented value={fence} onChange={setFence} options={[{ value: 'fenced', label: '``` code' }, { value: 'indented', label: 'Indented code' }]} />

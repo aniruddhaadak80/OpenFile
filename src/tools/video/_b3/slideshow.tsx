@@ -98,10 +98,10 @@ export function SlideshowPanel({ s, slides, name, onReset, extra }: { s: Slidesh
       {extra}
       <Switch checked={s.perSlide} onChange={s.setPerSlide} label="Set time per slide" />
       {!s.perSlide && <Slider label="Seconds per slide" value={s.dur} onChange={s.setDur} min={0.5} max={15} step={0.5} suffix=" s" />}
-      <div><Label>Transition</Label><Select value={s.transition} onChange={(v) => s.setTransition(v as Transition)} options={TRANSITIONS} /></div>
+      <div><Label>Transition</Label><Select aria-label="Transition" value={s.transition} onChange={(v) => s.setTransition(v as Transition)} options={TRANSITIONS} /></div>
       {s.transition !== 'none' && <Slider label="Transition length" value={s.td} onChange={s.setTd} min={0.2} max={2} step={0.1} suffix=" s" />}
       <Switch checked={s.kenBurns} onChange={s.setKenBurns} label="Slow zoom (Ken Burns)" />
-      <div><Label>Video size</Label><Select value={s.size} onChange={s.setSize} options={SIZES} /></div>
+      <div><Label>Video size</Label><Select aria-label="Video size" value={s.size} onChange={s.setSize} options={SIZES} /></div>
       <div><Label>Picture fit</Label><Segmented value={s.fit} onChange={s.setFit} options={[{ value: 'fit', label: 'Fit with bars' }, { value: 'fill', label: 'Fill and crop' }]} /></div>
       {s.fit === 'fit' && <div><Label>Bar colour</Label><ColorInput value={s.bg} onChange={s.setBg} /></div>}
       <div><Label>Music (optional)</Label><FilePick file={s.music} onFile={s.setMusic} accept="audio/*,.mp3,.wav,.m4a,.ogg,.flac" label="Drop a song" /></div>

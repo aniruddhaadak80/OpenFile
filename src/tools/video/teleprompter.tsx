@@ -102,7 +102,7 @@ export default function Teleprompter() {
           <div className="border-t border-border pt-4 space-y-3">
             <div><Label>Record</Label><Segmented value={source} onChange={(v) => { setSource(v); if (v === 'none') { stopStream(stream); setStream(null) } }} options={[{ value: 'camera', label: 'Camera' }, { value: 'none', label: 'Prompter only' }]} /></div>
             {source === 'camera' && <>
-              {devices.length > 1 && <Select value={camId} onChange={(v) => { setCamId(v); stopStream(stream); setStream(null) }} options={[{ value: '', label: 'Default camera' }, ...devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} />}
+              {devices.length > 1 && <Select aria-label="Camera" value={camId} onChange={(v) => { setCamId(v); stopStream(stream); setStream(null) }} options={[{ value: '', label: 'Default camera' }, ...devices.map((d, i) => ({ value: d.deviceId, label: d.label || `Camera ${i + 1}` }))]} />}
               <Switch checked={camMirror} onChange={setCamMirror} label={<span className="inline-flex items-center gap-1"><FlipHorizontal className="size-4" />Mirror preview</span>} />
               {!stream ? <Button className="w-full" icon={<Camera className="size-4" />} onClick={startCam}>Turn on camera</Button>
                 : !rec ? <Button size="lg" className="w-full" icon={<Circle className="size-5 fill-current" />} onClick={record}>Start recording</Button>

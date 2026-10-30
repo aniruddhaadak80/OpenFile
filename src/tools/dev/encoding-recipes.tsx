@@ -60,7 +60,7 @@ export default function EncodingRecipes() {
       {/* recipe */}
       <div className="space-y-2">
         <div className="flex items-center gap-2"><span className="text-xs font-semibold uppercase tracking-wide text-muted">Recipe</span>
-          <Select value="" onChange={(v) => { const p = PRESETS.find((x) => x.name === v); if (p) { setSteps(p.steps); setInput(p.input); setFile(null) } }} options={[{ value: '', label: 'Load a preset' }, ...PRESETS.map((p) => ({ value: p.name, label: p.name }))]} className="h-8 flex-1 text-xs" />
+          <Select aria-label="Load a preset" value="" onChange={(v) => { const p = PRESETS.find((x) => x.name === v); if (p) { setSteps(p.steps); setInput(p.input); setFile(null) } }} options={[{ value: '', label: 'Load a preset' }, ...PRESETS.map((p) => ({ value: p.name, label: p.name }))]} className="h-8 flex-1 text-xs" />
           <Button size="sm" variant="ghost" onClick={() => setSteps([])} disabled={!steps.length}>Clear</Button>
         </div>
         {steps.length === 0 && <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted"><Wand2 className="mx-auto mb-2 size-5" />Pick operations on the left. They run top to bottom.</div>}

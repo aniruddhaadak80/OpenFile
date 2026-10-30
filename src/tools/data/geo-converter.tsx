@@ -130,7 +130,7 @@ export default function GeoConverter() {
       </div>
       <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
         <div className="space-y-4 rounded-2xl border border-border bg-surface p-5">
-          <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Convert to</div><Select value={out} onChange={setOut} options={OUTS.map((o) => ({ value: o.value, label: o.label }))} /></div>
+          <div><div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted">Convert to</div><Select aria-label="Convert to" value={out} onChange={setOut} options={OUTS.map((o) => ({ value: o.value, label: o.label }))} /></div>
           <Button className="w-full" size="lg" loading={busy} icon={<Download className="size-4" />} onClick={save}>Convert and download</Button>
           {err && <Status kind="err">{err}</Status>}
           <div className="space-y-1 text-xs text-muted">

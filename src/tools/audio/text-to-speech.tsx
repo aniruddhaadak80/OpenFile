@@ -291,7 +291,7 @@ export default function TextToSpeech() {
         <div className="space-y-2">
           <Label hint={voices.length ? `${filtered.length} of ${voices.length}` : undefined}>Voice</Label>
           <div className="grid grid-cols-2 gap-2">
-            <Select value={lang} onChange={setLang} options={[{ value: 'all', label: 'All languages' }, ...langs.map((l) => ({ value: l.k, label: `${l.name} (${l.n})` }))]} />
+            <Select aria-label="Language" value={lang} onChange={setLang} options={[{ value: 'all', label: 'All languages' }, ...langs.map((l) => ({ value: l.k, label: `${l.name} (${l.n})` }))]} />
             <div className="relative"><Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search" className="pl-8" /></div>
           </div>
           <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-border p-1 scrollbar-thin">
