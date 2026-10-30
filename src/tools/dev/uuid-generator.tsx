@@ -1,8 +1,10 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { RefreshCw, CheckCircle2, XCircle } from 'lucide-react'
+import { RefreshCw, CheckCircle2, XCircle, Copy } from 'lucide-react'
+import { toast } from '@/components/toast'
 import { Button, Card, Field, Input, Textarea, Select, Switch, CopyButton, Slider, ErrorNote, cn } from '@/components/ui'
 import { DownloadButton, Pane } from './_dev/kit'
+import { copyText } from '@/lib/files'
 import { generateMany, parseUlid, ulidToUuid, nanoCollision, NAMESPACES, NANO_ALPHABETS, type IdKind } from '@/lib/b5/ids'
 
 const fmt36 = (h: string) => `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`
@@ -120,7 +122,7 @@ export default function UuidGenerator() {
                 <span className="w-12 shrink-0 text-right text-[11px] text-muted">{i + 1}</span>
                 <span className="min-w-0 flex-1 break-all">{u}</span>
                 {nameBased && <span className="hidden max-w-[30%] truncate text-[11px] text-muted sm:inline">{names.split(/\r?\n/)[i]}</span>}
-                <span className="opacity-0 transition focus-within:opacity-100 group-hover:opacity-100"><CopyButton text={u} label="" variant="ghost" /></span>
+                <span className="opacity-0 transition focus-within:opacity-100 group-hover:opacity-100"><Button size="sm" variant="ghost" icon={<Copy className="size-4" />} aria-label={`Copy ${u}`} title="Copy" onClick={async () => { if (await copyText(u)) toast('Copied to clipboard') }} /></span>
               </div>
             ))}
             {out.length > 2000 && <p className="px-3 py-2 text-xs text-muted">Showing the first 2,000. Copy or download to get all {out.length.toLocaleString()}.</p>}

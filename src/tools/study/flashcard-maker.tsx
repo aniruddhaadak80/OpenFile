@@ -4,6 +4,8 @@ import { Button, Card, Label, Segmented, Switch, Textarea } from '@/components/u
 import { downloadBlob } from '@/lib/files'
 import { cardsToAnki, cardsToCsv, leitnerAnswer, leitnerNext, parseCards, shuffle, rng, type Card as FCard, type Leitner } from '@/lib/cf/study'
 import { cardsPdf } from '@/lib/cf/print'
+import { OpenButton } from '@/lib/b14/ui'
+import { toast } from '@/components/toast'
 
 const SAMPLE = `photosynthesis - how plants turn light, water and carbon dioxide into sugar and oxygen
 mitochondria - the part of a cell that releases energy from food
@@ -12,6 +14,15 @@ enzyme - a protein that speeds up a chemical reaction
 chlorophyll - the green pigment that absorbs light in plants
 diffusion - particles spreading from high to low concentration`
 const KEY = 'of-flashcards'
+const ACCEPT = '.txt,.csv,.tsv,.md,text/plain,text/csv,text/tab-separated-values'
+/** Read a picked TXT, CSV or TSV file as text; binary files get a plain message instead. */
+async function readCardsFile(f: File): Promise<string | null> {
+  if (f.size > 20 * 1024 * 1024) { toast('This file is too big for a card list. Pick a text or CSV file under 20 MB.', 'error'); return null }
+  const t = (await f.text()).replace(/^\ufeff/, '')
+  if (/\u0000/.test(t.slice(0, 4096))) { toast('This does not look like a text or CSV file. Pick a TXT, CSV or TSV file.', 'error'); return null }
+  if (!t.trim()) { toast('This file is empty.', 'error'); return null }
+  return t
+}
 
 export default function FlashcardMaker() {
   const [text, setText] = useState(() => localStorage.getItem(KEY) ?? SAMPLE)
@@ -29,7 +40,9 @@ export default function FlashcardMaker() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2"><Segmented value={mode} onChange={(v) => (v === 'study' ? start() : setMode(v))} options={[{ value: 'edit', label: 'Make cards' }, { value: 'study', label: 'Study' }]} /><span className="text-sm text-muted">{cards.length} cards</span></div>
       {mode === 'edit' ? <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
-        <div><Label>One card per line: front - back (also CSV, tab separated, or Q: / A: lines)</Label><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-80 font-sans text-sm" /></div>
+        <div onDragOver={(e) => e.preventDefault()} onDrop={async (e) => { const f = e.dataTransfer.files?.[0]; if (!f) return; e.preventDefault(); const t = await readCardsFile(f); if (t != null) { setText(t); toast(`Opened ${f.name}`) } }}>
+          <div className="mb-1.5 flex flex-wrap items-end justify-between gap-2"><Label className="mb-0">One card per line: front - back (also CSV, tab separated, or Q: / A: lines)</Label><OpenButton accept={ACCEPT} label="Open TXT or CSV" onFiles={async ([f]) => { const t = await readCardsFile(f); if (t != null) { setText(t); toast(`Opened ${f.name}, ${parseCards(t).length} cards`) } }} /></div>
+          <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-80 font-sans text-sm" aria-label="Cards, one per line: front - back" /></div>
         <Card className="space-y-3 self-start">
           <Button className="w-full" onClick={start} disabled={!cards.length}>Start studying</Button>
           <Button className="w-full" variant="outline" icon={<Shuffle className="size-4" />} onClick={() => setText(shuffle(text.split('\n'), rng(Date.now())).join('\n'))}>Shuffle order</Button>

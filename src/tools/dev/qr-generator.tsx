@@ -90,7 +90,7 @@ export default function QrGenerator() {
     try { const b = await canvasToBlob(canvas.current!); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast('QR image copied') }
     catch { toast('Your browser blocked image copy, use Download instead', 'error') }
   }
-  const onLogo = async (file?: File) => { if (!file) return; const url = await readDataUrl(file); const img = await loadImage(url); setLogo({ img, url }); if (ec === 'L' || ec === 'M') setEc('H') }
+  const onLogo = async (file?: File) => { if (!file) return; try { const url = await readDataUrl(file); const img = await loadImage(url); setLogo({ img, url }); if (ec === 'L' || ec === 'M') setEc('H') } catch { toast('This file is not an image the browser can open. Pick a PNG, JPG, SVG or WEBP logo.', 'error') } }
 
   const I = (k: string, label: string, ph?: string, type = 'text') => <Field label={label}><Input type={type} value={f[k] ?? ''} onChange={(e) => set(k, e.target.value)} placeholder={ph} /></Field>
 
