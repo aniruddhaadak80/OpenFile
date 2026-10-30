@@ -57,9 +57,9 @@ export function useFxFile(video: boolean) {
   return { file, setFile, duration }
 }
 
-export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, dropSub, actionLabel, actionIcon, suffix, children, process, note, file: fileProp, onFile, defaultFmt = 'same', main }: {
+export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, dropSub, actionLabel, actionIcon, suffix, children, process, note, videoNote, file: fileProp, onFile, defaultFmt = 'same', main }: {
   accept?: string; allowVideo?: boolean; dropLabel: string; dropSub: string; actionLabel: string; actionIcon?: React.ReactNode; suffix: string
-  children?: React.ReactNode; note?: React.ReactNode; defaultFmt?: OutFmt
+  children?: React.ReactNode; note?: React.ReactNode; videoNote?: React.ReactNode; defaultFmt?: OutFmt
   /** run the effect; return the output blob */
   process: (ctx: FxCtx) => Promise<Blob>
   file?: File | null; onFile?: (f: File | null) => void
@@ -128,7 +128,7 @@ export function FxShell({ accept = AUDIO_ACCEPT, allowVideo = false, dropLabel, 
             {lossy && <div><Label>Bitrate (kbps)</Label><Segmented value={bitrate} onChange={setBitrate} options={[{ value: 'same', label: 'Same' }, '128', '192', '256', '320']} /><p className="mt-1 text-xs text-muted">{bitrate === 'same' ? 'Matches the original bitrate, so the file stays about the same size.' : `Encodes at ${bitrate} kb/s.`}</p></div>}
           </div>
         )}
-        {isVideo && <Note>Video input: the picture is kept and only the sound is changed, so the result is ready to share.</Note>}
+        {isVideo && <Note>{videoNote ?? 'Video input: the picture is kept and only the sound is changed, so the result is ready to share.'}</Note>}
         {note}
         <Button size="lg" className="w-full" icon={actionIcon ?? <Wand2 className="size-5" />} onClick={go} loading={job.busy}>{actionLabel}</Button>
         <JobPanel job={job} onRetry={go} />

@@ -127,4 +127,24 @@ for (const viz of ['waves', 'line', 'bars', 'spectrum', 'circle'] as Viz[]) {
   assert.equal(normal[normal.indexOf('-maxrate') + 1], '2250k')
   console.log('ok bitrate cap floor')
 }
+// 7. Chunked reverse of a clip with chapters (phones add them): pieces carry no chapter track, so the join has no gaps
+{
+  const meta = new TextEncoder().encode(';FFMETADATA1\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=0\nEND=3000\ntitle=c1\n')
+  const r0 = await ff(['-i', 'v.mp4', '-i', 'meta.txt', '-map_metadata', '1', '-map_chapters', '1', '-c', 'copy', 'ch.mp4'], { 'v.mp4': V, 'meta.txt': meta }, 'ch.mp4')
+  assert.equal(r0.code, 0, r0.logs.slice(-3).join('\n'))
+  const plan = F.reversePlan({ duration: 3, width: 320, height: 180, fps: 25 }, { budgetMB: 0.09 })
+  assert.ok(plan.pieces.length >= 3, `several pieces, got ${plan.pieces.length}`)
+  const files: Record<string, Uint8Array> = {}
+  for (let i = 0; i < plan.pieces.length; i++) {
+    const op = F.reversePieceOp('ch.mp4', plan, i)
+    assert.ok(op.args.join(' ').includes('-map_chapters -1'), 'pieces drop chapters')
+    const r = await ff(op.args, { 'ch.mp4': r0.data! }, op.output); assert.equal(r.code, 0, r.logs.slice(-3).join('\n')); files[op.output] = r.data!
+  }
+  files['list.txt'] = new TextEncoder().encode(F.concatList(F.reverseOrder(plan, 'reverse')))
+  const j = F.reverseJoinOp('list.txt')
+  const r = await ff(j.args, files, j.output); assert.equal(r.code, 0, r.logs.slice(-3).join('\n'))
+  const p = await probe('o.mp4', r.data!)
+  assert.ok(Math.abs(p.duration - 3) < 0.2, `reversed clip with chapters is ${p.duration}s, want 3`)
+  console.log('ok chunked reverse with chapters', plan.pieces.length, 'pieces', p.duration, 's')
+}
 console.log('media-fixes: all passed')

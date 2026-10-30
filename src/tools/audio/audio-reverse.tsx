@@ -17,6 +17,7 @@ async function reverse(ctx: FxCtx): Promise<Blob> {
 export default function AudioReverse() {
   return (
     <FxShell allowVideo accept={AV_ACCEPT} dropLabel="Drop an audio file to reverse" dropSub="Play any sound backwards. For videos, the picture is reversed too." actionLabel="Reverse" actionIcon={<Rewind className="size-5" />} suffix="reversed"
+      videoNote="Video input: the picture and the sound are both reversed."
       note={<p className="text-xs text-muted">Videos are reversed in short parts to stay within your browser's memory, so long clips take a while.</p>}
       process={reverse} />
   )

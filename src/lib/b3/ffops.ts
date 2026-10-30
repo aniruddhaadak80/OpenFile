@@ -141,6 +141,10 @@ function picture(plan: ReversePlan, frames?: number) {
 }
 const CFR = (plan: ReversePlan) => ['-r', fpsStr(plan.fps), '-fps_mode', 'cfr', '-video_track_timescale', '90000']
 
+// Phone clips often carry chapters, which the mp4 muxer writes as a text track that keeps the source's length.
+// ffmpeg.wasm's concat demuxer then spaces the pieces by that longer track, so the joined video gains frozen gaps.
+const NO_CHAPTERS = ['-map_chapters', '-1']
+
 export const pieceName = (i: number) => `r${String(i).padStart(4, '0')}.mp4`
 
 /** Reverse one piece of the video (no sound). */
@@ -150,12 +154,12 @@ export function reversePieceOp(input: string, plan: ReversePlan, i: number): Op 
   // read one extra frame of input so rounding never drops the last frame, then trim to the exact count
   const seek = p.len ? ['-ss', f3(p.start), '-t', f3(p.len + 1 / plan.fps), '-i', input] : ['-i', input]
   const out = pieceName(i)
-  return { output: out, args: [...seek, '-map', '0:v:0', '-vf', `${picture(plan, frames)},reverse`, '-an', '-sn', '-dn', ...H264(), ...CFR(plan), out] }
+  return { output: out, args: [...seek, '-map', '0:v:0', ...NO_CHAPTERS, '-vf', `${picture(plan, frames)},reverse`, '-an', '-sn', '-dn', ...H264(), ...CFR(plan), out] }
 }
 
 /** The clip played forward with the same settings as the pieces (first half of a boomerang). */
 export function forwardPieceOp(input: string, plan: ReversePlan): Op {
-  return { output: 'fwd.mp4', args: ['-i', input, '-map', '0:v:0', '-vf', picture(plan), '-an', '-sn', '-dn', ...H264(), ...CFR(plan), 'fwd.mp4'] }
+  return { output: 'fwd.mp4', args: ['-i', input, '-map', '0:v:0', ...NO_CHAPTERS, '-vf', picture(plan), '-an', '-sn', '-dn', ...H264(), ...CFR(plan), 'fwd.mp4'] }
 }
 
 /** concat demuxer list: names in play order */
