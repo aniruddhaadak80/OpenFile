@@ -4,6 +4,7 @@ import { Download, RotateCcw } from 'lucide-react'
 import { Button, CopyButton, Dropzone, Input, Label, Select, cn } from '@/components/ui'
 import { downloadBlob, formatBytes } from '@/lib/files'
 import { readBook, SHEET_ACCEPT, type Book } from '@/lib/bcat/sheets'
+import { toast } from '@/components/toast'
 import type { Rows } from './sheet'
 
 export { SHEET_ACCEPT }
@@ -66,6 +67,15 @@ export function RowsTable({ rows, header = true, max = 200, highlight, className
 }
 
 /** Load a workbook or CSV and pick a sheet. */
+/** True for a binary file that is not a workbook (ZIP based XLSX/ODS/Numbers or an old OLE XLS), so it is not read as CSV text. */
+async function notASheet(f: File): Promise<boolean> {
+  const b = new Uint8Array(await f.slice(0, 4096).arrayBuffer())
+  if ((b[0] === 0x50 && b[1] === 0x4b) || (b[0] === 0xd0 && b[1] === 0xcf && b[2] === 0x11 && b[3] === 0xe0)) return false
+  if ((b[0] === 0xff && b[1] === 0xfe) || (b[0] === 0xfe && b[1] === 0xff)) return false
+  let ctrl = 0
+  for (const c of b) { if (c === 0) return true; if (c < 9 || (c > 13 && c < 32)) ctrl++ }
+  return b.length > 0 && ctrl / b.length > 0.1
+}
 export function useSheet() {
   const [file, setFile] = useState<File | null>(null)
   const [book, setBook] = useState<Book | null>(null)
@@ -74,8 +84,11 @@ export function useSheet() {
   const [busy, setBusy] = useState(false)
   const open = async (f: File) => {
     setFile(f); setError(null); setBusy(true); setSheet(0)
-    try { const b = await readBook(f); if (!b.sheets.length) throw new Error('This file has no sheets.'); setBook(b) }
-    catch (e: any) { setBook(null); setError(e?.message ? `Could not read this file: ${e.message}` : 'Could not read this file.') }
+    try {
+      if (await notASheet(f)) { const m = 'This is not a spreadsheet or CSV file. Pick an XLSX, XLS, ODS, CSV or TSV file.'; setBook(null); setFile(null); setError(m); toast(m, 'error'); return }
+      const b = await readBook(f); if (!b.sheets.length) throw new Error('This file has no sheets.'); setBook(b)
+    }
+    catch (e: any) { const m = e?.message ? `Could not read this file: ${e.message}` : 'Could not read this file.'; setBook(null); setError(m); toast(m, 'error') }
     finally { setBusy(false) }
   }
   const reset = () => { setFile(null); setBook(null); setError(null) }

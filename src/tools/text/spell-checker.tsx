@@ -4,6 +4,7 @@ import { Button, Textarea, Badge, Spinner, Switch, Segmented, CopyButton, cn } f
 import { toast } from '@/components/toast'
 import { Bar, Status, DownloadButton, useStored, useDebounced } from '../dev/_b5/shell'
 import { checkGrammar, words, type Issue } from '@/lib/b5/grammar'
+import { readTextFile } from '@/tools/dev/_dev/kit'
 
 const SAMPLE = `Their are a few mistakes in this paragraf. I recieve emails every day, and i could of answered them faster.  It is is a easy fix,but you has to look carefuly.
 
@@ -22,12 +23,12 @@ function loadSpell(variant: 'us' | 'gb') {
   void variant
 }
 
-async function fileToText(f: File): Promise<string> {
+async function fileToText(f: File): Promise<string | null> {
   const n = f.name.toLowerCase()
   if (n.endsWith('.docx')) { const mammoth = await import('mammoth'); return (await mammoth.extractRawText({ arrayBuffer: await f.arrayBuffer() })).value }
   if (n.endsWith('.pdf')) { const { openPdfJs, allText } = await import('@/lib/pdf'); return (await allText(await openPdfJs(f))).join('\n\n') }
   if (n.endsWith('.html') || n.endsWith('.htm')) { const d = new DOMParser().parseFromString(await f.text(), 'text/html'); return d.body.innerText || d.body.textContent || '' }
-  return f.text()
+  return readTextFile(f)
 }
 
 export default function SpellChecker() {
@@ -85,7 +86,7 @@ export default function SpellChecker() {
         <Badge color="#EF4444">{counts.spelling} spelling</Badge><Badge color="#F5A524">{counts.grammar} grammar</Badge><Badge color="#38BDF8">{counts.style} style</Badge>
         <Switch checked={grammar} onChange={setGrammar} label="Grammar" /><Switch checked={style} onChange={setStyle} label="Style" />
         <div className="ml-auto flex gap-1">
-          <input ref={fileRef} type="file" hidden accept=".txt,.md,.docx,.pdf,.html,.htm,.rtf,text/*" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; try { setText(await fileToText(f)); toast(`Loaded text from ${f.name}`) } catch (er: any) { toast(er?.message || 'Could not read that file', 'error') } }} />
+          <input ref={fileRef} type="file" hidden accept=".txt,.md,.docx,.pdf,.html,.htm,.rtf,text/*" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; try { const t = await fileToText(f); if (t == null) return; setText(t); toast(`Loaded text from ${f.name}`) } catch (er: any) { toast(er?.message || 'Could not read that file', 'error') } }} />
           <Button size="sm" variant="ghost" icon={<FileText className="size-4" />} onClick={() => fileRef.current?.click()}>Open TXT, DOCX or PDF</Button>
           <Button size="sm" variant="outline" icon={<Check className="size-4" />} onClick={fixAll} disabled={!counts.grammar && !counts.style}>Fix grammar and style</Button>
         </div>

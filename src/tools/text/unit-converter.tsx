@@ -73,7 +73,7 @@ export default function UnitConverter() {
         <div className="grid items-end gap-3 md:grid-cols-[1fr_auto_1fr]">
           <div className="space-y-2">
             <Select aria-label="From unit" value={from} onChange={setFrom} options={C.units.map((u) => ({ value: u.id, label: `${u.name} (${u.sym})` }))} />
-            <Input value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="h-16 font-display text-3xl font-semibold" />
+            <Input aria-label="Value to convert" value={val} onChange={(e) => setVal(e.target.value)} inputMode="decimal" className="h-16 font-display text-3xl font-semibold" />
           </div>
           <Button variant="outline" className="md:mb-3" icon={<ArrowLeftRight className="size-4" />} onClick={() => { setFrom(to); setTo(from); if (Number.isFinite(res)) setVal(String(Number(res.toPrecision(12)))) }} aria-label="Swap" />
           <div className="space-y-2">

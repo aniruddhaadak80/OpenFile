@@ -169,7 +169,7 @@ function Batch({ tz }: { tz: string }) {
   const csv = () => ['input,unix_seconds,unix_ms,iso_utc,iso_' + tz.replace(/\W/g, '_'), ...rows.map((r) => ('ms' in r && r.ms !== undefined ? [r.in, Math.floor(r.ms / 1000), Math.round(r.ms), new Date(r.ms).toISOString(), isoIn(r.ms, tz)] : [r.in, '', '', '', 'ERROR']).map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n')
   return (
     <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
-      <Pane title="One value per line"><Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-80 rounded-none border-0 bg-transparent" /></Pane>
+      <Pane title="One value per line"><Textarea aria-label="One value per line" value={text} onChange={(e) => setText(e.target.value)} className="min-h-80 rounded-none border-0 bg-transparent" /></Pane>
       <Pane title={`${rows.length} results`} actions={<><CopyButton text={csv} label="Copy CSV" variant="ghost" /><DownloadButton text={csv} filename="timestamps.csv" mime="text/csv" /></>}>
         <div className="scrollbar-thin max-h-[480px] overflow-auto">
           <table className="w-full text-left font-mono text-xs">

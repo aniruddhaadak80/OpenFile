@@ -5,6 +5,7 @@ import { baseName } from '@/lib/files'
 import { scanHidden, cleanHidden, type HiddenKind } from '@/lib/bcat/privacy'
 import { DlButton, Pill, pal } from '@/lib/bcat/kit'
 import { Stat } from '@/tools/dev/_b5/shell'
+import { readTextFile } from '@/tools/dev/_dev/kit'
 
 const KINDS: { id: HiddenKind; label: string }[] = [
   { id: 'zero-width', label: 'Zero width' }, { id: 'bidi', label: 'Direction controls' }, { id: 'tag', label: 'Invisible tags' }, { id: 'control', label: 'Control codes' }, { id: 'space', label: 'Odd spaces' }, { id: 'lookalike', label: 'Look-alike letters' },
@@ -33,7 +34,7 @@ export default function HiddenCharacterDetector() {
       main={
         <div className="space-y-3">
           <div className="flex items-center gap-2"><Label className="mb-0 mr-auto">Paste text</Label>
-            <label><input type="file" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f) { setName(baseName(f.name)); setText(await f.text()) } e.target.value = '' }} />
+            <label><input type="file" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const t = await readTextFile(f); if (t != null) { setName(baseName(f.name)); setText(t) } } e.target.value = '' }} />
               <Button variant="outline" size="sm" icon={<FolderOpen className="size-4" />} onClick={(e) => (e.currentTarget.previousSibling as HTMLInputElement).click()}>Open file</Button></label></div>
           <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-36 text-sm" aria-label="Text to check" />
           <div className="grid grid-cols-3 gap-2"><Stat label="Characters" value={[...text].length} /><Stat label="Hidden or odd" value={hits.length} /><Stat label="Lines affected" value={new Set(hits.map((h) => h.line)).size} /></div>

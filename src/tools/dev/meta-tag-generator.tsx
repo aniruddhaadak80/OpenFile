@@ -4,7 +4,7 @@ import { Input, Label, Textarea, Select, Segmented, CopyButton, Switch } from '@
 import { Pane, CodeView, DownloadButton, useStored, esc } from './_b5/shell'
 
 type F = { title: string; desc: string; url: string; image: string; site: string; type: string; twitter: string; card: 'summary' | 'summary_large_image'; author: string; keywords: string; theme: string; locale: string; robots: string; canonical: boolean }
-const INIT: F = { title: 'OpenFile: free, private file tools', desc: 'Convert, compress and edit PDFs, images, video and audio right in your browser. Nothing is uploaded.', url: 'https://example.com/', image: 'https://example.com/og.png', site: 'OpenFile', type: 'website', twitter: '', card: 'summary_large_image', author: '', keywords: 'pdf, image, converter', theme: '#F5A524', locale: 'en_US', robots: 'index, follow', canonical: true }
+const INIT: F = { title: 'OpenFile: free, private file tools', desc: 'Convert, compress and edit PDFs, images, video and audio right in your browser. Nothing is uploaded.', url: 'https://aniruddhaadak80.github.io/OpenFile/', image: 'https://aniruddhaadak80.github.io/OpenFile/og.png', site: 'OpenFile', type: 'website', twitter: '', card: 'summary_large_image', author: '', keywords: 'pdf, image, converter', theme: '#F5A524', locale: 'en_US', robots: 'index, follow', canonical: true }
 const a = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
 
 export default function MetaTagGenerator() {
@@ -37,8 +37,8 @@ export default function MetaTagGenerator() {
   return (
     <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
       <div className="space-y-3">
-        <div><Label hint={<span className={tLen > 60 ? 'text-warn' : ''}>{tLen}/60</span>}>Title</Label><Input value={f.title} onChange={(e) => set('title', e.target.value)} /></div>
-        <div><Label hint={<span className={dLen > 160 ? 'text-warn' : ''}>{dLen}/160</span>}>Description</Label><Textarea value={f.desc} onChange={(e) => set('desc', e.target.value)} className="min-h-20 font-sans text-sm" /></div>
+        <div><Label hint={<span className={tLen > 60 ? 'text-warn' : ''}>{tLen}/60</span>}>Title</Label><Input aria-label="Title" value={f.title} onChange={(e) => set('title', e.target.value)} /></div>
+        <div><Label hint={<span className={dLen > 160 ? 'text-warn' : ''}>{dLen}/160</span>}>Description</Label><Textarea aria-label="Description" value={f.desc} onChange={(e) => set('desc', e.target.value)} className="min-h-20 font-sans text-sm" /></div>
         <div><Label>Page URL</Label><Input aria-label="Page URL" value={f.url} onChange={(e) => set('url', e.target.value)} /></div>
         <div><Label>Image URL (1200 × 630)</Label><Input aria-label="Image URL (1200 × 630)" value={f.image} onChange={(e) => set('image', e.target.value)} /></div>
         <div className="grid grid-cols-2 gap-3">
@@ -47,7 +47,7 @@ export default function MetaTagGenerator() {
           <div><Label>X handle</Label><Input aria-label="X handle" value={f.twitter} onChange={(e) => set('twitter', e.target.value)} placeholder="@you" /></div>
           <label className="block"><Label>X card</Label><Select value={f.card} onChange={(v) => set('card', v)} options={[{ value: 'summary_large_image', label: 'Large image' }, { value: 'summary', label: 'Small' }]} /></label>
           <div><Label>Author</Label><Input aria-label="Author" value={f.author} onChange={(e) => set('author', e.target.value)} /></div>
-          <div><Label>Theme color</Label><div className="flex gap-2"><input type="color" value={/^#[0-9a-f]{6}$/i.test(f.theme) ? f.theme : '#000000'} onChange={(e) => set('theme', e.target.value)} className="h-10 w-12 cursor-pointer rounded-lg border border-border bg-transparent" aria-label="Theme color" /><Input value={f.theme} onChange={(e) => set('theme', e.target.value)} /></div></div>
+          <div><Label>Theme color</Label><div className="flex gap-2"><input type="color" value={/^#[0-9a-f]{6}$/i.test(f.theme) ? f.theme : '#000000'} onChange={(e) => set('theme', e.target.value)} className="h-10 w-12 cursor-pointer rounded-lg border border-border bg-transparent" aria-label="Theme color" /><Input aria-label="Theme color hex" value={f.theme} onChange={(e) => set('theme', e.target.value)} /></div></div>
           <div><Label>Locale</Label><Input aria-label="Locale" value={f.locale} onChange={(e) => set('locale', e.target.value)} /></div>
           <label className="block"><Label>Robots</Label><Select value={f.robots} onChange={(v) => set('robots', v)} options={['index, follow', 'noindex, follow', 'index, nofollow', 'noindex, nofollow']} /></label>
         </div>

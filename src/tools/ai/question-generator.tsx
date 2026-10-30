@@ -4,27 +4,10 @@ import { Button, Label, Segmented, Slider, ToolGrid, cn } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
 import { aiRun, chunkText, extractJson, jsonObjects, MODELS } from '@/lib/b4/ai'
 import { useAiState, ModelPanel, AiProgress, useDocInput, DocInput } from '@/lib/b4/aiui'
+import { parseQa, normCards, normMcq, parseMcqText, type Card, type Mcq } from '@/lib/b4/qparse'
 
 type Kind = 'cards' | 'mcq'
-interface Card { q: string; a: string }
-interface Mcq { q: string; options: string[]; answer: number; explain?: string }
-
-/** Parse "Q: ... A: ..." text when the model does not return JSON. Pure. */
-export function parseQa(s: string): Card[] {
-  const out: Card[] = []
-  const re = /(?:^|\n)\s*(?:\d+[.)]\s*)?(?:Q(?:uestion)?\s*[:.-])\s*(.+?)\s*\n\s*(?:A(?:nswer)?\s*[:.-])\s*(.+?)(?=\n\s*(?:\d+[.)]\s*)?Q|\n\n|$)/gis
-  for (const m of s.matchAll(re)) out.push({ q: m[1].trim(), a: m[2].trim() })
-  return out
-}
-function normCards(x: any): Card[] { return (Array.isArray(x) ? x : x?.cards ?? x?.flashcards ?? []).map((c: any) => ({ q: String(c.q ?? c.question ?? c.front ?? '').trim(), a: String(c.a ?? c.answer ?? c.back ?? '').trim() })).filter((c: Card) => c.q && c.a) }
-function normMcq(x: any): Mcq[] {
-  return (Array.isArray(x) ? x : x?.questions ?? []).map((c: any) => {
-    const options: string[] = (c.options ?? c.choices ?? []).map((o: any) => String(o).replace(/^[A-D][.)]\s*/, '').trim())
-    let answer = typeof c.answer === 'number' ? c.answer : typeof c.correct === 'number' ? c.correct : -1
-    if (answer < 0 && typeof (c.answer ?? c.correct) === 'string') { const s = String(c.answer ?? c.correct).trim(); answer = /^[A-D]$/i.test(s) ? s.toUpperCase().charCodeAt(0) - 65 : options.findIndex((o) => o.toLowerCase() === s.replace(/^[A-D][.)]\s*/, '').toLowerCase()) }
-    return { q: String(c.q ?? c.question ?? '').trim(), options, answer, explain: c.explain ?? c.explanation }
-  }).filter((c: Mcq) => c.q && c.options.length >= 2 && c.answer >= 0 && c.answer < c.options.length)
-}
+export { parseQa }
 
 export default function QuestionGenerator() {
   const doc = useDocInput()
@@ -83,7 +66,16 @@ export default function QuestionGenerator() {
         }
         allC.push(...c.slice(0, count - allC.length)); setCards([...allC])
       }
-      else { const m = pickBest(j ? normMcq(j) : [], normMcq(objs)); allM.push(...m.slice(0, count - allM.length)); setMcqs([...allM]) }
+      else {
+        let m = pickBest(j ? normMcq(j) : [], normMcq(objs)); if (!m.length) m = parseMcqText(r)
+        if (!m.length) {
+          // one plain-text retry, as for flashcards: SmolLM2 on a CPU often returns no usable JSON for multiple choice (live, Oct 2026)
+          ai.setStatus('Trying again in plain text')
+          const r2: string = await aiRun('text-generation', ai.info, ai.device, [{ role: 'system', content: 'You are a teacher who writes clear, factual quiz questions. Only use facts from the given text.' }, { role: 'user', content: `Text:\n${chunks[i]}\n\nWrite ${want} multiple-choice questions about the text above. Each has 4 options and one correct answer. Use this format:\nQ: question\nA) option\nB) option\nC) option\nD) option\nAnswer: letter of the correct option` }], { max: want * 110 + 40 }, ai.callbacks())
+          m = parseMcqText(r2); if (!m.length) m = normMcq(jsonObjects(r2))
+        }
+        allM.push(...m.slice(0, count - allM.length)); setMcqs([...allM])
+      }
     }
     if (!(kind === 'cards' ? allC.length : allM.length)) throw new Error('The model did not return usable questions. Try the larger model, or a shorter, clearer text.')
   })

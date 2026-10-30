@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Bold, Italic, Strikethrough, Heading1, Heading2, Heading3, Link2, Image as ImageIcon, Code, SquareCode, Quote, List, ListOrdered, ListChecks, Table, Minus, Columns2, Eye, PenLine, Download, FileCode2, Upload } from 'lucide-react'
 import { Button, Segmented, CopyButton, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
-import { useLib, useStored, useDebounced, downloadText } from '@/tools/dev/_dev/kit'
+import { useLib, useStored, useDebounced, downloadText, readTextFile } from '@/tools/dev/_dev/kit'
 
 const SAMPLE = `# Welcome to the Markdown Editor ✍️
 
@@ -54,11 +54,15 @@ export default function MarkdownEditor() {
   const html = useMemo(() => {
     if (!libs) return ''
     const raw = libs.marked.parse(dmd, { gfm: true, breaks: false, async: false }) as string
-    return libs.purify.sanitize(raw, { ADD_ATTR: ['target', 'checked', 'disabled'] }) as string
+    if (!/type="checkbox"/.test(raw)) return libs.purify.sanitize(raw, { ADD_ATTR: ['target', 'checked', 'disabled'] }) as string
+    // Rendered task-list checkboxes are read-only; name each one after its task so screen readers say what it is.
+    // Done on the sanitized markup itself so the names survive a view switch that remounts the preview.
+    const frag = libs.purify.sanitize(raw, { ADD_ATTR: ['target', 'checked', 'disabled'], RETURN_DOM_FRAGMENT: true }) as unknown as DocumentFragment
+    frag.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach((c) => { const t = (c.closest('li')?.textContent ?? '').trim().slice(0, 120); c.setAttribute('aria-label', `${t || 'Task'} (${c.hasAttribute('checked') ? 'done' : 'not done'})`) })
+    const box = document.createElement('div'); box.appendChild(frag)
+    return box.innerHTML
   }, [libs, dmd])
   useEffect(() => { pv.current?.querySelectorAll('a[href^="http"]').forEach((a) => { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener') })
-    // Rendered task-list checkboxes are read-only; name each one after its task so screen readers say what it is.
-    pv.current?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]').forEach((c) => { const t = (c.closest('li')?.textContent ?? '').trim().slice(0, 120); c.setAttribute('aria-label', `${t || 'Task'} (${c.checked ? 'done' : 'not done'})`) })
   }, [html])
 
   const stats = useMemo(() => { const w = md.trim() ? md.replace(/[#*_`>\-[\]()|~]/g, ' ').split(/\s+/).filter(Boolean).length : 0; return { w, c: md.length, l: md.split('\n').length, min: Math.max(1, Math.round(w / 238)) } }, [md])
@@ -155,7 +159,7 @@ export default function MarkdownEditor() {
         <span className="text-xs text-muted">{stats.w.toLocaleString()} words · {stats.c.toLocaleString()} chars · {stats.l} lines · ~{stats.min} min read · autosaved</span>
         <label className="ml-2 flex items-center gap-1.5 text-xs text-muted"><input type="checkbox" checked={sync} onChange={(e) => setSync(e.target.checked)} className="accent-[var(--accent)]" />Sync scroll</label>
         <div className="ml-auto flex flex-wrap gap-1">
-          <input ref={fileRef} type="file" hidden accept=".md,.markdown,.txt,text/*" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) { setMd(await f.text()); toast('Opened ' + f.name) } }} />
+          <input ref={fileRef} type="file" hidden accept=".md,.markdown,.txt,text/*" onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) { const t = await readTextFile(f); if (t != null) { setMd(t); toast('Opened ' + f.name) } } }} />
           <Button size="sm" variant="ghost" icon={<Upload className="size-4" />} onClick={() => fileRef.current?.click()}>Open</Button>
           <Button size="sm" variant="ghost" onClick={() => { if (confirm('Replace the document with the sample?')) setMd(SAMPLE) }}>Sample</Button>
           <CopyButton text={md} label="Copy MD" variant="ghost" />

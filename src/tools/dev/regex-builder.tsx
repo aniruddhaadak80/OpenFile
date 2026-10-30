@@ -210,8 +210,8 @@ function BlockRow({ b, ops, first, last }: { b: Block; ops: Ops; first: boolean;
         {m.quant && (
           <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
             <Select aria-label="Repeat" value={b.q} onChange={(q) => set({ q })} className="h-8 w-36 text-xs" options={[{ value: 'one', label: 'exactly once' }, { value: 'opt', label: 'optional' }, { value: 'plus', label: 'one or more' }, { value: 'star', label: 'zero or more' }, { value: 'exact', label: 'exactly N times' }, { value: 'range', label: 'between N and M' }, { value: 'min', label: 'at least N' }]} />
-            {(b.q === 'exact' || b.q === 'range' || b.q === 'min') && <Input type="number" min={0} value={b.min ?? 1} onChange={(e) => set({ min: Math.max(0, +e.target.value) })} className="h-8 w-16 text-xs" />}
-            {b.q === 'range' && <><span className="text-xs text-muted">to</span><Input type="number" min={0} value={b.max ?? ''} onChange={(e) => set({ max: e.target.value === '' ? undefined : Math.max(0, +e.target.value) })} className="h-8 w-16 text-xs" placeholder="∞" /></>}
+            {(b.q === 'exact' || b.q === 'range' || b.q === 'min') && <Input type="number" aria-label={b.q === 'range' ? 'At least' : b.q === 'min' ? 'At least' : 'Exactly'} min={0} value={b.min ?? 1} onChange={(e) => set({ min: Math.max(0, +e.target.value) })} className="h-8 w-16 text-xs" />}
+            {b.q === 'range' && <><span className="text-xs text-muted">to</span><Input type="number" aria-label="At most" min={0} value={b.max ?? ''} onChange={(e) => set({ max: e.target.value === '' ? undefined : Math.max(0, +e.target.value) })} className="h-8 w-16 text-xs" placeholder="∞" /></>}
             {b.q !== 'one' && b.q !== 'exact' && <label className="flex items-center gap-1 text-[11px] text-muted"><input type="checkbox" checked={!!b.lazy} onChange={(e) => set({ lazy: e.target.checked })} className="accent-[var(--accent)]" />lazy</label>}
           </div>
         )}

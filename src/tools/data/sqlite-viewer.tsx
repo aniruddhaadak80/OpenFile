@@ -4,6 +4,7 @@ import { Button, Dropzone, Segmented, Badge, Spinner, cn } from '@/components/ui
 import { toast } from '@/components/toast'
 import { downloadBlob, baseName, formatBytes } from '@/lib/files'
 import { Bar, Status, Pane, CodeArea, DataTable, cellText } from '../dev/_b5/shell'
+import { readTextFile } from '@/tools/dev/_dev/kit'
 
 type SqlJs = { Database: new (data?: Uint8Array) => any }
 let sqlP: Promise<SqlJs> | null = null
@@ -99,7 +100,8 @@ export default function SqliteViewer() {
   }
   const importCsv = async (f: File) => {
     const Papa = (await import('papaparse')).default
-    const p = Papa.parse<string[]>(await f.text(), { skipEmptyLines: true })
+    const txt = await readTextFile(f); if (txt == null) return
+    const p = Papa.parse<string[]>(txt, { skipEmptyLines: true })
     if (p.data.length < 1) return toast('That CSV is empty', 'error')
     const [hdr, ...rows] = p.data
     let t = baseName(f.name).replace(/\W+/g, '_') || 'imported'

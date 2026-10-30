@@ -4,6 +4,7 @@ import { Field, Input, Select, Switch, ToolGrid, CopyButton, Textarea, Label, cn
 import { extractColumns, guessDelimiter, splitRow, parseColumns, type Delim } from '@/lib/b14/text'
 import { OpenButton } from '@/lib/b14/ui'
 import { DlButton } from '@/lib/bcat/kit'
+import { readTextFile } from '@/tools/dev/_dev/kit'
 
 const SAMPLE = 'name,email,city,plan\nAsha Rao,asha@example.com,Pune,Pro\nLeo Park,leo@example.com,"Busan, KR",Free\nMia Chen,mia@example.com,Taipei,Pro'
 const DELIMS = [{ value: 'auto', label: 'Detect' }, { value: ',', label: 'Comma ,' }, { value: '\t', label: 'Tab' }, { value: ';', label: 'Semicolon ;' }, { value: '|', label: 'Pipe |' }, { value: 'ws', label: 'Spaces' }, { value: 'custom', label: 'Custom' }]
@@ -26,7 +27,7 @@ export default function ColumnExtractor() {
   return (
     <ToolGrid
       main={<>
-        <div className="flex items-center justify-between"><Label>Text with columns (CSV, TSV, logs)</Label><OpenButton accept=".csv,.tsv,.txt,.log,.dat" onFiles={async (f) => setText(await f[0].text())} /></div>
+        <div className="flex items-center justify-between"><Label>Text with columns (CSV, TSV, logs)</Label><OpenButton accept=".csv,.tsv,.txt,.log,.dat" onFiles={async (f) => { const t = await readTextFile(f[0]); if (t != null) setText(t) }} /></div>
         <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-40 font-mono text-xs" aria-label="Input text" />
         {head.length > 0 && <div className="scrollbar-thin overflow-auto rounded-xl border border-border">
           <table className="w-full text-left text-xs"><thead className="bg-surface-2"><tr>{Array.from({ length: res.width }, (_, i) => <th key={i} className="px-2 py-1.5"><button type="button" aria-pressed={chosen.has(i)} onClick={() => toggle(i)} className={cn('cursor-pointer rounded-md border px-2 py-0.5 font-mono', chosen.has(i) ? 'border-accent bg-accent/15' : 'border-border text-muted')}>{i + 1}</button></th>)}</tr></thead>

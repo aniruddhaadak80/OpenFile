@@ -16,7 +16,8 @@ export function parseMatrix(s: string): number[][] {
 }
 const nice = (x: number) => (Math.abs(x) < 1e-10 ? '0' : Number.isInteger(+x.toFixed(10)) ? String(Math.round(x)) : (+x.toPrecision(8)).toString())
 
-function toFrac(x: number) { if (Number.isInteger(x)) return String(x); for (let d = 2; d <= 1000; d++) { const n = Math.round(x * d); if (Math.abs(n / d - x) < 1e-9) return `${n}/${d}` } return nice(x) }
+// snap float noise first: lusolve gives 1.9999999999999998, which otherwise printed as 4/2 (live, Oct 2026)
+export function toFrac(x: number) { const r = Math.round(x); if (Math.abs(x - r) < 1e-9) return String(r === 0 ? 0 : r); for (let d = 2; d <= 1000; d++) { const n = Math.round(x * d); if (Math.abs(n / d - x) < 1e-9) return `${n}/${d}` } return nice(x) }
 
 function MatrixView({ m, frac }: { m: (number | string)[][]; frac: boolean }) {
   return (

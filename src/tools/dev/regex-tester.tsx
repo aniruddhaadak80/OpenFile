@@ -136,7 +136,7 @@ export default function RegexTester() {
       <Pane title="Test string" actions={<span className="text-[11px] text-muted">{text.length} chars · {text.split('\n').length} lines</span>}>
         <div className="relative min-h-48">
           <div ref={back} aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words p-4 font-mono text-[14px] leading-6 text-transparent" dangerouslySetInnerHTML={{ __html: html }} />
-          <textarea value={text} onChange={(e) => setText(e.target.value)} spellCheck={false}
+          <textarea aria-label="Test string" value={text} onChange={(e) => setText(e.target.value)} spellCheck={false}
             onScroll={(e) => { if (back.current) back.current.scrollTop = e.currentTarget.scrollTop }}
             style={{ fieldSizing: 'content' } as React.CSSProperties} className="scrollbar-thin relative block min-h-48 w-full resize-y whitespace-pre-wrap break-words bg-transparent p-4 font-mono text-[14px] leading-6 text-fg outline-none" rows={8} />
         </div>

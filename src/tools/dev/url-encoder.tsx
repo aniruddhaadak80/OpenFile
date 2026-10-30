@@ -133,7 +133,7 @@ function Parser() {
             <AnimatePresence initial={false}>
               {rows.map((r) => (
                 <motion.div key={r.id} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="flex items-center gap-2 px-3 py-2">
-                  <input type="checkbox" checked={r.on} onChange={(e) => editRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, on: e.target.checked } : x)))} className="accent-[var(--accent)]" />
+                  <input type="checkbox" aria-label="Use this parameter" checked={r.on} onChange={(e) => editRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, on: e.target.checked } : x)))} className="accent-[var(--accent)]" />
                   <Input value={r.k} onChange={(e) => editRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, k: e.target.value } : x)))} placeholder="key" className={cn('h-9 w-1/3 font-mono text-xs', /^utm_/.test(r.k) && 'text-warn')} />
                   <span className="text-muted">=</span>
                   <Input value={r.v} onChange={(e) => editRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, v: e.target.value } : x)))} placeholder="value (decoded)" className="h-9 flex-1 font-mono text-xs" />

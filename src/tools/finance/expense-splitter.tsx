@@ -3,6 +3,7 @@ import { Plus, Trash2, Upload } from 'lucide-react'
 import { Button, Input, Label, Select, ToolGrid, CopyButton } from '@/components/ui'
 import { balances, settle, parseMoney, type Expense } from '@/lib/r13/finance'
 import { toCsv, DlButton, pal } from '@/lib/bcat/kit'
+import { toast } from '@/components/toast'
 
 const SAMPLE: Expense[] = [{ payer: 'Asha', amount: 3600, for: [], note: 'Hotel' }, { payer: 'Ravi', amount: 1200, for: [], note: 'Dinner' }, { payer: 'Meera', amount: 450, for: ['Meera', 'Ravi'], note: 'Cab' }]
 
@@ -16,10 +17,13 @@ export default function ExpenseSplitter() {
   const upd = (i: number, p: Partial<Expense>) => setExps((x) => x.map((e, j) => (j === i ? { ...e, ...p } : e)))
   const importCsv = async (f: File) => {
     const Papa = (await import('papaparse')).default
-    const r = Papa.parse<Record<string, string>>(await f.text(), { header: true, skipEmptyLines: true })
+    const txt = await f.text()
+    if (txt.slice(0, 4096).includes('\u0000')) { toast('This is not a CSV file. Pick a CSV with payer, amount, for and note columns.', 'error'); return }
+    const r = Papa.parse<Record<string, string>>(txt, { header: true, skipEmptyLines: true })
     const rows = r.data.map((d) => { const k = (re: RegExp) => Object.keys(d).find((x) => re.test(x.toLowerCase())); const payer = (d[k(/paid|payer|who|name/) ?? ''] ?? '').trim(); return { payer, amount: parseMoney(d[k(/amount|cost|price|total/) ?? ''] ?? ''), for: (d[k(/for|split|between/) ?? ''] ?? '').split(/[;|]/).map((s) => s.trim()).filter(Boolean), note: d[k(/note|what|desc|item/) ?? ''] ?? '' } }).filter((e) => e.payer && isFinite(e.amount))
     const ppl = [...new Set([...people, ...rows.map((e) => e.payer), ...rows.flatMap((e) => e.for)])]
-    setPeople(ppl); setExps((x) => [...x, ...rows])
+    if (!rows.length) { toast('No expenses found. The CSV needs payer and amount columns.', 'error'); return }
+    setPeople(ppl); setExps((x) => [...x, ...rows]); toast(`Added ${rows.length} expense${rows.length === 1 ? '' : 's'}`)
   }
   const text = plan.length ? plan.map((p) => `${p.from} pays ${p.to} ${p.amount.toFixed(2)}`).join('\n') : 'Everyone is settled.'
   return (

@@ -313,8 +313,8 @@ function TableEditor({ t, model, upd, remove, close }: { t: Table; model: Model;
   const rels = model.rels.filter((r) => r.from.t === t.id || r.to.t === t.id)
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2"><Table2 className="size-4" style={{ color: t.color }} /><span className="text-xs font-semibold uppercase tracking-wide text-muted">Table</span><button onClick={close} className="ml-auto rounded p-1 text-muted hover:bg-surface-2"><X className="size-4" /></button></div>
-      <Input value={name} onChange={(e) => setName(e.target.value)} onBlur={() => name.trim() && name !== t.name && upd((x) => ({ ...x, name: name.trim().replace(/\s+/g, '_') }))} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} className="font-mono font-semibold" />
+      <div className="flex items-center gap-2"><Table2 className="size-4" style={{ color: t.color }} /><span className="text-xs font-semibold uppercase tracking-wide text-muted">Table</span><button onClick={close} aria-label="Close" className="ml-auto rounded p-1 text-muted hover:bg-surface-2"><X className="size-4" /></button></div>
+      <Input aria-label="Table name" value={name} onChange={(e) => setName(e.target.value)} onBlur={() => name.trim() && name !== t.name && upd((x) => ({ ...x, name: name.trim().replace(/\s+/g, '_') }))} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()} className="font-mono font-semibold" />
       <div className="flex flex-wrap gap-1.5">{COLORS.map((c) => <button key={c} onClick={() => upd((x) => ({ ...x, color: c }))} className={cn('size-6 rounded-full border-2 transition', t.color === c ? 'scale-110 border-fg' : 'border-transparent')} style={{ background: c }} aria-label={c} />)}</div>
       <div className="space-y-2">
         <div className="flex items-center justify-between"><span className="text-xs font-semibold uppercase tracking-wide text-muted">Columns</span><Button size="sm" variant="ghost" icon={<Plus className="size-3.5" />} onClick={() => upd((x) => ({ ...x, cols: [...x.cols, { id: uid('c'), name: `column_${x.cols.length + 1}`, type: 'text', nullable: true }] }))}>Add</Button></div>
@@ -322,18 +322,18 @@ function TableEditor({ t, model, upd, remove, close }: { t: Table; model: Model;
         {t.cols.map((c, i) => (
           <div key={c.id} className="space-y-1.5 rounded-xl border border-border bg-surface-2/30 p-2">
             <div className="flex gap-1.5">
-              <ColName value={c.name} onCommit={(v) => setCol(c.id, { name: v })} />
-              <ColName value={c.type} list="erd-types" onCommit={(v) => setCol(c.id, { type: v.toLowerCase() })} className="w-28" />
+              <ColName label="Column name" value={c.name} onCommit={(v) => setCol(c.id, { name: v })} />
+              <ColName label="Column type" value={c.type} list="erd-types" onCommit={(v) => setCol(c.id, { type: v.toLowerCase() })} className="w-28" />
             </div>
             <div className="flex flex-wrap items-center gap-1">
               {([['pk', 'PK'], ['unique', 'UQ'], ['nullable', 'NULL']] as const).map(([k, l]) => (
                 <button key={k} onClick={() => setCol(c.id, { [k]: !c[k], ...(k === 'pk' && !c.pk ? { nullable: false } : {}) })} className={cn('rounded-md border px-1.5 py-0.5 text-[10px] font-bold', c[k] ? 'border-accent bg-accent/15 text-accent' : 'border-border text-muted hover:text-fg')}>{l}</button>
               ))}
-              <ColName value={c.def ?? ''} placeholder="default" onCommit={(v) => setCol(c.id, { def: v || undefined })} className="h-6 w-20 text-[10px]" />
+              <ColName label="Default value" value={c.def ?? ''} placeholder="default" onCommit={(v) => setCol(c.id, { def: v || undefined })} className="h-6 w-20 text-[10px]" />
               <div className="ml-auto flex">
-                <button onClick={() => moveCol(i, -1)} className="rounded p-0.5 text-muted hover:text-fg"><ArrowUp className="size-3.5" /></button>
-                <button onClick={() => moveCol(i, 1)} className="rounded p-0.5 text-muted hover:text-fg"><ArrowDown className="size-3.5" /></button>
-                <button onClick={() => upd((x) => ({ ...x, cols: x.cols.filter((y) => y.id !== c.id) }))} className="rounded p-0.5 text-muted hover:text-danger"><Trash2 className="size-3.5" /></button>
+                <button onClick={() => moveCol(i, -1)} aria-label={`Move ${c.name} up`} className="rounded p-0.5 text-muted hover:text-fg"><ArrowUp className="size-3.5" /></button>
+                <button onClick={() => moveCol(i, 1)} aria-label={`Move ${c.name} down`} className="rounded p-0.5 text-muted hover:text-fg"><ArrowDown className="size-3.5" /></button>
+                <button onClick={() => upd((x) => ({ ...x, cols: x.cols.filter((y) => y.id !== c.id) }))} aria-label={`Delete ${c.name}`} className="rounded p-0.5 text-muted hover:text-danger"><Trash2 className="size-3.5" /></button>
               </div>
             </div>
             <RefPicker t={t} c={c} model={model} />
@@ -364,10 +364,10 @@ function RefPicker({ t, c, model }: { t: Table; c: Col; model: Model }) {
 const CommitCtx = createContext<((fn: (m: Model) => Model) => void) | null>(null)
 function useErdCommit() { return useContext(CommitCtx) }
 
-function ColName({ value, onCommit, className, list, placeholder }: { value: string; onCommit: (v: string) => void; className?: string; list?: string; placeholder?: string }) {
+function ColName({ value, onCommit, className, list, placeholder, label }: { label?: string; value: string; onCommit: (v: string) => void; className?: string; list?: string; placeholder?: string }) {
   const [v, setV] = useState(value)
   useEffect(() => setV(value), [value])
-  return <input value={v} list={list} placeholder={placeholder} onChange={(e) => setV(e.target.value)} onBlur={() => v !== value && onCommit(v.trim())} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+  return <input aria-label={label} value={v} list={list} placeholder={placeholder} onChange={(e) => setV(e.target.value)} onBlur={() => v !== value && onCommit(v.trim())} onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
     className={cn('h-7 min-w-0 flex-1 rounded-lg border border-border bg-surface px-2 font-mono text-xs outline-none focus:border-accent', className)} />
 }
 
@@ -376,7 +376,7 @@ function RelEditor({ r, byId, upd, remove, close }: { r: Rel; byId: Map<string, 
   const fc = a?.cols.find((c) => c.id === r.from.c), tc = b?.cols.find((c) => c.id === r.to.c)
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2"><Link2 className="size-4 text-accent" /><span className="text-xs font-semibold uppercase tracking-wide text-muted">Relation</span><button onClick={close} className="ml-auto rounded p-1 text-muted hover:bg-surface-2"><X className="size-4" /></button></div>
+      <div className="flex items-center gap-2"><Link2 className="size-4 text-accent" /><span className="text-xs font-semibold uppercase tracking-wide text-muted">Relation</span><button onClick={close} aria-label="Close" className="ml-auto rounded p-1 text-muted hover:bg-surface-2"><X className="size-4" /></button></div>
       <div className="rounded-xl bg-surface-2/50 p-3 font-mono text-xs leading-relaxed">
         <div><span style={{ color: a?.color }}>{a?.name}</span>.{fc?.name}</div>
         <div className="text-muted">{r.kind === 'N:M' ? '⟷ many-to-many ⟷' : '→ references →'}</div>
@@ -426,7 +426,7 @@ function ImportPanel({ onModel, onClose }: { onModel: (m: Model) => void; onClos
   return (
     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
       <Card className="space-y-3">
-        <div className="flex items-center gap-2"><Upload className="size-4 text-accent" /><span className="font-semibold">Import SQL CREATE TABLE statements</span><button onClick={onClose} className="ml-auto rounded p-1 text-muted hover:bg-surface-2"><X className="size-4" /></button></div>
+        <div className="flex items-center gap-2"><Upload className="size-4 text-accent" /><span className="font-semibold">Import SQL CREATE TABLE statements</span><button onClick={onClose} aria-label="Close" className="ml-auto rounded p-1 text-muted hover:bg-surface-2"><X className="size-4" /></button></div>
         <Textarea value={sql} onChange={(e) => setSql(e.target.value)} className="min-h-48" placeholder="Paste a schema dump (PostgreSQL, MySQL, SQLite…)" />
         {err && <div className="text-sm text-danger">{err}</div>}
         <div className="flex flex-wrap gap-2">

@@ -23,7 +23,8 @@ export default function CitationGenerator() {
   const [cur, setCur] = useState(0)
   const r = refs[cur]
   const set = (p: Partial<Ref & { authorText: string }>) => setRefs((x) => x.map((y, i) => (i === cur ? { ...y, ...p } : y)))
-  const full = useMemo(() => refs.map((x) => ({ ...x, authors: parseAuthors(x.authorText) })), [refs])
+  // a new, still empty source is left out of the list and exports until it has a title or an author (it printed ". **." and "(, n.d.)")
+  const full = useMemo(() => refs.map((x) => ({ ...x, authors: parseAuthors(x.authorText) })).filter((x) => x.title.trim() || x.authors.length), [refs])
   const sorted = useMemo(() => (style === 'ieee' || style === 'vancouver' ? full : [...full].sort((a, b) => (a.authors[0]?.family ?? a.title).localeCompare(b.authors[0]?.family ?? b.title))), [full, style])
   const list = sorted.map((x, i) => cite(x, style, i + 1))
   const html = `<ol style="list-style:none;padding:0">${list.map((c) => `<li style="padding-left:2em;text-indent:-2em;margin:0 0 .6em">${htmlCite(c, escapeHtml)}</li>`).join('')}</ol>`
@@ -32,7 +33,7 @@ export default function CitationGenerator() {
       <div className="min-w-0 space-y-4">
         <Segmented value={style} onChange={setStyle} options={STYLES} />
         <Card className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2"><div className="mr-auto font-semibold">Reference list ({refs.length})</div><CopyButton text={list.map(plainCite).join('\n')} label="Copy text" />
+          <div className="flex flex-wrap items-center gap-2"><div className="mr-auto font-semibold">Reference list ({list.length})</div><CopyButton text={list.map(plainCite).join('\n')} label="Copy text" />
             <Button size="sm" variant="outline" onClick={() => downloadBlob(new Blob([`<!doctype html><meta charset="utf-8"><title>References</title><body style="font:12pt/1.6 'Times New Roman',serif;max-width:7in;margin:1in auto">${html}</body>`], { type: 'text/html' }), 'references.html')}>HTML for Word</Button>
             <Button size="sm" variant="outline" onClick={() => downloadBlob(new Blob([toBibtex(full)], { type: 'text/plain' }), 'references.bib')}>BibTeX</Button>
             <Button size="sm" variant="outline" onClick={() => downloadBlob(new Blob([toRis(full)], { type: 'text/plain' }), 'references.ris')}>RIS</Button></div>

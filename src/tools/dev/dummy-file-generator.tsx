@@ -70,7 +70,7 @@ export default function DummyFileGenerator() {
         <Field label="File type"><Select value={kind} onChange={setKind} options={KINDS.map(({ value, label }) => ({ value, label }))} /></Field>
         <Field label="File name"><Input value={name} onChange={(e) => setName(e.target.value.replace(/[\\/:*?"<>|]/g, ''))} /></Field>
         <Field label="Size" hint={Number.isFinite(size) ? `${size.toLocaleString()} bytes` : ''}>
-          <div className="flex gap-2"><Input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" className="flex-1" /><Select value={unit} onChange={setUnit} options={Object.keys(UNITS) as Unit[]} className="w-24" /></div>
+          <div className="flex gap-2"><Input aria-label="Size" value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" className="flex-1" /><Select aria-label="Size unit" value={unit} onChange={setUnit} options={Object.keys(UNITS) as Unit[]} className="w-24" /></div>
         </Field>
         <Field label="How many files" hint="More than one comes as a ZIP"><Input value={count} onChange={(e) => setCount(e.target.value)} inputMode="numeric" /></Field>
       </div>

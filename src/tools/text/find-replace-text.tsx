@@ -5,6 +5,7 @@ import { applyRules, findMatches, parseRuleList, type Rule } from '@/lib/b14/tex
 import { RuleEditor, BulkRules, newRule } from '@/lib/b14/rules'
 import { OpenButton } from '@/lib/b14/ui'
 import { DlButton } from '@/lib/bcat/kit'
+import { readTextFile } from '@/tools/dev/_dev/kit'
 
 const SAMPLE = 'The colour of the sky changes through the day.\nMy favourite colour is teal.\nCall 555-0142 or 555-0199 before 2026-11-01.'
 
@@ -28,7 +29,7 @@ export default function FindReplaceText() {
   return (
     <ToolGrid
       main={<>
-        <div className="flex items-center justify-between"><Label>Your text</Label><OpenButton accept=".txt,.md,.csv,.json,.html,.xml,.log,.srt,.js,.ts,.css,.yaml,.yml" onFiles={async (f) => { setText(await f[0].text()); setName(f[0].name) }} /></div>
+        <div className="flex items-center justify-between"><Label>Your text</Label><OpenButton accept=".txt,.md,.csv,.json,.html,.xml,.log,.srt,.js,.ts,.css,.yaml,.yml" onFiles={async (f) => { const t = await readTextFile(f[0]); if (t != null) { setText(t); setName(f[0].name) } }} /></div>
         <Textarea value={text} onChange={(e) => setText(e.target.value)} className="min-h-44 font-mono text-sm" aria-label="Text" />
         {first && <div><Label hint={`${hits.length}${hits.length >= 500 ? '+' : ''} matches for the first rule`}>Matches</Label><pre className="scrollbar-thin max-h-48 overflow-auto whitespace-pre-wrap break-words rounded-xl border border-border bg-surface p-3 font-mono text-xs leading-5">{marked}</pre></div>}
         <div className="flex items-center justify-between"><Label hint={`${total} replacements`}>Result</Label><div className="flex gap-2"><CopyButton text={res.text} /><DlButton name={name.replace(/(\.[^.]+)?$/, '-replaced$1')} data={() => res.text}>Download</DlButton></div></div>

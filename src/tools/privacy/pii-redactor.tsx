@@ -5,6 +5,7 @@ import { baseName } from '@/lib/files'
 import { toast } from '@/components/toast'
 import { findPii, redact, PII_LABEL, type PiiKind, type MaskStyle } from '@/lib/bcat/privacy'
 import { DlButton, Pill, pal } from '@/lib/bcat/kit'
+import { readTextFile } from '@/tools/dev/_dev/kit'
 
 const SAMPLE = `Hi team, please refund Rahul Verma (rahul.verma@example.com, +91 98765 43210).
 Card on file: 4111 1111 1111 1111, IBAN GB82 WEST 1234 5698 7654 32.
@@ -25,7 +26,7 @@ export default function PiiRedactor() {
     try {
       setName(baseName(f.name))
       if (/\.(pdf|docx|epub|odt|rtf|html?)$/i.test(f.name)) { const { docPages } = await import('@/lib/b4/doctext'); setText((await docPages(f)).map((p) => p.text).join('\n\n')) }
-      else setText(await f.text())
+      else { const t = await readTextFile(f); if (t == null) return; setText(t) }
     } catch (e: any) { toast(e?.message || 'Could not read this file', 'error') }
   }
 

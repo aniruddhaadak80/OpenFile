@@ -1,5 +1,5 @@
 /* Shared helpers for dev + text tools (owned by the "dev" agent). */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Download, Upload } from 'lucide-react'
 import { Button, cn } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
@@ -46,6 +46,8 @@ export function Stat({ label, value, sub, className }: { label: React.ReactNode;
 }
 
 /** Panel with a header row (title + actions) and body. */
+/** The text title of the surrounding Pane, so a CodeArea inside it gets that title as its accessible name. */
+const PaneTitle = createContext<string | undefined>(undefined)
 export function Pane({ title, actions, children, className, bodyClass }: { title?: React.ReactNode; actions?: React.ReactNode; children: React.ReactNode; className?: string; bodyClass?: string }) {
   return (
     <div className={cn('flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface', className)}>
@@ -55,17 +57,18 @@ export function Pane({ title, actions, children, className, bodyClass }: { title
           {actions}
         </div>
       )}
-      <div className={cn('min-h-0 flex-1', bodyClass)}>{children}</div>
+      <div className={cn('min-h-0 flex-1', bodyClass)}><PaneTitle.Provider value={typeof title === 'string' ? title : undefined}>{children}</PaneTitle.Provider></div>
     </div>
   )
 }
 
 /** Plain code textarea that fills a Pane, with optional line numbers. */
-export function CodeArea({ value, onChange, placeholder, readOnly, className, lineNumbers = true, errorLine, minRows = 14, spellCheck = false, onKeyDown }: {
-  value: string; onChange?: (v: string) => void; placeholder?: string; readOnly?: boolean; className?: string; lineNumbers?: boolean; errorLine?: number | null; minRows?: number; spellCheck?: boolean; onKeyDown?: React.KeyboardEventHandler<HTMLTextAreaElement>
+export function CodeArea({ value, onChange, placeholder, readOnly, className, lineNumbers = true, errorLine, minRows = 14, spellCheck = false, onKeyDown, label }: {
+  label?: string; value: string; onChange?: (v: string) => void; placeholder?: string; readOnly?: boolean; className?: string; lineNumbers?: boolean; errorLine?: number | null; minRows?: number; spellCheck?: boolean; onKeyDown?: React.KeyboardEventHandler<HTMLTextAreaElement>
 }) {
   const ta = useRef<HTMLTextAreaElement>(null)
   const gut = useRef<HTMLDivElement>(null)
+  const pane = useContext(PaneTitle)
   const lines = Math.max(1, value.split('\n').length)
   return (
     <div className={cn('relative flex h-full min-h-0', className)} style={{ minHeight: minRows * 20 + 16 }}>
@@ -75,7 +78,7 @@ export function CodeArea({ value, onChange, placeholder, readOnly, className, li
         </div>
       )}
       <textarea
-        ref={ta} value={value} readOnly={readOnly} spellCheck={spellCheck} placeholder={placeholder}
+        ref={ta} value={value} readOnly={readOnly} spellCheck={spellCheck} placeholder={placeholder} aria-label={label || pane || (readOnly ? 'Output' : 'Input')}
         onChange={(e) => onChange?.(e.target.value)}
         onScroll={(e) => { if (gut.current) gut.current.scrollTop = e.currentTarget.scrollTop }}
         onKeyDown={(e) => {
