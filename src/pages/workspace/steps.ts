@@ -5,6 +5,7 @@
 import { CATALOG, CATS, kindOf, extOf, type StepMeta, type ParamDef as PD, type Cat } from './catalog'
 import { renamePattern } from './recipe'
 import { imagePool } from './pool'
+import { waitTurn } from './engine'
 import { notSmaller, planVideo, videoArgs, audioArgs, RETRY_FACTOR, type VideoSource } from '@/lib/compress-guard'
 import { baseName } from '@/lib/files'
 
@@ -22,7 +23,7 @@ const check = (s?: AbortSignal) => { if (s?.aborted) throw new Error('Cancelled'
 const perFile = (fn: (it: Item, p: Record<string, any>, onP: (r: number) => void, signal?: AbortSignal) => Promise<Item[]>) =>
   async (items: Item[], p: Record<string, any>, onP: (r: number) => void, signal?: AbortSignal) => {
     const out: Item[] = []
-    for (let i = 0; i < items.length; i++) { check(signal); out.push(...(await fn(items[i], p, (r) => onP((i + r) / items.length), signal))) }
+    for (let i = 0; i < items.length; i++) { check(signal); await waitTurn(signal); out.push(...(await fn(items[i], p, (r) => onP((i + r) / items.length), signal))) }
     onP(1)
     return out
   }
@@ -144,9 +145,9 @@ const RUN: Record<string, StepDef['run']> = {
     }
     return out
   }),
-  'pdf-compress': perFile(async (it, p, onP) => {
+  'pdf-compress': perFile(async (it, p, onP, signal) => {
     const { rasterizePdf } = await import('@/lib/pdf')
-    const bytes = await rasterizePdf(it.blob, { scale: Number(p.dpi) / 72, quality: p.quality / 100, onProgress: onP })
+    const bytes = await rasterizePdf(it.blob, { scale: Number(p.dpi) / 72, quality: p.quality / 100, onProgress: onP, transform: () => waitTurn(signal) })
     const blob = pdfOut(bytes)
     return notSmaller(it.blob.size, blob.size) ? [{ ...it, kept: true, note: 'Already as small as it gets, original kept' }] : [{ name: it.name, blob, path: it.path }]
   }),
@@ -154,9 +155,9 @@ const RUN: Record<string, StepDef['run']> = {
   'pdf-numbers': eachPdf(async (doc, p) => { const { StandardFonts, rgb } = await import('pdf-lib'); const f = await doc.embedFont(StandardFonts.Helvetica); const pages = doc.getPages(); pages.forEach((pg: any, i: number) => { const t = String(p.format).replace('{n}', String(i + 1)).replace('{total}', String(pages.length)); const w = f.widthOfTextAtSize(t, p.size); pg.drawText(t, { x: (pg.getWidth() - w) / 2, y: 20, size: p.size, font: f, color: rgb(0.3, 0.3, 0.35) }) }) }),
   'pdf-watermark': eachPdf(async (doc, p) => { const { StandardFonts, rgb, degrees } = await import('pdf-lib'); const f = await doc.embedFont(StandardFonts.HelveticaBold); const text = String(p.text).replace(/[^\x20-\x7e]/g, '?'); doc.getPages().forEach((pg: any) => { const s = Math.min(pg.getWidth(), pg.getHeight()) / 8; const w = f.widthOfTextAtSize(text, s); pg.drawText(text, { x: pg.getWidth() / 2 - (w / 2) * 0.7, y: pg.getHeight() / 2 - (w / 2) * 0.7, size: s, font: f, color: rgb(0.85, 0.1, 0.1), opacity: p.opacity / 100, rotate: degrees(45) }) }) }),
   'pdf-meta': eachPdf(async (doc) => { doc.setTitle(''); doc.setAuthor(''); doc.setSubject(''); doc.setKeywords([]); doc.setProducer('OpenFile'); doc.setCreator('OpenFile') }),
-  'pdf-gray': perFile(async (it, _p, onP) => {
+  'pdf-gray': perFile(async (it, _p, onP, signal) => {
     const { rasterizePdf } = await import('@/lib/pdf')
-    const bytes = await rasterizePdf(it.blob, { scale: 1.6, quality: 0.85, onProgress: onP, transform: (ctx, c) => { const d = ctx.getImageData(0, 0, c.width, c.height); const a = d.data; for (let k = 0; k < a.length; k += 4) { const g = a[k] * 0.299 + a[k + 1] * 0.587 + a[k + 2] * 0.114; a[k] = a[k + 1] = a[k + 2] = g } ctx.putImageData(d, 0, 0) } })
+    const bytes = await rasterizePdf(it.blob, { scale: 1.6, quality: 0.85, onProgress: onP, transform: async (ctx, c) => { await waitTurn(signal); const d = ctx.getImageData(0, 0, c.width, c.height); const a = d.data; for (let k = 0; k < a.length; k += 4) { const g = a[k] * 0.299 + a[k + 1] * 0.587 + a[k + 2] * 0.114; a[k] = a[k + 1] = a[k + 2] = g } ctx.putImageData(d, 0, 0) } })
     return [{ name: it.name, blob: pdfOut(bytes), path: it.path }]
   }),
   'pdf-from-images': async (items, p, onP) => {
@@ -179,11 +180,12 @@ const RUN: Record<string, StepDef['run']> = {
     for (let i = 0; i < items.length; i++) { await add(d, items[i]); onP((i + 1) / items.length) }
     return [{ name: `${String(p.name || 'images').replace(/[\\/]/g, '_')}.pdf`, blob: pdfOut(await d.save()) }]
   },
-  'pdf-to-images': perFile(async (it, p, onP) => {
+  'pdf-to-images': perFile(async (it, p, onP, signal) => {
     const { openPdfJs, renderPage } = await import('@/lib/pdf')
     const doc = await openPdfJs(await it.blob.arrayBuffer())
     const type = 'image/' + p.format, out: Item[] = []
     for (let i = 1; i <= doc.numPages; i++) {
+      await waitTurn(signal)
       const c = await renderPage(doc, i, Number(p.dpi) / 72)
       const blob: Blob = await new Promise((r, j) => c.toBlob((b) => (b ? r(b) : j(new Error('Could not encode page'))), type, 0.9))
       out.push({ name: `${baseName(it.name)}-p${String(i).padStart(3, '0')}.${IMG_EXT[blob.type] || 'png'}`, blob, path: it.path })
@@ -203,7 +205,7 @@ const RUN: Record<string, StepDef['run']> = {
       if (kindOfItem(it) === 'pdf') {
         const { openPdfJs, renderPage } = await import('@/lib/pdf')
         const doc = await openPdfJs(await it.blob.arrayBuffer()); pages = doc.numPages
-        for (page = 0; page < pages; page++) { check(signal); const c = await renderPage(doc, page + 1, 2); const r = await worker.recognize(c); texts.push(`--- page ${page + 1} ---\n${r.data.text}`); c.width = c.height = 0 }
+        for (page = 0; page < pages; page++) { check(signal); await waitTurn(signal); const c = await renderPage(doc, page + 1, 2); const r = await worker.recognize(c); texts.push(`--- page ${page + 1} ---\n${r.data.text}`); c.width = c.height = 0 }
       } else { const r = await worker.recognize(it.blob); texts.push(r.data.text) }
       return [{ name: withExt(it.name, 'txt'), blob: new Blob([texts.join('\n\n')], { type: 'text/plain' }), path: it.path }]
     } finally { signal?.removeEventListener('abort', stop); await worker.terminate().catch(() => {}) }

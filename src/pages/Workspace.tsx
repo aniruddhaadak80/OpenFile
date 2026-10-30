@@ -177,7 +177,7 @@ export default function Workspace() {
       flush()
       setOutputs((o) => (only ? [...o.filter((x) => !chosen.some((c) => c.id === x.src)), ...res.outputs] : res.outputs))
       const nFailed = Object.values({ ...(only ? status : {}), ...buf }).filter((s) => s.state === 'error').length
-      setInfo((i) => ({ ...i, phase: res.cancelled ? 'cancelled' : 'done', overall: res.cancelled ? i.overall : 1, eta: 0, ms: performance.now() - t0, done: chosen.length - res.failed.size, failed: nFailed, log: [...log] }))
+      setInfo((i) => ({ ...i, phase: res.cancelled ? 'cancelled' : 'done', overall: res.cancelled ? i.overall : 1, eta: 0, ms: performance.now() - t0, done: res.cancelled ? done : chosen.length - res.failed.size, failed: nFailed, log: [...log] }))
       if (res.cancelled) toast('Run cancelled')
       else toast(`Pipeline finished in ${((performance.now() - t0) / 1000).toFixed(1)}s${res.failed.size ? `, ${res.failed.size} failed` : ''}`, res.failed.size ? 'error' : undefined)
       if (!res.cancelled && res.outputs.length) setTimeout(() => document.querySelector('[data-tour="results"]')?.scrollIntoView({ behavior: motionLevel === 'off' ? 'auto' : 'smooth', block: 'nearest' }), 120)
@@ -361,7 +361,8 @@ export default function Workspace() {
 
             <div className="space-y-4 md:col-span-2 lg:col-span-1">
               <div ref={drawerRef} className="scroll-mt-32">
-                {selNode ? <StepDrawer graph={graph} node={selNode} sample={sample} onParam={(k, v) => setParam(selNode.id, k, v)} onToggle={(v) => toggle(selNode.id, v)} onDuplicate={() => duplicate(selNode.id)} onDelete={() => removeNode(selNode.id)} onClose={() => setSel(null)} />
+                {selNode ? <StepDrawer graph={graph} node={selNode} sample={sample} onParam={(k, v) => setParam(selNode.id, k, v)} onToggle={(v) => toggle(selNode.id, v)} onDuplicate={() => duplicate(selNode.id)} onDelete={() => removeNode(selNode.id)} onClose={() => setSel(null)}
+                  onLink={(to) => connect(selNode.id, to)} onUnlink={(to) => commit((g) => ({ ...g, edges: g.edges.filter(([a, b]) => !(a === selNode.id && b === to)) }))} canLink={(to) => !wouldCycle(graph, selNode.id, to)} />
                   : <div className="flex items-start gap-3 rounded-2xl border border-dashed border-border p-4 text-sm text-muted" data-tour="drawer"><Settings2 className="mt-0.5 size-4 shrink-0 text-accent" /><div>Select a step to change its settings and see a live preview on one of your files.</div></div>}
               </div>
               <RunPanel info={info} files={runFiles} conc={conc} auto={auto} onConc={setConc} onAuto={() => setConc(auto)} keep={keep} onKeep={setKeep} memory={memory}

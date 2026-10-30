@@ -24,10 +24,10 @@ export function MotionToggle({ value, onChange }: { value: MotionLevel; onChange
   return (
     <div role="radiogroup" aria-label="Motion" data-tour="motion" className="inline-flex rounded-xl border border-border bg-surface p-0.5">
       {opts.map((o) => (
-        <button key={o.v} role="radio" aria-checked={value === o.v} onClick={() => onChange(o.v)} title={`Motion: ${o.label}`}
+        <button key={o.v} role="radio" aria-checked={value === o.v} onClick={() => onChange(o.v)} title={`Motion: ${o.label}`} aria-label={`Motion: ${o.label}`}
           className={cn('relative flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition cursor-pointer', value === o.v ? 'text-on-accent' : 'text-muted hover:text-fg')}>
           {value === o.v && <motion.span layoutId="ws-motion-pill" className="absolute inset-0 rounded-lg bg-gradient-brand" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
-          <span className="relative flex items-center gap-1">{o.icon}<span className="hidden sm:inline">{o.label}</span></span>
+          <span className="relative flex items-center gap-1">{o.icon}<span className="hidden xl:inline" aria-hidden="true">{o.label}</span></span>
         </button>
       ))}
     </div>

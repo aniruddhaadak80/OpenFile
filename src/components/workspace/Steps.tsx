@@ -118,15 +118,41 @@ function LivePreview({ graph, node, sample }: { graph: Graph; node: GNode; sampl
   )
 }
 
-function TextPeek({ blob, name }: { blob: Blob; name: string }) {
+const nodeName = (n: GNode) => (n.id === IN ? 'Input' : n.id === '@out' ? 'Output' : metaOf(n.step)?.name ?? n.step)
+/** Keyboard friendly way to branch and merge: list the outgoing links and add one to any step that would not loop. */
+function Links({ graph, node, onLink, onUnlink, canLink }: { graph: Graph; node: GNode; onLink: (to: string) => void; onUnlink: (to: string) => void; canLink: (to: string) => boolean }) {
+  const by = new Map(graph.nodes.map((n) => [n.id, n]))
+  const outs = graph.edges.filter(([a]) => a === node.id).map(([, b]) => by.get(b)).filter((n): n is GNode => !!n)
+  const ins = graph.edges.filter(([, b]) => b === node.id).map(([a]) => by.get(a)).filter((n): n is GNode => !!n)
+  const cands = graph.nodes.filter((n) => n.id !== node.id && n.id !== IN && !outs.includes(n) && canLink(n.id))
+  return (
+    <div className="mt-4 space-y-2 border-t border-border pt-3 text-xs">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-muted">Links</div>
+      <div className="text-muted">From: {ins.length ? ins.map(nodeName).join(', ') : 'nothing yet, link a step into this one'}</div>
+      <div className="flex flex-wrap gap-1.5">
+        {outs.map((n) => <span key={n.id} className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5">To {nodeName(n)}<button onClick={() => onUnlink(n.id)} aria-label={`Remove link to ${nodeName(n)}`} className="text-muted hover:text-danger cursor-pointer"><X className="size-3" /></button></span>)}
+      </div>
+      {cands.length > 0 && (
+        <label className="flex items-center gap-2"><span className="shrink-0 text-muted">Also send to</span>
+          <select value="" onChange={(e) => { if (e.target.value) onLink(e.target.value) }} className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-2 py-1 text-xs" aria-label="Add a link to another step">
+            <option value="">Pick a step to branch or merge</option>
+            {cands.map((n) => <option key={n.id} value={n.id}>{nodeName(n)}</option>)}
+          </select></label>
+      )}
+    </div>
+  )
+}
+
+export function TextPeek({ blob, name }: { blob: Blob; name: string }) {
   const [t, setT] = useState('')
   useEffect(() => { let on = true; blob.slice(0, 1200).text().then((s) => on && setT(s)); return () => { on = false } }, [blob])
   return <pre className="max-h-48 overflow-auto rounded-xl border border-border bg-surface-2/50 p-3 font-mono text-[11px] leading-relaxed text-muted scrollbar-thin" aria-label={`Start of ${name}`}>{t || ' '}</pre>
 }
 
-export function StepDrawer({ graph, node, sample, onParam, onToggle, onDuplicate, onDelete, onClose }: {
+export function StepDrawer({ graph, node, sample, onParam, onToggle, onDuplicate, onDelete, onClose, onLink, onUnlink, canLink }: {
   graph: Graph; node: GNode; sample?: InFile
   onParam: (k: string, v: any) => void; onToggle: (v: boolean) => void; onDuplicate: () => void; onDelete: () => void; onClose: () => void
+  onLink: (to: string) => void; onUnlink: (to: string) => void; canLink: (to: string) => boolean
 }) {
   const m = metaOf(node.step)
   const mo = useMotion()
@@ -171,6 +197,7 @@ export function StepDrawer({ graph, node, sample, onParam, onToggle, onDuplicate
             })}
           </div>
         )}
+        <Links graph={graph} node={node} onLink={onLink} onUnlink={onUnlink} canLink={canLink} />
         <div className="mt-4 border-t border-border pt-3"><LivePreview graph={graph} node={node} sample={sample} /></div>
       </motion.aside>
     </AnimatePresence>

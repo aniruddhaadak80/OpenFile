@@ -52,7 +52,7 @@ export default function NodeCanvas(p: CanvasProps) {
   const box = useRef<HTMLDivElement>(null)
   const [view, setView] = useState<View>({ x: 40, y: 40, k: 1 })
   const [size, setSize] = useState({ w: 800, h: 460 })
-  const [link, setLink] = useState<{ from: string; x: number; y: number } | null>(null)
+  const [link, setLink] = useState<{ from: string; x: number; y: number; sx?: number; sy?: number; pending?: boolean } | null>(null)
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const lastTap = useRef<{ id: string; t: number } | null>(null)
   const gesture = useRef<{ kind: 'pan' | 'node' | 'pinch' | null; id?: string; sx: number; sy: number; ox: number; oy: number; d?: number; k?: number; moved?: boolean }>({ kind: null, sx: 0, sy: 0, ox: 0, oy: 0 })
@@ -108,10 +108,16 @@ export default function NodeCanvas(p: CanvasProps) {
       gesture.current = { kind: 'pinch', sx: 0, sy: 0, ox: 0, oy: 0, d: Math.hypot(a.x - b.x, a.y - b.y), k: view.k }
       return
     }
+    // second click of tap-to-link: a pending link connects to the step clicked next
+    if (link?.pending) {
+      const to = t.closest('[data-node-id]')?.getAttribute('data-node-id')
+      if (to && to !== link.from) p.onConnect(link.from, to)
+      setLink(null); e.preventDefault(); return
+    }
     if (t.closest('[data-port-out]')) {
       const id = t.closest('[data-node-id]')!.getAttribute('data-node-id')!
       const w = toWorld(e.clientX, e.clientY)
-      setLink({ from: id, x: w.x, y: w.y }); box.current!.setPointerCapture(e.pointerId); e.preventDefault(); return
+      setLink({ from: id, x: w.x, y: w.y, sx: e.clientX, sy: e.clientY }); box.current!.setPointerCapture(e.pointerId); e.preventDefault(); return
     }
     const nodeEl = t.closest('[data-node-id]')
     if (nodeEl && !t.closest('button')) {
@@ -128,7 +134,7 @@ export default function NodeCanvas(p: CanvasProps) {
   const onMove = (e: React.PointerEvent) => {
     if (pointers.current.has(e.pointerId)) pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
     const g = gesture.current
-    if (link) { const w = toWorld(e.clientX, e.clientY); setLink({ ...link, x: w.x, y: w.y }); return }
+    if (link) { const w = toWorld(e.clientX, e.clientY); setLink({ ...link, x: w.x, y: w.y }); if (!link.pending) return }
     if (g.kind === 'pinch' && pointers.current.size === 2) {
       const [a, b] = [...pointers.current.values()]
       const d = Math.hypot(a.x - b.x, a.y - b.y); const r = box.current!.getBoundingClientRect()
@@ -145,7 +151,11 @@ export default function NodeCanvas(p: CanvasProps) {
   }
   const onUp = (e: React.PointerEvent) => {
     pointers.current.delete(e.pointerId)
-    if (link) {
+    if (link && !link.pending && Math.hypot(e.clientX - (link.sx ?? 0), e.clientY - (link.sy ?? 0)) < 5) {
+      // a click on a port (no drag): keep the link open and connect on the next click
+      setLink({ ...link, pending: true }); gesture.current = { kind: null, sx: 0, sy: 0, ox: 0, oy: 0 }; return
+    }
+    if (link && !link.pending) {
       const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-node-id]')
       const to = el?.getAttribute('data-node-id')
       if (to && to !== link.from) p.onConnect(link.from, to)
@@ -199,14 +209,17 @@ export default function NodeCanvas(p: CanvasProps) {
                       <animateMotion dur={live ? '1.1s' : '3.2s'} begin={`${(k * (live ? 1.1 : 3.2)) / 3}s`} repeatCount="indefinite" path={d} />
                     </circle>
                   ))}
-                  {sel && (() => { const mx = (na.x + NW + nb.x) / 2, my = (na.y + nb.y) / 2 + NH / 2; return (
-                    <foreignObject x={mx - 12} y={my - 12} width={24} height={24}><button aria-label="Remove link" onClick={() => p.onDeleteEdge(i)} className="grid size-6 place-items-center rounded-full bg-danger text-white shadow cursor-pointer"><X className="size-3.5" /></button></foreignObject>
-                  ) })()}
                 </g>
               )
             })}
             {link && (() => { const na = byId.get(link.from); return na ? <path d={edgePath(na, { x: link.x, y: link.y - NH / 2 })} fill="none" stroke="var(--accent)" strokeWidth={2} strokeDasharray="4 6" /> : null })()}
           </svg>
+          {p.selectedEdge != null && graph.edges[p.selectedEdge] && (() => {
+            const [a, b] = graph.edges[p.selectedEdge]; const na = byId.get(a), nb = byId.get(b); if (!na || !nb) return null
+            const mx = (na.x + NW + nb.x) / 2, my = (na.y + nb.y) / 2 + NH / 2
+            return <button aria-label="Remove link" onClick={() => p.onDeleteEdge(p.selectedEdge!)} className="absolute z-10 grid size-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-danger text-white shadow-lg ring-4 ring-danger/25 cursor-pointer" style={{ left: mx, top: my }}><X className="size-4" /></button>
+          })()}
+          {link && link.pending && <div className="pointer-events-none absolute rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-on-accent" style={{ left: link.x + 12, top: link.y + 12 }}>Click a step to link</div>}
           {graph.nodes.map((n) => {
             const r = run[n.id], st = r?.state ?? 'idle', col = catColor(n.step), special = n.id === IN || n.id === OUT
             const name = n.id === IN ? 'Input' : n.id === OUT ? 'Output' : metaOf(n.step)?.name ?? n.step
@@ -250,7 +263,7 @@ export default function NodeCanvas(p: CanvasProps) {
           </g>
         </svg>
       </div>
-      <p className="mt-2 hidden text-[11px] text-muted sm:block">Drag the empty space to pan, Ctrl + wheel or pinch to zoom, drag a dot on the right of a step onto another step to link them. Double click a step for its settings.</p>
+      <p className="mt-2 hidden text-[11px] text-muted sm:block">Drag the empty space to pan, Ctrl + wheel or pinch to zoom. To link, drag the dot on the right of a step onto another step, or click the dot and then click the step. Double click a step for its settings.</p>
     </div>
   )
 }

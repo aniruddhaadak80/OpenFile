@@ -9,6 +9,7 @@ import { kindOf } from '@/pages/workspace/catalog'
 import type { Item } from '@/pages/workspace/engine'
 import type { InFile } from '@/pages/workspace/inputs'
 import { CompareSlider, ProgressRing, Skeleton, fmtMs, useMotion, useObjectUrl } from './kit'
+import { TextPeek } from './Steps'
 
 export type RunInfo = { phase: 'idle' | 'running' | 'paused' | 'done' | 'cancelled'; overall: number; eta: number | null; started: number; ms: number; done: number; failed: number; total: number; log: string[] }
 
@@ -28,8 +29,9 @@ export function RunPanel({ info, files, conc, auto, onConc, onAuto, keep, onKeep
         <div className="min-w-0 flex-1 space-y-0.5 text-xs">
           <div className="text-sm font-semibold">{info.phase === 'running' ? 'Running' : info.phase === 'paused' ? 'Paused' : info.phase === 'done' ? 'Finished' : info.phase === 'cancelled' ? 'Stopped' : `${files} file${files === 1 ? '' : 's'} ready`}</div>
           {busy && <div className="text-muted">About {fmtMs(info.eta)} left · {info.done}/{info.total} files</div>}
+          {info.phase === 'paused' && <div className="text-muted">Steps in progress stop at their next page</div>}
           {info.phase === 'done' && <div className="text-muted">{info.done} done in {fmtMs(info.ms)}{info.failed ? ` · ${info.failed} failed` : ''}</div>}
-          {info.phase === 'cancelled' && <div className="text-muted">{info.done} finished before you stopped it</div>}
+          {info.phase === 'cancelled' && <div className="text-muted">{info.done ? `${info.done} of ${info.total} finished before you stopped it` : 'Stopped before any file finished'}</div>}
           {info.phase === 'idle' && <div className="text-muted">Ctrl + Enter to run</div>}
           {memory != null && <div className={cn('flex items-center gap-1', memory > 0.8 ? 'text-warn' : 'text-muted')}><MemoryStick className="size-3" /> Memory {Math.round(memory * 100)}%{memory > 0.8 ? ', slowing down to stay safe' : ''}</div>}
         </div>
@@ -141,5 +143,6 @@ function MediaPeek({ it }: { it: Item }) {
   if (k === 'image' && url) return <img src={url} alt={it.name} className="max-h-[60vh] w-full rounded-xl object-contain" />
   if (k === 'video' && url) return <video src={url} controls playsInline className="max-h-[60vh] w-full rounded-xl bg-black" />
   if (k === 'audio' && url) return <audio src={url} controls className="w-full" />
+  if ((k === 'text' || k === 'data') && !/\.(xlsx|xls|ods)$/i.test(it.name)) return <TextPeek blob={it.blob} name={it.name} />
   return <div className="rounded-xl border border-border bg-surface-2/40 p-6 text-center text-sm text-muted">{it.name} · {formatBytes(it.blob.size)}<br /><span className="text-xs">Download it to open it in its app.</span></div>
 }

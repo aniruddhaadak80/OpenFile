@@ -1,6 +1,6 @@
 // Run: node --experimental-strip-types --no-warnings scripts/tests/workspace/engine.test.mjs
 import assert from 'node:assert/strict'
-import { pool, runGraph, RunControl, eta, autoConcurrency, keepOriginals, Cancelled } from '../../../src/pages/workspace/engine.ts'
+import { pool, runGraph, RunControl, waitTurn, eta, autoConcurrency, keepOriginals, Cancelled } from '../../../src/pages/workspace/engine.ts'
 import { linearGraph, IN, OUT } from '../../../src/pages/workspace/recipe.ts'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -58,4 +58,14 @@ const tag = (s) => ({ batch: false, accepts: () => true, run: async ([it]) => [{
   const one = { batch: false, limit: 1, accepts: () => true, run: async ([it]) => { active++; peak = Math.max(peak, active); await sleep(5); active--; return [{ name: it.name, blob: it.blob }] } }
   await runGraph({ graph: linearGraph([{ step: 'v' }]), inputs: [item('1'), item('2'), item('3')], resolve: () => one, control: new RunControl(), concurrency: () => 4 })
   assert.equal(peak, 1) }
+// waitTurn: a long step stops between pages while paused and ends on cancel without counting as failed
+{ const c = new RunControl(); let pages = 0
+  const slow = { batch: false, accepts: () => true, run: async ([it], _p, signal) => { for (let k = 0; k < 50; k++) { await waitTurn(signal); pages++; await sleep(4) } return [{ name: it.name, blob: it.blob }] } }
+  const run = runGraph({ graph: linearGraph([{ step: 's' }]), inputs: [item('1'), item('2')], resolve: () => slow, control: c, concurrency: () => 2 })
+  await sleep(30); c.pause(); await sleep(15); const at = pages; await sleep(60)
+  assert.equal(pages, at, 'no pages run while paused')
+  c.resume(); await sleep(30); assert.ok(pages > at, 'pages run again after resume')
+  c.cancel(); const r = await run
+  assert.equal(r.cancelled, true); assert.equal(r.failed.size, 0)
+  await assert.rejects(waitTurn(c.signal), Cancelled) }
 console.log('workspace engine tests passed')

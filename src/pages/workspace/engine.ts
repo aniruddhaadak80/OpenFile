@@ -23,11 +23,21 @@ export type Hooks = {
 
 export class Cancelled extends Error { constructor() { super('Cancelled') } }
 
-/** Pause, resume and cancel for one run. In-flight files finish their current step; nothing new starts while paused. */
+const gates = new WeakMap<AbortSignal, () => Promise<void>>()
+/** Called by long steps between pages or chunks: waits while the run is paused, throws Cancelled once it is cancelled. */
+export async function waitTurn(signal?: AbortSignal) {
+  if (!signal) return
+  const g = gates.get(signal)
+  if (g) return g()
+  if (signal.aborted) throw new Cancelled()
+}
+
+/** Pause, resume and cancel for one run. Nothing new starts while paused, and steps that call waitTurn stop at their next page. */
 export class RunControl {
   paused = false
   private ac = new AbortController()
   private waiters: (() => void)[] = []
+  constructor() { gates.set(this.ac.signal, () => this.gate()) }
   get signal() { return this.ac.signal }
   get cancelled() { return this.ac.signal.aborted }
   pause() { this.paused = true }
@@ -185,7 +195,7 @@ export async function runGraph(o: {
             fin++
             const it = take[i]
             if (s.ok) fileFrac(it.src)
-            else if (!(s.error instanceof Cancelled)) { const msg = String((s.error as Error)?.message || s.error); failed.set(it.src, msg); setFile(it.src, { state: 'error', error: msg, node: id }); h.onLog?.(`✗ ${it.name}: ${msg}`) }
+            else if (!(s.error instanceof Cancelled) && !o.control.cancelled) { const msg = String((s.error as Error)?.message || s.error); failed.set(it.src, msg); setFile(it.src, { state: 'error', error: msg, node: id }); h.onLog?.(`✗ ${it.name}: ${msg}`) }
             h.onNode?.(id, 'run', fin / take.length); report(fin / take.length)
           },
         })

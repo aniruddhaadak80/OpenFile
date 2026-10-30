@@ -47,8 +47,8 @@ export function RecipeGallery({ onUse, onTry }: { onUse: (b: Builtin) => void; o
             className="group flex flex-col rounded-2xl border border-border bg-surface p-2.5 transition hover:-translate-y-1 hover:border-accent/60 hover:shadow-2xl">
             <div className="relative overflow-hidden rounded-xl">
               <Loop id={b.id} title={b.name} />
-              <span className="absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-black" style={{ background: b.color }}>{b.tag}</span>
-              {branched && <span className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] text-white"><GitBranch className="size-3" /> branches</span>}
+              <span className="absolute bottom-2 left-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-black" style={{ background: b.color }}>{b.tag}</span>
+              {branched && <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] text-white"><GitBranch className="size-3" /> branches</span>}
             </div>
             <div className="mt-2.5 px-1"><h3 className="font-semibold leading-tight">{b.name}</h3><p className="mt-0.5 text-xs text-muted">{b.desc}</p></div>
             <div className="mt-2 flex flex-wrap gap-1 px-1">
