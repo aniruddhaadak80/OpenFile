@@ -26,17 +26,19 @@ export default function VideoReframe() {
   const [blur, setBlur] = useState(12)
   const [color, setColor] = useState('#000000')
   const [res, setRes] = useState<'720' | '1080'>('720')
-  const [out, setOut] = useState<Blob | null>(null)
-  const outUrl = useObjectUrl(out)
+  // the shape is stored with the result, so changing the shape later never relabels an older render
+  const [out, setOut] = useState<{ blob: Blob; ratio: Ratio } | null>(null)
+  const outUrl = useObjectUrl(out?.blob)
   const job = useMediaJob()
   const [rw, rh] = RATIOS[ratio], short = +res
   const W = even(rw <= rh ? short : (short * rw) / rh), H = even(rw <= rh ? (short * rh) / rw : short)
 
   const go = () => job.run(async ({ setProgress, setLabel }) => {
     setOut(null); setLabel('Reframing the video')
+    const made = ratio
     const ext = extFromBlob(file!), inp = 'in' + ext
     const blob = await ffRun({ inputs: [{ name: inp, file: file! }], args: ['-i', inp, '-vf', reframeFilter(W, H, fill, pos / 100, color.replace('#', '0x'), blur), ...X264, '-crf', '23', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', 'out.mp4'], output: 'out.mp4', duration: meta?.duration || undefined, onProgress: setProgress })
-    setOut(blob)
+    setOut({ blob, ratio: made })
   })
 
   if (!file) return <Dropzone accept="video/*,.mkv,.mov,.m4v,.avi" onFiles={(f) => setFile(f[0])} label="Drop a video to reframe" sub="Turn a landscape video into a vertical 9:16 short, a square post or 4:5, with a blurred or solid background." />
@@ -46,7 +48,7 @@ export default function VideoReframe() {
       main={
         <div className="space-y-3">
           <FileBar file={file} onReset={() => { if (job.busy) job.cancel(); setFile(null); setOut(null) }} extra={meta?.duration ? <span className="font-mono text-xs text-muted">{meta.width}×{meta.height} · {fmtTime(meta.duration, 0)}</span> : null} />
-          {out && outUrl ? <ResultCard blob={out} filename={`${baseName(file.name)}-${ratio.replace(':', 'x')}.mp4`} originalSize={file.size} title={`Reframed to ${ratio}`}><video src={outUrl} controls playsInline className="mx-auto max-h-[480px] rounded-xl bg-black" /></ResultCard> : (
+          {out && outUrl ? <ResultCard blob={out.blob} filename={`${baseName(file.name)}-${out.ratio.replace(':', 'x')}.mp4`} originalSize={file.size} title={`Reframed to ${out.ratio}`}><video src={outUrl} controls playsInline className="mx-auto max-h-[480px] rounded-xl bg-black" /></ResultCard> : (
             <div className="grid gap-3 sm:grid-cols-2">
               <VideoStage src={url} playable={meta?.playable !== false} />
               <div className="relative mx-auto max-h-[420px] w-full overflow-hidden rounded-2xl border border-border" style={{ aspectRatio: prevAspect, maxWidth: rw < rh ? 240 : undefined, background: fill === 'color' ? color : '#000' }} aria-label="Frame preview">
@@ -66,6 +68,7 @@ export default function VideoReframe() {
           {fill === 'blur' && <Slider label="Blur" value={blur} onChange={setBlur} min={4} max={30} />}
           {fill === 'color' && <div className="flex items-center gap-2"><Label className="mb-0 flex-1">Colour</Label><input type="color" value={color} onChange={(e) => setColor(e.target.value)} aria-label="Background colour" className="h-9 w-14 cursor-pointer rounded border border-border bg-transparent" /></div>}
           <div><Label hint={`${W}×${H}`}>Quality</Label><Segmented value={res} onChange={setRes} options={[{ value: '720', label: '720p (faster)' }, { value: '1080', label: '1080p' }]} /></div>
+          {out && out.ratio !== ratio && !job.busy && <p className="text-xs text-muted">The result above is {out.ratio}. Press Reframe video to make a {ratio} version.</p>}
           <Button className="w-full" icon={<Crop className="size-4" />} loading={job.busy} onClick={go}>Reframe video</Button>
           <p className="text-xs text-muted">Encoding happens on your device. Expect roughly real time or slower for 720p, depending on your computer.</p>
         </>

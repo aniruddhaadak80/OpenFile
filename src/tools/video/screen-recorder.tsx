@@ -59,6 +59,7 @@ export default function ScreenRecorder() {
   const [elapsed, setElapsed] = useState(0)
   const [paused, setPaused] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [picking, setPicking] = useState(false)
   const [result, setResult] = useState<Blob | null>(null)
   const [mp4, setMp4] = useState<Blob | null>(null)
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null)
@@ -107,9 +108,17 @@ export default function ScreenRecorder() {
   const start = async () => {
     setError(null); setResult(null); setMp4(null); setElapsed(0); setPaused(false); job.reset()
     const s = session.current
+    // Some browsers (in-app browsers, kiosk and test browsers) never open the share picker and never answer.
+    // Say so after a while instead of leaving the page silent.
+    setPicking(true)
+    const slow = window.setTimeout(() => setError('No screen picker opened. This browser may not allow screen capture on this page. Try Chrome, Edge or Firefox on a computer.'), 12000)
     try {
       s.display = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: { ideal: 30 } }, audio: sysAudio ? { echoCancellation: false, noiseSuppression: false } as MediaTrackConstraints : false })
-    } catch (e) { setError(mediaError(e, 'screen')); return }
+    } catch (e: any) {
+      setError(e?.name === 'NotSupportedError' || e?.name === 'InvalidStateError' || e?.name === 'TypeError' ? 'This browser cannot capture the screen on this page. Try Chrome, Edge or Firefox on a computer.' : mediaError(e, 'screen'))
+      return
+    } finally { window.clearTimeout(slow); setPicking(false) }
+    setError(null)
     try {
       if (micOn) s.mic = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: micId ? { exact: micId } : undefined, echoCancellation: true, noiseSuppression: true } })
       mics.refresh()
@@ -272,7 +281,8 @@ export default function ScreenRecorder() {
           </div>
           {!live && <>
             <div className="border-t border-border pt-4"><Switch checked={useCountdown} onChange={setUseCountdown} label={<span className="inline-flex items-center gap-1.5"><Timer className="size-4 text-muted" />3-second countdown</span>} /></div>
-            <Button size="lg" className="w-full" icon={<MonitorPlay className="size-5" />} onClick={start}>Start recording</Button>
+            <Button size="lg" className="w-full" icon={<MonitorPlay className="size-5" />} onClick={start} loading={picking}>Start recording</Button>
+            {picking && <p className="text-xs text-muted" role="status">Waiting for you to choose a screen, window or tab in the browser's share dialog.</p>}
             <p className="text-xs text-muted">Nothing is uploaded, the video is built in your browser. System audio capture works in Chrome & Edge (tick "Share audio").</p>
           </>}
         </>}

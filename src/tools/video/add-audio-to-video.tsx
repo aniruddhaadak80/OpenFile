@@ -4,6 +4,7 @@ import { Label, Segmented, Slider, Switch } from '@/components/ui'
 import { addAudioOp, type AudioMode } from '@/lib/b3/ffops'
 import { VideoOpTool, FilePick, inName, outName } from './_b3/shell'
 import { Note } from './_media/ui'
+import { ffProbe } from './_media/engine'
 
 export default function AddAudioToVideo() {
   const [audio, setAudio] = useState<File | null>(null)
@@ -27,6 +28,7 @@ export default function AddAudioToVideo() {
           <p className="mt-1 text-xs text-muted">{offset > 0 ? `Audio starts ${offset}s after the video.` : offset < 0 ? `The first ${-offset}s of the audio are skipped.` : 'Audio and video start together.'}</p>
         </div>
         <Switch checked={loop} onChange={setLoop} label="Repeat audio if it is shorter" />
+        {loop && fit === 'longest' && <p className="text-xs text-muted">The result is as long as the longer of the two files.</p>}
         <div><Label>Length</Label><Segmented value={fit} onChange={setFit} options={[{ value: 'video', label: 'Match video' }, { value: 'shortest', label: 'Shortest' }, { value: 'longest', label: 'Longest' }]} /></div>
         {mode === 'add' && <Note>Adds a second audio track (for example a commentary). Players let you switch tracks.</Note>}
       </>}
@@ -37,7 +39,9 @@ export default function AddAudioToVideo() {
         if (!info.hasVideo) throw new Error('The first file has no video track.')
         h.setLabel('Adding audio')
         const input = inName(file), a = inName(audio, 'audio')
-        const op = addAudioOp(input, a, mode, { videoHasAudio: info.hasAudio, volume: vol / 100, originalVolume: orig / 100, offset, loop, fit })
+        // the audio length is needed to end a repeated track when the length is "Longest"
+        const audioInfo = loop && fit === 'longest' ? await ffProbe(audio, a).catch(() => null) : null
+        const op = addAudioOp(input, a, mode, { videoHasAudio: info.hasAudio, volume: vol / 100, originalVolume: orig / 100, offset, loop, fit, videoDuration: info.duration, audioDuration: audioInfo?.duration })
         const blob = await h.run(op, [{ name: input, file }, { name: a, file: audio }])
         return { blob, name: outName(file, 'with-audio'), title: 'Audio added', note: !info.hasAudio && mode !== 'replace' ? 'The video had no sound, so the new audio became its only track.' : undefined }
       }}

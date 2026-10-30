@@ -17,11 +17,14 @@ export default function VideoStabilizer() {
         <Switch checked={zoom} onChange={setZoom} label="Zoom in slightly to hide moving edges" />
         <Note>Motion is analysed frame by frame on your device, so expect roughly real time or slower.{(meta?.width ?? 0) > 1920 ? ' 4K clips are slow; resize to 1080p first for speed.' : ''}</Note>
       </>}
-      onRun={async ({ file }, h) => {
+      onRun={async ({ file, meta }, h) => {
         const info = await h.probe()
         h.setLabel('Stabilizing')
         const input = inName(file)
-        const blob = await h.run(stabilizeOp(input, strength, zoom, info.hasAudio), [{ name: input, file }])
+        // the frame size as shown (a phone clip flagged 90 degrees is decoded upright), so the zoom ends at the same size
+        const turned = Math.abs(info.rotation ?? 0) % 180 === 90
+        const size = meta?.width && meta?.height ? { w: meta.width, h: meta.height } : info.width && info.height ? (turned ? { w: info.height, h: info.width } : { w: info.width, h: info.height }) : undefined
+        const blob = await h.run(stabilizeOp(input, strength, zoom, info.hasAudio, size), [{ name: input, file }])
         return { blob, name: outName(file, 'stabilized'), title: 'Stabilized' }
       }}
     />

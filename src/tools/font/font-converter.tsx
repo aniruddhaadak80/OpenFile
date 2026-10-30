@@ -53,9 +53,10 @@ export default function FontConverter() {
       const n = fontNames(font)
       const made: { type: string; name: string }[] = []
       for (const o of outs) {
-        const data = await writeFont(font, o, { hinting })
+        let noKern = false
+        const data = await writeFont(font, o, { hinting, onKerningDropped: () => { noKern = true } })
         const name = `${baseName(it.file.name)}.${o}`
-        res.push({ id: it.id + o, name, blob: new Blob([data as BlobPart], { type: FONT_MIME[o] }), originalSize: it.file.size, note: `${(it.kind ?? '?').toUpperCase()} → ${o.toUpperCase()}` })
+        res.push({ id: it.id + o, name, blob: new Blob([data as BlobPart], { type: FONT_MIME[o] }), originalSize: it.file.size, note: `${(it.kind ?? '?').toUpperCase()} → ${o.toUpperCase()}${noKern ? ', without GPOS kerning' : ''}` })
         made.push({ type: o, name })
       }
       cssAll += fontFaceCss(n.family, made, n.weight, n.italic) + '\n'

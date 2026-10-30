@@ -81,7 +81,8 @@ export function useDocInput() {
   const text = mode === 'paste' ? paste : (pages ?? []).map((p) => p.text).join('\n\n')
   const effectivePages: DocPage[] = mode === 'paste' ? (paste.trim() ? [{ page: 1, text: paste }] : []) : pages ?? []
   const reset = () => { setFile(null); setPages(null); setError(null) }
-  return { file, pages: effectivePages, text, paste, setPaste, mode, setMode, reading, error, open, reset, ready: effectivePages.length > 0 && text.trim().length > 0, name: file?.name.replace(/\.[^.]+$/, '') ?? 'text' }
+  // a problem with the dropped file (for example a scan with no text) does not apply to pasted text
+  return { file, pages: effectivePages, text, paste, setPaste, mode, setMode, reading, error: mode === 'file' ? error : null, open, reset, ready: effectivePages.length > 0 && text.trim().length > 0, name: file?.name.replace(/\.[^.]+$/, '') ?? 'text' }
 }
 export type DocInputState = ReturnType<typeof useDocInput>
 

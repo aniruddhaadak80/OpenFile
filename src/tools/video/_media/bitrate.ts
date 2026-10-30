@@ -34,12 +34,17 @@ export function snapAudioKbps(codec: string, kbps: number, recipe: number): numb
   return steps.find((s) => s >= kbps && (!(recipe > 0) || s <= recipe)) ?? (recipe > 0 ? recipe : steps[steps.length - 1])
 }
 
+/** Lowest video cap in kb/s. */
+export const VIDEO_FLOOR_KBPS = 32
+
 const CAPPABLE = ['libx264', 'libx265', 'libvpx', 'libvpx-vp9', 'mpeg4', 'msmpeg4', 'mpeg2video', 'wmv2']
 
 /** Caps video and audio bitrates in an ffmpeg argument list at `slack` times the source. Unknown rates are left alone. */
 export function capToSource(args: string[], src: SourceRate, slack = 1.1): string[] {
   const out = [...args]
-  const v = src.video > 0 ? Math.max(200, Math.round(src.video * slack)) : 0
+  // the floor only keeps a near-empty estimate usable: a 200 kb/s floor made 60 kb/s screen clips come back
+  // three times bigger, so very low sources keep their own rate (plus the slack)
+  const v = src.video > 0 ? Math.max(VIDEO_FLOOR_KBPS, Math.round(src.video * slack)) : 0
   const a = src.audio > 0 ? Math.max(48, Math.round(src.audio * slack)) : 0
   if (v) {
     const bi = out.indexOf('-b:v')

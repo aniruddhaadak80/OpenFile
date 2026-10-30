@@ -3,6 +3,7 @@ import { RefreshCw } from 'lucide-react'
 import { Button, Dropzone, Field, Input, Label, Progress, Segmented, Select, Switch, ToolGrid, ErrorNote, ResultCard, useJob } from '@/components/ui'
 import { baseName } from '@/lib/files'
 import type { CadDoc } from '@/lib/b2/cad'
+import { fitPageMm } from '@/lib/b2/cad-page'
 import { CadCanvas } from './_b2/CadCanvas'
 import { LayerPanel } from './_b2/LayerPanel'
 
@@ -38,7 +39,7 @@ export default function CadConverter() {
       const { jsPDF } = await import('jspdf'); await import('svg2pdf.js')
       const fixed = PAGES[page]
       const landscape = bw > bh
-      const [pw, ph] = fixed ? (landscape ? [fixed[1], fixed[0]] : fixed) : [Math.min(2000, Math.max(50, bw)), Math.min(2000, Math.max(50, bh)) * (bw > 2000 || bh > 2000 ? 1 : 1)]
+      const [pw, ph] = fixed ? (landscape ? [fixed[1], fixed[0]] : fixed) : fitPageMm(bw, bh, doc.units)
       const pdf = new jsPDF({ unit: 'mm', format: [pw, ph], orientation: pw > ph ? 'landscape' : 'portrait' })
       const svgText = cadToSvg(doc, { hidden, mono: monoColor, bg: bg === 'transparent' ? '#ffffff' : bg, strokeWidth: Math.max(bw, bh) / 1500 })
       const el = new DOMParser().parseFromString(svgText, 'image/svg+xml').documentElement as unknown as SVGSVGElement
@@ -71,7 +72,7 @@ export default function CadConverter() {
         main={<CadCanvas doc={doc} hidden={hidden} bg={bg === 'transparent' ? 'transparent' : bg} mono={monoColor} height="56vh" />}
         side={<>
           <Field label="Convert to"><Segmented value={to} onChange={(v) => { setTo(v); setResult(null) }} options={[{ value: 'pdf', label: 'PDF' }, { value: 'svg', label: 'SVG' }, { value: 'png', label: 'PNG' }, { value: 'jpg', label: 'JPG' }]} /></Field>
-          {to === 'pdf' && <Field label="Page size"><Select value={page} onChange={setPage} options={[{ value: 'fit', label: 'Fit drawing (1 unit = 1 mm)' }, { value: 'a4', label: 'A4' }, { value: 'a3', label: 'A3' }, { value: 'a2', label: 'A2' }, { value: 'a1', label: 'A1' }, { value: 'letter', label: 'Letter' }, { value: 'tabloid', label: 'Tabloid' }]} /></Field>}
+          {to === 'pdf' && <Field label="Page size"><Select value={page} onChange={setPage} options={[{ value: 'fit', label: 'Fit drawing (real size)' }, { value: 'a4', label: 'A4' }, { value: 'a3', label: 'A3' }, { value: 'a2', label: 'A2' }, { value: 'a1', label: 'A1' }, { value: 'letter', label: 'Letter' }, { value: 'tabloid', label: 'Tabloid' }]} /></Field>}
           {(to === 'png' || to === 'jpg') && <Field label="Image width (px)"><Input type="number" min={100} max={16000} value={width} onChange={(e) => setWidth(Number(e.target.value))} /></Field>}
           <Field label="Background"><Segmented value={bg} onChange={setBg} options={[{ value: '#ffffff', label: 'White' }, { value: '#111111', label: 'Dark' }, ...(to !== 'jpg' && to !== 'pdf' ? [{ value: 'transparent', label: 'None' }] : [])]} /></Field>
           <Switch checked={mono} onChange={setMono} label="Black and white lines (best for print)" />

@@ -6,6 +6,7 @@ import { encodeWav } from '@/tools/video/_media/audio'
 import { useObjectUrl } from '@/tools/video/_media/media'
 import { useDocInput, DocInput } from '@/lib/b4/aiui'
 import { loadNeural } from './_tts/neural'
+import { speechLength } from '@/lib/speech-length'
 import { Note } from '@/tools/video/_media/ui'
 
 type Engine = 'neural' | 'system'
@@ -51,6 +52,8 @@ export default function PdfToSpeech() {
     upd(); s.addEventListener('voiceschanged', upd); return () => { s.removeEventListener('voiceschanged', upd); s.cancel() }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => { run.current++ }, [])
+  // an earlier message about the other input (file or pasted text) no longer applies
+  useEffect(() => { setError(null) }, [doc.mode])
 
   const stop = () => { run.current++; setBusy(false); setLoad(null); window.speechSynthesis?.cancel(); setSpeaking(false) }
   const neural = async () => {
@@ -95,12 +98,12 @@ export default function PdfToSpeech() {
     next()
   }
 
-  const minutes = Math.round(doc.text.split(/\s+/).filter(Boolean).length / 150 / speed)
+  const length = speechLength(doc.text.split(/\s+/).filter(Boolean).length, speed)
   return (
     <ToolGrid
       main={<>
         <DocInput doc={doc} label="Drop a PDF or document to hear it" sub="PDF, DOCX, EPUB, TXT, Markdown or HTML. Turn it into an audiobook file on your device." />
-        {doc.ready && <p className="text-sm text-muted">About {minutes} minute{minutes === 1 ? '' : 's'} of speech.</p>}
+        {doc.ready && <p className="text-sm text-muted">{length}.</p>}
         {wav && url && <div className="space-y-3 rounded-2xl border border-success/30 bg-success/5 p-4">
           <audio src={url} controls className="w-full" />
           <div className="flex items-center gap-2"><span className="flex-1 text-sm text-muted">{formatBytes(wav.size)}</span><Button icon={<Download className="size-4" />} onClick={() => downloadBlob(wav, `${doc.name}-audio.${mp3 ? 'mp3' : 'wav'}`)}>Download {mp3 ? 'MP3' : 'WAV'}</Button></div>

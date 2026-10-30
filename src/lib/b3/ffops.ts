@@ -168,11 +168,12 @@ export function reverseOrder(plan: ReversePlan, mode: 'reverse' | 'boomerang'): 
 }
 
 /** Join the pieces with a stream copy. With `audioFrom`, the sound of that input is added, reversed. */
-export function reverseJoinOp(list: string, audioFrom?: string): Op {
+export function reverseJoinOp(list: string, audioFrom?: string, output = 'out.mp4', audio: string[] = AAC): Op {
+  const mp4ish = /\.(mp4|m4v|mov)$/i.test(output)
   return {
-    output: 'out.mp4',
+    output,
     args: ['-f', 'concat', '-safe', '0', '-i', list, ...(audioFrom ? ['-i', audioFrom] : []), '-map', '0:v:0',
-      ...(audioFrom ? ['-map', '1:a:0', '-af', 'areverse', ...AAC] : ['-an']), '-c:v', 'copy', ...FASTSTART, 'out.mp4'],
+      ...(audioFrom ? ['-map', '1:a:0', '-af', 'areverse', ...audio] : ['-an']), '-c:v', 'copy', ...(mp4ish ? FASTSTART : []), output],
   }
 }
 
@@ -276,22 +277,28 @@ export function zoomPanOp(input: string, zoomTo: number, duration: number, fps: 
 /* ------------------------------------------------------------------ audio */
 
 export type AudioMode = 'replace' | 'mix' | 'add'
-export function addAudioOp(video: string, audio: string, mode: AudioMode, o: { offset?: number; volume?: number; originalVolume?: number; loop?: boolean; fit?: 'video' | 'shortest' | 'longest' ; videoHasAudio: boolean }): Op {
+export function addAudioOp(video: string, audio: string, mode: AudioMode, o: { offset?: number; volume?: number; originalVolume?: number; loop?: boolean; fit?: 'video' | 'shortest' | 'longest' ; videoHasAudio: boolean; videoDuration?: number; audioDuration?: number }): Op {
   const delay = Math.max(0, o.offset ?? 0), adv = Math.max(0, -(o.offset ?? 0))
   const music = `[1:a]${adv ? `atrim=start=${f3(adv)},asetpts=PTS-STARTPTS,` : ''}volume=${f3(o.volume ?? 1)}${delay ? `,adelay=${n(delay * 1000)}|${n(delay * 1000)}` : ''}[m]`
-  const inputs = ['-i', video, ...(o.loop ? ['-stream_loop', '-1'] : []), '-i', audio]
   const fit = o.fit ?? 'video'
+  const vDur = o.videoDuration && o.videoDuration > 0 ? o.videoDuration : 0
+  const aDur = o.audioDuration && o.audioDuration > 0 ? Math.max(0, o.audioDuration - adv) + delay : 0
+  // a repeated audio input never ends, so "Longest" has to be capped at the longer of the two real lengths,
+  // otherwise ffmpeg keeps writing forever. Without both lengths the audio is not repeated for "Longest".
+  const loop = !!o.loop && (fit !== 'longest' || (vDur > 0 && aDur > 0))
+  const cap = loop && fit === 'longest' ? ['-t', f3(Math.max(vDur, aDur))] : []
+  const inputs = ['-i', video, ...(loop ? ['-stream_loop', '-1'] : []), '-i', audio]
   const tail = fit === 'shortest' ? ['-shortest'] : []
   if (mode === 'mix' && o.videoHasAudio) {
     const fc = `${music};[0:a]volume=${f3(o.originalVolume ?? 1)}[o];[o][m]amix=inputs=2:duration=${fit === 'longest' ? 'longest' : 'first'}:dropout_transition=0,volume=2[a]`
-    return { output: 'out.mp4', args: [...inputs, '-filter_complex', fc, '-map', '0:v:0', '-map', '[a]', '-c:v', 'copy', ...AAC, ...tail, ...FASTSTART, 'out.mp4'] }
+    return { output: 'out.mp4', args: [...inputs, '-filter_complex', fc, '-map', '0:v:0', '-map', '[a]', '-c:v', 'copy', ...AAC, ...tail, ...cap, ...FASTSTART, 'out.mp4'] }
   }
   if (mode === 'add' && o.videoHasAudio) {
-    return { output: 'out.mp4', args: [...inputs, '-filter_complex', music, '-map', '0:v:0', '-map', '0:a:0', '-map', '[m]', '-c:v', 'copy', ...AAC, ...(fit !== 'longest' ? ['-shortest'] : []), ...FASTSTART, 'out.mp4'] }
+    return { output: 'out.mp4', args: [...inputs, '-filter_complex', music, '-map', '0:v:0', '-map', '0:a:0', '-map', '[m]', '-c:v', 'copy', ...AAC, ...(fit !== 'longest' ? ['-shortest'] : []), ...cap, ...FASTSTART, 'out.mp4'] }
   }
   // replace (or the video had no sound)
   const cut = fit === 'longest' ? [] : ['-shortest']
-  return { output: 'out.mp4', args: [...inputs, '-filter_complex', music, '-map', '0:v:0', '-map', '[m]', '-c:v', 'copy', ...AAC, ...cut, ...FASTSTART, 'out.mp4'] }
+  return { output: 'out.mp4', args: [...inputs, '-filter_complex', music, '-map', '0:v:0', '-map', '[m]', '-c:v', 'copy', ...AAC, ...cut, ...cap, ...FASTSTART, 'out.mp4'] }
 }
 
 /* ------------------------------------------------------------------ layouts */
@@ -363,9 +370,12 @@ export function cssPreview(s: FilterSettings): string {
   return parts.join(' ')
 }
 
-export function stabilizeOp(input: string, strength: 'light' | 'normal' | 'strong', zoom: boolean, hasAudio: boolean): Op {
+export function stabilizeOp(input: string, strength: 'light' | 'normal' | 'strong', zoom: boolean, hasAudio: boolean, size?: { w: number; h: number }): Op {
   const rx = { light: 16, normal: 32, strong: 64 }[strength]
-  const vf = `deshake=rx=${rx}:ry=${rx}:edge=mirror${zoom ? ',scale=iw*1.06:ih*1.06,crop=iw/1.06:ih/1.06' : ''},${EVEN}`
+  // the zoom hides the moving edges; scaling back to the (even) source size keeps the frame size unchanged
+  const W = size && size.w > 1 ? Math.floor(size.w / 2) * 2 : 0, H = size && size.h > 1 ? Math.floor(size.h / 2) * 2 : 0
+  const back = W && H ? `scale=${W}:${H},setsar=1` : EVEN
+  const vf = `deshake=rx=${rx}:ry=${rx}:edge=mirror${zoom ? `,crop=iw/1.06:ih/1.06,${back}` : `,${EVEN}`}`
   return mp4(['-i', input], vf, hasAudio ? 'copy' : 'none')
 }
 
@@ -464,7 +474,9 @@ export function slideshowOp(slides: Slide[], o: { w: number; h: number; fps: num
   const parts: string[] = []
   const bg = o.bg.replace('#', '0x')
   slides.forEach((s, i) => {
-    ins.push('-loop', '1', '-t', f3(s.duration), '-i', s.name)
+    // read each still at the output rate: zoompan emits one frame per input frame, so at the default 25 fps
+    // a 30 fps slide came out 25/30 of its length and the file was shorter than the page said
+    ins.push('-framerate', String(fps), '-loop', '1', '-t', f3(s.duration), '-i', s.name)
     const base = o.fit === 'fill'
       ? `scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h}`
       : `scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2:${bg}`

@@ -6,24 +6,10 @@ import { ffRun, extFromBlob } from '@/tools/video/_media/engine'
 import { useMediaJob, useObjectUrl } from '@/tools/video/_media/media'
 import { JobPanel, FileBar, Note } from '@/tools/video/_media/ui'
 import { AUDIO_ACCEPT, mediaDuration } from './_b4/FxShell'
+import { vizGraph, type Viz } from '@/lib/b3/viz'
 
-type Viz = 'waves' | 'line' | 'bars' | 'spectrum' | 'circle'
 const SIZES = { landscape: [1280, 720], square: [720, 720], portrait: [720, 1280] } as const
 type Size = keyof typeof SIZES
-
-/** ffmpeg filter graph for the visualizer layer. Pure, unit tested. */
-export function vizFilter(viz: Viz, w: number, h: number, color: string, fps: number): { graph: string; y: string } {
-  const c = '0x' + color.replace('#', '')
-  const vw = w, vh = Math.round(h * (viz === 'spectrum' ? 0.32 : 0.28))
-  const base = `[1:a]aformat=channel_layouts=stereo,`
-  switch (viz) {
-    case 'waves': return { graph: `${base}showwaves=s=${vw}x${vh}:mode=cline:colors=${c}:rate=${fps}:scale=sqrt,format=rgba[viz]`, y: `H-h-${Math.round(h * 0.06)}` }
-    case 'line': return { graph: `${base}showwaves=s=${vw}x${vh}:mode=line:colors=${c}:rate=${fps}:draw=full,format=rgba[viz]`, y: `H-h-${Math.round(h * 0.06)}` }
-    case 'bars': return { graph: `${base}showfreqs=s=${vw}x${vh}:mode=bar:ascale=sqrt:fscale=log:colors=${c}:win_size=2048,fps=${fps},format=rgba,colorkey=black:0.1:0.0[viz]`, y: `H-h-${Math.round(h * 0.04)}` }
-    case 'spectrum': return { graph: `${base}showspectrum=s=${vw}x${vh}:mode=combined:color=fire:scale=log:slide=scroll,fps=${fps},format=rgba[viz]`, y: `H-h` }
-    case 'circle': return { graph: `${base}avectorscope=s=${Math.round(Math.min(w, h) * 0.5)}x${Math.round(Math.min(w, h) * 0.5)}:zoom=1.5:rc=${parseInt(color.slice(1, 3), 16)}:gc=${parseInt(color.slice(3, 5), 16)}:bc=${parseInt(color.slice(5, 7), 16)}:rf=15:gf=15:bf=15:draw=line,fps=${fps},format=rgba,colorkey=black:0.1:0.0[viz]`, y: `(H-h)/2` }
-  }
-}
 
 async function background(w: number, h: number, cover: Blob | null, title: string, artist: string, bg: string, viz: Viz): Promise<Blob> {
   const c = document.createElement('canvas'); c.width = w; c.height = h
@@ -81,9 +67,8 @@ export default function MusicVisualizer() {
     setLabel('Drawing background')
     const bgPng = await background(w, h, cover, title, artist, bg, viz)
     const inName = 'in' + extFromBlob(file)
-    const f = vizFilter(viz, w, h, color, +fps)
     setLabel('Rendering video')
-    const graph = `${f.graph};[0:v][viz]overlay=(W-w)/2:${f.y}:shortest=1,format=yuv420p[v]`
+    const graph = vizGraph(viz, w, h, color, +fps)
     setResult(await ffRun({
       inputs: [{ name: 'bg.png', file: bgPng }, { name: inName, file }],
       args: ['-loop', '1', '-framerate', fps, '-i', 'bg.png', '-i', inName, '-filter_complex', graph, '-map', '[v]', '-map', '1:a', '-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'stillimage', '-crf', '26', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', 'out.mp4'],

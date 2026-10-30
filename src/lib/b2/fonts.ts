@@ -1,5 +1,6 @@
 /* Font helpers built on fonteditor-core (MIT). Shared by font-converter and font-subsetter. */
 import woff2Wasm from '../../../node_modules/fonteditor-core/woff2/woff2.wasm?url'
+import { writeChecked } from './font-write'
 
 export type FontKind = 'ttf' | 'otf' | 'woff' | 'woff2' | 'eot' | 'svg'
 
@@ -55,10 +56,15 @@ export async function readFont(buf: ArrayBuffer, name: string, opts: { subset?: 
   return { font, kind: original as FontKind }
 }
 
-export async function writeFont(font: any, type: Exclude<FontKind, 'otf'>, opts: { hinting?: boolean; kerning?: boolean } = {}): Promise<Uint8Array | string> {
+export async function writeFont(font: any, type: Exclude<FontKind, 'otf'>, opts: { hinting?: boolean; kerning?: boolean; onKerningDropped?: () => void } = {}): Promise<Uint8Array | string> {
   const { zlibSync } = await import('fflate')
-  const out = font.write({ type, toBuffer: false, hinting: opts.hinting ?? true, kerning: opts.kerning ?? true, deflate: (d: number[]) => Array.from(zlibSync(Uint8Array.from(d), { level: 9 })) })
-  return typeof out === 'string' ? out : new Uint8Array(out)
+  const write = (kerning: boolean) => {
+    const out = font.write({ type, toBuffer: false, hinting: opts.hinting ?? true, kerning, deflate: (d: number[]) => Array.from(zlibSync(Uint8Array.from(d), { level: 9 })) })
+    return typeof out === 'string' ? out : new Uint8Array(out)
+  }
+  const r = writeChecked(write, type, opts.kerning ?? true)
+  if (r.kerningDropped) opts.onKerningDropped?.()
+  return r.data
 }
 
 export const FONT_MIME: Record<string, string> = { ttf: 'font/ttf', otf: 'font/otf', woff: 'font/woff', woff2: 'font/woff2', eot: 'application/vnd.ms-fontobject', svg: 'image/svg+xml' }

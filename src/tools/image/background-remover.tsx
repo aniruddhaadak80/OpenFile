@@ -68,21 +68,31 @@ function gpuReady(): Promise<boolean> {
   return gpuCheck
 }
 
-/** One module worker runs the model off the main thread; it is recreated if it ever crashes. */
+/** One module worker runs the model off the main thread; it is recreated if it ever crashes.
+ *  A watchdog stops it when it goes silent for too long, and `stopCurrent` cancels the running image. */
 let worker: Worker | null = null
+let stopCurrent: (() => void) | null = null
+const STALL_MS = 6 * 60_000
 function runInWorker(id: string, file: Blob, model: string, preferGpu: boolean, onProgress: (key: string, cur: number, total: number) => void) {
   return new Promise<Blob>((resolve, reject) => {
     if (!worker) worker = new Worker(new URL('./bg-remover.worker.ts', import.meta.url), { type: 'module' })
     const w = worker
-    const done = () => { w.onmessage = null; w.onerror = null }
+    let timer = 0
+    const done = () => { window.clearTimeout(timer); w.onmessage = null; w.onerror = null; w.onmessageerror = null; stopCurrent = null }
+    const kill = (msg: string) => { done(); w.terminate(); if (worker === w) worker = null; reject(new Error(msg)) }
+    const arm = () => { window.clearTimeout(timer); timer = window.setTimeout(() => kill('timed out'), STALL_MS) }
+    stopCurrent = () => kill('cancelled')
     w.onmessage = (ev) => {
       const m = ev.data
       if (m.id !== id) return
+      arm()
       if (m.type === 'progress') onProgress(m.key, m.cur, m.total)
       else if (m.type === 'done') { done(); resolve(m.blob) }
       else if (m.type === 'error') { done(); reject(new Error(m.message)) }
     }
-    w.onerror = (e) => { e.preventDefault?.(); done(); w.terminate(); if (worker === w) worker = null; reject(new Error('worker failed')) }
+    w.onerror = (e) => { e.preventDefault?.(); kill('worker failed') }
+    w.onmessageerror = () => kill('worker failed')
+    arm()
     w.postMessage({ id, file, model, preferGpu })
   })
 }
@@ -99,7 +109,11 @@ function useBlobUrl(blob: Blob | null | undefined) {
   return url
 }
 
-const friendly = (msg: string) => /memory|allocation|out of|worker failed/i.test(msg)
+const friendly = (msg: string) => msg === 'cancelled'
+  ? 'Stopped. Press Retry to run it again.'
+  : msg === 'timed out'
+    ? 'This took too long and was stopped. Try the Faster model or a smaller photo, then press Retry.'
+    : /memory|allocation|out of|worker failed/i.test(msg)
   ? 'This image needs more memory than the browser allowed. Try the Faster model or a smaller photo.'
   : /fetch|network|load/i.test(msg)
     ? 'The AI model could not be downloaded. Check your connection (the model downloads once) and retry.'
@@ -115,7 +129,7 @@ export default function BackgroundRemover() {
   const [bgFile, setBgFile] = useState<File | null>(null)
   const [bgImg, setBgImg] = useState<HTMLImageElement | null>(null)
   const [quality, setQuality] = useState<'isnet_fp16' | 'isnet_quint8'>('isnet_fp16')
-  const [stage, setStage] = useState<{ id: string; label: string; p: number } | null>(null)
+  const [stage, setStage] = useState<{ id: string; label: string; p: number; slow?: boolean } | null>(null)
   const [preview, setPreview] = useState<Blob | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [zipping, setZipping] = useState(false)
@@ -123,6 +137,7 @@ export default function BackgroundRemover() {
   const [tick, setTick] = useState(0)
   const bgInput = useRef<HTMLInputElement>(null)
   const stateRef = useRef(cuts); stateRef.current = cuts
+  const itemsRef = useRef(items); itemsRef.current = items
 
   const onFiles = useCallback(async (f: File[]) => { const a = await add(f); if (a[0]) setSel((s) => s ?? a[0].id) }, [add])
 
@@ -141,19 +156,23 @@ export default function BackgroundRemover() {
         setStage({ id, label: 'Loading AI engine', p: 0.02 })
         // The library reports download progress per file and only a few compute steps, so keep the bar moving
         // slowly between reports while the model runs.
-        let last = 0.05, computing = false
+        let last = 0.05, computing = false, since = 0
         const files: Record<string, [number, number]> = {}
+        const gpu = await gpuReady()
+        // show the time spent, since the model gives no progress while it runs (often a minute or more on a CPU)
+        const label = () => { const sec = since ? Math.round((Date.now() - since) / 1000) : 0; return sec >= 5 ? `Removing background, ${sec} s` : 'Removing background' }
         creep = window.setInterval(() => {
           if (!computing) return
+          if (!since) since = Date.now()
           last = Math.min(0.95, last + (0.95 - last) * 0.04)
-          setStage({ id, label: 'Removing background', p: last })
+          setStage({ id, label: label(), p: last, slow: !gpu })
         }, 300)
-        const blob = await runInWorker(id, next.file, quality, await gpuReady(), (key, c0, t0) => {
+        const blob = await runInWorker(id, next.file, quality, gpu, (key, c0, t0) => {
           if (key.startsWith('fetch')) {
             files[key] = [c0, t0]
             const c = Object.values(files).reduce((a, f) => a + f[0], 0), t = Object.values(files).reduce((a, f) => a + f[1], 0)
             last = Math.max(last, 0.05 + (t ? c / t : 0) * 0.6)
-            if (t && c >= t) { computing = true; setStage({ id, label: 'Removing background', p: last }) }
+            if (t && c >= t) { computing = true; setStage({ id, label: label(), p: last, slow: !gpu }) }
             else setStage({ id, label: `Downloading AI model (first run only) · ${formatBytes(c)} / ${formatBytes(t)}`, p: last })
           } else if (key === 'compose') {
             last = Math.max(last, 0.96)
@@ -161,7 +180,7 @@ export default function BackgroundRemover() {
           } else {
             computing = true
             last = Math.max(last, 0.65 + (t0 ? c0 / t0 : 0) * 0.3)
-            setStage({ id, label: 'Removing background', p: last })
+            setStage({ id, label: label(), p: last, slow: !gpu })
           }
         })
         setCuts((s) => (s[id] ? { ...s, [id]: { state: 'done', blob } } : s))
@@ -169,9 +188,16 @@ export default function BackgroundRemover() {
         setSel((cur) => (cur && cur !== id && stateRef.current[cur] ? cur : id))
       } catch (e: any) {
         console.warn('Background removal failed', e)
-        const msg = friendly(String(e?.message || e))
-        setError(msg)
-        setCuts((s) => (s[id] ? { ...s, [id]: { state: 'err', err: msg } } : s))
+        const raw = String(e?.message || e)
+        const msg = friendly(raw)
+        setError(raw === 'cancelled' ? null : msg)
+        // Cancel stops the whole queue: images still waiting are marked stopped too, each with its own Retry
+        setCuts((s) => {
+          if (!s[id]) return s
+          const n: Record<string, Cut> = { ...s, [id]: { state: 'err', err: msg } }
+          if (raw === 'cancelled') for (const it of itemsRef.current) if (!n[it.id]) n[it.id] = { state: 'err', err: msg }
+          return n
+        })
       } finally { clearInterval(creep); queue.current = false; setStage(null); setTick((t) => t + 1) }
     })()
   }, [items, cuts, quality, tick])
@@ -233,12 +259,16 @@ export default function BackgroundRemover() {
           {curState === 'done' && (previewUrl || cutUrl) ? (
             <motion.div key={cur!.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}><BeforeAfter before={cur!.url} after={(previewUrl || cutUrl)!} labels={['Original', 'Result']} maxH="60vh" /></motion.div>
           ) : curState === 'err' ? (
-            <div className="grid min-h-64 place-items-center text-center text-sm"><div><p className="text-danger">This image could not be processed.</p><Button className="mt-3" size="sm" variant="outline" onClick={() => retry(cur!.id)}>Retry</Button></div></div>
+            <div className="grid min-h-64 place-items-center text-center text-sm"><div><p className="text-danger">{cuts[cur!.id]?.err ?? 'This image could not be processed.'}</p><Button className="mt-3" size="sm" variant="outline" onClick={() => retry(cur!.id)}>Retry</Button></div></div>
           ) : (
             <div className="relative mx-auto w-fit overflow-hidden rounded-xl">
               {cur && <img src={cur.url} alt="" className="max-h-[60vh] max-w-full opacity-60 blur-[1px]" />}
               <div className="shimmer absolute inset-0" />
-              <div className="absolute inset-x-4 bottom-4 rounded-xl glass p-3 text-sm"><Progress value={curStage ? curStage.p : curState === 'done' ? 1 : 0} label={curStage ? curStage.label : curState === 'done' ? 'Preparing preview' : curState === 'run' ? 'Starting AI model' : 'Waiting in queue'} /></div>
+              <div className="absolute inset-x-4 bottom-4 space-y-2 rounded-xl glass p-3 text-sm">
+                <Progress value={curStage ? curStage.p : curState === 'done' ? 1 : 0} label={curStage ? curStage.label : curState === 'done' ? 'Preparing preview' : curState === 'run' ? 'Starting AI model' : 'Waiting in queue'} />
+                {curStage?.slow && <p className="text-xs text-muted">No GPU was found, so the model runs on the processor. This can take a minute or two.</p>}
+                {curState === 'run' && <Button size="sm" variant="outline" onClick={() => stopCurrent?.()}>Cancel</Button>}
+              </div>
             </div>
           )}
         </div>
