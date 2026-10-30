@@ -19,13 +19,19 @@ export default function PivotTable() {
 
   const open = async (f: File) => {
     setFile(f); setErr(null)
-    try { const b = await readBook(f); setBook(b); const h = (b.sheets[0].rows[0] ?? []).map(String); setRowF(h[0] ?? ''); setColF(''); const num = h.findIndex((_, i) => b.sheets[0].rows.slice(1, 50).some((r) => typeof r[i] === 'number')); setValF(num >= 0 ? h[num] : ''); setAgg(num >= 0 ? 'sum' : 'count') } catch (e: any) { setErr(e?.message) }
+    try { const b = await readBook(f); setBook(b); setSheet('0'); pickFields(b.sheets[0].rows) } catch (e: any) { setErr(e?.message) }
   }
+  // Fields for a sheet: group by its first column and sum its first numeric column, so switching sheets never keeps names from another sheet.
+  const pickFields = (rs: unknown[][]) => { const h = (rs[0] ?? []).map((x, i) => String(x ?? `Column ${i + 1}`)); setRowF(h[0] ?? ''); setColF(''); const num = h.findIndex((_, i) => rs.slice(1, 50).some((r) => typeof r[i] === 'number')); setValF(num >= 0 ? h[num] : ''); setAgg(num >= 0 ? 'sum' : 'count') }
+  const changeSheet = (v: string) => { setSheet(v); pickFields(book?.sheets[+v]?.rows ?? []) }
   const rows = book?.sheets[+sheet]?.rows ?? []
   const head = (rows[0] ?? []).map((h, i) => String(h ?? `Column ${i + 1}`))
   const records = useMemo(() => rows.slice(1).map((r) => Object.fromEntries(head.map((h, i) => [h, r[i]]))), [rows])
   const p = useMemo(() => (rowF ? pivot(records, rowF, colF || null, valF || null, agg) : null), [records, rowF, colF, valF, agg])
-  const grid = () => p ? [[`${rowF} / ${colF || ''}`.trim(), ...p.colKeys, 'Total'], ...p.rowKeys.map((k, i) => [k, ...p.table[i], p.rowTotals[i]]), ['Total', ...p.colTotals, p.grand]] as (string | number | null)[][] : []
+  const AGG: Record<string, string> = { sum: 'Sum', count: 'Count', avg: 'Average', min: 'Minimum', max: 'Maximum', distinct: 'Count distinct' }
+  const grid = () => !p ? [] : colF
+    ? [[`${rowF} / ${colF}`, ...p.colKeys, 'Total'], ...p.rowKeys.map((k, i) => [k, ...p.table[i], p.rowTotals[i]]), ['Total', ...p.colTotals, p.grand]] as (string | number | null)[][]
+    : [[rowF, valF ? `${AGG[agg] ?? agg} of ${valF}` : 'Count'], ...p.rowKeys.map((k, i) => [k, p.rowTotals[i]]), ['Total', p.grand]] as (string | number | null)[][]
   const fieldOpts = head.map((h) => ({ value: h, label: h }))
 
   if (!file) return <Dropzone accept={SHEET_ACCEPT} onFiles={(f) => open(f[0])} label="Drop a spreadsheet to summarise" sub="Group rows by any column and sum, count or average the values, like a pivot table in Excel." />
@@ -51,7 +57,7 @@ export default function PivotTable() {
       }
       side={
         <>
-          {book && book.sheets.length > 1 && <div><Label>Sheet</Label><Select value={sheet} onChange={setSheet} options={book.sheets.map((s, i) => ({ value: String(i), label: s.name }))} /></div>}
+          {book && book.sheets.length > 1 && <div><Label>Sheet</Label><Select value={sheet} onChange={changeSheet} options={book.sheets.map((s, i) => ({ value: String(i), label: s.name }))} /></div>}
           <div><Label>Rows (group by)</Label><Select value={rowF} onChange={setRowF} options={fieldOpts} /></div>
           <div><Label>Columns (optional)</Label><Select value={colF} onChange={setColF} options={[{ value: '', label: 'None' }, ...fieldOpts]} /></div>
           <div><Label>Values</Label><Select value={valF} onChange={setValF} options={[{ value: '', label: 'Count rows' }, ...fieldOpts]} /></div>
