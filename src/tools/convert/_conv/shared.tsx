@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { RotateCcw, FileIcon } from 'lucide-react'
 import { Button, cn } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
+import { safeBlobUrl } from '@/lib/safe'
 
 /** Page sizes in PDF points (1/72 inch), portrait. */
 export const PAGE_SIZES = {
@@ -102,7 +103,7 @@ export function Lightbox({ items, index, onClose, onIndex, actions }: { items: {
             {failed === items[index].src ? (
               <div onClick={(e) => e.stopPropagation()} className="m-auto rounded-xl bg-surface px-5 py-4 text-sm text-fg shadow-2xl">This preview could not be shown. The file itself can still be downloaded.</div>
             ) : (
-              <motion.img key={items[index].src} initial={{ scale: 0.97, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} src={items[index].src} alt={items[index].caption ?? ''}
+              <motion.img key={items[index].src} initial={{ scale: 0.97, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} src={safeBlobUrl(items[index].src)} alt={items[index].caption ?? ''}
                 onError={() => setFailed(items[index].src)}
                 onClick={(e) => { e.stopPropagation(); setZoom((z) => (z === 'fit' ? 'actual' : 'fit')) }}
                 className={cn('rounded-lg bg-white shadow-2xl', zoom === 'fit' ? 'max-h-full max-w-full cursor-zoom-in object-contain' : 'm-auto max-w-none cursor-zoom-out')} />

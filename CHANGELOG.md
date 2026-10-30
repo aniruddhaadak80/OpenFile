@@ -13,6 +13,30 @@
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).
 
+## v2.5.0 (2026-10-30)
+
+71 new tools across the original 16 studios, filling the gaps people asked about most: everyday audio tools, PDF stamps and Bates numbers, Markdown from anything, Mermaid diagrams, charts, video effects, G-code and point clouds.
+
+### Added
+
+- **pdf**: Bates Numbering, PDF Stamps, PDF to Long Image, Scanned Look PDF, PDF to JSON.
+- **convert**: Anything to Markdown (PDF, Word, PowerPoint, Excel, HTML, EPUB, email, notebooks, many at once), EMF and WMF Converter, MHTML Viewer, Jupyter Notebook Converter.
+- **image**: Image Recolor, Image Stitcher, Image to ASCII, Image DPI Tool, Signature Cleaner.
+- **video**: Video Contact Sheet, Countdown Video Maker (transparent WebM option), Video Effects (16 effects with a 3 second preview), Remove Black Bars.
+- **audio**: Tone and Noise Generator, Metronome, Instrument Tuner, BPM and Key Finder, LUFS Loudness Meter.
+- **dev**: Diff and Patch Viewer, Torrent Inspector, Env Converter, Semver Calculator, WASM Inspector.
+- **text**: Find and Replace (many rules), Find and Replace in Many Files, Text to Handwriting, Column Extractor, Text Repeater.
+- **design**: Code to Image, Diagram Maker (Mermaid), Blob and Wave Generator, Printable Paper, Chart Maker.
+- **data**: Data Profiler, SQL on CSV and Excel, JSON Flattener, HL7 and EDI Viewer.
+- **ai**: AI Writing Helper, Sound Identifier, Near Duplicate Finder, Toxic Comment Checker.
+- **3d**: G-code Viewer, SVG and Image to 3D, 3D Turntable Video, Point Cloud Converter.
+- **archive**: Split and Join Files, Archive Compare, Checksum Manifest, ZIP Repair.
+- **ebook**: EPUB Validator, Kindle Clippings, eBook Stats, eBook Cover Maker.
+- **font**: Text to SVG Path, Bitmap Font Generator, Font Renamer, Icon Font Generator.
+- **cad**: SVG to DXF, HPGL Viewer, Gear Generator, Laser Box Maker.
+- **subtitle**: Dual Subtitle Merger, Subtitle Cleaner, LRC Lyrics Sync Editor, Subtitles to Transcript, Split and Join Subtitles.
+- **blog**: three posts with films, cover loops, read aloud and quizzes: turning any document into Markdown, diagrams and charts from plain text, and 3D printing files in a browser.
+
 ## v2.4.0 (2026-10-29)
 
 Three new studios, **Study & Classroom**, **Web & SEO** and **Calendar & Time**, and 74 new tools in all. The five thinnest studios each grew to 14 tools or more, and category grids now keep every row full on phones, tablets and desktops.

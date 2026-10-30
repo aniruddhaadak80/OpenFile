@@ -198,6 +198,12 @@ function whatsNew() {
   const L = []
   L.push(`OpenFile now has **${TOTAL} tools in ${NCAT} studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.`)
   L.push('')
+  L.push('**71 new tools in the original studios (v2.5.0)**')
+  L.push('')
+  L.push(`- 🔄 **Convert and design**: ${tl('any-to-markdown')}, ${tl('notebook-converter')}, ${tl('mhtml-viewer')}, ${tl('diagram-renderer')}, ${tl('chart-maker')}, ${tl('code-to-image')} and ${tl('printable-paper')}.`)
+  L.push(`- 🎧 **Audio and video**: ${tl('instrument-tuner')}, ${tl('metronome')}, ${tl('bpm-finder')}, ${tl('loudness-meter')}, ${tl('video-effects')}, ${tl('countdown-video')} and ${tl('remove-black-bars')}.`)
+  L.push(`- 🧊 **3D, CAD and more**: ${tl('gcode-viewer')}, ${tl('extrude-to-3d')}, ${tl('3d-turntable')}, ${tl('point-cloud-converter')}, ${tl('gear-generator')}, ${tl('laser-box-maker')}, ${tl('sql-on-files')} and ${tl('bates-numbering')}.`)
+  L.push('')
   L.push('**Study & Classroom, Web & SEO and Calendar & Time**')
   L.push('')
   L.push(`- 🎓 ${catLine('study')}: ${tl('flashcard-maker')}, ${tl('notes-to-flashcards')}, ${tl('quiz-maker')}, ${tl('citation-generator')}, ${tl('crossword-maker')} and more.`)

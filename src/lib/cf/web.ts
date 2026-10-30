@@ -293,7 +293,7 @@ export function linksFromLines(text: string) {
 export interface AuditItem { id: string; level: 'pass' | 'warn' | 'fail'; text: string }
 export interface Audit { title: string; description: string; h1: string[]; words: number; items: AuditItem[]; score: number; links: { internal: number; external: number }; images: number; missingAlt: number }
 const attr = (tag: string, n: string) => tag.match(new RegExp(`\\b${n}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, 'i'))?.slice(1).find((x) => x != null) ?? null
-const strip = (h: string) => h.replace(/<script[\s\S]*?<\/script\s*>/gi, ' ').replace(/<style[\s\S]*?<\/style\s*>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
+const strip = (h: string) => h.replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, ' ').replace(/<style\b[^>]*>[\s\S]*?<\/style\b[^>]*>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim()
 export function auditHtml(html: string, keyword = ''): Audit {
   const items: AuditItem[] = []
   const add = (id: string, level: AuditItem['level'], text: string) => items.push({ id, level, text })

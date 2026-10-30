@@ -3,6 +3,18 @@
 export interface QuizQ { q: string; options: string[]; a: number; why: string }
 
 export const QUIZZES: Record<string, QuizQ[]> = {
+  'turn-any-document-into-markdown': [
+    { q: 'Why does Markdown work better than a raw PDF paste in an AI chat?', options: ['It keeps headings, lists and tables, so the model sees the shape of the document', 'It makes the text shorter by deleting words', 'AI tools cannot read plain text'], a: 0, why: 'A PDF pasted as text loses its structure, while Markdown keeps headings and tables intact.' },
+    { q: 'What should you do with a scanned PDF before converting it?', options: ['Run OCR first, because a scan has no text to read', 'Rename it to .md', 'Nothing, it converts the same'], a: 0, why: 'A scan is a picture of text. OCR turns it into real text that can be converted.' },
+  ],
+  'diagrams-and-charts-from-plain-text': [
+    { q: 'What is the main win of writing a diagram as Mermaid text?', options: ['It can be searched, reviewed and compared like code, and renders on GitHub', 'It always looks hand drawn', 'It needs a paid design app'], a: 0, why: 'The diagram becomes text, so it fits in code reviews and diffs and renders in many places.' },
+    { q: 'How should you print graph paper so the spacing stays true?', options: ['At actual size, 100 percent', 'Fit to page', 'In draft mode'], a: 0, why: 'Fit to page scales the lines, so millimetre spacing is only exact at actual size.' },
+  ],
+  '3d-printing-files-in-a-browser': [
+    { q: 'Where does the print time in the G-code viewer come from?', options: ['The length of each move divided by its speed, plus pauses', 'A guess from the file size', 'An online slicer service'], a: 0, why: 'Every move is measured and divided by its feed rate. Acceleration is not included, so slicers show a little more.' },
+    { q: 'Why thin out a point cloud by grid cell instead of keeping every Nth point?', options: ['It keeps the shape even while cutting the size', 'It adds colour', 'It makes the file a mesh'], a: 0, why: 'One point per grid cell spreads the kept points evenly, even where the scan was very dense.' },
+  ],
   'install-openfile-on-any-device': [
     { q: 'Which install option updates itself the moment a fix is published?', options: ['The installed web app', 'The Linux .deb package', 'A downloaded zip of the site'], a: 0, why: 'The web app picks up the new build on its next load, so it is always current.' },
     { q: 'Do settings sync between your phone and your laptop?', options: ['Yes, through an account', 'No, but you can export and import them', 'Only on iPhone'], a: 1, why: 'There is no server to sync through. Export your settings on one device and import them on the other.' },

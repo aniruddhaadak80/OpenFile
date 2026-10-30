@@ -22,6 +22,9 @@ import RobotsSitemapsRedirects from './posts/robots-txt-sitemaps-and-redirects'
 import CalendarFiles from './posts/calendar-files-and-repeat-rules'
 import InsideFitFile from './posts/what-is-inside-a-fit-file'
 import ScanReceipts from './posts/scan-receipts-privately'
+import AnyDocumentToMarkdown from './posts/turn-any-document-into-markdown'
+import DiagramsFromText from './posts/diagrams-and-charts-from-plain-text'
+import PrintingFilesInBrowser from './posts/3d-printing-files-in-a-browser'
 
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 const H2 = ({ children }: { children: string }) => <h2 id={slugify(children)}>{children}</h2>
@@ -238,6 +241,9 @@ function Voice() {
 }
 
 export const POST_BODIES: Record<string, () => ReactNode> = {
+  'turn-any-document-into-markdown': AnyDocumentToMarkdown,
+  'diagrams-and-charts-from-plain-text': DiagramsFromText,
+  '3d-printing-files-in-a-browser': PrintingFilesInBrowser,
   'how-openfile-keeps-files-private': Privacy,
   'pdf-tips-that-save-time': PdfTips,
   'image-compression-explained': ImageCompression,

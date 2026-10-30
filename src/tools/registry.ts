@@ -14,6 +14,7 @@ import { BATCH_CAT2 } from './batches/b-cat2'
 import { BATCH_CAT3 } from './batches/b-cat3'
 import { BATCH_13 } from './batches/b13'
 import { CF_TOOLS } from './batches/b-cf'
+import { BATCH_14 } from './batches/b14'
 
 export interface ToolMeta {
   slug: string
@@ -208,7 +209,7 @@ const CORE_TOOLS: ToolMeta[] = [
   { slug: 'placeholder-image', name: 'Placeholder Image', desc: 'Generate placeholder images in any size, color and text.', category: 'design', icon: 'ImageIcon' },
 ]
 
-export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5, ...BATCH_10, ...BATCH_11, ...BATCH_12, ...BATCH_CAT1, ...BATCH_CAT2, ...BATCH_CAT3, ...BATCH_13, ...CF_TOOLS]
+export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5, ...BATCH_10, ...BATCH_11, ...BATCH_12, ...BATCH_CAT1, ...BATCH_CAT2, ...BATCH_CAT3, ...BATCH_13, ...CF_TOOLS, ...BATCH_14]
 
 /** Only categories that have at least one tool are shown in the UI. */
 export const CATEGORIES = ALL_CATEGORIES.filter((c) => TOOLS.some((t) => t.category === c.id))

@@ -2505,6 +2505,20 @@ def plan(tool):
         cols[0] = GOLD
     P = dict(slug=slug, name=name, cat=cat, desc=short_desc(tool['desc']), seed=seed % 1000, r=seed % 7, cols=cols, mirror=bool(seed & 1), n=3 + seed % 3)
     fn = None
+    # ---- round 14 (originals-fill) routing
+    B14 = {'video-contact-sheet': (d_split, {'kind': 'frames'}), 'remove-black-bars': (d_image, {'act': 'crop'}), 'video-effects': (d_image, {'act': 'filters'}),
+           'countdown-video': (d_video, {'act': 'play'}), 'image-recolor': (d_image, {'act': 'filters'}), 'image-stitcher': (d_image, {'act': 'collage'}),
+           'image-to-ascii': (d_image, {'act': 'svg'}), 'image-dpi-tool': (d_image, {'act': 'exif'}), 'signature-cleaner': (d_image, {'act': 'bgremove'}),
+           'bates-numbering': (d_doc, {'act': 'numbers'}), 'pdf-stamps': (d_doc, {'act': 'watermark'}), 'pdf-scan-effect': (d_doc, {'act': 'grayscale'}),
+           'pdf-to-long-image': (d_convert, {'fmts': ['PDF', 'PNG']}), 'pdf-to-json': (d_convert, {'fmts': ['PDF', 'JSON']}),
+           'tone-generator': (d_audio, {'act': 'eq'}), 'metronome': (d_audio, {'act': 'record'}), 'instrument-tuner': (d_audio, {'act': 'record'}),
+           'bpm-finder': (d_audio, {'act': 'editor'}), 'loudness-meter': (d_audio, {'act': 'eq'}),
+           'emf-wmf-converter': (d_convert, {'fmts': ['EMF', 'SVG', 'PNG', 'PDF']}), 'any-to-markdown': (d_convert, {'fmts': ['PDF', 'DOCX', 'PPTX', 'MD']}),
+           'mhtml-viewer': (d_convert, {'fmts': ['MHTML', 'HTML']}), 'notebook-converter': (d_convert, {'fmts': ['IPYNB', 'HTML', 'PDF', 'PY']})}
+    if slug in B14:
+        fn, extra = B14[slug]
+        P.update(extra)
+        return fn, P
     # ---- action routing (slug first, then category defaults)
     if slug in ('merge-pdf', 'image-to-pdf'):
         fn, P['kind'] = d_merge, ('img' if slug == 'image-to-pdf' else 'doc')
