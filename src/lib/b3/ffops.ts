@@ -16,6 +16,25 @@ const mp4 = (inArgs: string[], vf: string | null, audio: 'copy' | 'aac' | 'none'
 const n = (v: number) => String(Math.round(v))
 const f3 = (v: number) => (Math.round(v * 1000) / 1000).toString()
 
+/** Audio codecs that MP4 and MOV files carry and every browser plays. */
+const MP4_AUDIO_OK = new Set(['aac', 'mp3', 'alac'])
+
+/** Make a recipe that copies the audio track safe for an MP4/MOV output: PCM, FLAC, Vorbis, AC-3, DTS, Opus and
+ * the like either cannot go into MP4 at all (the run fails) or go in but do not play in browsers, so they are
+ * re-encoded to AAC. `acodec` is the source audio codec from the probe. Other recipes come back unchanged. */
+export function safeAudioCopy(op: Op, acodec?: string): Op {
+  if (!/\.(mp4|m4v|mov)$/i.test(op.output) || !acodec || MP4_AUDIO_OK.has(acodec)) return op
+  if (/\.mov$/i.test(op.output) && /^pcm_/.test(acodec)) return op
+  const a = op.args
+  const out: string[] = []
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] === '-c:a' && a[i + 1] === 'copy') { out.push(...AAC); i++; continue }
+    if (a[i] === '-c' && a[i + 1] === 'copy') { out.push('-c', 'copy', ...AAC); i++; continue }
+    out.push(a[i])
+  }
+  return { ...op, args: out }
+}
+
 /* ------------------------------------------------------------------ geometry */
 
 export function cropOp(input: string, r: { x: number; y: number; w: number; h: number }, hasAudio: boolean): Op {
@@ -28,13 +47,22 @@ export function rotateOp(input: string, deg: Rotation, flipH: boolean, flipV: bo
   const f: string[] = []
   if (deg === 90) f.push('transpose=1'); else if (deg === 180) f.push('transpose=1,transpose=1'); else if (deg === 270) f.push('transpose=2')
   if (flipH) f.push('hflip'); if (flipV) f.push('vflip')
-  return mp4(['-i', input], f.join(',') || 'null', hasAudio ? 'copy' : 'none')
+  f.push(EVEN) // odd sizes (641x361) cannot be encoded as yuv420p
+  return mp4(['-i', input], f.join(','), hasAudio ? 'copy' : 'none')
 }
 
-/** Lossless rotation: only the display matrix changes (MP4/MOV with H.264/HEVC). */
-export function rotateMetaOp(input: string, deg: Rotation, ext = 'mp4'): Op {
+/** Rotation flag to write so the clip turns `deg` clockwise from how it shows now.
+ * `current` is the display matrix rotation ffmpeg prints (counter-clockwise degrees, 0 when there is none).
+ * The ffmpeg.wasm muxer turns `rotate=N` into an N degree counter-clockwise display matrix and replaces any flag
+ * the source had, so the new flag has to include the old one. */
+export function rotateMetaTag(deg: Rotation, current = 0): number {
+  return (((Math.round(current) - deg) % 360) + 360) % 360
+}
+
+/** Lossless rotation: only the display matrix changes (MP4/MOV with H.264/HEVC). `deg` is clockwise. */
+export function rotateMetaOp(input: string, deg: Rotation, ext = 'mp4', current = 0): Op {
   const out = `out.${ext}`
-  return { output: out, args: ['-i', input, '-map', '0', '-c', 'copy', '-metadata:s:v:0', `rotate=${deg}`, ...FASTSTART, out] }
+  return { output: out, args: ['-i', input, '-map', '0', '-c', 'copy', '-metadata:s:v:0', `rotate=${rotateMetaTag(deg, current)}`, ...FASTSTART, out] }
 }
 
 export type FillMode = 'fit' | 'fill' | 'stretch'
@@ -155,7 +183,7 @@ export function loopOp(input: string, times: number, hasAudio: boolean, ext = 'm
 }
 
 export function loopToDurationOp(input: string, seconds: number, hasAudio: boolean): Op {
-  return { output: 'out.mp4', args: ['-stream_loop', '-1', '-i', input, '-t', f3(seconds), ...H264(), ...(hasAudio ? AAC : ['-an']), ...FASTSTART, 'out.mp4'] }
+  return { output: 'out.mp4', args: ['-stream_loop', '-1', '-i', input, '-t', f3(seconds), '-vf', EVEN, ...H264(), ...(hasAudio ? AAC : ['-an']), ...FASTSTART, 'out.mp4'] }
 }
 
 export type FpsMode = 'convert' | 'smooth' | 'slowmo' | 'timelapse' | 'stopmotion'

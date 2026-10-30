@@ -13,7 +13,24 @@ const PNG = await make(['-f', 'lavfi', '-i', 'color=c=red@0.5:s=80x40,format=rgb
 const IMG2 = await make(['-f', 'lavfi', '-i', 'mandelbrot=size=300x400', '-frames:v', '1'], 'img2.jpg')
 const SRT = new TextEncoder().encode('1\n00:00:00,500 --> 00:00:02,000\nHello there\n')
 const FONT = fs.readFileSync(new URL('../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf', import.meta.url))
-const files = { 'in.mp4': V, 'b.mp4': V2, 'a.mp3': A, 'logo.png': PNG, 'img2.jpg': IMG2, 's.srt': SRT, '/fonts/LiberationSans-Bold.ttf': FONT }
+// odd size, 4:4:4 (screen recordings and some phone exports): every re-encode has to land on an even size
+const ODD = await make(['-f', 'lavfi', '-i', 'testsrc=size=320x240:rate=25:duration=2', '-vf', 'scale=161:121', '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv444p'], 'odd.mp4')
+// PCM audio in MOV: cannot be stream copied into MP4
+const PCM = await make(['-f', 'lavfi', '-i', 'testsrc=size=160x120:rate=25:duration=2', '-f', 'lavfi', '-i', 'sine=f=440:duration=2', '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p', '-c:a', 'pcm_s16le'], 'pcm.mov')
+
+// pure checks
+assert.equal(F.rotateMetaTag(90, 0), 270, 'clockwise 90 on an unflagged clip')
+assert.equal(F.rotateMetaTag(90, 90), 0, 'a phone clip flagged 90 counter-clockwise turns back upright')
+assert.equal(F.rotateMetaTag(180, 270), 90)
+{
+  const op = F.safeAudioCopy(F.cropOp('in.mov', { x: 0, y: 0, w: 100, h: 100 }, true), 'pcm_s16le')
+  assert.ok(op.args.includes('aac') && !op.args.join(' ').includes('-c:a copy'), 'PCM audio is re-encoded for MP4')
+  assert.deepEqual(F.safeAudioCopy(F.cropOp('in.mp4', { x: 0, y: 0, w: 100, h: 100 }, true), 'aac').args, F.cropOp('in.mp4', { x: 0, y: 0, w: 100, h: 100 }, true).args, 'AAC is still copied')
+  const rm = F.safeAudioCopy(F.remuxOp('in.mkv', 'mp4'), 'flac')
+  assert.ok(rm.args.join(' ').includes('-c copy -c:a aac'), 'remux keeps the video and re-encodes FLAC audio')
+}
+
+const files = { 'odd.mp4': ODD, 'pcm.mov': PCM, 'in.mp4': V, 'b.mp4': V2, 'a.mp3': A, 'logo.png': PNG, 'img2.jpg': IMG2, 's.srt': SRT, '/fonts/LiberationSans-Bold.ttf': FONT }
 
 const cases: [string, F.Op][] = [
   ['crop', F.cropOp('in.mp4', { x: 10, y: 10, w: 101, h: 99 }, true)],
@@ -67,6 +84,11 @@ const cases: [string, F.Op][] = [
   ['slideshow xfade kb audio', F.slideshowOp([{ name: 'logo.png', duration: 2 }, { name: 'img2.jpg', duration: 2 }], { w: 320, h: 240, fps: 25, transition: 'fade', td: 0.5, kenBurns: true, fit: 'fit', bg: '#000000', audio: 'a.mp3', audioFade: true })],
   ['slideshow plain', F.slideshowOp([{ name: 'logo.png', duration: 1 }, { name: 'img2.jpg', duration: 1 }, { name: 'logo.png', duration: 1 }], { w: 320, h: 240, fps: 25, transition: 'none', td: 0, kenBurns: false, fit: 'fill', bg: '#000000' })],
   ['xfade join', F.xfadeJoinOp([{ name: 'in.mp4', duration: 3, hasAudio: true }, { name: 'b.mp4', duration: 2, hasAudio: false }], { w: 320, h: 240, fps: 25, transition: 'wipeleft', td: 0.5 })],
+  ['rotate odd size', F.rotateOp('odd.mp4', 90, false, false, false)],
+  ['mirror odd size', F.rotateOp('odd.mp4', 0, true, false, false)],
+  ['loop to duration odd size', F.loopToDurationOp('odd.mp4', 3, false)],
+  ['crop pcm audio into mp4', F.safeAudioCopy(F.cropOp('pcm.mov', { x: 0, y: 0, w: 100, h: 80 }, true), 'pcm_s16le')],
+  ['remux pcm audio into mp4', F.safeAudioCopy(F.remuxOp('pcm.mov', 'mp4'), 'pcm_s16le')],
 ]
 
 const only = process.argv[2]

@@ -90,7 +90,7 @@ export default function BlurFaces() {
     const ctx = v.getContext('2d')!
     const all = draft ? [...shapes, norm(draft)] : shapes
     ctx.drawImage(composite(prev, eff, all, scale), 0, 0)
-    ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(139,108,255,.9)'
+    ctx.save(); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(245,165,36,.95)'
     for (const sh of all) if (sh.kind !== 'brush') { ctx.beginPath(); if (sh.kind === 'ellipse') ctx.ellipse((sh.x + sh.w / 2) * scale, (sh.y + sh.h / 2) * scale, Math.abs(sh.w / 2) * scale, Math.abs(sh.h / 2) * scale, 0, 0, Math.PI * 2); else ctx.rect(sh.x * scale, sh.y * scale, sh.w * scale, sh.h * scale); ctx.stroke() }
     ctx.restore()
   }, [prev, eff, shapes, draft, scale])

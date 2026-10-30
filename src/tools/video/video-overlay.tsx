@@ -82,7 +82,7 @@ export default function VideoOverlay() {
           const [cw, ch] = canvas.split('x').map(Number)
           const bg = bgKind === 'image' && bgImage ? { image: inName(bgImage, 'bg') } : { color: bgColor }
           h.setLabel('Placing on background')
-          const blob = await h.run(backgroundOp(input, cw, ch, bg, scale / 100, info.hasAudio), [{ name: input, file }, ...(bgImage && bgKind === 'image' ? [{ name: inName(bgImage, 'bg'), file: bgImage }] : [])])
+          const blob = await h.run(backgroundOp(input, cw, ch, bg, scale / 100, info.hasAudio), [{ name: input, file }, ...(bgImage && bgKind === 'image' ? [{ name: inName(bgImage, 'bg'), file: bgImage }] : [])], undefined, { pixelScale: (cw * ch) / (W * H) })
           return { blob, name: outName(file, `${cw}x${ch}`), title: 'Placed on background' }
         }
         h.setLabel('Zooming')

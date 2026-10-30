@@ -32,6 +32,8 @@ export default function SilenceRemover() {
         const segs = keepSegments(silences, dur, keep)
         const removed = dur - segs.reduce((a, s) => a + s.end - s.start, 0)
         if (!silences.length || removed < 0.05) throw new Error('No silence was found with these settings. Try a higher threshold (for example -30 dB) or a shorter minimum pause.')
+        // a threshold above the speech level marks the whole file as silent and would hand back an empty file
+        if (dur - removed < 0.25) throw new Error(`Everything in this file is quieter than ${threshold} dB, so nothing would be left. Pick a lower threshold, for example -40 dB.`)
         setStats(`Removed ${removed.toFixed(1)} s of silence in ${silences.length} place${silences.length > 1 ? 's' : ''}. New length ${(dur - removed).toFixed(1)} s.`)
         ctx.setLabel('Cutting')
         const sel = selectExpr(segs)

@@ -45,17 +45,21 @@ async function renderFrames(json: LottieJson, o: { width: number; fps: number; b
   const ctx = canvas.getContext('2d', { willReadFrequently: true })!
   const holder = document.createElement('div'); holder.style.cssText = `position:fixed;left:-99999px;top:0;width:${W}px;height:${H}px`
   document.body.appendChild(holder)
-  const anim = lottie.loadAnimation({ container: holder, renderer: 'canvas', loop: false, autoplay: false, animationData: JSON.parse(JSON.stringify(json)), rendererSettings: { context: ctx, clearCanvas: true, preserveAspectRatio: 'xMidYMid meet' } as any })
+  // lottie-web draws into a canvas it creates inside the holder (a passed-in context is ignored by 5.x, which left every frame blank),
+  // so render there at 1:1 pixels and copy each frame onto our canvas.
+  const anim = lottie.loadAnimation({ container: holder, renderer: 'canvas', loop: false, autoplay: false, animationData: JSON.parse(JSON.stringify(json)), rendererSettings: { clearCanvas: true, dpr: 1, preserveAspectRatio: 'xMidYMid meet' } as any })
   try {
     await new Promise<void>((res) => { if ((anim as any).isLoaded) res(); else { anim.addEventListener('DOMLoaded', () => res()); setTimeout(res, 3000) } })
+    const src = holder.querySelector('canvas')
+    if (!src) throw new Error('The animation could not be drawn in this browser.')
     const total = json.op - json.ip
     const seconds = total / json.fr
     const n = Math.max(1, Math.min(600, Math.round(seconds * o.fps)))
     const frames: Frame[] = []
     const delay = Math.round(1000 / o.fps)
     for (let i = 0; i < n; i++) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, W, H)
       anim.goToAndStop((i / n) * total, true)
+      ctx.clearRect(0, 0, W, H); ctx.drawImage(src, 0, 0, W, H)
       let px = ctx.getImageData(0, 0, W, H).data
       if (o.bg) {
         const t = document.createElement('canvas'); t.width = W; t.height = H

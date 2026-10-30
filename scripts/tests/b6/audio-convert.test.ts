@@ -37,5 +37,11 @@ for (const [input, data] of Object.entries(inputs)) {
     } catch (e: any) { fails++; console.log('FAIL', input, '->', f, e.message.split('\n')[0]) }
   }
 }
+// Vorbis in bitrate mode refused 320k mono and 192k at 22 kHz; quality mode takes every mix
+for (const [br, extra] of [[320, ['-ac', '1']], [192, ['-ar', '22050']], [256, ['-ar', '16000', '-ac', '1']]] as const) {
+  const { ext, args } = convertArgs('ogg', br)
+  const r = await ffmpeg(['-i', 'in.mp3', ...extra, ...args, `out.${ext}`], inputs, [`out.${ext}`])
+  if (r.code !== 0 || !r.out[`out.${ext}`]?.length) { fails++; console.log('FAIL ogg', br, extra.join(' ')) } else console.log('ok   ogg', br, extra.join(' '), r.out[`out.${ext}`].length)
+}
 assert.equal(fails, 0, `${fails} conversions failed`)
 console.log('all audio conversions passed')

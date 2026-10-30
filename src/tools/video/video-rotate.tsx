@@ -43,7 +43,9 @@ export default function VideoRotate() {
         if (lossless && canLossless && /\.(mp4|mov|m4v)$/i.test(file.name)) {
           h.setLabel('Updating rotation flag')
           const ext = extFromBlob(file).slice(1) === 'mov' ? 'mov' : 'mp4'
-          const blob = await h.run(rotateMetaOp(input, rot, ext), [{ name: input, file }])
+          // phone clips already carry a rotation flag; the new flag turns the picture from where it shows now
+          const info = await h.probe().catch(() => null)
+          const blob = await h.run(rotateMetaOp(input, rot, ext, info?.rotation ?? 0), [{ name: input, file }])
           return { blob, name: outName(file, `rotated-${rot}`, ext), title: 'Rotated (no re-encode)' }
         }
         const info = await h.probe()

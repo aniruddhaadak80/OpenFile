@@ -500,11 +500,16 @@ export function StatusPill({ state }: { state?: 'wait' | 'run' | 'done' | 'err' 
 }
 
 /** Landing dropzone for image tools with a paste hint. */
-export function ImageDrop({ onFiles, multiple = true, label, sub, accept = IMG_ACCEPT }: { onFiles: (f: File[]) => void; multiple?: boolean; label?: React.ReactNode; sub?: React.ReactNode; accept?: string }) {
-  usePasteImages(useCallback((f: File[]) => onFiles(multiple ? f : f.slice(0, 1)), [onFiles, multiple]))
+export function ImageDrop({ onFiles, multiple = true, label, sub, accept = IMG_ACCEPT }: { onFiles: (f: File[]) => unknown; multiple?: boolean; label?: React.ReactNode; sub?: React.ReactNode; accept?: string }) {
+  // Tools often decode the file straight away; when that fails (a damaged or mislabelled file) say so instead of doing nothing.
+  const safe = useCallback((f: File[]) => {
+    const fail = () => toast(f.length === 1 ? `Couldn't read ${f[0].name}. It may be damaged or not an image this browser can open.` : 'Some of those files could not be read as images.', 'error')
+    try { const r = onFiles(f); if (r instanceof Promise) r.catch(fail) } catch { fail() }
+  }, [onFiles])
+  usePasteImages(useCallback((f: File[]) => safe(multiple ? f : f.slice(0, 1)), [safe, multiple]))
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-      <Dropzone accept={accept} multiple={multiple} onFiles={onFiles}
+      <Dropzone accept={accept} multiple={multiple} onFiles={safe}
         label={label ?? (multiple ? 'Drop images here or click to browse' : 'Drop an image here or click to browse')}
         sub={sub ?? <>JPG, PNG, WEBP, GIF, AVIF, BMP · or paste with <kbd className="rounded border border-border px-1 font-mono">Ctrl/⌘ V</kbd> · never uploaded</>} />
     </motion.div>

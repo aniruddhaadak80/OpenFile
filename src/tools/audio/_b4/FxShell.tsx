@@ -7,6 +7,7 @@ import { baseName } from '@/lib/files'
 import { ffRun, ffProbe, extFromBlob } from '@/tools/video/_media/engine'
 import { matchAudioKbps, sourceRate } from '@/tools/video/_media/bitrate'
 import { audioCodecArgs } from '@/tools/video/_media/audio'
+import { vorbisQuality } from '@/tools/video/_media/codec-args'
 import { useMediaJob, useObjectUrl } from '@/tools/video/_media/media'
 import { JobPanel, FileBar, Note } from '@/tools/video/_media/ui'
 
@@ -40,7 +41,7 @@ export function mediaDuration(file: Blob, video = false): Promise<number> {
 }
 
 export function codecFor(ext: string, bitrate = 192) {
-  if (ext === 'webm') return ['-c:a', 'libvorbis', '-b:a', `${bitrate}k`]
+  if (ext === 'webm') return ['-c:a', 'libvorbis', '-q:a', vorbisQuality(bitrate)]
   if (ext === 'mp4' || ext === 'mov' || ext === 'm4v') return ['-c:a', 'aac', '-b:a', `${bitrate}k`]
   if (ext === 'mkv') return ['-c:a', 'aac', '-b:a', `${bitrate}k`]
   if (ext === 'avi') return ['-c:a', 'libmp3lame', '-b:a', `${bitrate}k`]

@@ -168,7 +168,7 @@ export async function ffRunMany(opts: RunOpts & { pattern: RegExp }): Promise<{ 
   return out.map((o) => ({ name: o.name, blob: new Blob([o.data as BlobPart], { type: mimeOf(o.name) }) }))
 }
 
-export interface ProbeInfo { duration: number; hasVideo: boolean; hasAudio: boolean; width?: number; height?: number; fps?: number; sampleRate?: number; channels?: number; vcodec?: string; acodec?: string; totalKbps?: number; videoKbps?: number; audioKbps?: number }
+export interface ProbeInfo { duration: number; hasVideo: boolean; hasAudio: boolean; width?: number; height?: number; /** display matrix rotation, counter-clockwise degrees as ffmpeg prints it (phones store portrait clips this way) */ rotation?: number; fps?: number; sampleRate?: number; channels?: number; vcodec?: string; acodec?: string; totalKbps?: number; videoKbps?: number; audioKbps?: number }
 
 /** Read stream info from ffmpeg's banner (`ffmpeg -i file`). */
 export async function ffProbe(file: Blob, name = 'probe' + extFromBlob(file)): Promise<ProbeInfo> {
@@ -203,6 +203,13 @@ export function parseProbe(text: string): ProbeInfo {
     info.hasVideo = !/attached pic/.test(v[1]); info.vcodec = v[1].split(/[\s,(]/)[0]
     const r = v[1].match(/, (\d{2,5})x(\d{2,5})/); if (r) { info.width = +r[1]; info.height = +r[2] }
     const f = v[1].match(/([\d.]+) fps/) || v[1].match(/([\d.]+) tbr/); if (f) info.fps = +f[1]
+    // width/height are the stored size; a phone clip filmed upright is stored sideways with a rotation flag.
+    // ffmpeg rotates the frames before any filter runs, so report the size as the picture is shown.
+    const rot = text.match(/displaymatrix: rotation of (-?[\d.]+) degrees/)
+    if (rot) {
+      info.rotation = ((Math.round(+rot[1]) % 360) + 360) % 360
+      if ((info.rotation === 90 || info.rotation === 270) && info.width && info.height) [info.width, info.height] = [info.height, info.width]
+    }
   }
   const a = text.match(/Stream #\d+:\d+[^\n]*?: Audio: ([^\n]+)/)
   if (a) {

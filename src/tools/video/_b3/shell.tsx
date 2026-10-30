@@ -3,16 +3,20 @@
 import React, { useRef, useState } from 'react'
 import { Button, Dropzone, ResultCard, ToolGrid } from '@/components/ui'
 import { baseName } from '@/lib/files'
-import type { Op } from '@/lib/b3/ffops'
+import { safeAudioCopy, type Op } from '@/lib/b3/ffops'
 import { ffRun, ffProbe, extFromBlob, type ProbeInfo } from '../_media/engine'
 import { fmtTime, useMediaJob, useObjectUrl, useVideoMeta, type VideoMeta, type MediaJob } from '../_media/media'
 import { FileBar, JobPanel, Reveal, VideoStage, Note } from '../_media/ui'
+import { capToSource, sourceRate } from '../_media/bitrate'
 
 export const VIDEO_ACCEPT = 'video/*,.mkv,.avi,.mov,.m4v,.flv,.wmv,.3gp,.ts,.mts,.m2ts,.mpg,.mpeg,.vob,.ogv'
 export const inName = (f: Blob, stem = 'in') => stem + extFromBlob(f)
 
 export interface Ctx { file: File; url: string | null; meta: VideoMeta | null; video: React.RefObject<HTMLVideoElement | null> }
-export interface RunHelpers { setProgress: (p: number) => void; setLabel: (s: string) => void; probe: () => Promise<ProbeInfo>; run: (op: Op, inputs: { name: string; file: Blob | Uint8Array }[], duration?: number) => Promise<Blob> }
+/** `pixelScale`: output pixels over source pixels, when a recipe makes the picture bigger (resize, canvas, grid).
+ * `cap: false` leaves the encoder uncapped (the input is not the main video, for example a slideshow). */
+export interface RunOpts { pixelScale?: number; cap?: boolean }
+export interface RunHelpers { setProgress: (p: number) => void; setLabel: (s: string) => void; probe: () => Promise<ProbeInfo>; run: (op: Op, inputs: { name: string; file: Blob | Uint8Array }[], duration?: number, opts?: RunOpts) => Promise<Blob> }
 export interface Output { blob: Blob; name: string; title?: string; note?: string }
 
 export function VideoOpTool({ dropLabel, dropSub, accept = VIDEO_ACCEPT, main, side, action, icon, onRun, disabled, below, onReset }: {
@@ -42,7 +46,23 @@ export function VideoOpTool({ dropLabel, dropSub, accept = VIDEO_ACCEPT, main, s
       if (!probeCache.current || probeCache.current.f !== file) probeCache.current = { f: file, p: ffProbe(file, inName(file)) }
       return probeCache.current.p
     }
-    const run = (op: Op, inputs: { name: string; file: Blob | Uint8Array }[], duration?: number) => ffRun({ inputs, args: op.args, output: op.output, duration: duration ?? (meta?.duration || undefined), onProgress: setProgress })
+    const run = async (op: Op, inputs: { name: string; file: Blob | Uint8Array }[], duration?: number, opts: RunOpts = {}) => {
+      // only recipes that read this file need its probe
+      const info = inputs.some((i) => i.file === file) ? await probe().catch(() => null) : null
+      let args = op.args
+      if (info) {
+        // PCM, FLAC, Vorbis, AC-3 and Opus audio cannot be copied into an MP4 that plays everywhere
+        args = safeAudioCopy(op, info.acodec).args
+        // keep re-encodes near the source bitrate so an edit does not come back several times bigger
+        if (opts.cap !== false) {
+          const src = sourceRate(info, file.size, info.duration || meta?.duration || 0)
+          // the output file name stays last, so the cap goes in front of it
+          const outAt = args.lastIndexOf(op.output)
+          if (outAt === args.length - 1) args = [...capToSource(args.slice(0, -1), { ...src, video: src.video * Math.max(1, opts.pixelScale ?? 1) }, 1.25), op.output]
+        }
+      }
+      return ffRun({ inputs, args, output: op.output, duration: duration ?? (meta?.duration || undefined), onProgress: setProgress })
+    }
     setLabel('Reading streams')
     const r = await onRun(ctx, { setProgress, setLabel, probe, run })
     setOut(r)

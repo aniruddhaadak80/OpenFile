@@ -7,13 +7,13 @@ import { type Anim, type Frame, flattenAnim, hexToRgba, estimateRawBytes } from 
 import { decodeGif, encodeGif, type GifOptions } from './gif'
 import { decodePng, encodeApng, encodePngFrame } from './png'
 import { decodeWebp, isWebp, patchWebpDurations } from './webp'
-import { webpArgs, animVideoArgs } from './args'
+import { webpArgs, animVideoArgs, videoToApngArgs } from './args'
 
 export * from './core'
 export { decodeGif, encodeGif, gifLoopCount, type GifOptions } from './gif'
 export { decodePng, encodeApng, encodePngFrame, isApng } from './png'
 export { parseWebp, decodeWebp, isWebp, patchWebpDurations } from './webp'
-export { webpArgs, animVideoArgs } from './args'
+export { webpArgs, animVideoArgs, videoToApngArgs } from './args'
 
 export type Kind = 'gif' | 'png' | 'webp' | 'avif' | 'jxl' | 'image' | 'video' | 'unknown'
 
@@ -120,10 +120,8 @@ export interface VideoToAnimOpts { fps?: number; width?: number; start?: number;
 
 /** Decode a video clip into frames using ffmpeg (writes an intermediate APNG). */
 export async function videoToAnim(file: Blob, o: VideoToAnimOpts = {}): Promise<Anim> {
-  const fps = o.fps ?? 12, input = 'in' + extFromBlob(file)
-  const vf = [`fps=${fps}`]
-  if (o.width) vf.push(`scale=${Math.round(o.width)}:-2:flags=lanczos`)
-  const args = [...(o.start ? ['-ss', String(o.start)] : []), ...(o.duration ? ['-t', String(o.duration)] : []), '-i', input, '-vf', vf.join(','), '-frames:v', String(o.maxFrames ?? 900), '-an', '-f', 'apng', '-plays', '0', 'out.apng']
+  const input = 'in' + extFromBlob(file)
+  const args = videoToApngArgs(input, 'out.apng', { fps: o.fps ?? 12, width: o.width, start: o.start, duration: o.duration, maxFrames: o.maxFrames })
   const blob = await ffRun({ inputs: [{ name: input, file }], args, output: 'out.apng', duration: o.duration, onProgress: o.onProgress })
   const a = decodePng(new Uint8Array(await blob.arrayBuffer()))
   a.loop = 0; a.source = 'Video'

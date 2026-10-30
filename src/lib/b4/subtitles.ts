@@ -78,6 +78,20 @@ export function detectFormat(text: string, name = ''): SubFormat {
   return byExt[ext] || 'srt'
 }
 
+/* ---------------- WebVTT text escaping ---------------- */
+// WebVTT cue text is HTML-like: a literal & or < has to be written as &amp; or &lt;, and readers turn them back.
+const VTT_ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', nbsp: '\u00a0', lrm: '\u200e', rlm: '\u200f', quot: '"', apos: "'" }
+export function vttDecode(t: string): string {
+  return t.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e: string) => {
+    if (e[0] === '#') { const n = e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10); return Number.isFinite(n) && n > 0 && n < 0x110000 ? String.fromCodePoint(n) : m }
+    return VTT_ENTITIES[e.toLowerCase()] ?? m
+  })
+}
+/** Escape & and any < that does not open a WebVTT tag (b, i, u, c, v, lang, ruby, rt, or a timestamp). */
+export function vttEncode(t: string): string {
+  return t.replace(/&/g, '&amp;').replace(/<(?!\/?(?:b|i|u|c|v|lang|ruby|rt)\b|\d+:\d{2})/gi, '&lt;')
+}
+
 /* ---------------- parsers ---------------- */
 function parseSrtLike(text: string): Cue[] {
   const blocks = normNl(text).replace(/^WEBVTT[^\n]*\n/, '').split(/\n{2,}/)
@@ -243,7 +257,8 @@ export function parseSubtitles(text: string, opts: { name?: string; format?: Sub
   let cues: Cue[] = []
   let assHeader: string | undefined
   switch (format) {
-    case 'srt': case 'vtt': cues = parseSrtLike(text); break
+    case 'srt': cues = parseSrtLike(text); break
+    case 'vtt': cues = parseSrtLike(text).map((c) => ({ ...c, text: vttDecode(c.text) })); break
     case 'ass': case 'ssa': { const r = parseAss(text); cues = r.cues; assHeader = r.header; break }
     case 'sbv': cues = parseSbv(text); break
     case 'sub': cues = parseMicroDvd(text, opts.fps ?? 23.976); break
@@ -277,7 +292,7 @@ export function writeSubtitles(cues: Cue[], format: SubFormat, o: WriteOpts = {}
   const list = [...cues].sort((a, b) => a.start - b.start)
   switch (format) {
     case 'srt': return list.map((c, i) => `${i + 1}\n${fmtClock(c.start)} --> ${fmtClock(c.end)}\n${tx(c, o)}\n`).join('\n')
-    case 'vtt': return 'WEBVTT\n\n' + list.map((c) => `${fmtClock(c.start, '.')} --> ${fmtClock(c.end, '.')}\n${tx(c, o)}\n`).join('\n')
+    case 'vtt': return 'WEBVTT\n\n' + list.map((c) => `${fmtClock(c.start, '.')} --> ${fmtClock(c.end, '.')}\n${vttEncode(tx(c, o))}\n`).join('\n')
     case 'ass': case 'ssa': {
       const ssa = format === 'ssa'
       const keep = o.assHeader && (ssa ? !/\[V4\+ Styles\]/i.test(o.assHeader) : /\[V4\+ Styles\]/i.test(o.assHeader))

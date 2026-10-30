@@ -22,6 +22,18 @@ export function sourceRate(info: ProbeInfo | null | undefined, size: number, dur
   return { total, video, audio }
 }
 
+/** MP2 and AC-3 encoders only accept fixed bitrates: an in-between value makes the encoder refuse to start. */
+const FIXED_RATES: Record<string, number[]> = {
+  mp2: [32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384],
+  ac3: [32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, 448, 512, 576, 640],
+}
+/** The capped audio bitrate, moved up to the next rate the encoder accepts (never above the recipe's own rate). */
+export function snapAudioKbps(codec: string, kbps: number, recipe: number): number {
+  const steps = FIXED_RATES[codec]
+  if (!steps) return kbps
+  return steps.find((s) => s >= kbps && (!(recipe > 0) || s <= recipe)) ?? (recipe > 0 ? recipe : steps[steps.length - 1])
+}
+
 const CAPPABLE = ['libx264', 'libx265', 'libvpx', 'libvpx-vp9', 'mpeg4', 'msmpeg4', 'mpeg2video', 'wmv2']
 
 /** Caps video and audio bitrates in an ffmpeg argument list at `slack` times the source. Unknown rates are left alone. */
@@ -35,7 +47,10 @@ export function capToSource(args: string[], src: SourceRate, slack = 1.1): strin
     const ci = out.indexOf('-c:v')
     if (ci >= 0 && CAPPABLE.includes(out[ci + 1]) && !out.includes('-maxrate')) out.push('-maxrate', `${v}k`, '-bufsize', `${v * 2}k`)
   }
-  if (a) for (let i = 0; i < out.length - 1; i++) if (out[i] === '-b:a' && !(kbpsOf(out[i + 1]) <= a)) out[i + 1] = `${a}k`
+  if (a) {
+    const ci = out.indexOf('-c:a'), ac = ci >= 0 ? out[ci + 1] : ''
+    for (let i = 0; i < out.length - 1; i++) if (out[i] === '-b:a' && !(kbpsOf(out[i + 1]) <= a)) out[i + 1] = `${snapAudioKbps(ac, a, kbpsOf(out[i + 1]))}k`
+  }
   return out
 }
 

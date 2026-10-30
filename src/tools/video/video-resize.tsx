@@ -49,11 +49,12 @@ export default function VideoResize() {
           </div>}
         </>
       }}
-      onRun={async ({ file }, hh) => {
+      onRun={async ({ file, meta }, hh) => {
         const info = await hh.probe()
         hh.setLabel('Resizing')
         const input = inName(file)
-        const blob = await hh.run(resizeOp(input, w, h, mode, pad, color, info.hasAudio), [{ name: input, file }])
+        const srcW = info.width || meta?.width || 0, srcH = info.height || meta?.height || 0
+        const blob = await hh.run(resizeOp(input, w, h, mode, pad, color, info.hasAudio), [{ name: input, file }], undefined, { pixelScale: srcW && srcH ? (w * h) / (srcW * srcH) : 1 })
         return { blob, name: outName(file, `${w}x${h}`), title: `Resized to ${w}×${h}` }
       }}
     />

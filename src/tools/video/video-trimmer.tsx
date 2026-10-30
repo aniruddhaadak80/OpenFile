@@ -3,7 +3,8 @@ import { Play, Pause, Scissors, ArrowLeftToLine, ArrowRightToLine, Repeat } from
 import { Button, Dropzone, Label, ResultCard, Segmented, ToolGrid, cn } from '@/components/ui'
 import { toast } from '@/components/toast'
 import { baseName } from '@/lib/files'
-import { ffRun, extFromBlob, ts, X264, VP8 } from './_media/engine'
+import { ffRun, ffProbe, extFromBlob, isCancel, ts, X264, VP8, type ProbeInfo } from './_media/engine'
+import { capToSource, sourceRate } from './_media/bitrate'
 import { fmtTime, useMediaJob, useObjectUrl, useThumbStrip, useVideoMeta } from './_media/media'
 import { FileBar, JobPanel, Note, RangeTimeline, Reveal, TimeInput, VideoStage } from './_media/ui'
 
@@ -76,9 +77,10 @@ export default function VideoTrimmer() {
   const inExt = file ? extFromBlob(file) : '.mp4'
   const sameContainer = inExt === `.${fmt}` || (fmt === 'mp4' && (inExt === '.mov' || inExt === '.m4v'))
 
-  const encodeArgs = (out: string) => fmt === 'mp4'
-    ? [...X264, '-crf', '20', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', out]
-    : [...VP8, '-crf', '10', '-b:v', '2M', '-c:a', 'libvorbis', '-b:a', '128k', out]
+  // even size for odd sources (641x361), and a bitrate kept near the source so a short cut is not bigger than the whole file
+  const encodeArgs = (out: string, info: ProbeInfo | null) => [...capToSource(fmt === 'mp4'
+    ? ['-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', ...X264, '-crf', '20', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart']
+    : ['-vf', 'scale=trunc(iw/2)*2:trunc(ih/2)*2', ...VP8, '-crf', '10', '-b:v', '2M', '-c:a', 'libvorbis', '-b:a', '128k'], sourceRate(info, file?.size ?? 0, duration), 1.25), out]
 
   const go = () => job.run(async ({ setProgress, setLabel }) => {
     if (!file) return
@@ -96,8 +98,10 @@ export default function VideoTrimmer() {
       }
     }
     if (!blob) {
-      setLabel('Re-encoding the selection…'); setProgress(0)
-      blob = await ffRun({ inputs: [{ name: input, file }], args: ['-ss', ts(s), '-i', input, '-t', ts(len), ...encodeArgs(out)], output: out, duration: len, onProgress: setProgress })
+      setLabel('Reading the source…'); setProgress(0)
+      const info = await ffProbe(file, input).catch((err) => { if (isCancel(err)) throw err; return null })
+      setLabel('Re-encoding the selection…')
+      blob = await ffRun({ inputs: [{ name: input, file }], args: ['-ss', ts(s), '-i', input, '-t', ts(len), ...encodeArgs(out, info)], output: out, duration: len, onProgress: setProgress })
     }
     setResult({ blob, name: `${baseName(file.name)}-trim-${fmtTime(s, 1).replace(/[:.]/g, '')}-${fmtTime(e, 1).replace(/[:.]/g, '')}.${fmt}` })
   })

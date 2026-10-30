@@ -48,6 +48,7 @@ const DEVICES: { id: string; label: string; fmt: Fmt; scale?: string; extra?: st
   { id: 'oldphone', label: 'Basic phone', fmt: '3gp' },
 ]
 const CRF: Record<Q, number> = { high: 20, medium: 24, low: 29 }
+const EVEN = 'scale=trunc(iw/2)*2:trunc(ih/2)*2'
 
 export default function VideoConverter() {
   const [file, setFile] = useState<File | null>(null)
@@ -59,7 +60,7 @@ export default function VideoConverter() {
   const [tryCopy, setTryCopy] = useState(true)
   const [device, setDevice] = useState('')
   const [showMore, setShowMore] = useState(false)
-  const [result, setResult] = useState<{ blob: Blob; name: string; copied: boolean } | null>(null)
+  const [result, setResult] = useState<{ blob: Blob; name: string; copied: boolean; fmt: Fmt } | null>(null)
   const resultUrl = useObjectUrl(result?.blob)
   const job = useMediaJob()
 
@@ -94,12 +95,14 @@ export default function VideoConverter() {
         base = capToSource(base, sourceRate(info, file.size, dur ?? 0))
       }
       // a device preset adds its own size and profile on top of the format recipe
+      // and every re-encode ends on an even size: H.264, VP8 and WMV refuse odd sizes such as 641×361
       const vfAt = base.indexOf('-vf')
-      const args = dev?.scale ? (vfAt >= 0 ? base.map((a, i) => (i === vfAt + 1 ? `${a},${dev.scale}` : a)) : ['-vf', dev.scale, ...base]) : base
+      const vf = [vfAt >= 0 ? base[vfAt + 1] : '', dev?.scale ?? '', EVEN].filter(Boolean).join(',')
+      const args = vfAt >= 0 ? base.map((a, i) => (i === vfAt + 1 ? vf : a)) : ['-vf', vf, ...base]
       blob = await ffRun({ inputs: [{ name: input, file }], args: ['-i', input, '-map', '0:v:0?', '-map', '0:a:0?', ...args, ...(dev?.extra && args.includes('libx264') ? dev.extra : []), out], output: out, duration: dur, onProgress: setProgress })
     }
     if (copied) toast('Remuxed instantly, no quality lost', 'success')
-    setResult({ blob, name: `${baseName(file.name)}${dev ? '-' + dev.id : ''}.${extFor(fmt)}`, copied })
+    setResult({ blob, name: `${baseName(file.name)}${dev ? '-' + dev.id : ''}.${extFor(fmt)}`, copied, fmt })
   })
 
   if (!file) return (
@@ -127,7 +130,7 @@ export default function VideoConverter() {
               ))}
               <Link to="/video-to-gif" className="rounded-xl border border-dashed border-border py-2.5 text-center text-sm font-semibold text-muted transition hover:border-accent hover:text-accent">GIF ↗</Link>
             </div>
-            {!showMore && !MORE.includes(fmt) && <button onClick={() => setShowMore(true)} className="mt-2 text-xs font-medium text-accent hover:underline cursor-pointer">More formats (3GP, FLV, WMV, MPEG-2, TS, VOB, OGV, DivX, ProRes)</button>}
+            {!showMore && !MORE.includes(fmt) && <button onClick={() => setShowMore(true)} className="mt-2 text-xs font-medium text-accent hover:underline cursor-pointer">More formats ({MORE.map((f) => FORMATS[f].label).join(', ')})</button>}
           </div>
           <div>
             <Label>Or pick a device</Label>
@@ -156,8 +159,8 @@ export default function VideoConverter() {
       {result && resultUrl && (
         <Reveal k={resultUrl}>
           <ResultCard blob={result.blob} filename={result.name} originalSize={file.size} title={result.copied ? 'Converted (lossless remux)' : 'Converted'} onReset={reset}>
-            {result.blob.size > file.size * 1.05 && <Note>This copy is {Math.round((result.blob.size / file.size - 1) * 100)}% bigger than the original ({FORMATS[fmt].label} {fmt === 'prores' || fmt === 'avi' || fmt === 'divx' || fmt === 'mpg' || fmt === 'vob' || fmt === 'wmv' || fmt === 'asf' ? 'uses an older or editing codec that needs more space' : 'needed more data at this quality'}). Pick Small for a lighter file, or use Video Compressor.</Note>}
-            {PLAYABLE.includes(fmt) ? <video src={resultUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" /> : <Note>Browsers can't play {FORMATS[fmt].label} inline, but the file opens in VLC, your OS player and editors.</Note>}
+            {result.blob.size > file.size * 1.05 && <Note>This copy is {Math.round((result.blob.size / file.size - 1) * 100)}% bigger than the original ({FORMATS[result.fmt].label} {['prores', 'avi', 'divx', 'mpg', 'vob', 'wmv', 'asf'].includes(result.fmt) ? 'uses an older or editing codec that needs more space' : 'needed more data at this quality'}). Pick Small for a lighter file, or use Video Compressor.</Note>}
+            {PLAYABLE.includes(result.fmt) ? <video src={resultUrl} controls playsInline className="max-h-80 w-full rounded-xl bg-black" /> : <Note>Browsers can't play {FORMATS[result.fmt].label} inline, but the file opens in VLC, your OS player and editors.</Note>}
           </ResultCard>
         </Reveal>
       )}

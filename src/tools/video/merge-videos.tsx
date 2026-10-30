@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button, Dropzone, Label, ResultCard, Segmented, Select, Slider, ToolGrid, Empty } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
 import { ffRun, ffProbe, extFromBlob, X264, type ProbeInfo } from './_media/engine'
+import { sourceRate } from './_media/bitrate'
 import { captureFrames, fmtTime, probeVideo, stamp, useMediaJob, useObjectUrl } from './_media/media'
 import { JobPanel, Note, Reveal } from './_media/ui'
 
@@ -125,7 +126,14 @@ export default function MergeVideos() {
       graph = `${parts.join(';')};${chain.join(';')}`
     }
     const inputs = clips.map((c, i) => ({ name: `in${i}${extFromBlob(c.file)}`, file: c.file as Blob }))
-    const args = [...inputs.flatMap((x) => ['-i', x.name]), '-filter_complex', graph, '-map', '[v]', '-map', '[a]', ...X264, '-crf', '22', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', 'out.mp4']
+    // cap the encoder near the richest clip's bitrate (scaled to the output size), so joining two clips is not several times their size
+    const capKbps = Math.max(0, ...infos.map((x, i) => {
+      const r = sourceRate(x, clips[i].file.size, durs[i])
+      const px = x.width && x.height ? (w * h) / (x.width * x.height) : 1
+      return r.video * Math.max(1, px)
+    }))
+    const cap = capKbps > 0 ? Math.max(300, Math.round(capKbps * 1.25)) : 0
+    const args = [...inputs.flatMap((x) => ['-i', x.name]), '-filter_complex', graph, '-map', '[v]', '-map', '[a]', ...X264, '-crf', '22', ...(cap ? ['-maxrate', `${cap}k`, '-bufsize', `${cap * 2}k`] : []), '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', 'out.mp4']
     const sum = durs.reduce((a, d) => a + d, 0) - tdEff * (clips.length - 1)
     const blob = await ffRun({ inputs, args, output: 'out.mp4', duration: sum || undefined, onProgress: (p) => setProgress(0.05 + p * 0.95) })
     setResult(blob)

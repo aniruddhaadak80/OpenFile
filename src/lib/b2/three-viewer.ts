@@ -344,6 +344,12 @@ export const EXPORT_EXT: Record<ExportFmt, string> = { glb: 'glb', gltf: 'gltf',
 
 export async function exportModel(root: THREE.Object3D, fmt: ExportFmt, animations: THREE.AnimationClip[] = []): Promise<Blob> {
   root.updateMatrixWorld(true)
+  // An empty STL or OBJ looks like a success but opens as nothing, so say plainly when there is no surface to save.
+  let meshes = 0, lines = 0, points = 0
+  root.traverse((o: any) => { if (!o.geometry?.attributes?.position?.count) return; if (o.isMesh) meshes++; else if (o.isLine) lines++; else if (o.isPoints) points++ })
+  if (!meshes && !lines && !points) throw new Error('This model has no geometry to save.')
+  if (!meshes && (fmt.startsWith('stl') || fmt === 'usdz' || (fmt.startsWith('ply') && !points)))
+    throw new Error('This model holds only lines, curves or points, with no surfaces. Save it as GLB, glTF or OBJ instead.')
   switch (fmt) {
     case 'glb': case 'gltf': {
       const { GLTFExporter } = await import('three/examples/jsm/exporters/GLTFExporter.js')

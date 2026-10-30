@@ -39,3 +39,14 @@ const t2 = S.parseSubtitles(tt); assert.equal(t2.cues[0].end, 3.5); assert.equal
 const wj = JSON.stringify({ chunks: [{ timestamp: [0, 1.2], text: ' hi' }] })
 assert.equal(S.parseSubtitles(wj).cues[0].end, 1.2)
 console.log('subtitles: all tests passed')
+
+// WebVTT entities: &amp; in a VTT file is an ampersand, and a VTT file written back escapes it again
+{
+  const vtt = 'WEBVTT\n\n00:00.500 --> 00:02.500\nFish &amp; chips &lt;3 <i>now</i>\n'
+  const d = S.parseSubtitles(vtt, { name: 'a.vtt' })
+  assert.equal(d.cues[0].text, 'Fish & chips <3 <i>now</i>')
+  assert.match(S.writeSubtitles(d.cues, 'srt'), /Fish & chips <3 <i>now<\/i>/)
+  assert.match(S.writeSubtitles(d.cues, 'vtt'), /Fish &amp; chips &lt;3 <i>now<\/i>/)
+  assert.equal(S.vttDecode('a &#38; b &#x26; c &bogus;'), 'a & b & c &bogus;')
+}
+console.log('vtt entities ok')

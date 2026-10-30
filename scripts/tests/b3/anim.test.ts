@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import { decodeGif, encodeGif, gifLoopCount } from '../../../src/lib/b3/anim/gif'
 import { decodePng, encodeApng, isApng } from '../../../src/lib/b3/anim/png'
 import { parseWebp, patchWebpDurations } from '../../../src/lib/b3/anim/webp'
-import { webpArgs, animVideoArgs } from '../../../src/lib/b3/anim/args'
+import { webpArgs, animVideoArgs, videoToApngArgs } from '../../../src/lib/b3/anim/args'
 import * as C from '../../../src/lib/b3/anim/core'
 // @ts-ignore
 import { ffmpeg } from './ffwasm.mjs'
@@ -109,6 +109,20 @@ for (const fmt of ['mp4', 'webm'] as const) await t(`${fmt} from apng`, async ()
   const r = await ffmpeg(animVideoArgs('in.apng', 'out.' + fmt, fmt), { 'in.apng': encodeApng(a) }, ['out.' + fmt])
   assert.equal(r.code, 0, r.logs.slice(-4).join('\n'))
   assert.ok(r.out['out.' + fmt].length > 500)
+})
+
+await t('video to apng args: frames become RGBA so palette-changing FLI/FLC sources encode', async () => {
+  const a = videoToApngArgs('in.flc', 'out.apng', { fps: 15, maxFrames: 2000 })
+  assert.deepEqual(a, ['-i', 'in.flc', '-vf', 'fps=15,format=rgba', '-frames:v', '2000', '-an', '-f', 'apng', '-plays', '0', 'out.apng'])
+  const b = videoToApngArgs('in.mp4', 'out.apng', { fps: 12, width: 320.4, start: 2, duration: 3 })
+  assert.deepEqual(b.slice(0, 7), ['-ss', '2', '-t', '3', '-i', 'in.mp4', '-vf'])
+  assert.equal(b[7], 'fps=12,scale=320:-2:flags=lanczos,format=rgba')
+  const flc = process.env.FLC_SAMPLE
+  if (flc && fs.existsSync(flc)) {
+    const r = await ffmpeg(a, { 'in.flc': fs.readFileSync(flc) }, ['out.apng'])
+    assert.equal(r.code, 0, r.logs.slice(-3).join('\n'))
+    assert.ok(decodePng(r.out['out.apng']).frames.length > 10)
+  }
 })
 
 console.log(`\n${passed} passed`)

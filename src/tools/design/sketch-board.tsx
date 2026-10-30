@@ -216,7 +216,7 @@ export default function SketchBoard() {
       const op = opRef.current
       if (op?.k === 'marquee') {
         const [x1, y1] = op.start, [x2, y2] = op.cur
-        ctx.fillStyle = 'rgba(109,74,255,0.08)'; ctx.strokeStyle = accent; ctx.lineWidth = 1 / z
+        ctx.fillStyle = 'rgba(245,165,36,0.1)'; ctx.strokeStyle = accent; ctx.lineWidth = 1 / z
         ctx.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1)); ctx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1))
       }
     }
