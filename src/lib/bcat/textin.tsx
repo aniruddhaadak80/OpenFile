@@ -27,6 +27,10 @@ export function useTextInput(sample = '', split: Split = 'lines') {
       }
       setCsv(null)
       if (/\.(pdf|docx|epub|odt|rtf|html?)$/.test(n)) { const { docPages } = await import('@/lib/b4/doctext'); setText((await docPages(f)).map((p) => p.text).join('\n\n')); return }
+      const b = new Uint8Array(await f.slice(0, 8192).arrayBuffer())
+      const utf16 = (b[0] === 0xff && b[1] === 0xfe) || (b[0] === 0xfe && b[1] === 0xff)
+      let ctrl = 0; for (const c of b) { if (c === 0 && !utf16) { ctrl = b.length; break } if (c < 9 || (c > 13 && c < 32)) ctrl++ }
+      if (!utf16 && b.length && ctrl / b.length > 0.1) { toast(`${f.name} is not a text file, so it was not opened. Choose a TXT, MD, CSV, PDF or DOCX file.`, 'error'); return }
       setText(await f.text())
     } catch (e: any) { toast(e?.message || 'Could not read this file', 'error') }
   }
