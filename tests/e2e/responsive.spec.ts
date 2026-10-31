@@ -7,6 +7,8 @@ const CONSOLE_ALLOW: RegExp[] = [
   // Open-source Playwright Chromium has no H.264; preview .mp4 files can fail to decode there (the app hides them).
   /Failed to load resource.*\.mp4/i,
   /MEDIA_ERR_SRC_NOT_SUPPORTED|NotSupportedError.*(video|media)/i,
+  // The optional latest-release lookup can hit the GitHub API rate limit on shared CI runners.
+  /Failed to load resource.*(403|429)/i,
 ]
 
 const test = base.extend<{ errors: string[] }>({
