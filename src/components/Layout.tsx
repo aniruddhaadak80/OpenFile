@@ -11,7 +11,7 @@ import { Toaster } from './toast'
 import { GlobalDrop } from './DropFlow'
 import { ShortcutsOverlay, OnboardingTour, OfflineIndicator, InstallPrompt, useGlobalShortcuts } from './Overlays'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
-import { catGroups, colsClass, evenCols, spanClass } from '@/lib/catgrid'
+import { catGroups, colsClass, spanClass } from '@/lib/catgrid'
 import { getIcon } from './icons'
 import { useReducedMotion } from '@/lib/store'
 import { cn } from './ui'
@@ -92,6 +92,20 @@ export function Layout() {
   const [megaEnd, setMegaEnd] = useState(true)
   const megaScroll = useCallback(() => { const el = megaBox.current; if (el) setMegaEnd(el.scrollTop + el.clientHeight >= el.scrollHeight - 8) }, [])
   useEffect(() => { if (mega) requestAnimationFrame(megaScroll) }, [mega, megaScroll])
+  // The menu lines up with the Tools button but always stays inside the viewport with a 16 px margin, at any width.
+  const [megaPos, setMegaPos] = useState<{ left: number; width: number }>({ left: 0, width: 860 })
+  useLayoutEffect(() => {
+    if (!mega) return
+    const place = () => {
+      const r = megaWrap.current?.getBoundingClientRect(); if (!r) return
+      const vw = document.documentElement.clientWidth, width = Math.min(1120, vw - 32)
+      const x = Math.min(Math.max(r.left, 16), vw - 16 - width)
+      setMegaPos({ left: Math.round(x - r.left), width })
+    }
+    place()
+    window.addEventListener('resize', place)
+    return () => window.removeEventListener('resize', place)
+  }, [mega])
   useEffect(() => { const a = startOffscreenMotion(), b = startFrameWatchdog(); return () => { a(); b() } }, [])
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPalette((p) => !p) } }
@@ -115,23 +129,24 @@ export function Layout() {
               <button onClick={() => { if (Date.now() - hoverAt.current < 500) setMega(true); else setMega((v) => !v) }} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-2 py-2 text-muted hover:text-fg cursor-pointer lg:px-3">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
               <AnimatePresence>
               {mega && (
-                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} className="absolute left-0 top-full w-[min(860px,calc(100vw-2rem))] pt-2">
+                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }} style={{ left: megaPos.left, width: megaPos.width }} className="absolute top-full pt-2">
                   <div className="relative">
                   <div ref={megaBox} onScroll={megaScroll} className="max-h-[75vh] space-y-5 overflow-y-auto rounded-2xl border border-border bg-surface p-5 shadow-2xl scrollbar-thin">
-                    {catGroups(CATEGORIES).map((group, gi) => { const lay = gi === 0 ? { base: 2, md: 4 } : { base: 2, lg: evenCols(group.length, [5, 4, 3]) }; return group.length > 0 && (
+                    {catGroups(CATEGORIES).map((group, gi) => { const lay = { base: 2, md: 4 } /* four even columns in both blocks: five left about 160 px per name at 1024 to 1280 px */; return group.length > 0 && (
                     <div key={gi} className={gi ? 'border-t border-border pt-5' : undefined}>
-                    {gi > 0 && <div className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted">More categories</div>}
-                    <div className={cn('grid gap-4', colsClass(lay))}>
-                    {group.map((c, i) => (
-                      <div key={c.id} className={spanClass(i, group.length, lay)}>
-                        <Link to={`/category/${c.id}`} className="mb-2 block text-xs font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.name}</Link>
+                    {gi > 0 && <div className="mb-3 px-1.5 text-[11px] font-semibold uppercase tracking-widest text-muted">More categories</div>}
+                    {/* Every name sits in its own column: a fixed icon slot keeps the text aligned, and a long name ends in an
+                        ellipsis (full name on hover) on desktop, or wraps to two lines on tablets, instead of running into the next column. */}
+                    <div className={cn('grid gap-x-6 gap-y-5', colsClass(lay))}>
+                    {group.map((c, i) => { const n = TOOLS.filter((t) => t.category === c.id).length; return (
+                      <div key={c.id} className={cn('min-w-0', spanClass(i, group.length, lay))}>
+                        <Link to={`/category/${c.id}`} title={c.name} className="mb-1.5 block truncate px-1.5 text-xs font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.name}</Link>
                         <div className="space-y-0.5">
                           {TOOLS.filter((t) => t.category === c.id).slice(0, 6).map((t) => { const I = getIcon(t.icon); return (
-                            <Link key={t.slug} to={`/${t.slug}`} className="flex items-center gap-2 rounded-md px-1.5 py-1 text-[13px] text-muted hover:bg-surface-2 hover:text-fg"><I className="size-3.5" />{t.name}</Link>) })}
-                          <Link to={`/category/${c.id}`} className="block px-1.5 py-1 text-xs text-accent">All {TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</Link>
+                            <Link key={t.slug} to={`/${t.slug}`} title={t.name} className="flex min-w-0 items-start gap-2 rounded-md px-1.5 py-1 text-[13px] text-muted hover:bg-surface-2 hover:text-fg"><I className="mt-[3px] size-3.5 shrink-0" aria-hidden="true" /><span className="min-w-0 max-lg:line-clamp-2 max-lg:whitespace-normal lg:truncate">{t.name}</span></Link>) })}
+                          <Link to={`/category/${c.id}`} className="block px-1.5 py-1 text-xs text-accent">All {n} {n === 1 ? 'tool' : 'tools'}</Link>
                         </div>
-                      </div>
-                    ))}
+                      </div>) })}
                     </div>
                     </div>) })}
                   </div>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Search, ArrowRight, ShieldCheck, Zap, Cpu, Workflow, Sparkles, GraduationCap, Users, Palette, Store, Check, X, Upload, Download, Lock, Infinity as Inf, Play, Star, ChevronDown, WifiOff, Code2, Layers, Command } from 'lucide-react'
@@ -154,11 +154,129 @@ function pipelineFor(list: ToolMeta[]): { kind: 'workspace' | 'chain'; steps: To
   return null
 }
 
+const popularFirst = (a: ToolMeta, b: ToolMeta) => Number(!!b.popular) - Number(!!a.popular) || Number(!!b.badge) - Number(!!a.badge)
+
+/** Tools from other categories that open this category's file types, best matches first, for the space a small category leaves. */
+function relatedTools(catId: string, list: ToolMeta[]) {
+  // The category's own main formats count most, and a tool made for a few formats beats one that opens anything.
+  const rank = new Map(allFormats(list).slice(0, 8).map((f, i) => [f.format, 8 - i]))
+  const score = (t: ToolMeta) => { const ins = toolFormats(t).inputs; return ins.reduce((s, f) => s + (rank.get(f) ?? 0), 0) / Math.sqrt(ins.length || 1) }
+  const near = TOOLS.filter((t) => t.category !== catId && score(t) > 0).sort((a, b) => score(b) - score(a) || popularFirst(a, b))
+  const seen = new Set(near.map((t) => t.slug))
+  return [...near, ...TOOLS.filter((t) => t.category !== catId && t.popular && !seen.has(t.slug))].slice(0, 40)
+}
+
+function useWide(q = '(min-width: 1024px)') {
+  const [on, setOn] = useState(() => typeof matchMedia === 'function' && matchMedia(q).matches)
+  useEffect(() => { const m = matchMedia(q); const f = () => setOn(m.matches); f(); m.addEventListener('change', f); return () => m.removeEventListener('change', f) }, [q])
+  return on
+}
+
+function ExplorerCard({ t, color, i, from }: { t: ToolMeta; color: string; i: number; from?: string }) {
+  const I = getIcon(t.icon)
+  const tint = from ? CATEGORIES.find((x) => x.id === t.category)?.color ?? color : color
+  return (
+    <motion.div data-fill-item initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 12) * 0.03 }}>
+      <Link to={`/${t.slug}`} className="group flex h-full items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-3 transition hover:border-transparent hover:bg-surface-2">
+        <span data-cat={t.category} className="icon-anim mt-0.5 shrink-0" style={{ color: tint }}><I className="size-4" /></span>
+        <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="rounded px-1 text-[9px] font-bold" style={{ background: (BADGE_COLORS[t.badge] ?? color) + '22', color: BADGE_COLORS[t.badge] ?? color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{from ? `${from}. ${t.desc}` : t.desc}</span></span>
+      </Link>
+    </motion.div>
+  )
+}
+
+/**
+ * The tool grid of the explorer panel. On wide screens the panel is as tall as the category list beside it, so the grid
+ * fills exactly the room it has: as many of the category's tools as fit, then, for a small category, tools from other
+ * categories that open the same files. It renders every candidate once, measures which whole rows fit, then shows only
+ * those and spreads the few spare pixels between the rows, so no category leaves a blank block above the footer.
+ * Below 1024 px the panel simply fits its content.
+ */
+function ExplorerTools({ cat, list, wide }: { cat: (typeof CATEGORIES)[number]; list: ToolMeta[]; wide: boolean }) {
+  const own = useMemo(() => [...list].sort(popularFirst), [list])
+  const rel = useMemo(() => (wide ? relatedTools(cat.id, list) : []), [cat.id, list, wide])
+  const box = useRef<HTMLDivElement>(null), grid = useRef<HTMLDivElement>(null)
+  const [fit, setFit] = useState<number | null>(null)
+  const label = cat.name.toLowerCase().replace(/ tools$/, '')
+  // Everything we could show, in order: own tools, then a heading and related tools.
+  const items: ({ k: 'tool'; t: ToolMeta; from?: string } | { k: 'head' })[] = wide
+    ? [...own.map((t) => ({ k: 'tool' as const, t })), ...(rel.length ? [{ k: 'head' as const }] : []), ...rel.map((t) => ({ k: 'tool' as const, t, from: CATEGORIES.find((x) => x.id === t.category)?.name }))]
+    : own.slice(0, 15).map((t) => ({ k: 'tool' as const, t }))
+  const measure = () => {
+    const b = box.current, g = grid.current
+    if (!b || !g) return
+    const h = b.clientHeight
+    const kids = [...g.children] as HTMLElement[]
+    let n = 0
+    for (const el of kids) { if (el.offsetTop + el.offsetHeight <= h + 0.5) n++; else break }
+    setFit(Math.max(1, n))
+  }
+  useLayoutEffect(() => { if (wide && fit === null) measure() }) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!wide || !box.current) return
+    let w = box.current.clientWidth, h = box.current.clientHeight
+    const ro = new ResizeObserver(([e]) => { const r = e.contentRect; if (Math.abs(r.width - w) > 1 || Math.abs(r.height - h) > 1) { w = r.width; h = r.height; setFit(null) } })
+    ro.observe(box.current)
+    return () => ro.disconnect()
+  }, [wide])
+
+  if (!wide) {
+    return (
+      <div className="relative mt-5 grid gap-2 @lg:grid-cols-2 @4xl:grid-cols-3">
+        {items.map((it, i) => it.k === 'tool' && <ExplorerCard key={it.t.slug} t={it.t} color={cat.color} i={i} />)}
+        {list.length > 15 && (
+          <Link to={`/category/${cat.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm @lg:col-span-2 @4xl:col-span-3 text-muted transition hover:border-accent hover:text-fg">+{list.length - 15} more {label} tools <ArrowRight className="size-3.5" /></Link>
+        )}
+      </div>
+    )
+  }
+  // Pick what to show from the measured count: when some own tools do not fit, the last slot becomes the "more" link.
+  let shown = items
+  let more = 0
+  if (fit !== null) {
+    shown = items.slice(0, fit)
+    if (fit < own.length) { shown = items.slice(0, Math.max(0, fit - 1)); more = own.length - shown.length }
+    if (shown[shown.length - 1]?.k === 'head') shown = shown.slice(0, -1)
+  }
+  return (
+    <div ref={box} className="relative mt-5 min-h-36 flex-1">
+      <div ref={grid} className={cn('absolute inset-0 grid auto-rows-max gap-2 overflow-hidden @lg:grid-cols-2 @4xl:grid-cols-3', fit === null ? 'content-start invisible' : 'content-between')}>
+        {shown.map((it, i) => it.k === 'head'
+          ? <div key="head" data-fill-item className="col-span-full flex items-center gap-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-muted"><span>Works well with {label}</span><span className="h-px flex-1 bg-border" aria-hidden="true" /></div>
+          : <ExplorerCard key={it.t.slug} t={it.t} color={cat.color} i={i} from={it.from} />)}
+        {more > 0 && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(shown.length, 12) * 0.03 }}>
+            <Link to={`/category/${cat.id}`} className="flex h-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm text-muted transition hover:border-accent hover:text-fg">+{more} more {label} tools <ArrowRight className="size-3.5" /></Link>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** Below 1024 px the panel fits its content; its height eases from one category to the next instead of jumping. */
+function ExplorerHeight({ wide, children }: { wide: boolean; children: React.ReactNode }) {
+  const inner = useRef<HTMLDivElement>(null)
+  const [h, setH] = useState<number>()
+  useEffect(() => {
+    if (wide || !inner.current) return
+    const ro = new ResizeObserver(() => { if (inner.current) setH(inner.current.offsetHeight) })
+    ro.observe(inner.current)
+    return () => ro.disconnect()
+  }, [wide])
+  if (wide) return <div className="min-w-0">{children}</div>
+  return (
+    <div className="min-w-0 overflow-hidden transition-[height] duration-300 ease-out motion-reduce:transition-none" style={{ height: h }}>
+      <div ref={inner}>{children}</div>
+    </div>
+  )
+}
+
 function CategoryExplorer() {
   const [cat, setCat] = useState(CATEGORIES[0].id)
+  const wide = useWide()
   const c = CATEGORIES.find((x) => x.id === cat) ?? CATEGORIES[0]
-  const list = TOOLS.filter((t) => t.category === c.id)
-  const top = [...list].sort((a, b) => Number(!!b.popular) - Number(!!a.popular) || Number(!!b.badge) - Number(!!a.badge)).slice(0, 15)
+  const list = useMemo(() => TOOLS.filter((t) => t.category === c.id), [c.id])
   const CatIcon = getIcon(list[0]?.icon ?? 'FileText')
   const formats = useMemo(() => allFormats(list).slice(0, 12), [c.id])
   const pipe = useMemo(() => pipelineFor(list), [c.id])
@@ -168,14 +286,15 @@ function CategoryExplorer() {
   return (
     <section className="mx-auto mt-24 max-w-7xl px-4 sm:px-6">
       <SectionHead kicker="Category explorer" title="Find the right station" sub="Pick a category to see what it can do." />
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]" data-tour="explorer">
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0 scrollbar-thin" role="tablist" aria-label="Categories">
+      {/* minmax(0,1fr): without it the one column below 1024 px grew to the width of the whole category strip (about 3400 px) */}
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[280px_minmax(0,1fr)]" data-tour="explorer">
+        <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0 scrollbar-thin" role="tablist" aria-label="Categories">
             {CATEGORIES.map((x) => {
               const n = TOOLS.filter((t) => t.category === x.id).length
               const on = x.id === cat
               return (
-                <button key={x.id} role="tab" aria-selected={on} aria-controls="cat-panel" onClick={() => setCat(x.id)} onMouseEnter={() => setCat(x.id)} className={cn('relative flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-left text-sm transition cursor-pointer', on ? 'text-fg' : 'text-muted hover:text-fg')}>
+                <button key={x.id} role="tab" aria-selected={on} aria-controls="cat-panel" onClick={() => setCat(x.id)} onMouseEnter={() => setCat(x.id)} className={cn('relative flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-left lg:min-h-9 lg:py-2 text-sm transition cursor-pointer', on ? 'text-fg' : 'text-muted hover:text-fg')}>
                   {on && <motion.span layoutId="cat-pill" className="absolute inset-0 rounded-xl border border-border bg-surface shadow-lg" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
                   <span className="relative size-2.5 rounded-full" style={{ background: x.color, boxShadow: on ? `0 0 12px ${x.color}` : undefined }} />
                   <span className="relative flex-1 font-medium">{x.name}</span>
@@ -186,6 +305,7 @@ function CategoryExplorer() {
           </div>
           <Link to="/tools" className="mt-3 hidden items-center gap-1.5 px-4 text-sm text-accent hover:underline lg:flex">Browse all {TOOLS.length} tools <ArrowRight className="size-3.5" /></Link>
         </div>
+        <ExplorerHeight wide={wide}>
         <AnimatePresence mode="wait">
           <motion.div key={c.id} id="cat-panel" role="tabpanel" aria-label={c.name} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }}
             onPointerMove={spotlightMove} className="spotlight @container relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface p-5 sm:p-8" style={{ ['--c' as string]: c.color }}>
@@ -204,18 +324,7 @@ function CategoryExplorer() {
                 ))}
               </div>
             )}
-            <div className="relative mt-5 grid gap-2 @lg:grid-cols-2 @4xl:grid-cols-3">
-              {top.map((t, i) => { const I = getIcon(t.icon); return (
-                <motion.div key={t.slug} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 12) * 0.03 }}>
-                  <Link to={`/${t.slug}`} className="group flex h-full items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-3 transition hover:border-transparent hover:bg-surface-2">
-                    <span data-cat={t.category} className="icon-anim mt-0.5 shrink-0" style={{ color: c.color }}><I className="size-4" /></span>
-                    <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="rounded px-1 text-[9px] font-bold" style={{ background: (BADGE_COLORS[t.badge] ?? c.color) + '22', color: BADGE_COLORS[t.badge] ?? c.color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{t.desc}</span></span>
-                  </Link>
-                </motion.div>) })}
-              {list.length > top.length && (
-                <Link to={`/category/${c.id}`} className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-border p-3 text-sm @lg:col-span-2 @4xl:col-span-3 text-muted transition hover:border-accent hover:text-fg">+{list.length - top.length} more {c.name.toLowerCase().replace(/ tools$/, '')} tools <ArrowRight className="size-3.5" /></Link>
-              )}
-            </div>
+            <ExplorerTools key={wide ? 'fill' : 'flow'} cat={c} list={list} wide={wide} />
             {pipe && (
               <div className="relative mt-5 rounded-2xl border border-border bg-gradient-to-r from-accent/8 via-transparent to-accent-2/8 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -233,8 +342,7 @@ function CategoryExplorer() {
                 <p className="mt-2 text-xs text-muted">{pipe.kind === 'workspace' ? 'Chain these steps once, then run them on hundreds of files at the same time.' : 'The result of the first tool opens straight in the second with one tap after you download.'}</p>
               </div>
             )}
-            <div className="min-h-5 flex-1" aria-hidden="true" />
-            <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-xs text-muted">
+            <div className={cn('relative flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-xs text-muted', 'mt-5')}>
               <span><Counter value={list.length} className="font-semibold text-fg" /> tools</span>
               <span><Counter value={allFormats(list).length} className="font-semibold text-fg" /> formats</span>
               {ai > 0 && <span><span className="font-semibold text-fg">{ai}</span> on-device AI</span>}
@@ -247,6 +355,7 @@ function CategoryExplorer() {
             </div>
           </motion.div>
         </AnimatePresence>
+        </ExplorerHeight>
       </div>
     </section>
   )
