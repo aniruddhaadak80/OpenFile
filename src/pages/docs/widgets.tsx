@@ -279,9 +279,9 @@ export function ToolsReference() {
       </div>
       <CategoryChips value={cat} onChange={setCat} counts={counts} />
       <div className="text-xs text-muted" aria-live="polite">Showing <b className="text-fg tabular-nums">{Math.min(limit, list.length)}</b> of <b className="text-fg tabular-nums">{list.length}</b> matching tools (<span className="tabular-nums">{TOOLS.length}</span> in total)</div>
-      <ul className="grid gap-2">
+      <ul className="grid grid-cols-[minmax(0,1fr)] gap-2">
         {list.slice(0, limit).map((t) => { const I = getIcon(t.icon); const c = catOf(t.category); const f = toolFormats(t); return (
-          <li key={t.slug} className="docs-cv">
+          <li key={t.slug} className="docs-cv min-w-0">
             <Link to={`/${t.slug}`} className="group flex items-start gap-3 rounded-2xl border border-border bg-surface p-3 transition hover:border-accent/50">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl" style={{ background: `${c?.color}22`, color: c?.color }}><I className="size-4.5" /></span>
               <span className="min-w-0 flex-1">
