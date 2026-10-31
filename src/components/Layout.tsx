@@ -139,7 +139,7 @@ export function Layout() {
                         ellipsis (full name on hover) on desktop, or wraps to two lines on tablets, instead of running into the next column. */}
                     <div className={cn('grid gap-x-6 gap-y-5', colsClass(lay))}>
                     {group.map((c, i) => { const n = TOOLS.filter((t) => t.category === c.id).length; return (
-                      <div key={c.id} className={cn('min-w-0', spanClass(i, group.length, lay))}>
+                      <div key={c.id} className="min-w-0">
                         <Link to={`/category/${c.id}`} title={c.name} className="cat-head mb-1.5 block px-1.5 text-xs leading-snug max-lg:whitespace-normal lg:truncate font-bold uppercase tracking-wider" style={{ ['--cat' as string]: c.color }}>{c.name}</Link>
                         <div className="space-y-0.5">
                           {TOOLS.filter((t) => t.category === c.id).slice(0, 6).map((t) => { const I = getIcon(t.icon); return (
