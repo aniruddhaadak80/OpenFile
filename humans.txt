@@ -1,0 +1,16 @@
+/* TEAM */
+Author: Aniruddha Adak
+Role: Creator and maintainer
+Site: https://github.com/aniruddhaadak80
+From: West Bengal, India
+
+/* THANKS */
+Every open-source project OpenFile builds on: pdf-lib, PDF.js, ffmpeg.wasm, Tesseract.js, Transformers.js and many more.
+
+/* SITE */
+Last update: 2026-10-31
+Language: English
+Standards: HTML5, CSS3, WebAssembly, PWA
+Components: React 19, TypeScript, Vite, Tailwind CSS 4, Framer Motion
+Tools: 572
+Source: https://github.com/aniruddhaadak80/OpenFile

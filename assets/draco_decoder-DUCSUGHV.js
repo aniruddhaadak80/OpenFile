@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/draco_decoder-Z1_iN-Ht.wasm`;export{e as default};

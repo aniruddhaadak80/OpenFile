@@ -1,0 +1,53 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:03.524
+Text to speech that never leaves your device.
+
+2
+00:00:05.024 --> 00:00:09.542
+How OpenFile reads text aloud with your system voices, and falls back to
+
+3
+00:00:09.542 --> 00:00:12.555
+a small neural voice model that runs in the tab.
+
+4
+00:00:14.456 --> 00:00:19.376
+System voices first. Every major browser has a Speech Synthesis API that
+
+5
+00:00:19.376 --> 00:00:22.861
+uses the voices installed on your operating system.
+
+6
+00:00:24.663 --> 00:00:27.948
+When there are no voices. Some setups have no voices at all.
+
+7
+00:00:29.749 --> 00:00:32.864
+Pick an engine. You can also choose the engine yourself.
+
+8
+00:00:34.665 --> 00:00:39.224
+Going the other way. If you need speech turned into text, Audio Transcriber
+
+9
+00:00:39.224 --> 00:00:41.108
+runs the Whisper model locally.
+
+10
+00:00:42.909 --> 00:00:45.801
+To try it, open Text to Speech in OpenFile.
+
+11
+00:00:45.801 --> 00:00:49.634
+Drop in a file, adjust the settings and press the button.
+
+12
+00:00:49.634 --> 00:00:53.064
+It all runs on your device, so nothing is uploaded.
+
+13
+00:00:56.009 --> 00:00:59.700
+Read the full post, with live demos, on the OpenFile blog.

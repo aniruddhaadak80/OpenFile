@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.079
+MIDI files explained, with a piano roll you can play.
+
+2
+00:00:05.579 --> 00:00:10.737
+Why a MIDI file has no sound in it, what note numbers, velocity and channels
+
+3
+00:00:10.737 --> 00:00:15.285
+mean, and how to play and render MIDI to MP3 or WAV in the browser.
+
+4
+00:00:16.685 --> 00:00:21.501
+Sheet music for machines. MIDI, the Musical Instrument Digital Interface,
+
+5
+00:00:21.501 --> 00:00:26.251
+was agreed by instrument makers in 1983 so that keyboards, drum machines
+
+6
+00:00:26.251 --> 00:00:30.275
+and computers from different brands could talk to each other.
+
+7
+00:00:31.575 --> 00:00:34.620
+Why the same file sounds different everywhere.
+
+8
+00:00:34.620 --> 00:00:39.454
+Since the file only says play a violin, the quality depends on the violin
+
+9
+00:00:39.454 --> 00:00:40.513
+sound available.
+
+10
+00:00:41.813 --> 00:00:44.288
+Playing and converting in OpenFile.
+
+11
+00:00:44.288 --> 00:00:49.024
+MIDI Player and Converter opens .mid, .midi and .kar karaoke files.
+
+12
+00:00:50.324 --> 00:00:54.335
+Going the other way. People sometimes ask for MP3 to MIDI.
+
+13
+00:00:55.635 --> 00:00:59.276
+To try it, open MIDI Player and Converter in OpenFile.
+
+14
+00:00:59.276 --> 00:01:03.119
+Drop in a file, adjust the settings and press the button.
+
+15
+00:01:03.119 --> 00:01:06.557
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:08.735 --> 00:01:12.340
+Read the full post, with live demos, on the OpenFile blog.

@@ -1,0 +1,24 @@
+[
+  {
+    "sku": "OF-100",
+    "name": "Notebook",
+    "stock": 42,
+    "price": 120.5
+  },
+  {
+    "sku": "OF-101",
+    "name": "Pen",
+    "stock": 300,
+    "price": 15
+  },
+  {
+    "sku": "OF-102",
+    "name": "Bag",
+    "stock": 7,
+    "price": 899,
+    "tags": [
+      "travel",
+      "canvas"
+    ]
+  }
+]

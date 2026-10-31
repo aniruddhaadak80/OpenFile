@@ -1,0 +1,49 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:05.849
+CSV, JSON, Excel and Parquet: converting data without losing it.
+
+2
+00:00:07.349 --> 00:00:12.211
+What each data format can and cannot hold, where conversions quietly break,
+
+3
+00:00:12.211 --> 00:00:15.712
+and the tools I use to move data between them locally.
+
+4
+00:00:17.941 --> 00:00:23.665
+Four formats, four ideas. Comma separated values is the oldest and simplest:
+
+5
+00:00:23.665 --> 00:00:26.602
+one line per row, commas between cells.
+
+6
+00:00:28.731 --> 00:00:31.761
+Try a conversion. Edit the CSV on the left.
+
+7
+00:00:33.890 --> 00:00:39.197
+Where conversions go wrong. JSON to CSV only works cleanly when every record
+
+8
+00:00:39.197 --> 00:00:40.524
+has the same shape.
+
+9
+00:00:42.653 --> 00:00:46.150
+To try it, open Data Format Converter in OpenFile.
+
+10
+00:00:46.150 --> 00:00:50.137
+Drop in a file, adjust the settings and press the button.
+
+11
+00:00:50.137 --> 00:00:53.704
+It all runs on your device, so nothing is uploaded.
+
+12
+00:00:55.753 --> 00:00:59.700
+Read the full post, with live demos, on the OpenFile blog.

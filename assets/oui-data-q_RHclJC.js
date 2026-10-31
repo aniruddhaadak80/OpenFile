@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/index-D7HKap-V.json`;export{e as default};

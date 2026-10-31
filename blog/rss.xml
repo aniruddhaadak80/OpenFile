@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/OpenFile/rss.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OpenFile Blog</title>
+    <link>https://aniruddhaadak80.github.io/OpenFile/blog</link>
+    <description>Guides, tips and notes on private, in-browser file tools.</description>
+    <language>en</language>
+    <lastBuildDate>Fri, 30 Oct 2026 09:00:00 GMT</lastBuildDate>
+    <atom:link href="https://aniruddhaadak80.github.io/OpenFile/blog/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Turn any document into Markdown for notes and AI chats</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/turn-any-document-into-markdown</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/turn-any-document-into-markdown</guid>
+      <pubDate>Fri, 30 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Why Markdown is worth it, how PDF, Word, PowerPoint, Excel, email and notebooks are read in the browser, and how to deal with saved web pages and old Windows drawings.</description>
+      <category>formats</category>
+      <category>markdown</category>
+      <category>ai</category>
+    </item>
+    <item>
+      <title>Diagrams, charts and code pictures from plain text</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/diagrams-and-charts-from-plain-text</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/diagrams-and-charts-from-plain-text</guid>
+      <pubDate>Fri, 30 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Write a flowchart in three lines, paste a table for a chart, and turn code into a clean picture. Plus blobs, waves and printable graph paper, all in the browser.</description>
+      <category>design</category>
+      <category>diagrams</category>
+      <category>tips</category>
+    </item>
+    <item>
+      <title>From logo to G-code to turntable: 3D printing files in a browser</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/3d-printing-files-in-a-browser</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/3d-printing-files-in-a-browser</guid>
+      <pubDate>Fri, 30 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Turn a flat logo into a solid, read G-code layer by layer, film a spinning turntable video, and convert point clouds from scanners and drones.</description>
+      <category>3d</category>
+      <category>printing</category>
+      <category>formats</category>
+    </item>
+    <item>
+      <title>Make flashcards, quizzes and worksheets that actually stick</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/make-flashcards-and-quizzes-that-stick</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/make-flashcards-and-quizzes-that-stick</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Why spaced repetition and self testing beat rereading, how to turn notes into cards and quizzes, and the printables that save a teacher an evening.</description>
+      <category>study</category>
+      <category>education</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>robots.txt, sitemaps and redirects: the small files that steer search engines</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/robots-txt-sitemaps-and-redirects</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/robots-txt-sitemaps-and-redirects</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What each file tells a crawler, the rules that trip people up, how to block AI crawlers, and how to move pages without losing traffic.</description>
+      <category>web</category>
+      <category>seo</category>
+      <category>developer</category>
+    </item>
+    <item>
+      <title>Calendar files and repeat rules, explained</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/calendar-files-and-repeat-rules</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/calendar-files-and-repeat-rules</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What is inside an .ics file, how repeat rules like last Friday of the month work, and how to turn a spreadsheet or a shift pattern into calendar invites.</description>
+      <category>calendar</category>
+      <category>formats</category>
+      <category>productivity</category>
+    </item>
+    <item>
+      <title>What is inside a FIT file from your watch</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/what-is-inside-a-fit-file</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/what-is-inside-a-fit-file</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 GMT</pubDate>
+      <description>The binary format behind every Garmin, Wahoo and Coros workout, how to turn it into CSV or GPX, and how heart rate zones and training load are worked out.</description>
+      <category>fitness</category>
+      <category>formats</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>OFX, QIF, CSV, CAMT and MT940: bank statement files explained</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/bank-statement-files-explained</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/bank-statement-files-explained</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What each bank download format holds, which one to pick for a money app or a spreadsheet, and how to convert them without uploading your statement.</description>
+      <category>finance</category>
+      <category>formats</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>Scan receipts into a spreadsheet without uploading them</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/scan-receipts-privately</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/scan-receipts-privately</guid>
+      <pubDate>Thu, 29 Oct 2026 09:00:00 GMT</pubDate>
+      <description>How on-device OCR reads a receipt photo, how the shop, date, tax and total are picked out, and tips for scans that come out right the first time.</description>
+      <category>finance</category>
+      <category>ai</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>Install OpenFile on any device, from a phone to a Linux box</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/install-openfile-on-any-device</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/install-openfile-on-any-device</guid>
+      <pubDate>Wed, 28 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Web app, Windows, macOS, Linux, Android and iPhone: what each option gives you, how to install it, and which one I would pick for your device.</description>
+      <category>install</category>
+      <category>apps</category>
+      <category>offline</category>
+    </item>
+    <item>
+      <title>How OpenFile keeps your files private</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/how-openfile-keeps-files-private</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/how-openfile-keeps-files-private</guid>
+      <pubDate>Tue, 27 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What really happens when you drop a file into OpenFile, why nothing gets uploaded, and how you can check it yourself in two minutes.</description>
+      <category>privacy</category>
+      <category>architecture</category>
+    </item>
+    <item>
+      <title>How AI models run inside your browser tab</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/ai-models-in-your-browser</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/ai-models-in-your-browser</guid>
+      <pubDate>Mon, 26 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What happens when you press the button in the background remover, upscaler or transcriber: model downloads, workers, WebGPU and the WebAssembly safety net.</description>
+      <category>ai</category>
+      <category>webgpu</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>Ten PDF tips that save me time every week</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/pdf-tips-that-save-time</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/pdf-tips-that-save-time</guid>
+      <pubDate>Sat, 24 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Page ranges, smart compression, signing, OCR and the order I run things in. Small habits that make PDF work painless.</description>
+      <category>pdf</category>
+      <category>tips</category>
+    </item>
+    <item>
+      <title>Shrink a PDF to fit an email limit</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/shrink-a-pdf-for-email</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/shrink-a-pdf-for-email</guid>
+      <pubDate>Fri, 23 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Gmail, Outlook and upload forms all have size caps. A practical routine to get under them: find the heavy part, pick the right preset, and split when you must.</description>
+      <category>pdf</category>
+      <category>email</category>
+      <category>tips</category>
+    </item>
+    <item>
+      <title>Image compression explained, with a slider you can drag</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/image-compression-explained</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/image-compression-explained</guid>
+      <pubDate>Wed, 21 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Lossy, lossless, JPG, WebP and AVIF in plain words. Drag the slider to see what quality settings actually do to a picture.</description>
+      <category>images</category>
+      <category>performance</category>
+    </item>
+    <item>
+      <title>HEIC, JPG, AVIF and JPEG XL compared</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/heic-jpg-avif-jpeg-xl</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/heic-jpg-avif-jpeg-xl</guid>
+      <pubDate>Tue, 20 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Four photo formats, what each one is good at, which browsers open them, and which I use for sharing, the web and my own archive. Test your browser live.</description>
+      <category>images</category>
+      <category>formats</category>
+    </item>
+    <item>
+      <title>Editing video in a browser tab with WebAssembly</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/video-in-the-browser-with-webassembly</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/video-in-the-browser-with-webassembly</guid>
+      <pubDate>Sun, 18 Oct 2026 09:00:00 GMT</pubDate>
+      <description>How ffmpeg runs inside your browser, why the first run downloads an engine, and how to get the best speed out of it.</description>
+      <category>video</category>
+      <category>webassembly</category>
+    </item>
+    <item>
+      <title>Make a good GIF from a video clip</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/make-a-gif-from-a-video</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/make-a-gif-from-a-video</guid>
+      <pubDate>Sat, 17 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Why GIFs get huge, and the four settings that fix it: width, frame rate, length and colours. Includes a planner that estimates the size before you convert.</description>
+      <category>video</category>
+      <category>gif</category>
+    </item>
+    <item>
+      <title>Building a batch pipeline for 200 product photos</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/building-a-batch-pipeline</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/building-a-batch-pipeline</guid>
+      <pubDate>Thu, 15 Oct 2026 09:00:00 GMT</pubDate>
+      <description>A real walk through of the Workspace: resize, watermark, strip metadata, convert and zip, then save it as a recipe you can run again.</description>
+      <category>workspace</category>
+      <category>automation</category>
+      <category>images</category>
+    </item>
+    <item>
+      <title>Fill and sign PDFs without uploading them</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/sign-and-fill-pdfs-privately</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/sign-and-fill-pdfs-privately</guid>
+      <pubDate>Wed, 14 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Form fields, signature images and certificate signatures explained, plus the order I fill, sign and flatten documents in, all inside the browser.</description>
+      <category>pdf</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>Sketch board tips: draw diagrams faster</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/sketch-board-tips</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/sketch-board-tips</guid>
+      <pubDate>Mon, 12 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Shortcuts, snapping, frames and export tricks for the Sketch board. Try the shortcut trainer right in the post.</description>
+      <category>design</category>
+      <category>tips</category>
+    </item>
+    <item>
+      <title>EPUB, MOBI, PDF and comics: an ebook conversion guide</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/ebook-formats-and-conversion</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/ebook-formats-and-conversion</guid>
+      <pubDate>Sun, 11 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Reflowable versus fixed layout, which ebook format to keep, and how to convert, fix and read books on your device. With a live reflow demo.</description>
+      <category>ebooks</category>
+      <category>formats</category>
+    </item>
+    <item>
+      <title>A friendly guide to file formats</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/file-formats-guide</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/file-formats-guide</guid>
+      <pubDate>Fri, 09 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Which format to use for what, and what each one is good and bad at. Includes an interactive format explorer.</description>
+      <category>formats</category>
+      <category>guide</category>
+    </item>
+    <item>
+      <title>Opening DXF and CAD drawings in a browser</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/open-dxf-cad-files-in-a-browser</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/open-dxf-cad-files-in-a-browser</guid>
+      <pubDate>Thu, 08 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What a DXF file really contains, how to view layers and measure without AutoCAD, and how to turn a drawing into a PDF anyone can print.</description>
+      <category>cad</category>
+      <category>design</category>
+    </item>
+    <item>
+      <title>The developer tools I reach for every day</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/developer-tools-roundup</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/developer-tools-roundup</guid>
+      <pubDate>Tue, 06 Oct 2026 09:00:00 GMT</pubDate>
+      <description>JSON, JWT, regex, hashes, cURL and cron: a quick tour of the dev tools in OpenFile, with a live JSON formatter to play with.</description>
+      <category>developer</category>
+      <category>tools</category>
+    </item>
+    <item>
+      <title>Looking at your own CT and MRI scans, privately</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/view-dicom-images-privately</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/view-dicom-images-privately</guid>
+      <pubDate>Mon, 05 Oct 2026 09:00:00 GMT</pubDate>
+      <description>What DICOM files are, why window and level matter so much, and how to view and share your scans without uploading medical data anywhere.</description>
+      <category>medical</category>
+      <category>images</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>Text to speech that never leaves your device</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/private-text-to-speech</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/private-text-to-speech</guid>
+      <pubDate>Sat, 03 Oct 2026 09:00:00 GMT</pubDate>
+      <description>How OpenFile reads text aloud with your system voices, and falls back to a small neural voice model that runs in the tab.</description>
+      <category>audio</category>
+      <category>ai</category>
+      <category>privacy</category>
+    </item>
+    <item>
+      <title>MIDI files explained, with a piano roll you can play</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/midi-files-explained</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/midi-files-explained</guid>
+      <pubDate>Thu, 01 Oct 2026 09:00:00 GMT</pubDate>
+      <description>Why a MIDI file has no sound in it, what note numbers, velocity and channels mean, and how to play and render MIDI to MP3 or WAV in the browser.</description>
+      <category>audio</category>
+      <category>music</category>
+    </item>
+    <item>
+      <title>CSV, JSON, Excel and Parquet: converting data without losing it</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/csv-json-parquet-excel</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/csv-json-parquet-excel</guid>
+      <pubDate>Sun, 27 Sep 2026 09:00:00 GMT</pubDate>
+      <description>What each data format can and cannot hold, where conversions quietly break, and the tools I use to move data between them locally.</description>
+      <category>data</category>
+      <category>developer</category>
+    </item>
+    <item>
+      <title>A practical guide to subtitles: SRT, VTT and ASS</title>
+      <link>https://aniruddhaadak80.github.io/OpenFile/blog/subtitles-srt-vtt-ass-guide</link>
+      <guid isPermaLink="true">https://aniruddhaadak80.github.io/OpenFile/blog/subtitles-srt-vtt-ass-guide</guid>
+      <pubDate>Wed, 23 Sep 2026 09:00:00 GMT</pubDate>
+      <description>The three subtitle formats you will meet, and how to fix the usual problems: wrong format, broken letters, drifting timing and missing tracks.</description>
+      <category>video</category>
+      <category>subtitles</category>
+    </item>
+  </channel>
+</rss>

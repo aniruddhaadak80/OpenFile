@@ -1,0 +1,1 @@
+import{Vt as e}from"./ui-BnOkXGVZ.js";import{t}from"./maker-fp4IktV_.js";var n=e();function r(){return(0,n.jsx)(t,{fmt:`webp`,title:`animated WebP`})}export{r as default};

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#000000" />
+<title>Offline | OpenFile</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;color:#F4F4F5;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  main{min-height:100%;display:grid;place-items:center;padding:24px;box-sizing:border-box;text-align:center}
+  .mark{width:72px;height:72px;margin:0 auto 20px;animation:b 2s ease-in-out infinite}
+  h1{font-size:28px;margin:0 0 10px}
+  p{color:#A1A1AA;max-width:440px;line-height:1.6;margin:0 auto 22px}
+  button{min-height:44px;padding:0 20px;border:0;border-radius:12px;background:#F5A524;color:#000;font-weight:700;font-size:15px;cursor:pointer}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#14B8A6;margin-right:8px}
+  @keyframes b{0%,100%{transform:scale(.96);opacity:.85}50%{transform:scale(1);opacity:1}}
+  @media (prefers-reduced-motion:reduce){.mark{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <svg class="mark" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><linearGradient id="g" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD27A"/><stop offset=".45" stop-color="#FFB224"/><stop offset="1" stop-color="#E08A00"/></linearGradient></defs><path d="M22 13h14l10 10v25a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" stroke="url(#g)" stroke-width="2.5" stroke-linejoin="round"/><path d="M36 13v8a2 2 0 0 0 2 2h8" stroke="url(#g)" stroke-width="2.5" stroke-linejoin="round"/><circle cx="32" cy="38" r="6.5" stroke="url(#g)" stroke-width="3"/></svg>
+    <h1>You are offline</h1>
+    <p>This page was not saved on this device yet. Tools you opened before still work offline. Connect once and OpenFile keeps the rest ready for next time.</p>
+    <button onclick="location.reload()">Try again</button>
+    <p style="margin-top:22px;font-size:13px"><span class="dot"></span>Your files never leave your device.</p>
+  </div>
+</main>
+</body>
+</html>

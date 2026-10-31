@@ -1,0 +1,6 @@
+import{o as e}from"./rolldown-runtime-BCiCTKAo.js";import{z as t}from"./files-DFsEDWi8.js";import{Vt as n,v as r}from"./ui-BnOkXGVZ.js";import{m as i}from"./kit-Kt77hAfx.js";import{a,i as o,t as s}from"./shell-6erUKoVz.js";import{n as c}from"./text-DR1xj83d.js";var l=e(t(),1),u=n();function d(){let[e,t]=i(`b11:dup`,`apple
+Apple
+banana
+apple
+
+cherry`),[n,d]=i(`b11:dup:ic`,!0),[f,p]=i(`b11:dup:tr`,!0),[m,h]=i(`b11:dup:de`,!1),[g,_]=i(`b11:dup:od`,!1),v=(0,l.useMemo)(()=>c(e,{ignoreCase:n,trim:f,dropEmpty:m,onlyDuplicates:g}),[e,n,f,m,g]);return(0,u.jsxs)(`div`,{className:`space-y-4`,children:[(0,u.jsxs)(s,{children:[(0,u.jsx)(r,{checked:n,onChange:d,label:`Ignore case`}),(0,u.jsx)(r,{checked:f,onChange:p,label:`Trim spaces`}),(0,u.jsx)(r,{checked:m,onChange:h,label:`Drop empty lines`}),(0,u.jsx)(r,{checked:g,onChange:_,label:`Keep only repeated lines`})]}),(0,u.jsxs)(o,{kind:`info`,children:[v.removed,` line`,v.removed===1?``:`s`,` removed`]}),(0,u.jsx)(a,{input:e,setInput:t,output:v.text,outputLang:`generic`,outName:`unique.txt`,outMime:`text/plain`,accept:`.txt,.csv,.log,text/*`})]})}export{d as default};

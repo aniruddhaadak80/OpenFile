@@ -1,0 +1,6 @@
+Contact: https://github.com/aniruddhaadak80/OpenFile/security/advisories/new
+Contact: https://github.com/aniruddhaadak80/OpenFile/issues
+Expires: 2027-10-31T18:30:54Z
+Preferred-Languages: en
+Canonical: https://aniruddhaadak80.github.io/OpenFile/.well-known/security.txt
+Policy: https://github.com/aniruddhaadak80/OpenFile/security/policy

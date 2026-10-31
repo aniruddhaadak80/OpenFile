@@ -1,0 +1,178 @@
+# OpenFile
+
+> 572+ free, open-source file tools that run entirely in the browser. PDFs, images, video, audio, data, code and more. Files are processed on the user's device with WebAssembly, Canvas and on-device AI. Nothing is uploaded, there is no account and no watermark.
+
+Key facts:
+- Every tool runs client-side. There is no file upload endpoint.
+- Some tools download an open-source engine once (ffmpeg.wasm, Tesseract, AI models), then work offline.
+- Each tool has its own page at https://aniruddhaadak80.github.io/OpenFile/<slug> with steps, tips and an FAQ.
+- Search tools: https://aniruddhaadak80.github.io/OpenFile/tools?q=<words>. Filter by format: https://aniruddhaadak80.github.io/OpenFile/tools?format=PDF
+- MIT licensed: https://github.com/aniruddhaadak80/OpenFile
+
+## Categories
+- [PDF Tools](https://aniruddhaadak80.github.io/OpenFile/category/pdf): Merge, split, sign, protect and edit PDFs. 63 tools.
+- [Convert](https://aniruddhaadak80.github.io/OpenFile/category/convert): Move between PDF, Office, Markdown, HTML and images. 35 tools.
+- [Image](https://aniruddhaadak80.github.io/OpenFile/category/image): Compress, resize, crop, remove backgrounds, upscale. 60 tools.
+- [Video](https://aniruddhaadak80.github.io/OpenFile/category/video): Trim, compress, convert, GIF and record. 40 tools.
+- [Audio](https://aniruddhaadak80.github.io/OpenFile/category/audio): Edit, convert, record and transcribe. 26 tools.
+- [Developer](https://aniruddhaadak80.github.io/OpenFile/category/dev): JSON, JWT, regex, hashes, cURL and more. 65 tools.
+- [Text & Data](https://aniruddhaadak80.github.io/OpenFile/category/text): Diff, count, convert tables, format text. 47 tools.
+- [Design](https://aniruddhaadak80.github.io/OpenFile/category/design): Colors, CSS, favicons, SVG, whiteboards. 21 tools.
+- [Data](https://aniruddhaadak80.github.io/OpenFile/category/data): CSV, Excel, JSON, SQLite, Parquet, maps and GPS. 15 tools.
+- [AI](https://aniruddhaadak80.github.io/OpenFile/category/ai): On-device AI for images, text and documents. 21 tools.
+- [3D](https://aniruddhaadak80.github.io/OpenFile/category/3d): View and convert GLB, GLTF, OBJ, STL, PLY and more. 9 tools.
+- [Archives](https://aniruddhaadak80.github.io/OpenFile/category/archive): Open and create ZIP, 7Z, TAR, GZ and RAR. 8 tools.
+- [eBooks](https://aniruddhaadak80.github.io/OpenFile/category/ebook): Read and convert EPUB, MOBI, FB2 and comics. 8 tools.
+- [Fonts](https://aniruddhaadak80.github.io/OpenFile/category/font): Convert, inspect and subset TTF, OTF, WOFF. 7 tools.
+- [CAD](https://aniruddhaadak80.github.io/OpenFile/category/cad): View and convert DXF and other drawings. 6 tools.
+- [Subtitles](https://aniruddhaadak80.github.io/OpenFile/category/subtitle): Convert, sync and edit SRT, VTT, ASS. 10 tools.
+- [Security & Privacy](https://aniruddhaadak80.github.io/OpenFile/category/privacy): Scrub metadata, lock files, hide messages, redact personal data. 15 tools.
+- [Maps & GPS](https://aniruddhaadak80.github.io/OpenFile/category/geo): GPX elevation, splits, heatmaps, privacy zones and location codes. 15 tools.
+- [Office & Sheets](https://aniruddhaadak80.github.io/OpenFile/category/office): Merge, split, compare and pivot spreadsheets, clean Word files. 19 tools.
+- [Science & Education](https://aniruddhaadak80.github.io/OpenFile/category/science): Equations, graphs, chemistry, matrices, logic and primes. 15 tools.
+- [Creator Studio](https://aniruddhaadak80.github.io/OpenFile/category/creator): Audiograms, vertical video, carousels, word clouds and chapters. 14 tools.
+- [Study & Classroom](https://aniruddhaadak80.github.io/OpenFile/category/study): Flashcards, quizzes, worksheets, puzzles, citations and grades. 12 tools.
+- [Web & SEO](https://aniruddhaadak80.github.io/OpenFile/category/web): robots.txt, sitemaps, redirects, schema, headers and on-page checks. 13 tools.
+- [Calendar & Time](https://aniruddhaadak80.github.io/OpenFile/category/time): Calendar files, repeat rules, rotas, timesheets and printable planners. 12 tools.
+- [Money & Finance](https://aniruddhaadak80.github.io/OpenFile/category/finance): Bank statements, receipts, loans, tax and shared expenses. 10 tools.
+- [Health & Fitness](https://aniruddhaadak80.github.io/OpenFile/category/health): FIT workouts, heart rate zones, Apple Health data, pace and body measures. 6 tools.
+
+## Docs
+- [Getting started](https://aniruddhaadak80.github.io/OpenFile/docs): What OpenFile is, how to use your first tool, install it as an app and work offline.
+- [How OpenFile works](https://aniruddhaadak80.github.io/OpenFile/docs/how-it-works): The zero-upload privacy architecture, the processing engines and first-use model downloads.
+- [Keyboard shortcuts](https://aniruddhaadak80.github.io/OpenFile/docs/keyboard-shortcuts): Global, command palette, docs and Sketch board keyboard shortcuts.
+- [PDF tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/pdf): Guide to every PDF tool: merge, split, compress, sign, protect, OCR and more.
+- [Convert](https://aniruddhaadak80.github.io/OpenFile/docs/tools/convert): Guide to converting between PDF, Word, Excel, PowerPoint, Markdown, HTML and images.
+- [Image tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/image): Guide to compressing, resizing, converting, background removal, upscaling and editing images.
+- [Video tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/video): Guide to trimming, compressing, converting, GIFs and recording video in the browser.
+- [Audio tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/audio): Guide to editing, converting, recording and transcribing audio on-device.
+- [Developer tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/dev): Guide to JSON, JWT, hashes, regex, QR codes, cURL conversion and other developer utilities.
+- [Text & data tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/text): Guide to diffing, counting, case conversion, Markdown and text cleanup tools.
+- [Design tools](https://aniruddhaadak80.github.io/OpenFile/docs/tools/design): Guide to colors, gradients, CSS, favicons, SVG and the Sketch whiteboard.
+- [Workspace pipelines](https://aniruddhaadak80.github.io/OpenFile/docs/workspace): Chain steps into reusable recipes and batch-process hundreds of images or PDFs.
+- [Sketch board](https://aniruddhaadak80.github.io/OpenFile/docs/sketch-board): The infinite whiteboard: tools, boards, sharing, presenting, exporting and shortcuts.
+- [Favorites, history & settings](https://aniruddhaadak80.github.io/OpenFile/docs/local-data): How favorites, recent tools, activity history and settings are stored locally in IndexedDB.
+- [Self-hosting](https://aniruddhaadak80.github.io/OpenFile/docs/self-hosting): Deploy OpenFile to Vercel, GitHub Pages, any static host or Docker with nginx.
+- [API reference](https://aniruddhaadak80.github.io/OpenFile/docs/api): The optional Vercel serverless routes: /api/health, /api/fetch-page and /api/meta.
+- [Browser support](https://aniruddhaadak80.github.io/OpenFile/docs/browser-support): Which browsers and platform features each group of tools needs.
+- [FAQ](https://aniruddhaadak80.github.io/OpenFile/docs/faq): Answers to common questions about privacy, limits, offline use and troubleshooting.
+- [Contributing & adding a tool](https://aniruddhaadak80.github.io/OpenFile/docs/contributing): Set up the project, follow the tool conventions and add a new tool to the registry.
+- [Changelog](https://aniruddhaadak80.github.io/OpenFile/changelog): Release notes for every OpenFile version.
+- [Install on every device](https://aniruddhaadak80.github.io/OpenFile/docs/install): Install OpenFile as a web app, a desktop app for Windows, macOS and Linux, an Android APK or on iPhone.
+- [Using tools](https://aniruddhaadak80.github.io/OpenFile/docs/using-tools): Drop zones, batches, page ranges, presets, history, undo and where your downloads go.
+- [Themes and accessibility](https://aniruddhaadak80.github.io/OpenFile/docs/themes-accessibility): Black, dark, light and system themes, accent colors, fonts, density, reduced motion and keyboard use.
+- [Offline and PWA](https://aniruddhaadak80.github.io/OpenFile/docs/offline): How the service worker caches the app, engines and models, how updates work and how to clear data.
+- [Open with and share target](https://aniruddhaadak80.github.io/OpenFile/docs/open-with): Open files from your system with OpenFile and send files to it from the share sheet.
+- [Local AI](https://aniruddhaadak80.github.io/OpenFile/docs/local-ai): Which AI models run on your device, their sizes, first-run downloads, WebGPU or CPU, cancelling and privacy.
+- [Privacy and security](https://aniruddhaadak80.github.io/OpenFile/docs/privacy-security): No uploads, how to verify it yourself in the DevTools network tab, headers and what is stored locally.
+- [Formats supported](https://aniruddhaadak80.github.io/OpenFile/docs/formats): A searchable matrix of every input and output format, generated from the tool registry.
+- [Full tools reference](https://aniruddhaadak80.github.io/OpenFile/docs/tools): Every tool with its description, formats and link, generated from the registry. Filter and search.
+- [Troubleshooting](https://aniruddhaadak80.github.io/OpenFile/docs/troubleshooting): Large files, memory, browser support, Safari quirks, unsigned app warnings and quick fixes.
+- [Developer guide](https://aniruddhaadak80.github.io/OpenFile/docs/developer): Architecture, adding a tool, batch files, tests, builds, Pages and Vercel base paths and releasing the apps.
+- [Roadmap](https://aniruddhaadak80.github.io/OpenFile/docs/roadmap): What has shipped and what comes next, generated from the project roadmap.
+- [Data](https://aniruddhaadak80.github.io/OpenFile/docs/tools/data): Guide to every Data tool: csv, excel, json, sqlite, parquet, maps and gps.
+- [AI](https://aniruddhaadak80.github.io/OpenFile/docs/tools/ai): Guide to every AI tool: on-device ai for images, text and documents.
+- [3D](https://aniruddhaadak80.github.io/OpenFile/docs/tools/3d): Guide to every 3D tool: view and convert glb, gltf, obj, stl, ply and more.
+- [Archives](https://aniruddhaadak80.github.io/OpenFile/docs/tools/archive): Guide to every Archives tool: open and create zip, 7z, tar, gz and rar.
+- [eBooks](https://aniruddhaadak80.github.io/OpenFile/docs/tools/ebook): Guide to every eBooks tool: read and convert epub, mobi, fb2 and comics.
+- [Fonts](https://aniruddhaadak80.github.io/OpenFile/docs/tools/font): Guide to every Fonts tool: convert, inspect and subset ttf, otf, woff.
+- [CAD](https://aniruddhaadak80.github.io/OpenFile/docs/tools/cad): Guide to every CAD tool: view and convert dxf and other drawings.
+- [Subtitles](https://aniruddhaadak80.github.io/OpenFile/docs/tools/subtitle): Guide to every Subtitles tool: convert, sync and edit srt, vtt, ass.
+- [Security & Privacy](https://aniruddhaadak80.github.io/OpenFile/docs/tools/privacy): Guide to every Security & Privacy tool: scrub metadata, lock files, hide messages, redact personal data.
+- [Maps & GPS](https://aniruddhaadak80.github.io/OpenFile/docs/tools/geo): Guide to every Maps & GPS tool: gpx elevation, splits, heatmaps, privacy zones and location codes.
+- [Office & Sheets](https://aniruddhaadak80.github.io/OpenFile/docs/tools/office): Guide to every Office & Sheets tool: merge, split, compare and pivot spreadsheets, clean word files.
+- [Science & Education](https://aniruddhaadak80.github.io/OpenFile/docs/tools/science): Guide to every Science & Education tool: equations, graphs, chemistry, matrices, logic and primes.
+- [Creator Studio](https://aniruddhaadak80.github.io/OpenFile/docs/tools/creator): Guide to every Creator Studio tool: audiograms, vertical video, carousels, word clouds and chapters.
+- [Study & Classroom](https://aniruddhaadak80.github.io/OpenFile/docs/tools/study): Guide to every Study & Classroom tool: flashcards, quizzes, worksheets, puzzles, citations and grades.
+- [Web & SEO](https://aniruddhaadak80.github.io/OpenFile/docs/tools/web): Guide to every Web & SEO tool: robots.txt, sitemaps, redirects, schema, headers and on-page checks.
+- [Calendar & Time](https://aniruddhaadak80.github.io/OpenFile/docs/tools/time): Guide to every Calendar & Time tool: calendar files, repeat rules, rotas, timesheets and printable planners.
+- [Money & Finance](https://aniruddhaadak80.github.io/OpenFile/docs/tools/finance): Guide to every Money & Finance tool: bank statements, receipts, loans, tax and shared expenses.
+- [Health & Fitness](https://aniruddhaadak80.github.io/OpenFile/docs/tools/health): Guide to every Health & Fitness tool: fit workouts, heart rate zones, apple health data, pace and body measures.
+
+## Popular tools
+- [Merge PDF](https://aniruddhaadak80.github.io/OpenFile/merge-pdf): Combine multiple PDFs into one ordered document with drag-and-drop sorting.
+- [Split PDF](https://aniruddhaadak80.github.io/OpenFile/split-pdf): Split by ranges, every N pages, or extract each page into a ZIP.
+- [Compress PDF](https://aniruddhaadak80.github.io/OpenFile/compress-pdf): Shrink PDF size with smart image downsampling and stream compression.
+- [Sign PDF](https://aniruddhaadak80.github.io/OpenFile/sign-pdf): Draw, type or upload a signature and place it anywhere, plus dates and initials.
+- [Invoice Generator](https://aniruddhaadak80.github.io/OpenFile/invoice-generator): Create GST/VAT invoices with automatic totals and a polished PDF.
+- [PDF to Image](https://aniruddhaadak80.github.io/OpenFile/pdf-to-image): Export PDF pages as crisp PNG, JPG or WEBP at any DPI.
+- [Image to PDF](https://aniruddhaadak80.github.io/OpenFile/image-to-pdf): Combine JPG, PNG and WEBP into one PDF with page-size controls.
+- [PDF to Word](https://aniruddhaadak80.github.io/OpenFile/pdf-to-word): Convert PDF text into an editable DOCX document.
+- [Word to PDF](https://aniruddhaadak80.github.io/OpenFile/word-to-pdf): Turn DOCX files into well-formatted PDFs.
+- [Image Compressor](https://aniruddhaadak80.github.io/OpenFile/image-compressor): Shrink images in bulk with quality and width controls and live savings.
+- [Image Converter](https://aniruddhaadak80.github.io/OpenFile/image-converter): Convert JPG, PNG, WEBP, AVIF, BMP, GIF and ICO in bulk.
+- [Image Resizer](https://aniruddhaadak80.github.io/OpenFile/image-resizer): Resize to exact pixels, percentages or social presets.
+- [Background Remover](https://aniruddhaadak80.github.io/OpenFile/background-remover): Remove image backgrounds with on-device AI. Replace with color or blur.
+- [Video Trimmer](https://aniruddhaadak80.github.io/OpenFile/video-trimmer): Trim and cut clips with a visual timeline, no re-upload.
+- [Video Compressor](https://aniruddhaadak80.github.io/OpenFile/video-compressor): Compress videos with quality presets and target resolution.
+- [Screen Recorder](https://aniruddhaadak80.github.io/OpenFile/screen-recorder): Record screen + webcam bubble with mic and system audio.
+- [Audio Editor & Trimmer](https://aniruddhaadak80.github.io/OpenFile/audio-editor): Trim, fade in/out, change volume and export with a waveform.
+- [JSON Formatter](https://aniruddhaadak80.github.io/OpenFile/json-formatter): Prettify, validate, minify and explore JSON as a tree.
+- [QR Code Generator](https://aniruddhaadak80.github.io/OpenFile/qr-generator): QR codes for links, Wi-Fi, vCards and text with colors and logo.
+- [Diff Checker](https://aniruddhaadak80.github.io/OpenFile/diff-checker): Compare text and code side-by-side or inline.
+- [Color Palette Extractor](https://aniruddhaadak80.github.io/OpenFile/color-palette): Extract dominant colors and export CSS/Tailwind palettes.
+- [Create Fillable PDF Form](https://aniruddhaadak80.github.io/OpenFile/create-pdf-form): Add text fields, checkboxes, radio buttons, dropdowns, lists and signature fields to any PDF.
+- [Extract PDF Images](https://aniruddhaadak80.github.io/OpenFile/extract-pdf-images): Pull embedded images out of a PDF at original quality and download them as a ZIP.
+- [Scan to PDF](https://aniruddhaadak80.github.io/OpenFile/scan-to-pdf): Turn phone photos or your camera into a clean multi-page PDF: edge detection, straightening, black and white.
+- [3D Model Viewer](https://aniruddhaadak80.github.io/OpenFile/3d-viewer): View GLB, GLTF, OBJ, STL, PLY, FBX, 3MF, DAE, 3DS, USDZ, AMF, VRML, OFF and point clouds with orbit controls, lighting, wireframe and screenshots.
+- [GIF Compressor](https://aniruddhaadak80.github.io/OpenFile/gif-optimizer): Shrink GIFs and animated WebP with lossy compression, fewer colours, frame dropping or a target file size.
+- [Animated Image Converter](https://aniruddhaadak80.github.io/OpenFile/animated-converter): Convert between GIF, APNG, animated WebP and AVIF, and turn video clips into GIF, APNG or WebP.
+- [Crop Video](https://aniruddhaadak80.github.io/OpenFile/video-crop): Crop a video visually with aspect presets for Reels, Shorts and TikTok (9:16), square (1:1) and portrait (4:5).
+- [Add Audio to Video](https://aniruddhaadak80.github.io/OpenFile/add-audio-to-video): Add music, replace the soundtrack, mix it with the original or add a second track, with a sync offset.
+- [Images to Video](https://aniruddhaadak80.github.io/OpenFile/images-to-video): Make a slideshow video from photos with music, crossfades, a slow Ken Burns zoom and per-slide timing.
+- [Open Any Archive](https://aniruddhaadak80.github.io/OpenFile/archive-extractor): Open ZIP, 7Z, RAR, TAR, GZ, XZ, ISO, CAB, DEB, RPM, JAR and more. Preview files and download what you need.
+- [Subtitle Converter](https://aniruddhaadak80.github.io/OpenFile/subtitle-converter): Convert between SRT, VTT, ASS, SSA, SBV, SUB, LRC, SAMI, TTML, JSON and CSV in bulk.
+- [Volume Booster and Normalizer](https://aniruddhaadak80.github.io/OpenFile/volume-booster): Make quiet audio or video louder, or even out loudness to a standard level (EBU R128).
+- [E-book Converter](https://aniruddhaadak80.github.io/OpenFile/ebook-converter): Convert EPUB, MOBI, AZW3, FB2, CBZ, DOCX, PDF, TXT and more to EPUB, PDF, Word, HTML, TXT, Markdown or FB2.
+- [Document Converter](https://aniruddhaadak80.github.io/OpenFile/document-converter): Convert DOCX, ODT, RTF, Markdown, HTML, TXT and EPUB to Word, PDF, Markdown, HTML, TXT, RTF or EPUB.
+- [AI Summarizer](https://aniruddhaadak80.github.io/OpenFile/pdf-summarizer): Summarize PDFs, Word files and long text on your device, as paragraphs or key points.
+- [Chat with PDF](https://aniruddhaadak80.github.io/OpenFile/chat-pdf): Ask questions about a PDF or document and get answers with page numbers, fully offline.
+- [Data Format Converter](https://aniruddhaadak80.github.io/OpenFile/data-converter): Convert between JSON, YAML, XML, TOML, INI, CSV, NDJSON, MessagePack, CBOR and BSON.
+- [CSV & Spreadsheet Editor](https://aniruddhaadak80.github.io/OpenFile/csv-editor): Edit CSV and Excel files in a fast grid: sort, filter, dedupe, find and replace, split and merge.
+- [Encoding Toolbox (Recipe Chains)](https://aniruddhaadak80.github.io/OpenFile/encoding-recipes): Chain encodings: Base64, hex, Base32/58/62/85, gzip, URL, punycode, quoted-printable, MessagePack, protobuf and more.
+- [Time Zone Converter](https://aniruddhaadak80.github.io/OpenFile/time-zone-converter): Convert times across zones, keep a world clock and find meeting times that suit everyone.
+- [Metadata Scrubber](https://aniruddhaadak80.github.io/OpenFile/metadata-scrubber): Remove hidden data from photos, PDFs, Office files and MP3s in one batch: GPS, camera, author, company and more.
+- [Password ZIP](https://aniruddhaadak80.github.io/OpenFile/zip-encrypt): Make an AES-256 password-protected ZIP that opens anywhere, or unlock one you have the password for.
+- [Merge Excel Files](https://aniruddhaadak80.github.io/OpenFile/xlsx-merger): Combine sheets from many Excel, ODS or CSV files into one workbook, or stack their rows into one table.
+- [LaTeX Equation Renderer](https://aniruddhaadak80.github.io/OpenFile/latex-equation): Type LaTeX and get a crisp equation as PNG, SVG or JPG, or copy it as MathML for Word.
+- [Bank Statement Converter](https://aniruddhaadak80.github.io/OpenFile/bank-statement-converter): Convert OFX, QFX, QIF, CAMT.053 XML, MT940 and CSV bank files to CSV, Excel, JSON, OFX or QIF.
+- [AI Receipt Scanner](https://aniruddhaadak80.github.io/OpenFile/receipt-scanner): Photograph receipts and get the shop, date, tax, total and line items as CSV or JSON, read by on-device OCR.
+- [FIT File Converter & Viewer](https://aniruddhaadak80.github.io/OpenFile/fit-file-converter): Open Garmin, Wahoo, Coros and Zwift FIT files, see the stats, route and charts, and convert to CSV, GPX, Excel or JSON.
+- [Document Leak Checker](https://aniruddhaadak80.github.io/OpenFile/leak-checker): See names, GPS, comments, tracked changes, hidden sheets, emails and keys inside files before you share them.
+- [Remove Duplicate Rows](https://aniruddhaadak80.github.io/OpenFile/remove-duplicate-rows): Delete repeated rows from Excel or CSV, matching on all columns or the ones you pick, ignoring case and spaces.
+- [Merge Word Documents](https://aniruddhaadak80.github.io/OpenFile/docx-merger): Combine DOCX files into one, keeping text, tables, images and links, with page breaks between them.
+- [Caption Styler](https://aniruddhaadak80.github.io/OpenFile/caption-styler): Turn SRT captions into bold short-form captions with word highlight, then burn them into your video or export ASS.
+- [Flashcard Maker](https://aniruddhaadak80.github.io/OpenFile/flashcard-maker): Make flashcards from a list, study them with spaced repetition, and export to Anki, CSV or printable cards.
+- [Citation Generator](https://aniruddhaadak80.github.io/OpenFile/citation-generator): Make references in APA, MLA, Chicago, Harvard, IEEE and Vancouver for articles, books, chapters and web pages.
+- [robots.txt Generator & Tester](https://aniruddhaadak80.github.io/OpenFile/robots-txt-generator): Build a robots.txt with rule groups and sitemaps, block AI crawlers in one tick, and test which URLs are allowed.
+- [Schema Markup Generator](https://aniruddhaadak80.github.io/OpenFile/schema-generator): Make JSON-LD structured data for FAQ, Article, Product, Local Business, Event, Recipe, How-to and more.
+- [Calendar Event Maker (ICS)](https://aniruddhaadak80.github.io/OpenFile/ics-creator): Make an .ics invite with reminders and repeats, plus Add to Google and Outlook calendar links.
+- [Tone & Noise Generator](https://aniruddhaadak80.github.io/OpenFile/tone-generator): Play and download sine, square or saw tones, sweeps, white, pink or brown noise, binaural beats and phone keys.
+- [Metronome & Click Track](https://aniruddhaadak80.github.io/OpenFile/metronome): Steady metronome with tap tempo, accents and subdivisions, plus a click track WAV download.
+- [Instrument Tuner](https://aniruddhaadak80.github.io/OpenFile/instrument-tuner): Chromatic tuner for guitar, bass, ukulele, violin and more, live from your microphone.
+- [BPM & Key Finder](https://aniruddhaadak80.github.io/OpenFile/bpm-finder): Find the tempo and musical key of songs in bulk, with tap tempo to check.
+- [Find & Replace Text](https://aniruddhaadak80.github.io/OpenFile/find-replace-text): Find and replace in any text with many rules at once, whole words, match case and regular expressions.
+- [Text to Handwriting](https://aniruddhaadak80.github.io/OpenFile/text-to-handwriting): Turn typed text into realistic handwritten notebook pages, then save PNG or PDF.
+- [File Splitter & Joiner](https://aniruddhaadak80.github.io/OpenFile/split-join-files): Split any big file into parts (.001, .002) by size or count, and join parts back into one file.
+- [Kindle Highlights Exporter](https://aniruddhaadak80.github.io/OpenFile/kindle-clippings): Turn My Clippings.txt into clean Markdown, CSV or JSON, sorted by book, with duplicates merged.
+- [PDF Stamps](https://aniruddhaadak80.github.io/OpenFile/pdf-stamps): Add rubber stamps like Approved, Paid, Draft or Confidential, with a date line, to any PDF page.
+- [Change Image Colours](https://aniruddhaadak80.github.io/OpenFile/image-recolor): Swap one colour for another or make a colour transparent, with tolerance and soft edges.
+- [Image Stitcher](https://aniruddhaadak80.github.io/OpenFile/image-stitcher): Join images side by side, top to bottom or in a grid, and merge scrolling screenshots at their overlap.
+- [Image DPI Changer](https://aniruddhaadak80.github.io/OpenFile/image-dpi-tool): Check and change the DPI of JPG and PNG files, or resize to an exact size in cm, mm or inches.
+- [Signature Extractor](https://aniruddhaadak80.github.io/OpenFile/signature-cleaner): Turn a phone photo of your handwritten signature into a clean, transparent PNG.
+- [SVG to DXF](https://aniruddhaadak80.github.io/OpenFile/svg-to-dxf): Convert SVG logos and drawings to DXF at real size in millimetres, for laser cutters and CNC.
+- [Laser Cut Box Maker](https://aniruddhaadak80.github.io/OpenFile/laser-box-maker): Design a finger joint box from width, depth, height and material thickness, ready to laser cut.
+- [Text to SVG Path](https://aniruddhaadak80.github.io/OpenFile/text-to-svg-path): Turn text in any font into outlined SVG paths or DXF, for logos, laser cutting and icons.
+- [Data Profiler](https://aniruddhaadak80.github.io/OpenFile/data-profiler): A quick health check of any CSV, Excel or JSON file: column types, empty cells, ranges, outliers, duplicates and correlations.
+- [SQL on CSV & Excel](https://aniruddhaadak80.github.io/OpenFile/sql-on-files): Run SQL queries on CSV, Excel and JSON files, join them together, and export the result.
+- [AI Writing Helper](https://aniruddhaadak80.github.io/OpenFile/ai-writer): Fix grammar, change tone, shorten, expand, make bullet points or draft a reply with an AI that runs in your browser.
+- [Anything to Markdown](https://aniruddhaadak80.github.io/OpenFile/any-to-markdown): Turn PDF, Word, PowerPoint, Excel, HTML, EPUB, email and more into clean Markdown, one file or many at once.
+- [Video Effects](https://aniruddhaadak80.github.io/OpenFile/video-effects): Add glitch, VHS, old film, mirror, kaleidoscope, pixel, sketch, heat map, neon, ghost trail and zoom pulse effects to a video.
+- [Code to Image](https://aniruddhaadak80.github.io/OpenFile/code-to-image): Turn code into a clean picture with syntax colours, a window frame and a background, for slides, posts and docs.
+- [Diagram Maker (Mermaid)](https://aniruddhaadak80.github.io/OpenFile/diagram-renderer): Write flowcharts, sequence, class, ER, Gantt, mind map and timeline diagrams as text and save them as SVG or PNG.
+- [Chart Maker](https://aniruddhaadak80.github.io/OpenFile/chart-maker): Paste data and make bar, line, area, pie, donut and scatter charts, then save them as SVG or PNG.
+- [G-code Viewer](https://aniruddhaadak80.github.io/OpenFile/gcode-viewer): See 3D printer, CNC and laser G-code layer by layer in 3D, with print time, filament and size.
+
+## Optional
+- [Full tool list](https://aniruddhaadak80.github.io/OpenFile/llms-full.txt)
+- [Blog](https://aniruddhaadak80.github.io/OpenFile/blog)

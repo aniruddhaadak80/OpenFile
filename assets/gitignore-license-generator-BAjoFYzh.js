@@ -1,0 +1,364 @@
+import{o as e}from"./rolldown-runtime-BCiCTKAo.js";import{z as t}from"./files-DFsEDWi8.js";import{Vt as n,c as r,i,m as a,u as o}from"./ui-BnOkXGVZ.js";import{i as s,m as c,o as l,r as u,t as d}from"./kit-Kt77hAfx.js";import{t as f}from"./shell-6erUKoVz.js";var p=e(t(),1),m={Node:`# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.npm/
+.yarn/cache
+.yarn/install-state.gz
+dist/
+build/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.eslintcache
+.parcel-cache/
+.turbo/`,"Next.js":`# Next.js
+.next/
+out/
+next-env.d.ts
+.vercel/`,Vite:`# Vite
+dist/
+dist-ssr/
+*.local
+.vite/`,Python:`# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.ipynb_checkpoints/
+*.pyo`,Django:`# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/`,Java:`# Java
+*.class
+*.jar
+*.war
+*.ear
+*.log
+hs_err_pid*
+target/
+.gradle/
+build/
+out/`,Android:`# Android
+*.apk
+*.aab
+*.ap_
+.gradle/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.keystore
+*.jks`,Go:`# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+vendor/
+bin/`,Rust:`# Rust
+target/
+**/*.rs.bk
+*.pdb`,"C / C++":`# C and C++
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt`,".NET":`# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.nupkg
+TestResults/`,PHP:`# PHP
+vendor/
+composer.phar
+.phpunit.result.cache
+*.cache`,Ruby:`# Ruby
+*.gem
+.bundle/
+vendor/bundle/
+log/
+tmp/
+coverage/
+.byebug_history`,Flutter:`# Flutter and Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+.pub-cache/
+.pub/`,Swift:`# Swift and Xcode
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.ipa
+*.dSYM.zip
+Pods/`,Unity:`# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+*.csproj
+*.sln
+*.pidb
+*.unityproj`,Terraform:`# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+override.tf
+.terraformrc`,LaTeX:`# LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot`,"Jupyter / data":`# Notebooks and data
+.ipynb_checkpoints/
+*.parquet
+*.h5
+*.ckpt
+data/raw/
+wandb/
+mlruns/`,Env:`# Secrets and local env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.*`,macOS:`# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes`,Windows:`# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk`,Linux:`# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*`,"VS Code":`# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace`,JetBrains:`# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+out/`,Vim:`# Vim
+*.swp
+*.swo
+*~
+Session.vim
+.netrwhist`},h=[{id:`MIT`,name:`MIT License`,summary:`Do almost anything, keep the copyright notice. The most popular choice.`,text:(e,t)=>`MIT License
+
+Copyright (c) ${e} ${t}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+`},{id:`BSD-2-Clause`,name:`BSD 2-Clause License`,summary:`Like MIT, with the notice kept in source and binary forms.`,text:(e,t)=>`BSD 2-Clause License
+
+Copyright (c) ${e}, ${t}
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+`},{id:`BSD-3-Clause`,name:`BSD 3-Clause License`,summary:`BSD 2-Clause plus: you may not use the author names to promote your product.`,text:(e,t)=>`BSD 3-Clause License
+
+Copyright (c) ${e}, ${t}
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+`},{id:`ISC`,name:`ISC License`,summary:`A shorter MIT. Used by npm and OpenBSD.`,text:(e,t)=>`ISC License
+
+Copyright (c) ${e} ${t}
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+`},{id:`0BSD`,name:`Zero-Clause BSD`,summary:`Public-domain style: no notice needed at all.`,text:(e,t)=>`Zero-Clause BSD
+
+Copyright (C) ${e} by ${t}
+
+Permission to use, copy, modify, and/or distribute this software for
+any purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE
+FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY
+DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+`},{id:`Unlicense`,name:`The Unlicense`,summary:`Gives the work to the public domain.`,text:()=>`This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org>
+`},{id:`Apache-2.0`,name:`Apache License 2.0 (notice)`,summary:`Permissive with a patent grant. This writes the standard notice; add the full text from apache.org.`,text:(e,t)=>`Copyright ${e} ${t}
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+`},{id:`GPL-3.0-or-later`,name:`GNU GPL v3 (notice)`,summary:`Copyleft: changes must stay open. This writes the standard notice; add the full text from gnu.org.`,text:(e,t)=>`Copyright (C) ${e} ${t}
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+`}],g=n();function _(){let[e,t]=(0,p.useState)(`gitignore`),[n,_]=c(`b10:gi:picked`,[`Node`,`Vite`,`Env`,`macOS`,`Windows`,`VS Code`]),[v,y]=c(`b10:gi:extra`,``),[b,x]=(0,p.useState)(``),[S,C]=c(`b10:lic:id`,`MIT`),[w,T]=c(`b10:lic:holder`,``),[E,D]=(0,p.useState)(String(new Date().getFullYear())),O=(0,p.useMemo)(()=>{let e=new Set,t=n.filter(e=>m[e]).map(t=>m[t].split(`
+`).filter(t=>t.startsWith(`#`)||!t.trim()?!0:!e.has(t)&&(e.add(t),!0)).join(`
+`));return v.trim()&&t.push(`# Project
+`+v.trim()),t.join(`
+
+`)+(t.length?`
+`:``)},[n,v]),k=(h.find(e=>e.id===S)??h[0]).text(E,w.trim()||`Your Name`),A=e=>_(t=>t.includes(e)?t.filter(t=>t!==e):[...t,e]),j=Object.keys(m).filter(e=>e.toLowerCase().includes(b.toLowerCase()));return(0,g.jsxs)(`div`,{className:`space-y-4`,children:[(0,g.jsx)(a,{value:e,onChange:t,options:[{value:`gitignore`,label:`.gitignore`},{value:`license`,label:`LICENSE`}]}),e===`gitignore`?(0,g.jsxs)(`div`,{className:`grid gap-4 lg:grid-cols-[1fr_1.2fr]`,children:[(0,g.jsxs)(`div`,{className:`space-y-3`,children:[(0,g.jsx)(o,{value:b,onChange:e=>x(e.target.value),placeholder:`Filter stacks`,"aria-label":`Filter stacks`}),(0,g.jsx)(`div`,{className:`flex flex-wrap gap-2`,children:j.map(e=>(0,g.jsx)(d,{active:n.includes(e),onClick:()=>A(e),children:e},e))}),(0,g.jsx)(r,{label:`Your own lines`,hint:`One pattern per line`,children:(0,g.jsx)(`textarea`,{value:v,onChange:e=>y(e.target.value),className:`min-h-24 w-full rounded-xl border border-border bg-surface p-3 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent`,placeholder:`uploads/
+*.local.json`})})]}),(0,g.jsx)(l,{title:`.gitignore (${n.length} stacks)`,className:`h-[520px]`,actions:(0,g.jsxs)(g.Fragment,{children:[(0,g.jsx)(i,{text:O,variant:`ghost`}),(0,g.jsx)(s,{text:O,filename:`.gitignore`})]}),children:(0,g.jsx)(u,{code:O||`# Pick a stack on the left`,lang:`conf`,className:`h-full`})})]}):(0,g.jsxs)(`div`,{className:`grid gap-4 lg:grid-cols-[1fr_1.4fr]`,children:[(0,g.jsxs)(`div`,{className:`space-y-3`,children:[(0,g.jsx)(`div`,{className:`space-y-2`,children:h.map(e=>(0,g.jsxs)(`button`,{type:`button`,onClick:()=>C(e.id),className:`block w-full rounded-xl border p-3 text-left transition ${S===e.id?`border-accent bg-accent/10`:`border-border bg-surface hover:border-accent/50`}`,children:[(0,g.jsxs)(`div`,{className:`font-semibold`,children:[e.name,` `,(0,g.jsx)(`span`,{className:`ml-1 font-mono text-xs text-muted`,children:e.id})]}),(0,g.jsx)(`div`,{className:`text-sm text-muted`,children:e.summary})]},e.id))}),(0,g.jsxs)(f,{children:[(0,g.jsx)(r,{label:`Copyright holder`,className:`flex-1`,children:(0,g.jsx)(o,{value:w,onChange:e=>T(e.target.value),placeholder:`Your name or company`})}),(0,g.jsx)(r,{label:`Year`,className:`w-28`,children:(0,g.jsx)(o,{value:E,onChange:e=>D(e.target.value)})})]})]}),(0,g.jsx)(l,{title:`LICENSE`,className:`h-[620px]`,actions:(0,g.jsxs)(g.Fragment,{children:[(0,g.jsx)(i,{text:k,variant:`ghost`}),(0,g.jsx)(s,{text:k,filename:`LICENSE`})]}),children:(0,g.jsx)(`pre`,{className:`scrollbar-thin h-full overflow-auto whitespace-pre-wrap p-4 font-mono text-[13px] leading-5`,children:k})})]})]})}export{_ as default};

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en" class="dark" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="object-src 'self' blob:" />
+    <title>Hash Generator | Free and private in your browser | OpenFile</title>
+    <meta name="description" content="MD5, SHA-1, SHA-256, SHA-512 for text and files. Free, no uploads, no sign-up. Runs 100% in your browser." />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href="/OpenFile/favicon.svg" />
+    <link rel="apple-touch-icon" href="/OpenFile/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="OpenFile" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="application-name" content="OpenFile" />
+    <link rel="manifest" href="/OpenFile/manifest.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="OpenFile Blog" href="/OpenFile/blog/rss.xml" />
+    <meta property="og:title" content="Hash Generator | Free and private in your browser | OpenFile" />
+    <meta property="og:description" content="MD5, SHA-1, SHA-256, SHA-512 for text and files. Free, no uploads, no sign-up. Runs 100% in your browser." />
+    <meta property="og:image" content="https://aniruddhaadak80.github.io/OpenFile/og/category-dev.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="OpenFile" />
+    <meta name="twitter:title" content="Hash Generator | Free and private in your browser | OpenFile" />
+    <meta name="twitter:description" content="MD5, SHA-1, SHA-256, SHA-512 for text and files. Free, no uploads, no sign-up. Runs 100% in your browser." />
+    <meta name="twitter:image" content="https://aniruddhaadak80.github.io/OpenFile/og/category-dev.png" />
+    <meta name="author" content="Aniruddha Adak" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:alt" content="OpenFile: every file tool, private, in your browser" />
+    <meta name="twitter:image:alt" content="OpenFile: every file tool, private, in your browser" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="author" href="/OpenFile/humans.txt" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="preload" as="font" type="font/woff2" href="/OpenFile/fonts/inter-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/OpenFile/fonts/space-grotesk-latin.woff2" crossorigin />
+    <style id="of-fonts">@font-face{font-family:Inter;font-style:normal;font-weight:400 700;font-display:swap;src:url(/OpenFile/fonts/inter-latin-ext.woff2)format("woff2");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Inter;font-style:normal;font-weight:400 700;font-display:swap;src:url(/OpenFile/fonts/inter-latin.woff2)format("woff2");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Space Grotesk;font-style:normal;font-weight:500 700;font-display:swap;src:url(/OpenFile/fonts/space-grotesk-latin-ext.woff2)format("woff2");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Space Grotesk;font-style:normal;font-weight:500 700;font-display:swap;src:url(/OpenFile/fonts/space-grotesk-latin.woff2)format("woff2");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:JetBrains Mono;font-style:normal;font-weight:400 500;font-display:swap;src:url(/OpenFile/fonts/jetbrains-mono-latin-ext.woff2)format("woff2");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:JetBrains Mono;font-style:normal;font-weight:400 500;font-display:swap;src:url(/OpenFile/fonts/jetbrains-mono-latin.woff2)format("woff2");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+    <style id="of-critical">html{background:#0b0d10}html[data-theme=black]{background:#000}html[data-theme=light]{background:#fafaf7}body{margin:0}#prerender{clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;opacity:0;pointer-events:none;border:0;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;position:absolute!important}#of-splash{display:none}.of-boot #root{opacity:0}.of-ready #root{opacity:1;transition:opacity .45s}.of-boot #of-splash,.of-ready #of-splash{z-index:2147483000;background:#000;place-items:center;display:grid;position:fixed;inset:0}html[data-theme=dark] #of-splash{background:#0b0d10}html[data-theme=light] #of-splash{background:#fafaf7}.of-ready #of-splash{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s,visibility 0s linear .45s}.of-mark{place-items:center;width:84px;height:84px;display:grid;position:relative}.of-mark svg{width:56px;height:56px;animation:1.8s ease-in-out infinite of-breathe}.of-mark:before,.of-mark:after{content:"";border:1.5px solid #f5a5248c;border-radius:50%;animation:1.8s cubic-bezier(.2,.6,.3,1) infinite of-pulse;position:absolute;inset:0}.of-mark:after{border:2px solid #ffd27a;border-color:#ffd27a #14b8a699 #0000 #0000;animation:1.1s linear infinite of-spin;inset:-2px}@keyframes of-pulse{0%{opacity:.9;transform:scale(.82)}to{opacity:0;transform:scale(1.35)}}@keyframes of-spin{to{transform:rotate(360deg)}}@keyframes of-breathe{0%,to{opacity:.85;transform:scale(.97)}50%{opacity:1;transform:scale(1)}}@media (prefers-reduced-motion:reduce){html:not(.motion-full) .of-mark svg,html:not(.motion-full) .of-mark:before,html:not(.motion-full) .of-mark:after{animation:none}html:not(.motion-full) .of-ready #root,html:not(.motion-full) .of-ready #of-splash{transition:none}}html.reduce-motion .of-mark svg,html.reduce-motion .of-mark:before,html.reduce-motion .of-mark:after{animation:none}</style>
+    <noscript><style>.of-boot #root{opacity:1}#of-splash{display:none!important}#prerender{clip:auto;clip-path:none;white-space:normal;opacity:1;pointer-events:auto;width:auto;height:auto;margin:0 auto;overflow:visible;position:static!important}</style></noscript>
+    <script>
+      // before first paint: apply the saved theme and motion preference (full logic lives in src/lib/prefs.ts) and turn on the boot splash
+      (function () { var r = document.documentElement; r.classList.add('of-boot');
+        try { var p = JSON.parse(localStorage.getItem('of:prefs') || '{}'), t = p.theme || 'system';
+          if (t === 'system') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          r.dataset.theme = t; r.classList.toggle('dark', t !== 'light');
+          if (p.reducedMotion === 'reduce') r.classList.add('reduce-motion'); if (p.reducedMotion === 'full') r.classList.add('motion-full');
+          var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', t === 'light' ? '#FAFAF7' : t === 'black' ? '#000000' : '#0B0D10');
+        } catch (e) {}
+        // failsafe: if the app bundle cannot load, drop the splash and show the plain guide instead of a blank page
+        var fail = function () { if (!r.classList.contains('of-boot')) return; r.classList.remove('of-boot'); r.classList.add('of-fail') };
+        addEventListener('error', function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && /\/assets\//.test(t.src || '')) fail() }, true);
+        setTimeout(fail, 30000);
+        // keep the install prompt event even if it fires before the app bundle is ready (src/lib/ux.ts reads it)
+        addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__ofBIP = e; dispatchEvent(new Event('of:bip')) });
+        addEventListener('appinstalled', function () { window.__ofBIP = undefined });
+      })();
+    </script>
+    <style>.of-fail #prerender{clip:auto;clip-path:none;white-space:normal;opacity:1;pointer-events:auto;width:auto;height:auto;margin:0 auto;overflow:visible;position:static!important}</style>
+    <script type="module" crossorigin src="/OpenFile/assets/index--rrWVhH1.js"></script>
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rolldown-runtime-BCiCTKAo.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/browser-Ddioz8iZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/purify.es-Cm0RpNuY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/safe-CIOrKQxe.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/files-DFsEDWi8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/chunk-6KYCQHYJ-C5FQvVQ4.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/ui-BnOkXGVZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/activity-g2wCfeSW.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/accessibility-RPv0CsuR.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/aperture-BleSd13J.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/archive-D8dHyfYs.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-down-a-z-rrE-WtRO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-down-up-DOP0g4HW.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-left-right-BwHa-HA8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-right-left-DpFdNQLu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/audio-lines-Pznb0LMW.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/audio-waveform-Dzu9ctDT.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/badge-check-DwWOmcCE.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/bell-ring-H1I-mxos.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-bookmark-DzW0uKGl.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-check-CDArCsZ2.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-image-BG05uBja.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-open-DyJTEY3f.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/box-ZHpesI2j.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/braces-C1vZxebT.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/brain-circuit-C2hinjOH.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/brush-cleaning-BHWag9c5.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calendar-range-U7SX2nip.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calculator-CmNzpvVP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calendar-clock-D1WJ5nTw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calendar-days-CEzNsz8f.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/camera-Ye9qkdtu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/captions-eXAwT42U.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/case-upper-B61Zu2Ek.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/chart-column-D1qc9lNS.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/clapperboard-BuMlXSo4.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/clipboard-list-B1n9RBtI.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/clock-CZYuizH_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/code-xml-ieDbzYZu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/cog-C06VRbMk.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/code-CsP2Evcq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/columns-2-BMiY-cyq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/columns-3-p6RAOwum.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/combine-Btr4OOuK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/compass-oC4ayjDU.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/contact-IE645X7L.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/contrast-BJkVP8Vh.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/copy-minus-DJF9w2IJ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/cpu-Bov5vvVy.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/crop-BWh7Pp8C.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/database-Bfjd9RBz.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/dices-BOp6JFBw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/droplets-CdXiWZD7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/ear-hrjja-cu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/earth-BXoP1PFV.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eighth-note-BVOFr4OT.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eighth-notes-gHFLdQds.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eraser-DBXoHpNv.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/external-link-S5r3zBwo.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eye-off-xwdrYgT8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eye-DXu1QXPr.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/face-grinning-CaSwf7MA.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/face-slightly-smiling-C1vJCriB.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-archive-B9UU-t_Z.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-braces-DWqJTeN3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-check-corner-CZOBx6J9.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-code-corner-xj9WqU_Q.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-code-D8rXs4Cb.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-cog-BtxqGDbF.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-digit-YormvvL0.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-down-BYsLbxic.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-image-6fF9VMld.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-key-UsdPhle2.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-lock-CS5fZd-7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-output-DXmcwVM6.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-pen-line-IXL_-tii.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-pen-C9C0A5PF.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-play-DblxLcMb.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-plus-UENNCvhG.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-search-CfR9k88L.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-spreadsheet-iLwCQHhH.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-stack-CDtXj0-_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-text-CYMRj2Dk.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-type-Ed1_ijPs.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-x-corner-ClXfxk1o.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/film-BsIl1Lfy.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/fingerprint-pattern-BoHq3nwf.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/flame-7IbTFNWZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/folder-open-ByaqSUx-.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/library-BK2vJnro.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/workflow-B3efTWAR.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/gallery-vertical-uGkGEIhr.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/gauge-DrYRnR-B.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/gift-yccjA3Iw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/git-compare-DRLzFrhZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/git-pull-request-DmNx_ua2.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/globe-BLjtY8Gx.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/graduation-cap-CYb7wnrZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/grid-2x2-BjRqXt_F.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/grid-3x3-Mf-xE2xv.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/hash-Dhen4H9c.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/highlighter-FP560f57.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/image-down-D0J9UHoC.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/image-plus-ZRCVktrb.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/image-C9ik3_IZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/images-Dc6teI0Y.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/key-round-CwJ9XFgY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/keyboard-RfG8C5Pq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/languages-B9bXyuxv.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/layers-2-w6GlZdSK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/layers-DVkGyzQu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/layout-grid-CTOpxF4f.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/link-2-C5VOuWqu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-checks-B6IQGPBg.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-music-DMnCQ6Kf.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-ordered-F-odMtL_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-tree-g_-43V1s.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/locate-fixed-hjN4B9vd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/lock-keyhole-B6kizY5j.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/lock-open-Bqt7wJ0-.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/lock-B8f-_BrR.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/magnet-BxeQTxQk.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mail-DYTqFBG6.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/map-pin-p3Iex16h.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/map-pinned-BprvIdcL.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/merge-BgPsR8eK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/message-square-off-DB4XxRad.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/message-square-text-B12ae7lz.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mic-off-CotGbkBm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mic-DGt2nE98.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/minimize-2-C0tX0mIq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/monitor-cog-DyiRg0OY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/monitor-play-MP38fIgP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/monitor-CDtjhWXq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mountain-DyvbTWau.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/paintbrush-D4L9VeMj.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/palette-1hn9AlqH.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/panel-top-BusBCgDT.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/paperclip-CIDixk2t.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pen-line-CJi4s1Wj.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pen-tool-CMESSorO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pencil-line-DBN6hxJE.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/phone-BiXGesI3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/picture-in-picture-2-DoPLyFIx.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pipette-CgzLMKDW.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/presentation-CqZ_tSPs.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/printer-B7OaSzi3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/qr-code-CQ0b3gE7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/quote-BBcTzBWA.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/receipt-euro-Ci9y-uXK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/receipt-DWSjzzue.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rectangle-ellipsis-ayycee4g.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/refresh-cw-Cg9jeUu1.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/repeat-DMmVY5ZM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/replace-ypzGpkid.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rewind-C2_M8_XZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rotate-cw-XdXw5J0_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/route-DJC9cX0z.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rows-3-BCoJkkCw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/ruler-NU-5gIWZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scaling-CpOO4i-Q.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-face-grn_81vU.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-line-B3S-vNVN.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-search-BiJX9Yf9.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-text-J9oXsoDA.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scissors-CuzHybTM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shapes-d_JQ2dkO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sheet-DlseCT5f.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shield-alert-BCOyjto7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shield-check-se9KKy86.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shield-question-mark-DzkHJSTJ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shuffle-DXVuI4h3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sigma-Cnt01TrM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/signature-rSbs3Y6k.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sliders-horizontal-BKnecuOn.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sliders-vertical-D51NTgYk.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/smartphone-BKudC5kG.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/snowflake-BdAvvh5D.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sparkles-DjYB7mUV.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/spell-check-C9RW2-_X.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/spline-Dpe-YCpC.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/split-ERhk35yL.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-centerline-dashed-vertical-B0t7jlOp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-centerline-dashed-horizontal-DgYJUsmM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-split-horizontal-DHYDgDmq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-53G_z9b7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/stamp-CfwLSUpv.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/table-2-DJbDoe-b.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/table-C8NINXKd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/tag-ICCls-RY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/tags-C8i-Eute.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/target-DZlje8Lm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/terminal-C_6jyPq4.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/text-align-start-D8fJog2A.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/text-wrap-C3NndJmZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/timer-D-25gGd0.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/trash-CwsZkUnm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/trending-up-BhEsPH8o.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/triangles-centerline-dashed-horizontal-CqmZyRPa.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/type-DAdHir-P.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/unlink-B1tvd_pa.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/utensils-DRpgfa6H.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/vibrate-CMgfpj1X.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/video-D95ZJyPs.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/volume-2-D13ITtoQ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/volume-x-DhLk8fK_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/wand-sparkles-DdITqy-w.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/wrench-BElE3MvU.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/zap-C-8rB4oO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/zoom-in-BsQ13r52.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/icons-9MfZ9GQ5.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/corner-down-left-DSi0Ajl_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/platform-tlK_XIGi.js">
+    <link rel="stylesheet" crossorigin href="/OpenFile/assets/index-Ym1dJOCq.css">
+      <meta property="og:url" content="https://aniruddhaadak80.github.io/OpenFile/hash-generator" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <link rel="canonical" href="https://aniruddhaadak80.github.io/OpenFile/hash-generator" />
+      <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Hash Generator","description":"MD5, SHA-1, SHA-256, SHA-512 for text and files.","url":"https://aniruddhaadak80.github.io/OpenFile/hash-generator","applicationCategory":"UtilitiesApplication","applicationSubCategory":"Developer","operatingSystem":"Any (web browser)","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Aniruddha Adak","url":"https://aniruddhaadak80.github.io/OpenFile/about#author","sameAs":["https://github.com/aniruddhaadak80","https://dev.to/aniruddhaadak","https://www.linkedin.com/in/aniruddha-adak","https://x.com/asi369_","https://devpost.com/aniruddhaadak"]},"image":"https://aniruddhaadak80.github.io/OpenFile/og/category-dev.png","softwareRequirements":"crypto-js, Web Crypto API"},{"@type":"HowTo","name":"How to use Hash Generator","step":[{"@type":"HowToStep","position":1,"text":"Open Hash Generator and paste or type your input."},{"@type":"HowToStep","position":2,"text":"Results update instantly as you type."},{"@type":"HowToStep","position":3,"text":"Tweak options such as format, indentation or algorithm."},{"@type":"HowToStep","position":4,"text":"Copy the output or download it as a file."}]},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my files uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. This tool runs entirely in your browser tab. Files are read from your disk into memory and the result is generated locally."}},{"@type":"Question","name":"Is it free? Are there limits or watermarks?","acceptedAnswer":{"@type":"Answer","text":"Free and open source (MIT). There are no file-size caps, daily quotas, accounts or watermarks."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes, once the page (and any engine it needs) has loaded, it keeps working without a connection thanks to the service worker cache."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aniruddhaadak80.github.io/OpenFile/"},{"@type":"ListItem","position":2,"name":"Developer","item":"https://aniruddhaadak80.github.io/OpenFile/category/dev"},{"@type":"ListItem","position":3,"name":"Hash Generator","item":"https://aniruddhaadak80.github.io/OpenFile/hash-generator"}]}]}</script>
+    <style id="pr-css">.pr{max-width:860px;margin:0 auto;padding:32px 20px 64px;font:16px/1.65 Inter,ui-sans-serif,system-ui,sans-serif;color:#ECEEF1;background:#0B0D10}.pr a{color:#F5A524}.pr h1{font:700 2.25rem/1.15 "Space Grotesk",Inter,sans-serif;margin:.8em 0 .4em}.pr h2{font-size:1.3rem;margin:1.6em 0 .5em}.pr nav{font-size:14px;opacity:.85}.pr li{margin:.3em 0}.pr dt{font-weight:600;margin-top:.8em}.pr dd{margin:0 0 0 1em;color:#B6BCC5}.pr-note{margin-top:2em;font-size:13px;color:#8B929C}html[data-theme=light] .pr{background:#FAFAF7;color:#16140F}html[data-theme=light] .pr a{color:#8a5a00}</style>
+  </head>
+  <body>
+    <noscript><p style="padding:16px;font-family:system-ui;color:#F5A524;background:#0B0D10">OpenFile runs in your browser and needs JavaScript for the tools. The page content below still works as a guide.</p></noscript>
+    <div id="of-splash" aria-hidden="true"><div class="of-mark"><svg viewBox="0 0 64 64" fill="none"><defs><linearGradient id="ofsg" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD27A"/><stop offset=".45" stop-color="#FFB224"/><stop offset="1" stop-color="#E08A00"/></linearGradient></defs><path d="M22 13h14l10 10v25a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" stroke="url(#ofsg)" stroke-width="2.5" stroke-linejoin="round"/><path d="M36 13v8a2 2 0 0 0 2 2h8" stroke="url(#ofsg)" stroke-width="2.5" stroke-linejoin="round"/><circle cx="32" cy="38" r="6.5" stroke="url(#ofsg)" stroke-width="3"/></svg></div></div>
+    <div id="root"><div id="prerender" class="pr"><nav aria-label="Site"><a href="/OpenFile/">OpenFile</a> | <a href="/OpenFile/tools">All tools</a> | <a href="/OpenFile/workspace">Workspace</a> | <a href="/OpenFile/docs">Docs</a> | <a href="/OpenFile/blog">Blog</a> | <a href="/OpenFile/install">Install</a> | <a href="/OpenFile/about">About</a></nav><main><p><a href="/OpenFile/">Home</a> / <a href="/OpenFile/category/dev">Developer</a> / Hash Generator</p><h1>Hash Generator</h1><p>MD5, SHA-1, SHA-256, SHA-512 for text and files.</p><p>Free, no uploads, no sign-up. Runs 100% in your browser.</p><h2>How Hash Generator works</h2><p>Hash Generator runs entirely in your browser. MD5, SHA-1, SHA-256, SHA-512 for text and files. Under the hood it uses crypto-js (hash functions not offered by Web Crypto, such as MD5) and Web Crypto API (the browser’s built-in, hardware-accelerated cryptography). Your files are read into this tab’s memory, processed on your own CPU, and handed back to you as a download. Nothing is sent to a server.</p><h2>How to use Hash Generator</h2><ol><li>Open Hash Generator and paste or type your input.</li><li>Results update instantly as you type.</li><li>Tweak options such as format, indentation or algorithm.</li><li>Copy the output or download it as a file.</li></ol><h2>Tips</h2><ul><li>Use SHA-256 to verify downloads; MD5 and SHA-1 are not collision-resistant.</li></ul><h2>Hash Generator FAQ</h2><dl><dt>Are my files uploaded?</dt><dd>No. This tool runs entirely in your browser tab. Files are read from your disk into memory and the result is generated locally.</dd><dt>Is it free? Are there limits or watermarks?</dt><dd>Free and open source (MIT). There are no file-size caps, daily quotas, accounts or watermarks.</dd><dt>Does it work offline?</dt><dd>Yes, once the page (and any engine it needs) has loaded, it keeps working without a connection thanks to the service worker cache.</dd></dl><h2>Related tools</h2><ul><li><a href="/OpenFile/password-generator">Password Generator</a>: Strong random passwords and passphrases with strength meter.</li><li><a href="/OpenFile/uuid-generator">UUID Generator</a>: Generate v4 and v7 UUIDs in bulk.</li><li><a href="/OpenFile/base64">Base64 Encode/Decode</a>: Encode or decode Base64 text and files.</li><li><a href="/OpenFile/json-formatter">JSON Formatter</a>: Prettify, validate, minify and explore JSON as a tree.</li></ul></main><p class="pr-note">OpenFile runs in your browser. Turn on JavaScript to use the tools.</p></div></div>
+  </body>
+</html>
