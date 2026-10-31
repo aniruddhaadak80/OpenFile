@@ -1208,7 +1208,7 @@ export default function SketchBoard() {
           </div>
 
           <div className="pointer-events-auto mx-auto min-w-0 overflow-x-auto scrollbar-thin" data-scroll>
-            <div className={cn(panel, 'flex items-center gap-0.5 p-1')}>
+            <div className={cn(panel, 'flex w-max items-center gap-0.5 p-1')}>
               {TOOLS.map(({ t, icon: I, label, key }) => (
                 <button key={t} title={`${label}, ${key}`} onClick={() => pickTool(t)} className={cn('relative grid size-9 shrink-0 place-items-center rounded-lg transition cursor-pointer', tool === t ? 'bg-accent text-on-accent shadow-md shadow-accent/30' : 'text-fg/75 hover:bg-surface-2 hover:text-fg')}>
                   <I className="size-[17px]" strokeWidth={tool === t ? 2.2 : 1.8} />

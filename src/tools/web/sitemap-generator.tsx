@@ -19,7 +19,7 @@ export default function SitemapGenerator() {
         <Dropzone compact multiple accept=".html,.htm,.txt,.csv" onFiles={fromHtml} label="Or drop your HTML files" sub="Links inside them and their own paths are added" />
         <Card className="grid gap-3 sm:grid-cols-2">
           <Switch checked={lastmod} onChange={setLastmod} label="Last modified date" />{lastmod && <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Last modified" />}
-          <label className="block"><Label>Change frequency</Label><Select value={freq} onChange={setFreq} options={[{ value: '', label: 'Leave out (ignored by Google)' }, 'daily', 'weekly', 'monthly', 'yearly']} /></label>
+          <label className="block"><Label>Change frequency (Google ignores it)</Label><Select value={freq} onChange={setFreq} options={[{ value: '', label: 'Leave out' }, 'daily', 'weekly', 'monthly', 'yearly']} /></label>
           <Switch checked={prio} onChange={setPrio} label="Priority by depth" /><Switch checked={sameHost} onChange={setSameHost} label="Only this site's pages" />
         </Card>
       </div>

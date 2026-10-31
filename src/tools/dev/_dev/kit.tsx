@@ -39,7 +39,7 @@ export function Stat({ label, value, sub, className }: { label: React.ReactNode;
   return (
     <div className={cn('rounded-xl border border-border bg-surface-2/40 px-3 py-2.5', className)}>
       <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">{label}</div>
-      <div className="mt-0.5 truncate font-display text-lg font-semibold tabular-nums">{value}</div>
+      <div className="mt-0.5 font-display text-lg font-semibold leading-snug tabular-nums [overflow-wrap:anywhere]">{value}</div>
       {sub && <div className="truncate text-[11px] text-muted">{sub}</div>}
     </div>
   )

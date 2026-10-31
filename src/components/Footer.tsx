@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ShieldCheck, Keyboard, Download, Star, ArrowUpRight, Rss } from 'lucide-react'
 import { CATEGORIES, TOOLS, type ToolMeta } from '@/tools/registry'
 import { cn } from '@/components/ui'
-import { catGroups, colsClass, evenCols, spanClass } from '@/lib/catgrid'
+import { catGroups, colsClass, spanClass } from '@/lib/catgrid'
 import { overlayBus, useInstall } from '@/lib/ux'
 import { MadeByCard } from './Author'
 import { OnlineDot } from './Overlays'
@@ -102,12 +102,12 @@ export function Footer() {
         <div className="mt-12 grid gap-x-8 gap-y-10 border-t border-border pt-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]">
           <div className="min-w-0">
             <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-fg">Categories</h2>
-            <div className="space-y-2">{catGroups(CATEGORIES).map((group, gi) => { const lay = gi === 0 ? { base: 1, sm: 2, md: 4 } : { base: 1, sm: 2, lg: evenCols(group.length, [5, 4, 3]) }; return group.length > 0 && (
+            <div className="space-y-2">{catGroups(CATEGORIES).map((group, gi) => { const lay = { base: 1, sm: 2, md: 4 }; return group.length > 0 && (
             <ul key={gi} className={cn('grid gap-2', colsClass(lay))}>
               {group.map((c, i) => (
                 <li key={c.id} className={cn('min-w-0', spanClass(i, group.length, lay))}>
                   <Link to={`/category/${c.id}`} className="group flex min-h-10 items-center justify-between gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-muted transition hover:border-accent/60 hover:text-fg">
-                    <span className="flex min-w-0 items-center gap-2"><span className="size-2 shrink-0 rounded-full" style={{ background: c.color }} /><span className="truncate">{c.name}</span></span>
+                    <span className="flex min-w-0 items-center gap-2 py-1.5"><span className="size-2 shrink-0 rounded-full" style={{ background: c.color }} /><span className="leading-tight">{c.name}</span></span>
                     <span className="shrink-0 font-mono text-[11px] text-muted">{count(c.id)}</span>
                   </Link>
                 </li>

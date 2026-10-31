@@ -200,7 +200,7 @@ function Sidebar({ current, headings, active, onPick }: { current?: DocPage; hea
           className={cn('group relative flex min-h-9 items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm transition', nested && 'min-h-8 py-1 text-[13px]', isActive ? 'bg-accent/10 font-medium text-fg' : 'text-muted hover:bg-surface-2 hover:text-fg')}>
           {isActive && <motion.span layoutId="docs-active" className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-accent" />}
           {c ? <span className="ml-1 mr-0.5 size-2 shrink-0 rounded-full" style={{ background: c }} /> : <I className={cn('size-4 shrink-0', isActive && 'text-accent')} />}
-          <span className="truncate">{p.title}</span>
+          <span className="min-w-0 leading-snug">{p.title}</span>
           {p.source === 'category' && <span className="ml-auto text-[11px] tabular-nums text-muted/70">{toolCountFor(p.id.slice(6))}</span>}
         </Link>
         {isActive && sub.length > 1 && (

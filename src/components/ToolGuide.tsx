@@ -16,7 +16,7 @@ export function ToolGuideSection({ tool, guide }: { tool: ToolMeta; guide: Guide
   const [open, setOpen] = useState<number | null>(0)
   return (
     <div className="mt-20 space-y-14">
-      <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+      <div className="grid items-start gap-5 lg:grid-cols-[1.35fr_1fr]">
         <motion.section {...fade} className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-8">
           <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full blur-3xl" style={{ background: cat.color + '22' }} />
           <div className="relative">

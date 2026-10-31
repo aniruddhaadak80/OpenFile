@@ -413,15 +413,15 @@ export function PostTools({ slugs }: { slugs: string[] }) {
   return (
     <div className="not-prose my-10">
       <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">Tools from this post</div>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
         {tools.map((t) => { const I = getIcon(t.icon); const c = CATEGORIES.find((x) => x.id === t.category)?.color ?? 'var(--accent)'; return (
           <Link key={t.slug} to={`/${t.slug}`} className="group flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 transition hover:border-accent">
-            <span className="grid size-9 place-items-center rounded-lg" style={{ background: c + '1a', color: c }}><I className="size-4" /></span>
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg" style={{ background: c + '1a', color: c }}><I className="size-4" /></span>
             <span className="min-w-0 flex-1"><span className="block text-sm font-medium">{t.name}</span><span className="block truncate text-xs text-muted">{t.desc}</span></span>
             <ArrowRight className="size-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-accent" />
           </Link>) })}
       </div>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">{tools.slice(0, 4).map((t) => <WatchPreview key={t.slug} slug={t.slug} name={t.name} />)}</div>
+      <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">{tools.slice(0, 4).map((t) => <WatchPreview key={t.slug} slug={t.slug} name={t.name} />)}</div>
     </div>
   )
 }

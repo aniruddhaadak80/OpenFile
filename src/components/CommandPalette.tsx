@@ -53,7 +53,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
   const go = (path: string) => { nav(path); onClose() }
   return (
     <div className="fixed inset-0 z-[90] flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-label="Search tools" className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="border-b border-border p-2"><div className="group relative flex items-center gap-3 rounded-xl border border-transparent px-3 transition-[border-color,background-color,box-shadow] focus-within:border-accent/70 focus-within:bg-accent/[0.05] focus-within:shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_22%,transparent)]">
           <Search className="size-5 text-muted transition-colors group-focus-within:text-accent" />
           <input ref={inputRef} data-palette-input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Search ${TOOLS.length} tools, pages and docs`} className="h-12 flex-1 min-w-0 bg-transparent text-base outline-none placeholder:text-muted focus:outline-none focus-visible:outline-none"

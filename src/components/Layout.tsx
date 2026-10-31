@@ -140,7 +140,7 @@ export function Layout() {
                     <div className={cn('grid gap-x-6 gap-y-5', colsClass(lay))}>
                     {group.map((c, i) => { const n = TOOLS.filter((t) => t.category === c.id).length; return (
                       <div key={c.id} className={cn('min-w-0', spanClass(i, group.length, lay))}>
-                        <Link to={`/category/${c.id}`} title={c.name} className="mb-1.5 block truncate px-1.5 text-xs font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.name}</Link>
+                        <Link to={`/category/${c.id}`} title={c.name} className="cat-head mb-1.5 block px-1.5 text-xs leading-snug max-lg:whitespace-normal lg:truncate font-bold uppercase tracking-wider" style={{ ['--cat' as string]: c.color }}>{c.name}</Link>
                         <div className="space-y-0.5">
                           {TOOLS.filter((t) => t.category === c.id).slice(0, 6).map((t) => { const I = getIcon(t.icon); return (
                             <Link key={t.slug} to={`/${t.slug}`} title={t.name} className="flex min-w-0 items-start gap-2 rounded-md px-1.5 py-1 text-[13px] text-muted hover:bg-surface-2 hover:text-fg"><I className="mt-[3px] size-3.5 shrink-0" aria-hidden="true" /><span className="min-w-0 max-lg:line-clamp-2 max-lg:whitespace-normal lg:truncate">{t.name}</span></Link>) })}

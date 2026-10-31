@@ -55,17 +55,17 @@ export default function Status() {
           <div className="grid gap-2 sm:grid-cols-2">
             {caps.map(([n, has, why]) => <div key={n} className="flex items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm">{has ? <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" /> : <XCircle className="mt-0.5 size-4 shrink-0 text-muted" />}<span><span className="font-medium">{n}</span><span className="block text-xs text-muted">{why}</span></span></div>)}
           </div>
-        </section>
-        <aside className="space-y-4">
-          <div className="rounded-2xl border border-border bg-surface p-5">
-            <h2 className="flex items-center gap-2 font-semibold"><Cpu className="size-4 text-accent" /> Tools per category</h2>
-            <ul className="mt-3 space-y-2 text-sm">{CATEGORIES.map((c) => { const n = TOOLS.filter((t) => t.category === c.id).length; return <li key={c.id}><Link to={`/category/${c.id}`} className="flex items-center gap-2 hover:text-accent"><span className="size-2 rounded-full" style={{ background: c.color }} /><span className="flex-1">{c.name}</span><span className="font-mono text-xs text-muted">{n}</span></Link></li> })}</ul>
-          </div>
-          <div className="rounded-2xl border border-border bg-surface p-5">
+          <div className="mt-6 rounded-2xl border border-border bg-surface p-5">
             <h2 className="flex items-center gap-2 font-semibold"><Download className="size-4 text-accent" /> Engines that download once</h2>
             <p className="mt-1 text-xs text-muted">Fetched the first time a tool needs them, then cached.</p>
             <ul className="mt-3 flex flex-wrap gap-1.5">{HEAVY_ENGINES.map((e) => <li key={e} className="rounded-md border border-border px-2 py-1 text-xs">{e}</li>)}</ul>
             {!install.installed && install.canPrompt && <Button className="mt-4 w-full" icon={<Download className="size-4" />} onClick={() => void install.prompt()}>Install OpenFile</Button>}
+          </div>
+        </section>
+        <aside className="space-y-4">
+          <div className="rounded-2xl border border-border bg-surface p-5">
+            <h2 className="flex items-center gap-2 font-semibold"><Cpu className="size-4 text-accent" /> Tools per category</h2>
+            <ul className="mt-3 space-y-1.5 text-sm">{CATEGORIES.map((c) => { const n = TOOLS.filter((t) => t.category === c.id).length; return <li key={c.id}><Link to={`/category/${c.id}`} className="flex items-center gap-2 hover:text-accent"><span className="size-2 rounded-full" style={{ background: c.color }} /><span className="flex-1">{c.name}</span><span className="font-mono text-xs text-muted">{n}</span></Link></li> })}</ul>
           </div>
         </aside>
       </div>

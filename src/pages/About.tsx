@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ShieldCheck, Cpu, Code2, MapPin, GraduationCap, Bot, GitPullRequest, Newspaper, ArrowUpRight, Heart } from 'lucide-react'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
-import { catGroups, colsClass, evenCols, spanClass } from '@/lib/catgrid'
+import { catGroups, colsClass, spanClass } from '@/lib/catgrid'
 import { Github } from '@/components/Logo'
 import { REPO_URL } from '@/components/Layout'
 import { AUTHOR } from '@/lib/author'
@@ -90,10 +90,10 @@ export default function About() {
         {/* -------- inside -------- */}
         <section className="pt-20 sm:pt-24">
           <Reveal><h2 className="font-display text-2xl font-bold sm:text-3xl">What is inside</h2><p className="mt-2 text-muted">{TOOLS.length} tools in {CATEGORIES.length} categories. Pick one to see them all.</p></Reveal>
-          {catGroups(CATEGORIES).map((group, gi) => { const lay = gi === 0 ? { base: 1, sm: 2, lg: 4 } : { base: 1, sm: 2, lg: evenCols(group.length, [5, 4, 3]) }; return group.length > 0 && (
+          {catGroups(CATEGORIES).map((group, gi) => { const lay = { base: 1, sm: 2, lg: 4 }; return group.length > 0 && (
           <Stagger key={gi} className={`${gi ? "mt-3" : "mt-6"} grid gap-3 ${colsClass(lay)}`}>
             {group.map((c, i) => (
-              <StaggerItem key={c.id} className={spanClass(i, group.length, lay)}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex h-full min-h-12 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex min-w-0 items-center gap-2"><span className="size-2.5 shrink-0 rounded-full" style={{ background: c.color }} /><span className="truncate">{c.name}</span></span><span className="shrink-0 text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</span></Link></StaggerItem>
+              <StaggerItem key={c.id} className={spanClass(i, group.length, lay)}><Link to={`/category/${c.id}`} onPointerMove={spotlightMove} className="spotlight flex h-full min-h-12 items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3" style={{ ['--c' as string]: c.color }}><span className="flex min-w-0 items-center gap-2"><span className="size-2.5 shrink-0 rounded-full" style={{ background: c.color }} /><span className="leading-tight">{c.name}</span></span><span className="shrink-0 text-sm text-muted">{TOOLS.filter((t) => t.category === c.id).length} {TOOLS.filter((t) => t.category === c.id).length === 1 ? "tool" : "tools"}</span></Link></StaggerItem>
             ))}
           </Stagger>) })}
         </section>

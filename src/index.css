@@ -62,6 +62,9 @@ html[data-theme="light"] .text-accent { color: var(--accent-ink); }
 /* category-coloured kicker text (ToolGuide): darker on the light theme so it keeps 4.5:1 on white */
 .cat-ink { color: var(--cat); }
 html[data-theme="light"] .cat-ink { color: color-mix(in oklab, var(--cat) 62%, #000); }
+/* Tools menu category headings: the pastel hues (Creator Studio, Study & Classroom, Money & Finance) need a deeper mix to keep 4.5:1 on the light menu */
+.cat-head { color: var(--cat); }
+html[data-theme="light"] .cat-head { color: color-mix(in oklab, var(--cat) 55%, #000); }
 html[data-theme="light"] .on-dark .text-accent { color: var(--accent); }
 html[data-density="compact"] { --spacing: 0.215rem; font-size: 15px; }
 html[data-radius="sharp"] { --radius-xs: 1px; --radius-sm: 2px; --radius-md: 3px; --radius-lg: 4px; --radius-xl: 4px; --radius-2xl: 6px; --radius-3xl: 8px; }
@@ -119,7 +122,7 @@ html[data-theme="light"] .text-gradient { background-image: linear-gradient(100d
 
 .prose-of h1 { @apply text-3xl font-bold mt-6 mb-3; } .prose-of h2 { @apply text-2xl font-semibold mt-5 mb-2; } .prose-of h3 { @apply text-xl font-semibold mt-4 mb-2; }
 .prose-of p { @apply my-2 leading-relaxed; } .prose-of ul { @apply list-disc pl-6 my-2; } .prose-of ol { @apply list-decimal pl-6 my-2; }
-.prose-of code { @apply font-mono text-sm bg-surface-2 px-1 py-0.5 rounded; } .prose-of pre { @apply bg-surface-2 p-3 rounded-lg overflow-auto my-3; } .prose-of pre code { @apply bg-transparent p-0; }
+.prose-of code { @apply font-mono text-sm bg-surface-2 px-1 py-0.5 rounded; overflow-wrap: anywhere; } .prose-of pre { @apply bg-surface-2 p-3 rounded-lg overflow-auto my-3; } .prose-of pre code { @apply bg-transparent p-0; }
 .prose-of blockquote { @apply border-l-4 border-accent pl-4 italic text-muted my-3; } .prose-of a { @apply text-accent underline; }
 .prose-of table { @apply border-collapse my-3; } .prose-of th, .prose-of td { @apply border border-border px-3 py-1.5; } .prose-of img { @apply max-w-full rounded; } .prose-of hr { @apply my-6 border-border; }
 }
@@ -149,7 +152,7 @@ kbd { font-family: var(--font-mono); }
 .docs-prose a .ext { font-size: .75em; margin-left: .15em; opacity: .7; }
 .docs-prose strong { font-weight: 650; color: var(--fg); }
 .docs-prose hr { border: 0; border-top: 1px solid var(--border); margin: 2rem 0; }
-.docs-prose :not(pre) > code { font-family: var(--font-mono); font-size: .85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: .1em .4em; }
+.docs-prose :not(pre) > code { font-family: var(--font-mono); font-size: .85em; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: .1em .4em; overflow-wrap: anywhere; }
 .docs-prose kbd { display: inline-block; min-width: 1.6em; text-align: center; font-size: .78em; line-height: 1.5; padding: 0 .45em; border-radius: 6px; border: 1px solid var(--border); border-bottom-width: 2px; background: var(--surface); color: var(--fg); }
 .docs-prose blockquote { border-left: 3px solid var(--accent); padding: .25rem 1rem; color: var(--muted); margin: 1rem 0; }
 .docs-prose img { max-width: 100%; border-radius: 12px; }
@@ -214,6 +217,8 @@ html[data-theme="black"] { --code-bg: #050505; }
    .reduce-motion rule above (plus the media query below) freezes it.
    ===================================================================== */
 html, body { overflow-x: clip; }
+/* Icons keep their size in flex rows: a long label next to an icon used to squeeze the svg to 0 px wide (missing icons, ragged rows). */
+svg.lucide { flex-shrink: 0; }
 @media (prefers-reduced-motion: reduce) { html:not(.motion-full) *, html:not(.motion-full) *::before, html:not(.motion-full) *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } }
 @property --mx { syntax: '<length-percentage>'; inherits: true; initial-value: 50%; }
 @property --my { syntax: '<length-percentage>'; inherits: true; initial-value: 50%; }

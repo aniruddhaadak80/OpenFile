@@ -32,7 +32,7 @@ export function StepPalette({ onAdd, searchRef }: { onAdd: (step: string) => voi
             onClick={() => onAdd(s.id)} title={s.desc}
             className="ws-in group flex items-center gap-2 rounded-xl border border-border bg-surface-2/40 px-2 py-1.5 text-left text-xs transition hover:border-accent/60 hover:bg-accent/5 cursor-pointer">
             <span className="grid size-7 shrink-0 place-items-center rounded-lg" style={{ background: catColor(s.id) + '22', color: catColor(s.id) }}><StepIcon step={s.id} className="size-3.5" /></span>
-            <span className="min-w-0 flex-1"><span className="block truncate font-medium">{s.name}</span><span className="block truncate text-[10px] text-muted">{s.desc}</span></span>
+            <span className="min-w-0 flex-1"><span className="block font-medium leading-tight">{s.name}</span><span className="block truncate text-[10px] text-muted">{s.desc}</span></span>
             <Plus className="size-3.5 shrink-0 text-muted transition group-hover:text-accent" />
           </button>
         ))}

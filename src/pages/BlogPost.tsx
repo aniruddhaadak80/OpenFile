@@ -92,7 +92,7 @@ export default function BlogPost() {
           <PostVideo key={slug} slug={slug} kind={post.cover} title={post.title} />
         </motion.div>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
           <article ref={articleRef} className="docs-prose mx-auto w-full max-w-3xl">
             <div ref={bodyRef} key={slug}><Body /></div>
             <PostFigures key={'f' + slug} slug={slug} rootRef={bodyRef} />
