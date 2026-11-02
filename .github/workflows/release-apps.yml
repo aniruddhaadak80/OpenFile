@@ -278,7 +278,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       - name: Capacitor sync
         working-directory: mobile
         run: npm install && npx cap sync android
