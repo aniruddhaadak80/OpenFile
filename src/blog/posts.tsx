@@ -24,6 +24,8 @@ import InsideFitFile from './posts/what-is-inside-a-fit-file'
 import ScanReceipts from './posts/scan-receipts-privately'
 import TokensChunksMcp from './posts/tokens-chunks-and-mcp-configs'
 import ReadYourDataExports from './posts/read-your-data-exports-privately'
+import FineTuningDatasetsThatPass from './posts/fine-tuning-datasets-that-pass'
+import InstagramUnfollowersWithoutALogin from './posts/instagram-unfollowers-without-a-login'
 import AnyDocumentToMarkdown from './posts/turn-any-document-into-markdown'
 import DiagramsFromText from './posts/diagrams-and-charts-from-plain-text'
 import PrintingFilesInBrowser from './posts/3d-printing-files-in-a-browser'
@@ -275,4 +277,6 @@ export const POST_BODIES: Record<string, () => ReactNode> = {
   'scan-receipts-privately': ScanReceipts,
   'tokens-chunks-and-mcp-configs': TokensChunksMcp,
   'read-your-data-exports-privately': ReadYourDataExports,
+  'fine-tuning-datasets-that-pass': FineTuningDatasetsThatPass,
+  'instagram-unfollowers-without-a-login': InstagramUnfollowersWithoutALogin,
 }

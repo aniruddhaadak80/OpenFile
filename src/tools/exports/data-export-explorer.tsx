@@ -38,7 +38,7 @@ export default function DataExportExplorer() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={ex} accept=".zip,.json,.js,.csv,.html,.txt" label="Drop any data export ZIP, or JSON files from one" sub="Instagram, Facebook, TikTok, Google, Discord, LinkedIn, Snapchat and others. Read in your browser, never uploaded." />
+        <ExportDrop sample="explorer" st={ex} accept=".zip,.json,.js,.csv,.html,.txt" label="Drop any data export ZIP, or JSON files from one" sub="Instagram, Facebook, TikTok, Google, Discord, LinkedIn, Snapchat and others. Read in your browser, never uploaded." />
         {scan && <p className="text-sm text-muted" role="status">{scan}</p>}
         {ex.entries.length > 0 && <>
           <Stats cols={4}><Stat label="Looks like" value={<span className="text-base">{service}</span>} /><Stat label="Files" value={fmtNum(ex.entries.length)} sub={formatBytes(total)} /><Stat label="Data files read" value={fmtNum(found.length)} sub="JSON and JS" /><Stat label="Lists of records" value={fmtNum(found.reduce((a, f) => a + f.lists.length, 0))} /></Stats>

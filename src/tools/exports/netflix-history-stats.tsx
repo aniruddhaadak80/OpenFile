@@ -24,7 +24,7 @@ export default function NetflixHistoryStats() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? res?.error ?? null }} accept=".zip,.csv" label="Drop your Netflix viewing history" sub="NetflixViewingHistory.csv from your profile page, or ViewingActivity.csv from a full data request. Read in your browser." />
+        <ExportDrop sample="netflix" st={{ ...ex, error: ex.error ?? res?.error ?? null }} accept=".zip,.csv" label="Drop your Netflix viewing history" sub="NetflixViewingHistory.csv from your profile page, or ViewingActivity.csv from a full data request. Read in your browser." />
         {s ? <>
           <Stats cols={4}>
             <Stat label={s.hasTime ? 'Hours watched' : 'Titles watched'} value={s.hasTime ? fmtNum(s.hours ?? 0) : fmtNum(s.total)} sub={s.hasTime ? `${fmtNum(Math.round((s.hours ?? 0) / 24))} days` : res?.format} />

@@ -37,7 +37,7 @@ export default function LocationHistoryConverter() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json" label="Drop Google location history" sub="Timeline.json from your phone, or Records.json and Semantic Location History from Takeout. Read in your browser." />
+        <ExportDrop sample="location" st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json" label="Drop Google location history" sub="Timeline.json from your phone, or Records.json and Semantic Location History from Takeout. Read in your browser." />
         {s ? <>
           <Stats cols={4}>
             <Stat label="Points" value={fmtNum(s.points)} sub={fmt} />

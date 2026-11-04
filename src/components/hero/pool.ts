@@ -68,6 +68,10 @@ const RAW_POOL: FormatEntry[] = [
   { f: 'GPX', cat: 'data', slug: 'geo-converter', to: 'KML', toSlug: 'geo-converter' },
   { f: 'MD', cat: 'text', slug: 'markdown-editor', to: 'DOCX', toSlug: 'markdown-to-docx' },
   { f: 'TXT', cat: 'ai', slug: 'pdf-summarizer', to: 'MP3', toSlug: 'pdf-to-speech' },
+  { f: 'GGUF', cat: 'llm', slug: 'model-file-inspector', to: 'JSON', toSlug: 'model-file-inspector' },
+  { f: 'JSONL', cat: 'llm', slug: 'finetune-dataset-checker', to: 'CSV', toSlug: 'dataset-converter' },
+  { f: 'OFX', cat: 'finance', slug: 'bank-statement-converter', to: 'CSV', toSlug: 'bank-statement-converter' },
+  { f: 'FIT', cat: 'health', slug: 'fit-file-converter', to: 'GPX', toSlug: 'fit-file-converter' },
 ]
 
 export const FORMAT_POOL: FormatEntry[] = RAW_POOL.filter((e) => toolBySlug(e.slug) && (!e.toSlug || toolBySlug(e.toSlug)))

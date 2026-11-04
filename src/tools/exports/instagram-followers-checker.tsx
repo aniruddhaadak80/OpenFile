@@ -26,7 +26,7 @@ export default function InstagramFollowersChecker() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json,.html" label="Drop your Instagram export ZIP, or followers_1.json and following.json" sub="JSON or HTML from Download your information. Read in your browser, never uploaded, no login." />
+        <ExportDrop sample="instagram" st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json,.html" label="Drop your Instagram export ZIP, or followers_1.json and following.json" sub="JSON or HTML from Download your information. Read in your browser, never uploaded, no login." />
         {c ? <>
           <Stats cols={4}>
             <Stat label="Followers" value={fmtNum(fr!.length)} />

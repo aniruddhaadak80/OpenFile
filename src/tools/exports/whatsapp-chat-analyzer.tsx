@@ -16,7 +16,7 @@ export default function WhatsAppChatAnalyzer() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={ex} accept=".txt,.zip" label="Drop a WhatsApp chat export" sub="The .txt or .zip from Export chat on Android or iPhone. Read in your browser, never uploaded." />
+        <ExportDrop sample="whatsapp" st={ex} accept=".txt,.zip" label="Drop a WhatsApp chat export" sub="The .txt or .zip from Export chat on Android or iPhone. Read in your browser, never uploaded." />
         {chat && !s && <Empty>No messages could be read. Check the date order on the right.</Empty>}
         {s && chat && <>
           <Stats cols={4}>

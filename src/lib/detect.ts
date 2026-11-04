@@ -25,6 +25,7 @@ const LABELS: Record<string, string> = {
   ZIP: 'ZIP archive', '7Z': '7-Zip archive', RAR: 'RAR archive', GZ: 'Gzip archive', TAR: 'Tar archive', BZ2: 'Bzip2 archive', XZ: 'XZ archive',
   DOCX: 'Word document', XLSX: 'Excel workbook', PPTX: 'PowerPoint deck', ODT: 'OpenDocument text', EPUB: 'EPUB eBook', MOBI: 'MOBI eBook', RTF: 'Rich text', DOC: 'Word 97 document', XLS: 'Excel 97 workbook',
   TTF: 'TrueType font', OTF: 'OpenType font', WOFF: 'WOFF font', WOFF2: 'WOFF2 font', SQLITE: 'SQLite database', PARQUET: 'Parquet data', GLB: '3D model (glTF)', STL: '3D model (STL)', OBJ: '3D model (OBJ)', DXF: 'CAD drawing',
+  GGUF: 'GGUF model', SAFETENSORS: 'Safetensors model', JSONL: 'JSON Lines data', NDJSON: 'JSON Lines data', OFX: 'Bank statement (OFX)', QFX: 'Bank statement (QFX)', QIF: 'Bank statement (QIF)', FIT: 'Workout file (FIT)', TCX: 'Workout file (TCX)',
   JSON: 'JSON data', XML: 'XML data', CSV: 'CSV table', TSV: 'TSV table', YAML: 'YAML data', TOML: 'TOML config', MD: 'Markdown', HTML: 'Web page', TXT: 'Plain text', SRT: 'Subtitles (SRT)', VTT: 'Subtitles (WebVTT)', DICOM: 'Medical image (DICOM)', EML: 'Email message',
 }
 const EXT_ALIAS: Record<string, string> = { JPEG: 'JPG', JFIF: 'JPG', TIF: 'TIFF', HEIF: 'HEIC', YML: 'YAML', HTM: 'HTML', MARKDOWN: 'MD', GLTF: 'GLB', MID: 'MIDI', TGZ: 'GZ', DB: 'SQLITE', SQLITE3: 'SQLITE', DCM: 'DICOM', WEBMANIFEST: 'JSON' }
@@ -82,6 +83,10 @@ export function sniff(b: Uint8Array, ext = ''): string | null {
   if (ascii(b, 0, 15) === 'SQLite format 3') return 'SQLITE'
   if (ascii(b, 0, 4) === 'PAR1') return 'PARQUET'
   if (ascii(b, 0, 4) === 'glTF') return 'GLB'
+  if (ascii(b, 0, 4) === 'GGUF') return 'GGUF'
+  if (b.length > 12 && (b[0] === 12 || b[0] === 14) && ascii(b, 8, 4) === '.FIT') return 'FIT'
+  // safetensors: an 8 byte little endian header length, then the JSON header
+  if (b.length > 10 && b[8] === 0x7b && b[9] === 0x22 && b[6] === 0 && b[7] === 0 && (b[0] | b[1] | b[2]) !== 0) return 'SAFETENSORS'
   if (starts(b, [0xd0, 0xcf, 0x11, 0xe0])) return ext === 'XLS' ? 'XLS' : ext === 'MSG' ? 'MSG' : ext === 'PPT' ? 'PPT' : 'DOC'
   if (b.length > 132 && ascii(b, 128, 4) === 'DICM') return 'DICOM'
   if (ascii(b, 0, 5) === '{\\rtf') return 'RTF'
@@ -93,7 +98,14 @@ export function sniff(b: Uint8Array, ext = ''): string | null {
   if (/^WEBVTT/.test(text)) return 'VTT'
   if (/^\d+\s*\r?\n\d\d:\d\d:\d\d[,.]\d+ --> /.test(text)) return 'SRT'
   if (/^solid\s/i.test(text) && ext === 'STL') return 'STL'
-  if ((text.startsWith('{') || text.startsWith('[')) && ext !== 'CSV') { try { JSON.parse(new TextDecoder().decode(b)); return 'JSON' } catch { if (ext === 'JSON' || ext === 'GEOJSON') return 'JSON' } }
+  if ((text.startsWith('{') || text.startsWith('[')) && ext !== 'CSV') {
+    try { JSON.parse(new TextDecoder().decode(b)); return 'JSON' } catch {
+      // JSON Lines: one JSON value per line (fine-tuning datasets, logs, NDJSON streams)
+      const lines = text.split(/\r?\n/).filter((l) => l.trim())
+      if (lines.length > 1 && text.startsWith('{')) { try { JSON.parse(lines[0]); return ext === 'NDJSON' ? 'NDJSON' : 'JSONL' } catch { /* not JSON Lines */ } }
+      if (ext === 'JSON' || ext === 'GEOJSON') return 'JSON'
+    }
+  }
   return null
 }
 

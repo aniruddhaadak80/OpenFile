@@ -25,6 +25,19 @@ All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are sho
 
 - **ci**: new Desktop app start test workflow builds the app from each change and starts it with no workarounds on Ubuntu 22.04 and 24.04, Fedora, Debian and Arch (each on X11 and on Wayland), Windows Server 2022 and 2025, and macOS on Apple silicon and Intel. It fails on a blank window or a start-up error and uploads the screenshots.
 
+### Added (AI Builder and Data Exports, parity round)
+
+- **exports**: every Data Exports tool has a Try a sample button that opens a made-up export (chat, listening history, followers, AI chats, Timeline, watch history, Netflix activity, X archive, a data package), built on your device. GGUF and Safetensors Inspector has a sample model header.
+- **workspace**: three new steps, Chunk for RAG, Count tokens and WhatsApp chat to CSV, and two recipes with motion previews and sample files: RAG-ready chunks, and WhatsApp chat to a table (CSV and Excel).
+- **blog**: two more posts with films, cover loops, read aloud in two voices, quizzes and live demos: fine-tuning datasets that pass the first time, and seeing who does not follow you back on Instagram without giving any app your password. New #llm and #exports topics.
+- **guides**: two questions and answers of their own on every AI Builder and Data Exports tool, real engine lists ("Under the hood") for these 18 tools and the Money & Finance and Health & Fitness tools, and links from 25 older text, data, developer, privacy and map tools to the new ones.
+- **smart drop**: GGUF, safetensors, JSON Lines and FIT files are recognised by their bytes, OFX, QIF and TCX get proper names, and export files such as conversations.json, watch-history.html or a WhatsApp chat open the right tool first.
+- **home**: GGUF, JSONL, OFX and FIT chips on the hero ring.
+
+### Fixed (docs)
+
+- **docs**: the Local AI model table no longer lists Data Exports tools, the MCP builder or the stream viewer as downloading tokenizers, and no longer credits every vision model to every vision tool. Each model now lists only the tools that load it, and the AI tool count is the real one.
+
 ## v2.6.0 (2026-11-04)
 
 Two new studios for things people now do every day: building with language models, and reading the data exports that apps send you. 18 tools, all in the browser.

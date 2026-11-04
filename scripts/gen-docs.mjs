@@ -91,22 +91,39 @@ const resolveImport = (from, spec) => {
 }
 const importsOf = new Map([...fileText.entries()].map(([f, t]) => [f, [...t.matchAll(/(?:from\s+|import\s*\(|new URL\()\s*['"]([^'"]+)['"]/g)].map((m) => resolveImport(f, m[1])).filter(Boolean)]))
 const importers = (file) => [...importsOf.entries()].filter(([, deps]) => deps.includes(file)).map(([f]) => f)
+// MODELS = { chat: [ { id } ] } (lists under a key) or VMODELS = { embed: { id } } (one model per key)
 const keyOf = (txt, id) => {
   const at = txt.indexOf(id); if (at < 0) return null
+  const name = txt.match(/export const (\w*MODELS)\s*=/)?.[1]
+  if (!name) return null
   const before = txt.slice(Math.max(0, at - 400), at)
-  const m = [...before.matchAll(/(\w+):\s*\[/g)].pop()
-  return m && txt.includes('export const MODELS') ? m[1] : null
+  const m = name === 'MODELS' ? [...before.matchAll(/(\w+):\s*\[/g)].pop() : [...before.matchAll(/(\w+):\s*\{\s*id:/g)].pop()
+  return m ? `${name}.${m[1]}` : null
 }
+// A shared module (not a tool) that lists a model in one export, such as a tokenizer list, is only "used" by the
+// files that name that export, or an export of the same module that refers to it (a hook that reads the list).
+const modelExports = (txt, id) => {
+  const decl = [...txt.matchAll(/^export (?:async )?(?:function|const|let|class)\s+(\w+)/gm)]
+  if (!decl.length) return null
+  const spans = decl.map((d, i) => ({ name: d[1], body: txt.slice(d.index, i + 1 < decl.length ? decl[i + 1].index : undefined) }))
+  const names = new Set(spans.filter((x) => x.body.includes(id)).map((x) => x.name))
+  if (!names.size) return null
+  for (let pass = 0; pass < 3; pass++) for (const x of spans) if (!names.has(x.name) && [...names].some((n) => new RegExp(`\\b${n}\\b`).test(x.body))) names.add(x.name)
+  return [...names]
+}
+const namesAny = (txt, names) => names.some((n) => new RegExp(`\\b${n}\\b`).test(txt))
 const aiModels = [...models.values()].map((m) => {
   const files = [...m.files]
   const users = new Set()
   for (const f of files) {
     const own = toolOfFile(f); if (own) users.add(own)
     const key = keyOf(fileText.get(f), m.id.split(' ')[0])
-    const near = importers(f).flatMap((g) => [g, ...importers(g)])
+    const exp = own || key ? null : modelExports(fileText.get(f), m.id.split(' ')[0])
+    const direct = importers(f).filter((g) => !exp || namesAny(fileText.get(g), exp))
+    const near = direct.flatMap((g) => [g, ...importers(g)])
     for (const g of near) {
       const t = toolOfFile(g); if (!t) continue
-      if (key && !fileText.get(g).includes(`MODELS.${key}`)) continue
+      if (key && !fileText.get(g).includes(key)) continue
       users.add(t)
     }
   }

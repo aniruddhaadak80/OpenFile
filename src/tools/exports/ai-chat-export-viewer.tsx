@@ -38,7 +38,7 @@ export default function AiChatExportViewer() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json" label="Drop a ChatGPT or Claude data export" sub="The export ZIP or conversations.json. Read in your browser, never uploaded." />
+        <ExportDrop sample="ai-chats" st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json" label="Drop a ChatGPT or Claude data export" sub="The export ZIP or conversations.json. Read in your browser, never uploaded." />
         {chats.length > 0 && <>
           <Stats cols={4}><Stat label="Chats" value={fmtNum(chats.length)} sub={[...new Set(chats.map((c) => c.source))].join(' and ')} /><Stat label="Messages" value={fmtNum(chats.reduce((a, c) => a + c.messages.length, 0))} /><Stat label="Words" value={fmtNum(words)} /><Stat label="First chat" value={<span className="text-base">{fmtDate(chats.reduce<Date | undefined>((a, c) => (c.created && (!a || c.created < a) ? c.created : a), undefined))}</span>} /></Stats>
           {months.length > 1 && <Columns label="New chats per month" data={months} color="#6EE7B7" />}

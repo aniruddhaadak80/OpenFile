@@ -24,7 +24,7 @@ export default function XArchiveViewer() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? err }} accept=".zip,.js,.json" label="Drop your X (Twitter) archive" sub="The archive ZIP or data/tweets.js. Read in your browser, never uploaded." />
+        <ExportDrop sample="x" st={{ ...ex, error: ex.error ?? err }} accept=".zip,.js,.json" label="Drop your X (Twitter) archive" sub="The archive ZIP or data/tweets.js. Read in your browser, never uploaded." />
         {s ? <>
           <Stats cols={4}>
             <Stat label="Posts" value={fmtNum(s.total)} sub={`${fmtNum(s.original)} original`} />

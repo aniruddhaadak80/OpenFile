@@ -18,6 +18,20 @@ export function takeHandoff(accept?: string): File[] | null {
 /** Suggest tools for a dropped file */
 export function suggestFor(file: File): string[] {
   const n = file.name.toLowerCase(), t = file.type
+  // exports and model files are told apart by their names before their generic type
+  const base = n.split('/').pop() ?? n
+  if (/\.(gguf|safetensors)$/.test(n)) return ['model-file-inspector']
+  if (/\.(jsonl|ndjson)$/.test(n)) return ['finetune-dataset-checker', 'dataset-converter', 'llm-stream-viewer']
+  if (base === 'conversations.json') return ['ai-chat-export-viewer', 'data-export-explorer']
+  if (/^whatsapp chat|_chat\.txt$/.test(base)) return ['whatsapp-chat-analyzer']
+  if (/^tweets?(-part\d+)?\.js$/.test(base)) return ['x-archive-viewer']
+  if (/^watch-history\.(json|html)$/.test(base)) return ['youtube-history-stats']
+  if (/^(viewingactivity|netflixviewinghistory)[^/]*\.csv$/.test(base)) return ['netflix-history-stats']
+  if (/^(streaming_?history|streamhistory)[^/]*\.json$/.test(base)) return ['spotify-history-stats']
+  if (/^(followers(_\d+)?|following)\.(json|html)$/.test(base)) return ['instagram-followers-checker']
+  if (/^(timeline|records)\.json$/.test(base)) return ['location-history-converter']
+  if (/\.(ofx|qfx|qif|mt940|sta)$/.test(n)) return ['bank-statement-converter', 'statement-analyzer']
+  if (/\.(fit|tcx)$/.test(n)) return ['fit-file-converter', 'heart-rate-zones']
   if (t === 'application/pdf' || n.endsWith('.pdf')) return ['compress-pdf', 'merge-pdf', 'split-pdf', 'organize-pdf', 'pdf-to-image', 'pdf-to-word', 'sign-pdf', 'edit-pdf', 'protect-pdf', 'pdf-watermark', 'ocr-pdf', 'pdf-to-text']
   if (n.endsWith('.heic') || n.endsWith('.heif')) return ['heic-converter']
   if (t === 'image/svg+xml') return ['svg-optimizer', 'image-converter']

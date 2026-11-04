@@ -99,6 +99,14 @@ export const CATALOG: StepMeta[] = [
   { id: 'text-replace', cat: 'data', name: 'Find and replace', desc: 'Replace text in TXT, CSV, JSON, MD and more', icon: 'Replace', accepts: ['text', 'data'],
     params: [{ key: 'find', label: 'Find', type: 'text', default: 'foo' }, { key: 'replace', label: 'Replace with', type: 'text', default: 'bar' }, { key: 'regex', label: 'Regular expression', type: 'bool', default: false }, { key: 'caseSensitive', label: 'Match case', type: 'bool', default: true }] },
 
+  // ---- AI Builder and Data Exports ----
+  { id: 'llm-chunk', cat: 'data', name: 'Chunk for RAG', desc: 'Split text and Markdown into overlapping chunks as JSONL', icon: 'Scissors', accepts: ['text'],
+    params: [{ key: 'size', label: 'Chunk size', type: 'number', min: 50, max: 20000, default: 1200 }, { key: 'unit', label: 'Size in', type: 'select', options: ['characters', 'words', 'tokens (estimate)'], default: 'characters' }, { key: 'overlap', label: 'Overlap', type: 'number', min: 0, max: 5000, default: 150 }, { key: 'split', label: 'Split by', type: 'select', options: ['markdown', 'text', 'code'], default: 'markdown' }] },
+  { id: 'llm-tokens', cat: 'data', name: 'Count tokens', desc: 'Add a CSV with words and estimated tokens per file', icon: 'Hash', accepts: ['text', 'data'], batch: true,
+    params: [{ key: 'name', label: 'Report name', type: 'text', default: 'token-counts' }, { key: 'price', label: 'Price per million tokens', type: 'number', min: 0, max: 1000, step: 0.01, default: 0, hint: 'Leave 0 to skip the cost column' }] },
+  { id: 'chat-to-csv', cat: 'data', name: 'WhatsApp chat to CSV', desc: 'Turn an exported chat into a table, one message per row', icon: 'Table', accepts: ['text'],
+    params: [{ key: 'dates', label: 'Dates', type: 'select', options: ['detect', 'day first', 'month first'], default: 'detect' }, { key: 'media', label: 'Keep media placeholders', type: 'bool', default: true }] },
+
   // ---- archive ----
   { id: 'zip-all', cat: 'archive', name: 'Zip everything', desc: 'Pack every file into one ZIP', icon: 'FileArchive', accepts: 'any', batch: true,
     params: [{ key: 'name', label: 'ZIP name', type: 'text', default: 'files' }, { key: 'folders', label: 'Keep folders', type: 'bool', default: true }] },
@@ -123,7 +131,7 @@ const EXT_KIND: Record<string, Kind> = {
   mp4: 'video', webm: 'video', mov: 'video', mkv: 'video', avi: 'video', m4v: 'video', '3gp': 'video',
   mp3: 'audio', wav: 'audio', ogg: 'audio', oga: 'audio', m4a: 'audio', aac: 'audio', flac: 'audio', opus: 'audio',
   csv: 'data', tsv: 'data', json: 'data', xlsx: 'data', xls: 'data', ods: 'data',
-  txt: 'text', md: 'text', markdown: 'text', html: 'text', htm: 'text', xml: 'text', yml: 'text', yaml: 'text', log: 'text', ini: 'text', srt: 'text', vtt: 'text', css: 'text', js: 'text', ts: 'text', svg: 'text',
+  jsonl: 'text', ndjson: 'text', txt: 'text', md: 'text', markdown: 'text', html: 'text', htm: 'text', xml: 'text', yml: 'text', yaml: 'text', log: 'text', ini: 'text', srt: 'text', vtt: 'text', css: 'text', js: 'text', ts: 'text', svg: 'text',
   zip: 'archive',
 }
 

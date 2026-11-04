@@ -1,9 +1,11 @@
 /* Shared UI for the AI Builder and Data Exports tools: tokenizer worker hook, export file loader (ZIP, folder or
  * single files), and small charts. */
 import { useEffect, useRef, useState } from 'react'
-import { Dropzone, ErrorNote, Progress, cn } from '@/components/ui'
+import { Sparkles } from 'lucide-react'
+import { Button, Dropzone, ErrorNote, Progress, cn } from '@/components/ui'
 import { formatBytes } from '@/lib/files'
 import { FileBar } from '@/lib/cf/ui'
+import type { SampleId } from './samples'
 
 /* ---------------- tokenizers ---------------- */
 export const TOKENIZERS = [
@@ -126,11 +128,22 @@ export function useExport(pick?: (path: string) => boolean) {
 }
 export type ExportState = ReturnType<typeof useExport>
 
-export function ExportDrop({ st, label, sub, accept = EXPORT_ACCEPT, extra }: { st: ExportState; label: string; sub: string; accept?: string; extra?: React.ReactNode }) {
+/** "Try a sample" button: builds a made-up file on the device and opens it like a dropped one. */
+export function SampleButton({ id, onFiles, what = 'export' }: { id: SampleId; onFiles: (f: File[]) => void; what?: string }) {
+  const [busy, setBusy] = useState(false)
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button size="sm" variant="outline" loading={busy} icon={<Sparkles className="size-4" />} onClick={async () => { setBusy(true); try { const { makeSample } = await import('./samples'); onFiles(await makeSample(id)) } finally { setBusy(false) } }}>Try a sample</Button>
+      <span className="text-xs text-muted">No {what} at hand? This opens a made-up one, built on your device.</span>
+    </div>
+  )
+}
+
+export function ExportDrop({ st, label, sub, accept = EXPORT_ACCEPT, extra, sample }: { st: ExportState; label: string; sub: string; accept?: string; extra?: React.ReactNode; sample?: SampleId }) {
   const size = st.files.reduce((a, f) => a + f.size, 0)
   return (
     <div className="space-y-3">
-      {!st.files.length ? <Dropzone accept={accept} multiple onFiles={(f) => f.length && st.open(f)} label={label} sub={sub} />
+      {!st.files.length ? <><Dropzone accept={accept} multiple onFiles={(f) => f.length && st.open(f)} label={label} sub={sub} />{sample && <SampleButton id={sample} onFiles={(f) => st.open(f)} />}</>
         : <FileBar name={st.files.length === 1 ? st.files[0].name : `${st.files.length} files`} size={size} onReset={st.reset} extra={extra} />}
       {st.busy && <p className="text-sm text-muted" role="status">Reading the export on your device...</p>}
       <ErrorNote error={st.error} />

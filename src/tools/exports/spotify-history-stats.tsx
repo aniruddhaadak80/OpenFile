@@ -23,7 +23,7 @@ export default function SpotifyHistoryStats() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json" label="Drop your Spotify data ZIP or history JSON files" sub="Account data (StreamingHistory_music) or Extended streaming history (Streaming_History_Audio). Read in your browser." />
+        <ExportDrop sample="spotify" st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json" label="Drop your Spotify data ZIP or history JSON files" sub="Account data (StreamingHistory_music) or Extended streaming history (Streaming_History_Audio). Read in your browser." />
         {s ? <>
           <Stats cols={4}>
             <Stat label="Listening time" value={`${fmtNum(Math.round(s.hours))} h`} sub={`${fmtNum(Math.round(s.hours / 24))} days of sound`} />

@@ -22,7 +22,7 @@ export default function YouTubeHistoryStats() {
   return (
     <ToolGrid
       main={<>
-        <ExportDrop st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json,.html" label="Drop your YouTube watch history" sub="watch-history.json or .html from Google Takeout, or the whole Takeout ZIP. Read in your browser." />
+        <ExportDrop sample="youtube" st={{ ...ex, error: ex.error ?? err }} accept=".zip,.json,.html" label="Drop your YouTube watch history" sub="watch-history.json or .html from Google Takeout, or the whole Takeout ZIP. Read in your browser." />
         {s ? <>
           <Stats cols={4}>
             <Stat label="Videos watched" value={fmtNum(s.total)} sub={`${fmtNum(s.uniqueChannels)} channels`} />

@@ -1559,7 +1559,7 @@ Merge all · Split pages · Compress · Rotate · Page numbers · Watermark · C
 Trim · Convert · Compress video (never bigger) · Extract audio · Video to GIF
 
 **📊 Text and data** · **📦 Archive** · **🗂️ Any file**
-Convert CSV / JSON / XLSX · Find and replace · Zip everything · Unzip · Rename by pattern · Checksums
+Convert CSV / JSON / XLSX · Find and replace · Chunk for RAG · Count tokens · WhatsApp chat to CSV · Zip everything · Unzip · Rename by pattern · Checksums
 
 </td>
 </tr>
@@ -1568,7 +1568,7 @@ Convert CSV / JSON / XLSX · Find and replace · Zip everything · Unzip · Rena
 
 **Inputs:** files, whole folders (drop or picker), paste images or text, public file URLs, ZIPs unpacked on add, a watch folder (Chrome and Edge), and sample files for every recipe.
 **Run engine:** Web Worker pool with a files-at-once control, pause, resume, cancel, per-file and overall progress with ETA, retry failed files, a memory guard, and keep-the-original when a result is bigger.
-**Recipes:** 16 ready recipes with motion previews, save and load, export and import JSON (schema checked), a share link in the URL hash, and sync across open tabs.
+**Recipes:** 18 ready recipes with motion previews, save and load, export and import JSON (schema checked), a share link in the URL hash, and sync across open tabs.
 **Guide:** an onboarding tour, contextual tips, a keyboard shortcut sheet (`?`), undo and redo, and a "how it works" film. Motion follows your system setting, with an Off, Subtle and Full switch.
 
 </td>

@@ -8,6 +8,8 @@ import { imagePool } from './pool'
 import { waitTurn } from './engine'
 import { notSmaller, planVideo, videoArgs, audioArgs, RETRY_FACTOR, type VideoSource } from '@/lib/compress-guard'
 import { baseName } from '@/lib/files'
+import { chunkText, estimateTokens, countWords, SPLITTERS } from '@/lib/r15/llm'
+import { parseWhatsApp } from '@/lib/r15/exports'
 
 export type Mode = Cat
 export type ParamDef = PD
@@ -254,6 +256,44 @@ const RUN: Record<string, StepDef['run']> = {
     if (!p.find) return [it]
     const out = text.replace(re, String(p.replace))
     return [{ name: it.name, blob: new Blob([out], { type: it.blob.type || 'text/plain' }), path: it.path }]
+  }),
+
+  'llm-chunk': perFile(async (it, p) => {
+    const text = await it.blob.text()
+    if (!text.trim()) return [{ ...it, kept: true, note: 'Empty file, nothing to chunk' }]
+    const measure = p.unit === 'words' ? countWords : p.unit === 'characters' ? undefined : estimateTokens
+    const seps = SPLITTERS[(p.split as keyof typeof SPLITTERS)] ?? SPLITTERS.markdown
+    const chunks = chunkText(text, { size: Number(p.size), overlap: Number(p.overlap), measure, separators: seps })
+    const lines = chunks.map((c) => JSON.stringify({ id: `${baseName(it.name)}-${c.i}`, source: it.name, chunk: c.i, start: c.start, end: c.end, text: c.text }))
+    return [{ name: `${baseName(it.name)}.chunks.jsonl`, blob: new Blob([lines.join('\n') + '\n'], { type: 'application/jsonl' }), path: it.path, note: `${chunks.length} chunks` }]
+  }),
+  'llm-tokens': async (items, p, onP) => {
+    const Papa = (await import('papaparse')).default
+    const price = Number(p.price) || 0
+    const rows: (string | number)[][] = [['file', 'lines', 'characters', 'words', 'tokens (estimate)', 'largest line tokens', ...(price ? ['cost'] : [])]]
+    let total = 0
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i]
+      if (['xlsx', 'xls', 'ods'].includes(extOf(it.name))) continue
+      const text = await it.blob.text()
+      const ls = text.split(/\r?\n/).filter((l) => l.trim())
+      const tok = estimateTokens(text); total += tok
+      const big = ls.reduce((m, l) => Math.max(m, estimateTokens(l)), 0)
+      rows.push([(it.path ? it.path.replace(/[^/]+$/, '') : '') + it.name, ls.length, text.length, countWords(text), tok, big, ...(price ? [((tok / 1e6) * price).toFixed(4)] : [])])
+      onP((i + 1) / items.length)
+    }
+    rows.push(['TOTAL', '', '', '', total, '', ...(price ? [((total / 1e6) * price).toFixed(4)] : [])])
+    return [...items, { name: `${String(p.name || 'token-counts').replace(/[\\/]/g, '_')}.csv`, blob: new Blob([Papa.unparse(rows)], { type: 'text/csv' }), note: `${total.toLocaleString()} tokens (estimate)` }]
+  },
+  'chat-to-csv': perFile(async (it, p) => {
+    const order = p.dates === 'day first' ? 'dmy' : p.dates === 'month first' ? 'mdy' : undefined
+    const chat = parseWhatsApp(await it.blob.text(), order)
+    if (!chat.messages.length) return [{ ...it, kept: true, note: 'Not a WhatsApp chat export, left as it is' }]
+    const Papa = (await import('papaparse')).default
+    const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    const hm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+    const rows = chat.messages.filter((m) => p.media || !m.media).map((m) => ({ date: iso(m.t), time: hm(m.t), sender: m.who, message: m.text, media: m.media ? 'yes' : '', deleted: m.deleted ? 'yes' : '' }))
+    return [{ name: withExt(it.name, 'csv'), blob: new Blob([Papa.unparse(rows)], { type: 'text/csv' }), path: it.path, note: `${rows.length} messages` }]
   }),
 
   'zip-all': async (items, p, onP) => {

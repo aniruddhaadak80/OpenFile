@@ -58,9 +58,13 @@ export const BUILTINS: Builtin[] = [
     graph: line([{ step: 'text-replace', params: { find: 'Calcutta', replace: 'Kolkata', caseSensitive: false } }]) },
   { id: 'zip-repack', name: 'Repack a ZIP smaller', desc: 'Unzip, compress the images inside, zip it back.', tag: 'Archive', color: '#22D3EE', samples: ['bundle.zip'],
     graph: line([{ step: 'unzip' }, { step: 'img-compress', params: { quality: 70 } }, { step: 'zip-all', params: { name: 'repacked' } }]) },
+  { id: 'rag-ready', name: 'RAG-ready chunks', desc: 'Cut documents into overlapping chunks as JSONL, then count tokens.', tag: 'AI', color: '#EAB308', samples: ['handbook.md', 'notes.txt'],
+    graph: line([{ step: 'llm-chunk', params: { size: 300, unit: 'tokens (estimate)', overlap: 40, split: 'markdown' } }, { step: 'llm-tokens', params: { name: 'chunk-tokens' } }]) },
+  { id: 'chat-table', name: 'WhatsApp chat to a table', desc: 'One row per message, as CSV and as an Excel copy.', tag: 'Exports', color: '#6EE7B7', samples: ['chat.txt'],
+    graph: () => branchGraph([[{ step: 'chat-to-csv' }], [{ step: 'chat-to-csv' }, { step: 'data-convert', params: { to: 'xlsx' } }]]) },
 ]
 
 export const builtinRecipe = (b: Builtin): Recipe => ({ v: 1, name: b.name, desc: b.desc, graph: b.graph() })
 
 /** Sample files shipped in public/media/workspace/samples. */
-export const SAMPLE_FILES = ['photo-dunes.jpg', 'photo-lagoon.jpg', 'photo-city.png', 'report.pdf', 'invoice.pdf', 'clip.mp4', 'tone.wav', 'cities.csv', 'stock.json', 'notes.txt', 'bundle.zip']
+export const SAMPLE_FILES = ['photo-dunes.jpg', 'photo-lagoon.jpg', 'photo-city.png', 'report.pdf', 'invoice.pdf', 'clip.mp4', 'tone.wav', 'cities.csv', 'stock.json', 'notes.txt', 'bundle.zip', 'handbook.md', 'chat.txt']

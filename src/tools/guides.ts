@@ -46,11 +46,14 @@ export const ENGINE_INFO: Record<string, EngineInfo> = {
   jsdiff: { name: 'jsdiff', what: 'the Myers diff algorithm for line, word and character differences' },
   'Canvas 2D': { name: 'Canvas 2D', what: 'the browser’s hardware-accelerated 2D drawing surface' },
   'FileReader API': { name: 'FileReader', what: 'reads files straight from your disk into memory' },
+  'Transformers.js tokenizers': { name: 'Transformers.js tokenizers', what: 'the real tokenizer of the model you pick (the same vocabulary and merge rules the model uses), run in a Web Worker', download: 'one tokenizer file of 1 to 8 MB from the Hugging Face Hub the first time you pick a model, then cached', source: 'https://huggingface.co/docs/transformers.js' },
+  'Transformers.js tokenizers (optional)': { name: 'Transformers.js tokenizers', what: 'optional: when you measure in real tokens, the tokenizer file of the model you pick (1 to 8 MB) is loaded once in a Web Worker. Characters, words and the quick estimate need no download', source: 'https://huggingface.co/docs/transformers.js' },
+  'JSZip (exports)': { name: 'JSZip', what: 'lists the files inside an export ZIP and opens only the ones the tool reads, so large exports are never unpacked all at once' },
   'Plain TypeScript': { name: 'Plain TypeScript', what: 'small, dependency-free code that runs instantly in your tab' },
 }
 
 /** Engines that download something large the first time they are used. */
-export const HEAVY_ENGINES = ['ffmpeg.wasm', 'Tesseract.js', 'IMG.LY background removal', 'Transformers.js (ONNX)']
+export const HEAVY_ENGINES = ['ffmpeg.wasm', 'Tesseract.js', 'IMG.LY background removal', 'Transformers.js (ONNX)', 'Transformers.js tokenizers']
 
 type Override = Pick<ToolMeta, 'how' | 'steps' | 'tips' | 'faq' | 'related' | 'inputs' | 'outputs'>
 
@@ -225,6 +228,35 @@ const O: Record<string, Override> = {
   'color-palette': { related: ['color-converter', 'gradient-generator', 'color-picker-image'] },
 }
 
+/* Links from older tools to the newer studios that pick up where they stop. Placed after a tool's first two own picks. */
+const ALSO: Record<string, string[]> = {
+  'word-counter': ['token-counter'],
+  'json-formatter': ['finetune-dataset-checker', 'mcp-config-builder'],
+  'yaml-json': ['mcp-config-builder'],
+  'env-converter': ['mcp-config-builder'],
+  'secret-scanner': ['mcp-config-builder'],
+  'har-viewer': ['llm-stream-viewer'],
+  'text-similarity': ['embedding-playground'],
+  'semantic-file-search': ['embedding-playground', 'rag-chunker'],
+  'chat-pdf': ['rag-chunker'],
+  'pdf-summarizer': ['rag-chunker'],
+  'pdf-to-text': ['rag-chunker'],
+  'markdown-editor': ['rag-chunker'],
+  'table-converter': ['dataset-converter'],
+  'data-converter': ['dataset-converter'],
+  'csv-editor': ['data-export-explorer'],
+  'hex-viewer': ['model-file-inspector'],
+  'file-identifier': ['model-file-inspector', 'data-export-explorer'],
+  'archive-extractor': ['data-export-explorer'],
+  'word-cloud': ['whatsapp-chat-analyzer', 'x-archive-viewer'],
+  'pii-redactor': ['ai-chat-export-viewer'],
+  'markdown-to-pdf': ['ai-chat-export-viewer'],
+  'geo-converter': ['location-history-converter'],
+  'gpx-privacy-zone': ['location-history-converter'],
+  'route-heatmap': ['location-history-converter'],
+  'apple-health-export': ['data-export-explorer'],
+}
+
 const GENERIC_FAQ: { q: string; a: string }[] = [
   { q: 'Are my files uploaded?', a: 'No. This tool runs entirely in your browser tab. Files are read from your disk into memory and the result is generated locally.' },
   { q: 'Is it free? Are there limits or watermarks?', a: 'Free and open source (MIT). There are no file-size caps, daily quotas, accounts or watermarks.' },
@@ -258,7 +290,9 @@ export function toolGuide(tool: ToolMeta): ToolGuide {
   const tips = tool.tips ?? o.tips ?? cat.tips
   const faq = [...(tool.faq ?? []), ...(o.faq ?? []), ...(firstUse && !(o.faq ?? []).some((f) => /first/i.test(f.q)) ? [{ q: 'Why is the first run slower?', a: `This tool needs a processing engine that is downloaded once and then cached: ${firstUse}. Only the engine is downloaded. Your file never leaves your device.` }] : []), ...GENERIC_FAQ]
   const relSlugs = tool.related ?? o.related ?? []
-  const picked = relSlugs.map(toolBySlug).filter((t): t is ToolMeta => !!t && t.slug !== tool.slug)
+  const own = relSlugs.map(toolBySlug).filter((t): t is ToolMeta => !!t && t.slug !== tool.slug)
+  const extra = (ALSO[tool.slug] ?? []).map(toolBySlug).filter((t): t is ToolMeta => !!t && t.slug !== tool.slug && !own.includes(t))
+  const picked = [...own.slice(0, 2), ...extra, ...own.slice(2)]
   const fill = TOOLS.filter((t) => t.category === tool.category && t.slug !== tool.slug && !picked.includes(t)).sort((a, b) => Number(!!b.popular) - Number(!!a.popular))
   const related = [...picked, ...fill].slice(0, 4)
   return { how, steps, tips, faq, related, engines, engineKeys, firstUse, inputs: tool.inputs ?? o.inputs ?? cat.inputs, outputs: tool.outputs ?? o.outputs }

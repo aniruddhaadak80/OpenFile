@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Dropzone, Input, Label, ToolGrid, Empty, ErrorNote, Segmented } from '@/components/ui'
 import { FileBar, Stat, Stats } from '@/lib/cf/ui'
 import { parseGguf, parseSafetensors, sniffModel, NeedMore, fmtParams, fmtBytes, type ModelInfo } from '@/lib/r15/llm'
-import { Panel, fmtNum } from '@/lib/r15/ui'
+import { Panel, fmtNum, SampleButton } from '@/lib/r15/ui'
 import { DlButton, toCsv, Bars } from '@/lib/bcat/kit'
 
 const LIMIT = 512 * 1024 * 1024
@@ -40,7 +40,7 @@ export default function ModelFileInspector() {
   return (
     <ToolGrid
       main={<>
-        {!file ? <Dropzone accept=".gguf,.safetensors" onFiles={(f) => f[0] && open(f[0])} label="Drop a GGUF or safetensors model file" sub="Only the header at the start of the file is read, so even 70 GB files open in a second. Nothing is uploaded." />
+        {!file ? <><Dropzone accept=".gguf,.safetensors" onFiles={(f) => f[0] && open(f[0])} label="Drop a GGUF or safetensors model file" sub="Only the header at the start of the file is read, so even 70 GB files open in a second. Nothing is uploaded." /><SampleButton id="gguf" what="model file" onFiles={(f) => f[0] && open(f[0])} /></>
           : <FileBar name={file.name} size={file.size} onReset={() => { setFile(null); setInfo(null); setError(null) }} />}
         {status && <p className="text-sm text-muted" role="status">{status}</p>}
         <ErrorNote error={error} />

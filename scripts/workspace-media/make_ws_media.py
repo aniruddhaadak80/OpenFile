@@ -33,6 +33,7 @@ STEP = {
     'av-extract-audio': ('Audio', 'Music', 'media'), 'av-convert': ('To MP3', 'RefreshCw', 'media'), 'data-convert': ('Convert', 'Table', 'data'),
     'text-replace': ('Replace', 'Replace', 'data'), 'zip-all': ('ZIP', 'FileArchive', 'archive'), 'unzip': ('Unzip', 'PackageOpen', 'archive'),
     'file-rename': ('Rename', 'TextCursorInput', 'file'), 'checksum': ('Checksum', 'Fingerprint', 'file'),
+    'llm-chunk': ('Chunk', 'Scissors', 'data'), 'llm-tokens': ('Tokens', 'Hash', 'data'), 'chat-to-csv': ('Chat to CSV', 'Table', 'data'),
 }
 # recipe id -> (title, branches, join, input kind colors)
 RECIPES = {
@@ -52,6 +53,8 @@ RECIPES = {
     'data-formats': ('Data in every format', [['data-convert'], ['data-convert']], [], [M.EMERALD]),
     'find-replace': ('Fix a word everywhere', [['text-replace']], [], [M.EMERALD]),
     'zip-repack': ('Repack a ZIP smaller', [['unzip', 'img-compress', 'zip-all']], [], [M.CYAN]),
+    'rag-ready': ('RAG-ready chunks', [['llm-chunk', 'llm-tokens']], [], [M.GOLD, M.EMERALD]),
+    'chat-table': ('WhatsApp chat to a table', [['chat-to-csv'], ['chat-to-csv', 'data-convert']], [], [M.EMERALD]),
 }
 
 
@@ -407,7 +410,56 @@ def landscape(W, H, sky, sand, sun, seed):
     return img.filter(ImageFilter.GaussianBlur(0.6))
 
 
+HANDBOOK = """# Team handbook
+
+## Working hours
+
+We work from 10 in the morning to 6 in the evening, Monday to Friday. Core hours are 11 to 4, when everyone should be reachable. Tell your lead a day ahead if you need to move your hours.
+
+## Leave
+
+Everyone gets 24 days of paid leave a year, plus public holidays. Ask for leave in the team calendar at least a week before for anything longer than two days. Sick days do not need notice, just a message to your lead in the morning.
+
+## Expenses
+
+Keep every receipt. Travel, meals on work trips and books for work are paid back within ten days of sending the receipts. Use the shared sheet, one row per receipt, with the date, the shop and the total.
+
+### Laptops
+
+Every new person gets a laptop on the first day. Report a broken one the same day so we can lend you another. Keep the disk encrypted and lock the screen when you step away.
+
+## Files and privacy
+
+Do not upload customer files to random websites. Use tools that run on your own device, or the shared drive. Delete local copies of customer data when a project ends.
+
+## Questions
+
+Ask in the help channel. There are no silly questions, and someone usually answers within an hour.
+"""
+
+
+def make_text_samples():
+    """Text samples for the AI Builder and Data Exports recipes: a Markdown handbook and a WhatsApp chat (all made up)."""
+    open(os.path.join(SMP, 'handbook.md'), 'w').write(HANDBOOK)
+    import random
+    r = random.Random(7)
+    who = ['Asha', 'Ravi', 'Meera', 'Kabir']
+    msgs = ['Is everyone free on Saturday for the trek?', 'I am in. What time do we leave?', 'Six works for me', 'Who is bringing the stove?',
+            'I can bring it, and the tea', 'Do not forget the rain jackets this time', 'Car is easier, I can drive', 'I will book the homestay',
+            'Sent the money for the homestay', 'Got it, thanks', 'Running 10 minutes late, sorry', 'That view from the top', 'Sending photos tonight',
+            'Everyone owes 850 for the stay', 'Paid', 'Next one in November?', 'Count me in', '<Media omitted>']
+    lines = ['14/08/2026, 09:40 - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them. Tap to learn more.',
+             '14/08/2026, 09:41 - Asha created group "Weekend trek"']
+    import datetime as dt
+    t = dt.datetime(2026, 8, 14, 9, 45)
+    for i in range(160):
+        t += dt.timedelta(minutes=r.randint(2, 50) if r.random() > 0.15 else r.randint(300, 2000))
+        lines.append(f"{t:%d/%m/%Y, %H:%M} - {r.choice(who)}: {r.choice(msgs)}")
+    open(os.path.join(SMP, 'chat.txt'), 'w').write('\n'.join(lines) + '\n')
+
+
 def make_samples():
+    make_text_samples()
     landscape(1800, 1200, ((14, 22, 40), (245, 165, 36)), (180, 120, 60), (255, 214, 140), 1).save(os.path.join(SMP, 'photo-dunes.jpg'), quality=86)
     landscape(1600, 1067, ((8, 30, 46), (34, 211, 238)), (20, 120, 110), (230, 250, 255), 2).save(os.path.join(SMP, 'photo-lagoon.jpg'), quality=86)
     city = Image.new('RGB', (1200, 800), (5, 5, 5)); d = ImageDraw.Draw(city)
@@ -458,6 +510,7 @@ def make_samples():
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'loops'
     if cmd == 'samples': make_samples()
+    elif cmd == 'text-samples': make_text_samples()
     elif cmd == 'loops':
         for rid in (sys.argv[2:] or list(RECIPES)): render_loop(rid); print('loop', rid, flush=True)
     elif cmd == 'hero': render_hero()

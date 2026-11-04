@@ -1,6 +1,184 @@
 {
  "release": "https://github.com/aniruddhaadak80/OpenFile/releases/download/media-v1/",
  "posts": {
+  "instagram-unfollowers-without-a-login": {
+   "hash": "dc5b90c87849",
+   "loop": true,
+   "video": {
+    "dur": 67.37,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 6.33,
+      "label": "In this post"
+     },
+     {
+      "t": 14.88,
+      "label": "Why the login apps are risky"
+     },
+     {
+      "t": 21.7,
+      "label": "Ask Instagram for your lists"
+     },
+     {
+      "t": 31.24,
+      "label": "How the comparison works"
+     },
+     {
+      "t": 37.29,
+      "label": "The same idea works for other apps"
+     },
+     {
+      "t": 47.6,
+      "label": "Try the tool"
+     },
+     {
+      "t": 60.6,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2820025,
+    "webm": 2042402
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 4 chapters: Why the login apps are risky; Ask Instagram for your lists; How the comparison works; The same idea works for other apps.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Instagram Followers Checker, Data Export Explorer, X (Twitter) Archive Viewer, WhatsApp Chat Analyzer, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Ask Instagram for your lists\". Open Instagram, go to Accounts Center, then Your information and permissions, then Download your information.",
+     "caption": "From the explainer film: Ask Instagram for your lists.",
+     "heading": "ask-instagram-for-your-lists"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Key terms diagram for the chapter \"The same idea works for other apps\". Almost every app has a download your data page now, and the files are always the same mix of ZIP, JSON and CSV.",
+     "caption": "From the explainer film: The same idea works for other apps.",
+     "heading": "the-same-idea-works-for-other-apps"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 229.59,
+     "words": 683,
+     "mp3": 1378373
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 208.94,
+     "words": 683,
+     "mp3": 1254387
+    }
+   ]
+  },
+  "fine-tuning-datasets-that-pass": {
+   "hash": "403d76cb92f7",
+   "loop": true,
+   "video": {
+    "dur": 70.68,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 7.44,
+      "label": "In this post"
+     },
+     {
+      "t": 17.67,
+      "label": "What a fine-tuning file is"
+     },
+     {
+      "t": 26.2,
+      "label": "The mistakes that fail a job"
+     },
+     {
+      "t": 31.39,
+      "label": "Making many examples from one template"
+     },
+     {
+      "t": 43.97,
+      "label": "Split, then check again"
+     },
+     {
+      "t": 50.69,
+      "label": "Try the tool"
+     },
+     {
+      "t": 63.69,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2988102,
+    "webm": 2110454
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: What a fine-tuning file is; The mistakes that fail a job; Converting between formats; Making many examples from one template; Split, then check again.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your CSV file goes through Fine-tune Dataset Checker, Dataset Format Converter, Token Counter, Prompt Template Filler, GGUF & Safetensors Inspector, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"The mistakes that fail a job\". Most failures come from a short list.",
+     "caption": "From the explainer film: The mistakes that fail a job.",
+     "heading": "the-mistakes-that-fail-a-job"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Split, then check again\". Keep part of the data back to see whether the model really learned something.",
+     "caption": "From the explainer film: Split, then check again.",
+     "heading": "split-then-check-again"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 279.54,
+     "words": 829,
+     "mp3": 1678033
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 263.59,
+     "words": 829,
+     "mp3": 1582271
+    }
+   ]
+  },
   "tokens-chunks-and-mcp-configs": {
    "hash": "b9c8f2c50011",
    "loop": true,
@@ -176,6 +354,273 @@
      "dur": 245.27,
      "words": 748,
      "mp3": 1472391
+    }
+   ]
+  },
+  "turn-any-document-into-markdown": {
+   "hash": "2e2fbdfe50f8",
+   "loop": true,
+   "video": {
+    "dur": 76.04,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.95,
+      "label": "In this post"
+     },
+     {
+      "t": 20.27,
+      "label": "Why Markdown is worth the trouble"
+     },
+     {
+      "t": 32.77,
+      "label": "How each kind of file is read"
+     },
+     {
+      "t": 38.47,
+      "label": "Notebooks without Jupyter"
+     },
+     {
+      "t": 47.15,
+      "label": "Privacy"
+     },
+     {
+      "t": 55.45,
+      "label": "Try the tool"
+     },
+     {
+      "t": 68.45,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3046278,
+    "webm": 2201384
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: Why Markdown is worth the trouble; How each kind of file is read; Saved web pages and old pictures; Notebooks without Jupyter; Privacy.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Anything to Markdown, Jupyter Notebook Converter, MHTML Viewer, EMF & WMF Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"How each kind of file is read\". Every format needs its own reader.",
+     "caption": "From the explainer film: How each kind of file is read.",
+     "heading": "how-each-kind-of-file-is-read"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Privacy\". Documents are often the most private files we have: contracts, payslips, medical letters.",
+     "caption": "From the explainer film: Privacy.",
+     "heading": "privacy"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 211.5,
+     "words": 617,
+     "mp3": 1269768
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 196.57,
+     "words": 617,
+     "mp3": 1180198
+    }
+   ]
+  },
+  "diagrams-and-charts-from-plain-text": {
+   "hash": "33dc86b7eb2b",
+   "loop": true,
+   "video": {
+    "dur": 66.51,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.67,
+      "label": "In this post"
+     },
+     {
+      "t": 18.14,
+      "label": "Diagrams with Mermaid"
+     },
+     {
+      "t": 24.18,
+      "label": "Charts from a pasted table"
+     },
+     {
+      "t": 30.3,
+      "label": "Shapes and paper"
+     },
+     {
+      "t": 38.68,
+      "label": "Why text first works"
+     },
+     {
+      "t": 45.57,
+      "label": "Try the tool"
+     },
+     {
+      "t": 58.78,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2649446,
+    "webm": 1823776
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: Diagrams with Mermaid; Charts from a pasted table; Code as a picture; Shapes and paper; Why text first works.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Diagram Maker (Mermaid), Chart Maker, Code to Image, Blob & Wave Generator, Printable Paper, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Charts from a pasted table\". Chart Maker takes data straight from a spreadsheet.",
+     "caption": "From the explainer film: Charts from a pasted table.",
+     "heading": "charts-from-a-pasted-table"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Why text first works\". Writing a picture as text sounds odd until you try it.",
+     "caption": "From the explainer film: Why text first works.",
+     "heading": "why-text-first-works"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 218.27,
+     "words": 630,
+     "mp3": 1310372
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 203.23,
+     "words": 630,
+     "mp3": 1220226
+    }
+   ]
+  },
+  "3d-printing-files-in-a-browser": {
+   "hash": "755021072304",
+   "loop": true,
+   "video": {
+    "dur": 81.57,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 7.4,
+      "label": "In this post"
+     },
+     {
+      "t": 18.72,
+      "label": "From a flat logo to a solid"
+     },
+     {
+      "t": 28.08,
+      "label": "Reading G-code"
+     },
+     {
+      "t": 36.87,
+      "label": "Point clouds from scanners and drones"
+     },
+     {
+      "t": 49.9,
+      "label": "Privacy"
+     },
+     {
+      "t": 59.95,
+      "label": "Try the tool"
+     },
+     {
+      "t": 73.84,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3122596,
+    "webm": 2201165
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: From a flat logo to a solid; Reading G-code; A turntable video of the result; Point clouds from scanners and drones; Privacy.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your GLB file goes through SVG & Image to 3D, G-code Viewer, 3D Turntable Video, Point Cloud Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Reading G-code\". G-code is the list of moves your printer, CNC router or laser actually runs.",
+     "caption": "From the explainer film: Reading G-code.",
+     "heading": "reading-g-code"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Privacy\". Designs for products, scans of rooms and drone surveys of private land are not things I want on a stranger's server.",
+     "caption": "From the explainer film: Privacy.",
+     "heading": "privacy"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 199.59,
+     "words": 595,
+     "mp3": 1198354
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 192.63,
+     "words": 595,
+     "mp3": 1156592
     }
    ]
   },
@@ -2559,273 +3004,6 @@
      "dur": 332.18,
      "words": 952,
      "mp3": 1993792
-    }
-   ]
-  },
-  "turn-any-document-into-markdown": {
-   "hash": "2e2fbdfe50f8",
-   "loop": true,
-   "video": {
-    "dur": 76.04,
-    "chapters": [
-     {
-      "t": 0.0,
-      "label": "Intro"
-     },
-     {
-      "t": 5.95,
-      "label": "In this post"
-     },
-     {
-      "t": 20.27,
-      "label": "Why Markdown is worth the trouble"
-     },
-     {
-      "t": 32.77,
-      "label": "How each kind of file is read"
-     },
-     {
-      "t": 38.47,
-      "label": "Notebooks without Jupyter"
-     },
-     {
-      "t": 47.15,
-      "label": "Privacy"
-     },
-     {
-      "t": 55.45,
-      "label": "Try the tool"
-     },
-     {
-      "t": 68.45,
-      "label": "Read more"
-     }
-    ],
-    "mp4": 3046278,
-    "webm": 2201384
-   },
-   "images": [
-    {
-     "src": "map.webp",
-     "alt": "Route map of the post with 5 chapters: Why Markdown is worth the trouble; How each kind of file is read; Saved web pages and old pictures; Notebooks without Jupyter; Privacy.",
-     "caption": "The route through this post. Every stop is a chapter you can jump to.",
-     "after": 0
-    },
-    {
-     "src": "flow.webp",
-     "alt": "Diagram: your FILE file goes through Anything to Markdown, Jupyter Notebook Converter, MHTML Viewer, EMF & WMF Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
-     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
-     "after": "end"
-    },
-    {
-     "src": "scene-1.webp",
-     "alt": "Layer diagram for the chapter \"How each kind of file is read\". Every format needs its own reader.",
-     "caption": "From the explainer film: How each kind of file is read.",
-     "heading": "how-each-kind-of-file-is-read"
-    },
-    {
-     "src": "scene-2.webp",
-     "alt": "Layer diagram for the chapter \"Privacy\". Documents are often the most private files we have: contracts, payslips, medical letters.",
-     "caption": "From the explainer film: Privacy.",
-     "heading": "privacy"
-    }
-   ],
-   "voices": [
-    {
-     "id": "lessac",
-     "label": "Lessac",
-     "gender": "female",
-     "accent": "US English",
-     "dur": 211.5,
-     "words": 617,
-     "mp3": 1269768
-    },
-    {
-     "id": "ryan",
-     "label": "Ryan",
-     "gender": "male",
-     "accent": "US English",
-     "dur": 196.57,
-     "words": 617,
-     "mp3": 1180198
-    }
-   ]
-  },
-  "diagrams-and-charts-from-plain-text": {
-   "hash": "33dc86b7eb2b",
-   "loop": true,
-   "video": {
-    "dur": 66.51,
-    "chapters": [
-     {
-      "t": 0.0,
-      "label": "Intro"
-     },
-     {
-      "t": 5.67,
-      "label": "In this post"
-     },
-     {
-      "t": 18.14,
-      "label": "Diagrams with Mermaid"
-     },
-     {
-      "t": 24.18,
-      "label": "Charts from a pasted table"
-     },
-     {
-      "t": 30.3,
-      "label": "Shapes and paper"
-     },
-     {
-      "t": 38.68,
-      "label": "Why text first works"
-     },
-     {
-      "t": 45.57,
-      "label": "Try the tool"
-     },
-     {
-      "t": 58.78,
-      "label": "Read more"
-     }
-    ],
-    "mp4": 2649446,
-    "webm": 1823776
-   },
-   "images": [
-    {
-     "src": "map.webp",
-     "alt": "Route map of the post with 5 chapters: Diagrams with Mermaid; Charts from a pasted table; Code as a picture; Shapes and paper; Why text first works.",
-     "caption": "The route through this post. Every stop is a chapter you can jump to.",
-     "after": 0
-    },
-    {
-     "src": "flow.webp",
-     "alt": "Diagram: your FILE file goes through Diagram Maker (Mermaid), Chart Maker, Code to Image, Blob & Wave Generator, Printable Paper, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
-     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
-     "after": "end"
-    },
-    {
-     "src": "scene-1.webp",
-     "alt": "Layer diagram for the chapter \"Charts from a pasted table\". Chart Maker takes data straight from a spreadsheet.",
-     "caption": "From the explainer film: Charts from a pasted table.",
-     "heading": "charts-from-a-pasted-table"
-    },
-    {
-     "src": "scene-2.webp",
-     "alt": "Layer diagram for the chapter \"Why text first works\". Writing a picture as text sounds odd until you try it.",
-     "caption": "From the explainer film: Why text first works.",
-     "heading": "why-text-first-works"
-    }
-   ],
-   "voices": [
-    {
-     "id": "lessac",
-     "label": "Lessac",
-     "gender": "female",
-     "accent": "US English",
-     "dur": 218.27,
-     "words": 630,
-     "mp3": 1310372
-    },
-    {
-     "id": "ryan",
-     "label": "Ryan",
-     "gender": "male",
-     "accent": "US English",
-     "dur": 203.23,
-     "words": 630,
-     "mp3": 1220226
-    }
-   ]
-  },
-  "3d-printing-files-in-a-browser": {
-   "hash": "755021072304",
-   "loop": true,
-   "video": {
-    "dur": 81.57,
-    "chapters": [
-     {
-      "t": 0.0,
-      "label": "Intro"
-     },
-     {
-      "t": 7.4,
-      "label": "In this post"
-     },
-     {
-      "t": 18.72,
-      "label": "From a flat logo to a solid"
-     },
-     {
-      "t": 28.08,
-      "label": "Reading G-code"
-     },
-     {
-      "t": 36.87,
-      "label": "Point clouds from scanners and drones"
-     },
-     {
-      "t": 49.9,
-      "label": "Privacy"
-     },
-     {
-      "t": 59.95,
-      "label": "Try the tool"
-     },
-     {
-      "t": 73.84,
-      "label": "Read more"
-     }
-    ],
-    "mp4": 3122596,
-    "webm": 2201165
-   },
-   "images": [
-    {
-     "src": "map.webp",
-     "alt": "Route map of the post with 5 chapters: From a flat logo to a solid; Reading G-code; A turntable video of the result; Point clouds from scanners and drones; Privacy.",
-     "caption": "The route through this post. Every stop is a chapter you can jump to.",
-     "after": 0
-    },
-    {
-     "src": "flow.webp",
-     "alt": "Diagram: your GLB file goes through SVG & Image to 3D, G-code Viewer, 3D Turntable Video, Point Cloud Converter, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
-     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
-     "after": "end"
-    },
-    {
-     "src": "scene-1.webp",
-     "alt": "Layer diagram for the chapter \"Reading G-code\". G-code is the list of moves your printer, CNC router or laser actually runs.",
-     "caption": "From the explainer film: Reading G-code.",
-     "heading": "reading-g-code"
-    },
-    {
-     "src": "scene-2.webp",
-     "alt": "Layer diagram for the chapter \"Privacy\". Designs for products, scans of rooms and drone surveys of private land are not things I want on a stranger's server.",
-     "caption": "From the explainer film: Privacy.",
-     "heading": "privacy"
-    }
-   ],
-   "voices": [
-    {
-     "id": "lessac",
-     "label": "Lessac",
-     "gender": "female",
-     "accent": "US English",
-     "dur": 199.59,
-     "words": 595,
-     "mp3": 1198354
-    },
-    {
-     "id": "ryan",
-     "label": "Ryan",
-     "gender": "male",
-     "accent": "US English",
-     "dur": 192.63,
-     "words": 595,
-     "mp3": 1156592
     }
    ]
   }

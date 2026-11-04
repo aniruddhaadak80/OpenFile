@@ -112,6 +112,15 @@ export const QUIZZES: Record<string, QuizQ[]> = {
     { q: 'What does overlap do when you chunk a document for RAG?', options: ['It repeats the end of one chunk at the start of the next, so facts on a boundary are not lost', 'It makes every chunk the same size', 'It removes duplicate chunks'], a: 0, why: 'A sentence that falls on a cut still appears whole in one of the two chunks.' },
     { q: 'Why can the GGUF inspector open a 40 GB model in a second?', options: ['It reads only the header at the start of the file', 'It uploads the file to a fast server', 'It skips every other tensor'], a: 0, why: 'The header lists the metadata and every tensor, so the weights never need to be read.' },
   ],
+  'fine-tuning-datasets-that-pass': [
+    { q: 'Why does one trailing comma break a whole JSONL file?', options: ['Each line must be a complete JSON object on its own', 'JSONL files cannot hold commas', 'Trainers read only the first line'], a: 0, why: 'JSONL has no outer list, so every line is parsed by itself and a stray comma makes that line invalid.' },
+    { q: 'Why remove duplicate rows before training?', options: ['Many copies of one example teach the model to repeat that answer', 'Duplicates make the file invalid', 'Trainers reject any repeated text'], a: 0, why: 'Repeated examples get extra weight, which skews what the model learns.' },
+    { q: 'What does a seeded train and validation split give you?', options: ['The same split every time you use the same seed', 'A bigger training set', 'Fewer tokens to pay for'], a: 0, why: 'A fixed seed makes the shuffle repeatable, so runs can be compared fairly.' },
+  ],
+  'instagram-unfollowers-without-a-login': [
+    { q: 'Why do unfollower apps often get accounts locked?', options: ['They sign in as you from unknown servers and read profiles very fast', 'Instagram bans every third party app', 'They delete your followers'], a: 0, why: 'Logins from unknown places and very fast reading look like an attack to Instagram.' },
+    { q: 'Who counts as not following you back?', options: ['Someone in your following list who is not in your followers list', 'Someone who follows you but you do not follow', 'Anyone with a private account'], a: 0, why: 'It is the difference between the two lists from your own download.' },
+  ],
   'read-your-data-exports-privately': [
     { q: 'How does the Instagram Followers Checker find who does not follow you back?', options: ['It compares the followers and following lists in your own export', 'It signs in to your account', 'It asks Instagram for a report'], a: 0, why: 'Anyone you follow who is not in your followers list does not follow you back. No login is involved.' },
     { q: 'Why does the location tool draw dots instead of loading a map?', options: ['A map tile request would tell a server roughly where you were', 'Maps are too slow', 'GPX files cannot be shown on maps'], a: 0, why: 'Keeping the preview to your own points means nothing about your places leaves the tab.' },
