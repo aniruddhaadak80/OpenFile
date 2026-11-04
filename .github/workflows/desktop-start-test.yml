@@ -1,0 +1,285 @@
+name: Desktop app start test
+
+# Builds the desktop app from this commit and starts it the way people do, with no workarounds set, then checks
+# the window is not blank and the app printed no start-up error (tests/apps/screen-check.py). Added for issue #10
+# (a black window on Fedora 44 Wayland). Screenshots and logs are uploaded as artifacts.
+#   Linux:   Ubuntu 22.04 and 24.04 runners, plus Fedora, Debian and Arch containers. Each on X11 (Xvfb) and on
+#            Wayland (cage with its headless backend). AppImage everywhere, .deb on Ubuntu and Debian, .rpm on Fedora.
+#            The same runs with the previous release (BEFORE_TAG) give the before picture; they never fail the job.
+#   Windows: NSIS setup on windows-2022 and windows-2025 (install, start, screenshot, uninstall).
+#   macOS:   .dmg on macos-latest (Apple silicon) and macos-15-intel (Intel).
+# CI machines have no GPU, so WebKitGTK draws with Mesa's software renderer here. GPU driver problems (NVIDIA,
+# some Mesa versions) only show on real hardware; the safe defaults in desktop/src-tauri/src/main.rs cover those.
+
+on:
+  workflow_dispatch:
+    inputs:
+      before_tag:
+        description: 'Release to compare against (its Linux assets run with the same checks), or none'
+        default: 'v1.2.0'
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'index.html'
+      - 'src/lib/boot.ts'
+      - 'tests/apps/linux-launch.sh'
+      - 'tests/apps/linux-deps.sh'
+      - 'tests/apps/screen-check.py'
+      - 'tests/apps/fallback-check.mjs'
+      - '.github/workflows/desktop-start-test.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-start-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  BEFORE_TAG: ${{ github.event.inputs.before_tag || 'v1.2.0' }}
+  NO_UPDATER: '{"bundle":{"createUpdaterArtifacts":false}}'
+
+jobs:
+  web:
+    name: Web build for the app
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/prepare-app-dist.mjs dist
+      - name: Start screen and fallback screen (index.html)
+        run: |
+          npx playwright install --with-deps chromium
+          (cd dist && python3 -m http.server 8791 --bind 127.0.0.1 >/dev/null 2>&1 &)
+          sleep 2
+          node tests/apps/fallback-check.mjs
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: start-web-screens
+          path: app-start
+          if-no-files-found: ignore
+      - run: tar -czf web-dist.tgz dist && ls -lh web-dist.tgz
+      - uses: actions/upload-artifact@v7
+        with:
+          name: start-web-dist
+          path: web-dist.tgz
+          retention-days: 3
+
+  build:
+    name: Build / ${{ matrix.name }}
+    needs: web
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Linux, os: ubuntu-22.04, bundles: 'appimage,deb,rpm' }
+          - { name: Windows, os: windows-latest, bundles: 'nsis' }
+          - { name: macOS Apple silicon, os: macos-latest, bundles: 'dmg' }
+          - { name: macOS Intel, os: macos-15-intel, bundles: 'dmg' }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: start-web-dist
+      - run: tar -xzf web-dist.tgz && rm web-dist.tgz
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri -> target
+          key: start-${{ matrix.os }}
+      - name: Build
+        working-directory: desktop
+        run: |
+          npm install
+          npx tauri build --bundles ${{ matrix.bundles }} --config "$NO_UPDATER"
+      - name: Collect
+        run: |
+          mkdir -p out; B=desktop/src-tauri/target/release/bundle
+          find "$B" -maxdepth 2 -type f | sort
+          case "$RUNNER_OS" in
+            Linux)
+              cp "$(ls $B/appimage/*.AppImage | head -1)" out/OpenFile-linux-x86_64.AppImage
+              cp "$(ls $B/deb/*.deb | head -1)" out/OpenFile-linux-amd64.deb
+              cp "$(ls $B/rpm/*.rpm | head -1)" out/OpenFile-linux-x86_64.rpm ;;
+            Windows) cp "$(ls $B/nsis/*.exe | head -1)" out/OpenFile-windows-x64-setup.exe ;;
+            macOS) cp "$(ls $B/dmg/*.dmg | head -1)" out/OpenFile-macos.dmg ;;
+          esac
+          ls -la out
+      - uses: actions/upload-artifact@v7
+        with:
+          name: start-app-${{ matrix.os }}
+          path: out
+          retention-days: 7
+
+  linux-runner:
+    name: Linux / ${{ matrix.os }} / ${{ matrix.display }} / ${{ matrix.kind }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+        display: [x11, wayland]
+        kind: [appimage, deb]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - uses: actions/download-artifact@v8
+        with:
+          name: start-app-ubuntu-22.04
+          path: dl
+      - run: bash tests/apps/linux-deps.sh
+      - name: Before (${{ env.BEFORE_TAG }}, never fails the job)
+        if: env.BEFORE_TAG != 'none'
+        continue-on-error: true
+        run: |
+          if [ "${{ matrix.kind }}" = deb ]; then F=OpenFile-linux-amd64.deb; else F=OpenFile-linux-x86_64.AppImage; fi
+          curl -fsSL -o "before-$F" "https://github.com/${{ github.repository }}/releases/download/$BEFORE_TAG/$F"
+          bash tests/apps/linux-launch.sh ${{ matrix.display }} ${{ matrix.kind }} "before-$F" "before-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
+      - name: After (this commit)
+        run: |
+          if [ "${{ matrix.kind }}" = deb ]; then F=OpenFile-linux-amd64.deb; else F=OpenFile-linux-x86_64.AppImage; fi
+          bash tests/apps/linux-launch.sh ${{ matrix.display }} ${{ matrix.kind }} "dl/$F" "after-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}" app-start 25
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: start-linux-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}
+          path: app-start
+          if-no-files-found: ignore
+
+  linux-distro:
+    name: Linux / ${{ matrix.distro }} / ${{ matrix.display }} / ${{ matrix.kind }}
+    needs: build
+    runs-on: ubuntu-24.04
+    container: ${{ matrix.image }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        display: [x11, wayland]
+        distro: [fedora, debian, arch]
+        kind: [appimage, native]
+        include:
+          - { distro: fedora, image: 'fedora:latest' }
+          - { distro: debian, image: 'debian:stable' }
+          - { distro: arch, image: 'archlinux:latest' }
+        exclude:
+          - { distro: arch, kind: native }
+    steps:
+      - name: Tools
+        run: |
+          if command -v dnf >/dev/null; then dnf -y -q install git tar; elif command -v apt-get >/dev/null; then apt-get update -qq && apt-get install -y -qq git ca-certificates tar >/dev/null; else pacman -Syu --noconfirm --needed git tar >/dev/null; fi
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - uses: actions/download-artifact@v8
+        with:
+          name: start-app-ubuntu-22.04
+          path: dl
+      - run: bash tests/apps/linux-deps.sh
+      - name: Package for this system
+        run: |
+          K=appimage; F=OpenFile-linux-x86_64.AppImage
+          if [ "${{ matrix.kind }}" = native ]; then
+            case "${{ matrix.distro }}" in fedora) K=rpm; F=OpenFile-linux-x86_64.rpm ;; debian) K=deb; F=OpenFile-linux-amd64.deb ;; esac
+          fi
+          echo "K=$K" >> "$GITHUB_ENV"; echo "F=$F" >> "$GITHUB_ENV"
+      - name: Before (${{ env.BEFORE_TAG }}, never fails the job)
+        if: env.BEFORE_TAG != 'none'
+        continue-on-error: true
+        run: |
+          curl -fsSL -o "before-$F" "https://github.com/${{ github.repository }}/releases/download/$BEFORE_TAG/$F"
+          bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "before-$F" "before-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
+      - name: After (this commit)
+        run: bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "dl/$F" "after-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: start-${{ matrix.distro }}-${{ matrix.display }}-${{ matrix.kind }}
+          path: app-start
+          if-no-files-found: ignore
+
+  windows:
+    name: Windows / ${{ matrix.os }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2025]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - uses: actions/download-artifact@v8
+        with:
+          name: start-app-windows-latest
+          path: dl
+      - name: Install, start, screenshot, uninstall
+        shell: pwsh
+        run: ./tests/apps/windows-smoke.ps1 -Kind nsis -Installer dl/OpenFile-windows-x64-setup.exe -OutDir app-start -WaitSeconds 25
+      - name: Window is not blank
+        shell: bash
+        run: |
+          python -m pip install -q pillow
+          python tests/apps/screen-check.py app-start/openfile-nsis.png - "${{ matrix.os }}-nsis"
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: start-${{ matrix.os }}
+          path: app-start
+          if-no-files-found: ignore
+
+  macos:
+    name: macOS / ${{ matrix.os }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tests/apps
+      - uses: actions/download-artifact@v8
+        with:
+          name: start-app-${{ matrix.os }}
+          path: dl
+      - name: Mount, start, screenshot, remove
+        run: bash tests/apps/macos-smoke.sh dl/OpenFile-macos.dmg app-start 25
+      - name: Window is not blank
+        run: |
+          python3 -m pip install -q --break-system-packages pillow 2>/dev/null || python3 -m pip install -q pillow
+          python3 tests/apps/screen-check.py app-start/openfile-macos.png - "${{ matrix.os }}-dmg"
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: start-${{ matrix.os }}
+          path: app-start
+          if-no-files-found: ignore
