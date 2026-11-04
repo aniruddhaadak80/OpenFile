@@ -1,0 +1,73 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:02.799
+Make a good GIF from a video clip.
+
+2
+00:00:04.299 --> 00:00:08.344
+Why GIFs get huge, and the four settings that fix it: width, frame rate,
+
+3
+00:00:08.344 --> 00:00:12.446
+length and colours. Includes a planner that estimates the size before you
+
+4
+00:00:12.446 --> 00:00:12.896
+convert.
+
+5
+00:00:14.296 --> 00:00:19.371
+Why GIFs get so big. A video codec like H.264 stores one full picture now
+
+6
+00:00:19.371 --> 00:00:24.237
+and then and, between them, only the changes, using motion prediction.
+
+7
+00:00:25.537 --> 00:00:27.299
+Step 2: pick sensible settings.
+
+8
+00:00:27.299 --> 00:00:31.105
+This matters most because pixels grow with the square of the width.
+
+9
+00:00:32.405 --> 00:00:34.600
+Step 3: make it smaller after the fact.
+
+10
+00:00:34.600 --> 00:00:38.597
+If the result is still too large for where it is going (Discord, GitHub
+
+11
+00:00:38.597 --> 00:00:42.368
+and many forums have upload limits), run it through GIF Compressor.
+
+12
+00:00:43.668 --> 00:00:45.704
+My recipe for a bug report GIF.
+
+13
+00:00:45.704 --> 00:00:50.563
+It usually lands between 1 and 4 MB, the text stays readable, and it plays
+
+14
+00:00:50.563 --> 00:00:52.073
+right inside the issue.
+
+15
+00:00:53.373 --> 00:00:55.897
+To try it, open Video to GIF in OpenFile.
+
+16
+00:00:55.897 --> 00:00:59.407
+Drop in a file, adjust the settings and press the button.
+
+17
+00:00:59.407 --> 00:01:02.547
+It all runs on your device, so nothing is uploaded.
+
+18
+00:01:06.473 --> 00:01:09.951
+Read the full post, with live demos, on the OpenFile blog.

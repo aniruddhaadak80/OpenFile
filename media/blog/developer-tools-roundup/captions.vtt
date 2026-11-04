@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:03.503
+The developer tools I reach for every day.
+
+2
+00:00:05.003 --> 00:00:11.169
+JSON, JWT, regex, hashes, cURL and cron: a quick tour of the dev tools in
+
+3
+00:00:11.169 --> 00:00:15.392
+OpenFile, with a live JSON formatter to play with.
+
+4
+00:00:16.792 --> 00:00:19.309
+JSON formatter. The one I use the most.
+
+5
+00:00:20.609 --> 00:00:25.464
+Regex builder. Regex Builder highlights matches as you type, explains each
+
+6
+00:00:25.464 --> 00:00:28.481
+part of the pattern, and lists capture groups.
+
+7
+00:00:29.781 --> 00:00:38.030
+Hashes. Hash Generator computes MD5, SHA-1, SHA-256 and SHA-512 for text
+
+8
+00:00:38.030 --> 00:00:39.061
+or files.
+
+9
+00:00:40.361 --> 00:00:49.161
+Cron parser. Cron Parser turns */15 9-17 * * 1-5 into plain words and lists
+
+10
+00:00:49.161 --> 00:00:51.391
+the next run times.
+
+11
+00:00:52.691 --> 00:00:55.698
+To try it, open JSON Formatter in OpenFile.
+
+12
+00:00:55.698 --> 00:00:59.684
+Drop in a file, adjust the settings and press the button.
+
+13
+00:00:59.684 --> 00:01:03.251
+It all runs on your device, so nothing is uploaded.
+
+14
+00:01:05.791 --> 00:01:09.737
+Read the full post, with live demos, on the OpenFile blog.

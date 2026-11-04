@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:05.124
+A practical guide to subtitles: SRT, VTT and ASS.
+
+2
+00:00:06.624 --> 00:00:10.994
+The three subtitle formats you will meet, and how to fix the usual problems:
+
+3
+00:00:10.994 --> 00:00:14.731
+wrong format, broken letters, drifting timing and missing tracks.
+
+4
+00:00:16.131 --> 00:00:20.613
+The three main formats. SubRip is the most common subtitle format there
+
+5
+00:00:20.613 --> 00:00:20.803
+is.
+
+6
+00:00:22.103 --> 00:00:24.820
+Problem 1: the player will not load the file.
+
+7
+00:00:24.820 --> 00:00:26.391
+Usually a format mismatch.
+
+8
+00:00:27.691 --> 00:00:29.870
+Problem 4: no subtitles at all.
+
+9
+00:00:29.870 --> 00:00:35.143
+If the subtitles are inside the video file, as they often are in MKV files,
+
+10
+00:00:35.143 --> 00:00:40.064
+Extract Subtitles pulls the text tracks out as SRT, VTT, ASS and more.
+
+11
+00:00:41.364 --> 00:00:43.483
+My usual flow for a talk recording.
+
+12
+00:00:43.483 --> 00:00:47.904
+All four steps run in the browser, so an unreleased recording stays on my
+
+13
+00:00:47.904 --> 00:00:49.236
+laptop the whole time.
+
+14
+00:00:50.536 --> 00:00:53.473
+To try it, open Subtitle Converter in OpenFile.
+
+15
+00:00:53.473 --> 00:00:57.035
+Drop in a file, adjust the settings and press the button.
+
+16
+00:00:57.035 --> 00:01:00.221
+It all runs on your device, so nothing is uploaded.
+
+17
+00:01:03.636 --> 00:01:07.113
+Read the full post, with live demos, on the OpenFile blog.
