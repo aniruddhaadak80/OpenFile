@@ -175,7 +175,7 @@ function CategoryStrip({ cat }: { cat: Category }) {
   const color = CATEGORIES.find((x) => x.id === cat)?.color
   return (
     <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl border border-border bg-surface/70 px-4 py-3 text-sm backdrop-blur">
-      <span><span className="font-display text-lg font-bold" style={{ color }}>{list.length}</span> <span className="text-muted">{list.length === 1 ? 'tool' : 'tools'}</span></span>
+      <span><span className="cat-head font-display text-lg font-bold" style={{ ['--cat' as string]: color }}>{list.length}</span> <span className="text-muted">{list.length === 1 ? 'tool' : 'tools'}</span></span>
       <span><span className="font-display text-lg font-bold">{fm.length}</span> <span className="text-muted">formats</span></span>
       {list.some((t) => t.badge === 'AI') && <span className="flex items-center gap-1 text-muted"><Sparkles className="size-3.5 text-accent" /> On-device AI</span>}
       <span className="flex min-w-[min(100%,15rem)] flex-1 flex-wrap gap-1">{fm.slice(0, 8).map((f) => <Link key={f.format} to={`?format=${f.format}`} className="whitespace-nowrap rounded-md border border-border px-1.5 py-0.5 font-mono text-[11px] text-muted hover:text-fg">.{f.format.toLowerCase()}</Link>)}</span>

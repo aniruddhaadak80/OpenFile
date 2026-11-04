@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Input, Label, ToolGrid, Empty, Segmented } from '@/components/ui'
 import { Stat, Stats, OutBox } from '@/lib/cf/ui'
 import { parseChats, chatToMarkdown, safeName, type Conversation } from '@/lib/r15/exports'
-import { useExport, ExportDrop, Columns, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
+import { useExport, ExportDrop, plainError, Columns, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
 import { DlButton } from '@/lib/bcat/kit'
 import { downloadBlob } from '@/lib/files'
 import { Button } from '@/components/ui'
@@ -16,7 +16,7 @@ export default function AiChatExportViewer() {
   useEffect(() => { (async () => {
     setErr(null); setChats([]); setSel(null)
     const all: Conversation[] = []
-    for (const e of ex.entries) { try { all.push(...parseChats(await e.read())) } catch (x: any) { if (ex.entries.length === 1) setErr(x?.message || String(x)) } }
+    for (const e of ex.entries) { try { all.push(...parseChats(await e.read())) } catch (x: any) { if (ex.entries.length === 1) setErr(plainError(x)) } }
     if (ex.entries.length && !all.length) setErr((m) => m ?? 'No conversations were found. Drop conversations.json from a ChatGPT or Claude export, or the whole ZIP.')
     setChats(all); setSel(all[0]?.id ?? null)
   })() }, [ex.entries])

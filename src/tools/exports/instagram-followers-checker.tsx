@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react'
 import { Input, Label, ToolGrid, Segmented, Empty } from '@/components/ui'
 import { Stat, Stats } from '@/lib/cf/ui'
 import { igUsers, igKind, compareFollows, type IgUser } from '@/lib/r15/exports'
-import { useExport, ExportDrop, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
+import { useExport, ExportDrop, plainError, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
 import { DlButton, toCsv } from '@/lib/bcat/kit'
 
 const pick = (p: string) => igKind(p) != null
@@ -15,7 +15,7 @@ export default function InstagramFollowersChecker() {
     setErr(null); setFr(null); setFg(null)
     if (!ex.entries.length) return
     const a: IgUser[] = [], b: IgUser[] = []
-    try { for (const e of ex.entries) { const k = igKind(e.path); const u = igUsers(await e.read()); (k === 'followers' ? a : b).push(...u) } } catch (e: any) { setErr(`Could not read this file: ${e?.message || e}`); return }
+    try { for (const e of ex.entries) { const k = igKind(e.path); const u = igUsers(await e.read()); (k === 'followers' ? a : b).push(...u) } } catch (e: any) { setErr(plainError(e)); return }
     const kinds = new Set(ex.entries.map((e) => igKind(e.path)))
     if (!kinds.has('followers') || !kinds.has('following')) setErr(`Found only your ${kinds.has('followers') ? 'followers' : 'following'} list. Drop both followers_1.json and following.json, or the whole ZIP.`)
     setFr(a); setFg(b)

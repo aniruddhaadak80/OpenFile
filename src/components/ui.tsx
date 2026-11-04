@@ -121,7 +121,7 @@ export function Segmented<T extends string>({ value, onChange, options, classNam
 }
 
 export function Badge({ children, className, color }: { children: React.ReactNode; className?: string; color?: string }) {
-  return <span className={cn('inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wider', className)} style={{ background: (color ?? 'var(--accent)') + '22', color: color ?? 'var(--accent)' }}>{children}</span>
+  return <span className={cn('cat-head inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold tracking-wider', className)} style={{ background: (color ?? 'var(--accent)') + '22', ['--cat' as string]: color ?? 'var(--accent)' }}>{children}</span>
 }
 
 export function Progress({ value, label }: { value: number; label?: React.ReactNode }) {

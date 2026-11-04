@@ -7,14 +7,14 @@ import { FileBar } from '@/lib/cf/ui'
 
 /* ---------------- tokenizers ---------------- */
 export const TOKENIZERS = [
-  { value: 'Xenova/gpt-4o', label: 'OpenAI o200k (GPT-4o, GPT-4.1, o-series, GPT-5)', ctx: 128000 },
-  { value: 'Xenova/gpt-4', label: 'OpenAI cl100k (GPT-4, GPT-3.5)', ctx: 8192 },
+  { value: 'Xenova/gpt-4o', label: 'GPT-4o, GPT-4.1, GPT-5 (o200k)', ctx: 128000 },
+  { value: 'Xenova/gpt-4', label: 'GPT-4, GPT-3.5 (cl100k)', ctx: 8192 },
   { value: 'Xenova/Meta-Llama-3.1-Tokenizer', label: 'Llama 3', ctx: 128000 },
   { value: 'Xenova/mistral-tokenizer-v3', label: 'Mistral', ctx: 32768 },
   { value: 'Qwen/Qwen2.5-0.5B-Instruct', label: 'Qwen 2.5', ctx: 32768 },
   { value: 'Xenova/gemma-tokenizer', label: 'Gemma', ctx: 8192 },
   { value: 'deepseek-ai/DeepSeek-V3', label: 'DeepSeek V3', ctx: 128000 },
-  { value: 'Xenova/claude-tokenizer', label: 'Claude (older public tokenizer, an estimate)', ctx: 200000 },
+  { value: 'Xenova/claude-tokenizer', label: 'Claude (old tokenizer, estimate)', ctx: 200000 },
 ] as const
 export const QUICK = 'quick'
 
@@ -71,6 +71,14 @@ export function TokProgress({ tk }: { tk: TokState }) {
   )
 }
 
+/** Turn parser and ZIP library errors into plain words for the error note. */
+export function plainError(x: any): string {
+  const m = String(x?.message || x || '')
+  if (x?.name === 'SyntaxError' || /JSON|Unexpected (token|end)/.test(m)) return 'This file is not valid JSON, so it could not be read. Use the file exactly as it came in your export, without edits.'
+  if (/central directory|corrupted zip|zip file|end of data|invalid signature/i.test(m)) return 'This ZIP file is damaged or not complete. Download your export again and drop the new file here.'
+  return m || 'This file could not be read.'
+}
+
 /* ---------------- export files: ZIP, folder or loose files ---------------- */
 export interface Entry { path: string; size: number; read: () => Promise<string>; bytes: () => Promise<Uint8Array> }
 const MAX_ENTRY = 400 * 1024 * 1024
@@ -111,7 +119,7 @@ export function useExport(pick?: (path: string) => boolean) {
       const keep = pick ? all.filter((e) => pick(e.path)) : all
       if (!keep.length) throw new Error(all.length > 1 ? 'None of the files inside are the kind this tool reads. Check the file names in the help below.' : 'This is not a file this tool reads. Check the file names in the help below.')
       setEntries(keep)
-    } catch (e: any) { setEntries([]); setError(e?.message || String(e)) } finally { setBusy(false) }
+    } catch (e: any) { setEntries([]); setError(plainError(e)) } finally { setBusy(false) }
   }
   const reset = () => { setFiles([]); setEntries([]); setError(null) }
   return { files, entries, busy, error, setError, open, reset }

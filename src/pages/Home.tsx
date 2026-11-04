@@ -179,7 +179,7 @@ function ExplorerCard({ t, color, i, from }: { t: ToolMeta; color: string; i: nu
     <motion.div data-fill-item initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 12) * 0.03 }}>
       <Link to={`/${t.slug}`} className="group flex h-full items-start gap-3 rounded-xl border border-border bg-surface-2/40 p-3 transition hover:border-transparent hover:bg-surface-2">
         <span data-cat={t.category} className="icon-anim mt-0.5 shrink-0" style={{ color: tint }}><I className="size-4" /></span>
-        <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="rounded px-1 text-[9px] font-bold" style={{ background: (BADGE_COLORS[t.badge] ?? color) + '22', color: BADGE_COLORS[t.badge] ?? color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{from ? `${from}. ${t.desc}` : t.desc}</span></span>
+        <span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">{t.name}{t.badge && <span className="cat-head rounded px-1 text-[9px] font-bold" style={{ background: (BADGE_COLORS[t.badge] ?? color) + '22', ['--cat' as string]: BADGE_COLORS[t.badge] ?? color }}>{t.badge}</span>}</span><span className="line-clamp-1 text-xs text-muted">{from ? `${from}. ${t.desc}` : t.desc}</span></span>
       </Link>
     </motion.div>
   )

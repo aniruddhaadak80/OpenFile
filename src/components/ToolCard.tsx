@@ -30,7 +30,7 @@ export function ToolCard({ tool, compact, view = 'grid' }: { tool: ToolMeta; com
           <div className="flex flex-wrap items-center gap-2 font-medium">{tool.name}{tool.badge && <Badge color={BADGE_COLORS[tool.badge]}>{tool.badge}</Badge>}</div>
           <p className="truncate text-sm text-muted">{tool.desc}</p>
         </div>
-        <span className="hidden shrink-0 text-xs text-muted sm:inline" style={{ color: cat.color }}>{cat.name}</span>
+        <span className="cat-head hidden shrink-0 text-xs sm:inline" style={{ ['--cat' as string]: cat.color }}>{cat.name}</span>
         {star}
         <ArrowUpRight className="size-4 shrink-0 text-muted transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-fg" />
       </Link>

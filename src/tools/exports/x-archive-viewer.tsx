@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Input, Label, ToolGrid, Empty, Segmented } from '@/components/ui'
 import { Stat, Stats } from '@/lib/cf/ui'
 import { parseXArchive, xStats, WEEKDAYS, type Post } from '@/lib/r15/exports'
-import { useExport, ExportDrop, Columns, hourData, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
+import { useExport, ExportDrop, plainError, Columns, hourData, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
 import { Bars, DlButton, toCsv } from '@/lib/bcat/kit'
 
 const pick = (p: string) => /(^|\/)(data\/)?tweets?(-part\d+)?\.js$/i.test(p) || (!p.includes('/') && /\.(js|json)$/i.test(p))
@@ -13,7 +13,7 @@ export default function XArchiveViewer() {
   useEffect(() => { (async () => {
     setErr(null); setPosts([])
     const all: Post[] = []
-    for (const e of ex.entries) { try { all.push(...parseXArchive(await e.read())) } catch (x: any) { if (ex.entries.length === 1) setErr(x?.message || String(x)) } }
+    for (const e of ex.entries) { try { all.push(...parseXArchive(await e.read())) } catch (x: any) { if (ex.entries.length === 1) setErr(plainError(x)) } }
     if (ex.entries.length && !all.length) setErr((m) => m ?? 'No posts were found. Drop data/tweets.js from your X archive, or the whole ZIP.')
     const seen = new Set<string>(); setPosts(all.filter((p) => (p.id && seen.has(p.id) ? false : (seen.add(p.id), true))).sort((a, b) => a.t.getTime() - b.t.getTime()))
   })() }, [ex.entries])

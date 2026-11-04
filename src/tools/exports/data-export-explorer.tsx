@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Input, Label, ToolGrid, Empty } from '@/components/ui'
 import { Stat, Stats, RowsTable } from '@/lib/cf/ui'
 import { findRecordLists, flatRow, guessService, type RecordList } from '@/lib/r15/exports'
-import { useExport, ExportDrop, readJson, Panel, fmtNum, LocalNote, type Entry } from '@/lib/r15/ui'
+import { useExport, ExportDrop, plainError, readJson, Panel, fmtNum, LocalNote, type Entry } from '@/lib/r15/ui'
 import { formatBytes } from '@/lib/files'
 import { Bars, DlButton, toCsv } from '@/lib/bcat/kit'
 
@@ -18,7 +18,7 @@ export default function DataExportExplorer() {
     const json = ex.entries.filter((e) => /\.(json|js)$/i.test(e.path) && e.size < 150 * 1024 * 1024)
     for (const [i, e] of json.entries()) {
       setScan(`Looking inside ${i + 1} of ${json.length}: ${e.path}`)
-      try { out.push({ entry: e, lists: findRecordLists(await readJson(e)) }) } catch (x: any) { out.push({ entry: e, lists: [], error: x?.message }) }
+      try { out.push({ entry: e, lists: findRecordLists(await readJson(e)) }) } catch (x: any) { out.push({ entry: e, lists: [], error: plainError(x) }) }
       if (i % 20 === 0) await new Promise((r) => setTimeout(r))
     }
     setScan(''); setFound(out)

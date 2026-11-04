@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Input, Label, ToolGrid, Empty, Switch } from '@/components/ui'
 import { Stat, Stats } from '@/lib/cf/ui'
 import { parseLocation, locStats, toGpx, toKml, toGeoJson, type Pt } from '@/lib/r15/exports'
-import { useExport, ExportDrop, readJson, Columns, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
+import { useExport, ExportDrop, plainError, readJson, Columns, Panel, fmtDate, fmtNum, LocalNote } from '@/lib/r15/ui'
 import { Bars, DlButton, toCsv } from '@/lib/bcat/kit'
 
 const pick = (p: string) => /\.json$/i.test(p) && /(timeline|records|location|semantic|\d{4}_[a-z]+\.json$|^[^/]+\.json$)/i.test(p)
@@ -24,7 +24,7 @@ export default function LocationHistoryConverter() {
   useEffect(() => { (async () => {
     setErr(null); setPts([])
     const all: Pt[] = [], fm = new Set<string>()
-    for (const e of ex.entries) { try { const r = parseLocation(await readJson(e)); all.push(...r.points); fm.add(r.format) } catch (x: any) { if (ex.entries.length === 1) setErr(x?.message || String(x)) } }
+    for (const e of ex.entries) { try { const r = parseLocation(await readJson(e)); all.push(...r.points); fm.add(r.format) } catch (x: any) { if (ex.entries.length === 1) setErr(plainError(x)) } }
     if (ex.entries.length && !all.length) setErr((m) => m ?? 'No locations were found in these files.')
     setPts(all); setFmt([...fm].join(', '))
   })() }, [ex.entries])

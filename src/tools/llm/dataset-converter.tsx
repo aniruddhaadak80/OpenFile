@@ -12,8 +12,8 @@ const SAMPLE = [
 ].map((r) => JSON.stringify(r)).join('\n')
 
 const OUT: { value: OutFormat | 'csv'; label: string }[] = [
-  { value: 'chat', label: 'Chat messages JSONL (OpenAI, Mistral, Llama, Together)' },
-  { value: 'sharegpt', label: 'ShareGPT JSONL (Axolotl, LLaMA-Factory)' },
+  { value: 'chat', label: 'Chat JSONL (OpenAI, Mistral, Llama)' },
+  { value: 'sharegpt', label: 'ShareGPT (Axolotl, LLaMA-Factory)' },
   { value: 'alpaca', label: 'Alpaca JSONL (instruction, input, output)' },
   { value: 'prompt', label: 'Prompt and completion JSONL' },
   { value: 'csv', label: 'CSV (system, user, assistant)' },

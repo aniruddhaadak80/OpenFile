@@ -33,7 +33,7 @@ export default function McpConfigBuilder() {
     'claude-code': cli ? 'Run these commands in a terminal inside your project.' : '.mcp.json at the root of your project, shared with your team through git.',
     gemini: 'The mcpServers block in ~/.gemini/settings.json or .gemini/settings.json in a project.',
   }
-  const doImport = () => { setImpErr(null); try { setServers(parseMcp(imp)); setImp('') } catch (e: any) { setImpErr(e?.message || String(e)) } }
+  const doImport = () => { setImpErr(null); try { setServers(parseMcp(imp)); setImp('') } catch (e: any) { setImpErr(e?.name === 'SyntaxError' ? 'This is not valid JSON. Paste the whole config file, from the first { to the last }.' : e?.message || String(e)) } }
   return (
     <ToolGrid
       main={<>
