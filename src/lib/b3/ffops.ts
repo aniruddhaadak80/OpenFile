@@ -127,9 +127,10 @@ export function reversePlan(src: ReverseSource, opts: { budgetMB?: number; maxSi
   // between 0.5 s and 5 s of frames per piece, fewer if the frames are big
   const frames = Math.max(Math.ceil(fps * 0.5), Math.min(Math.round(fps * 5), Math.floor(budget / frameBytes)))
   const dur = src.duration > 0 && Number.isFinite(src.duration) ? src.duration : 0
-  // the cap only binds on low bitrate sources: twice the source rate, never under 1.5 Mb/s at 1080p (scaled by area)
+  // a reversed clip should not come out bigger than the source: cap the video near the source rate (the rate counts
+  // the sound too), never under 0.4 Mb/s at 1080p (scaled by area) so tiny sources stay watchable
   const area = (w * scale * h * scale) / (1920 * 1080)
-  const maxKbps = src.kbps && src.kbps > 0 ? Math.round(Math.max(src.kbps * 2, 1500 * Math.min(1, Math.max(0.1, area)))) : 0
+  const maxKbps = src.kbps && src.kbps > 0 ? Math.round(Math.max(src.kbps * 0.9, 400 * Math.min(1, Math.max(0.1, area)))) : 0
   if (!dur) return { fps, scale, frames, maxKbps, pieces: [{ start: 0, len: 0 }] }
   const total = Math.max(1, Math.ceil(dur * fps - 0.01))
   const pieces: { start: number; len: number }[] = []
@@ -148,7 +149,7 @@ function picture(plan: ReversePlan, frames?: number) {
  *  copies them into one stream. ultrafast with CABAC, B-frames and deblocking switched back on encodes about twice as
  *  fast as veryfast in ffmpeg.wasm at a similar size (CRF 25 here is close to veryfast CRF 21 in size). */
 export const PIECE_H264 = (plan: ReversePlan) => ['-c:v', 'libx264', '-preset', 'ultrafast', '-x264-params', 'cabac=1:bframes=3:b-adapt=0:deblock=0,0', '-crf', '25',
-  ...(plan.maxKbps ? ['-maxrate', `${plan.maxKbps}k`, '-bufsize', `${plan.maxKbps * 2}k`] : []), '-pix_fmt', 'yuv420p']
+  ...(plan.maxKbps ? ['-maxrate', `${plan.maxKbps}k`, '-bufsize', `${plan.maxKbps}k`] : []), '-pix_fmt', 'yuv420p']
 const CFR = (plan: ReversePlan) => ['-r', fpsStr(plan.fps), '-fps_mode', 'cfr', '-video_track_timescale', '90000']
 
 // Phone clips often carry chapters, which the mp4 muxer writes as a text track that keeps the source's length.

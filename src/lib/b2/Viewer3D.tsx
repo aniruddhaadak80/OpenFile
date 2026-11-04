@@ -31,7 +31,7 @@ export const Viewer3D = forwardRef<Viewer3DHandle, Props>(function Viewer3D({ ob
     let v: Viewer | null = null, dead = false
     import('./three-viewer').then(({ Viewer }) => {
       if (dead || !host.current) return
-      try { v = new Viewer(host.current); setViewer(v); onReady?.(v) } catch (e: any) { setErr('3D needs WebGL, which is not available in this browser. ' + (e?.message || '')) }
+      try { v = new Viewer(host.current); setViewer(v); onReady?.(v) } catch { setErr('The 3D preview needs WebGL, which is off or not available in this browser. Turn on hardware acceleration in the browser settings, or try another browser.') }
     })
     return () => { dead = true; v?.dispose() }
   }, [])

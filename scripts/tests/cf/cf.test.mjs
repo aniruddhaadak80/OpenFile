@@ -115,6 +115,8 @@ t('cards', () => {
   assert.equal(Q.parseCards('Front,Back\n"a, b",c\nd,e').length, 2); assert.equal(Q.parseCards('Q: 2+2?\nA: 4\nQ: Sky?\nA: Blue').length, 2)
   let l = { box: [1, 1], due: [0, 0] }; l = Q.leitnerAnswer(l, 0, true, 0); assert.equal(l.box[0], 2); assert.equal(Q.leitnerNext(l, 0), 1)
   const s = 'The Treaty of Versailles was signed in 1919 after the First World War ended.'; const c = Q.clozeTarget(s, new Map()); assert.ok(c); assert.ok(Q.makeCloze(s, c).front.includes('_____'))
+  assert.equal(Q.clozeTarget('The mitochondria makes ATP for the whole cell.', new Map([['mitochondria', 3]])), 'ATP')
+  { const ss = ['Photosynthesis happens in green plants every day.', 'It takes place in the chloroplasts of each leaf.']; assert.equal(Q.clozeContext(ss, 1, 'chloroplasts'), ss[0] + ' '); assert.equal(Q.clozeContext(ss, 0, 'plants'), ''); assert.equal(Q.clozeContext(ss, 1, 'green'), '') }
   assert.deepEqual(Q.rankByEmbedding([[1, 0], [0.9, 0.1], [0, 1]], 2), [1, 0].length === 2 ? Q.rankByEmbedding([[1, 0], [0.9, 0.1], [0, 1]], 2) : [])
 })
 t('quiz', () => {

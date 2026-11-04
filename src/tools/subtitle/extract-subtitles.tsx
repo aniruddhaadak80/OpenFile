@@ -79,7 +79,7 @@ export default function ExtractSubtitles() {
             <div key={s.index} className={cn('flex items-center gap-3 rounded-xl border bg-surface px-3 py-2.5', s.text ? 'border-border' : 'border-warn/30')}>
               <div className={cn('grid size-9 shrink-0 place-items-center rounded-lg', s.text ? 'bg-accent/10 text-accent' : 'bg-warn/10 text-warn')}>{s.text ? <Captions className="size-4" /> : <AlertCircle className="size-4" />}</div>
               <div className="min-w-0 flex-1"><div className="truncate text-sm font-medium">{label(s)}</div><div className="text-xs text-muted">{s.codec}{d ? ` · ${d.cues.length} lines` : ''}{!s.text && ' · picture-based subtitles (PGS/VobSub) need OCR and cannot be saved as text here'}</div></div>
-              {d && <Button size="sm" variant="outline" icon={<Download className="size-4" />} onClick={() => downloadBlob(new Blob([text(s)], { type: subMime(fmt) }), fileName(s))}>{subExt(fmt).toUpperCase()}</Button>}
+              {d && <Button size="sm" variant="outline" icon={<Download className="size-4" />} aria-label={`Save ${label(s)} as ${subExt(fmt).toUpperCase()}`} onClick={() => downloadBlob(new Blob([text(s)], { type: subMime(fmt) }), fileName(s))}>{subExt(fmt).toUpperCase()}</Button>}
             </div>
           )
         })}</div>}

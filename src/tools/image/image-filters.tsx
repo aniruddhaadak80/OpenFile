@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Download, RotateCcw, SplitSquareHorizontal, Wand2 } from 'lucide-react'
 import { Button, ErrorNote, Label, Segmented, Slider, Tabs, ToolGrid, cn, useJob } from '@/components/ui'
 import { downloadBlob } from '@/lib/files'
+import { encodeNotBigger, estimateJpegQuality } from '@/lib/img/jpegQuality'
 import { BeforeAfter, ImageDrop, blurImageData, canvas, decode, exportCanvas, fmtFromMime, hqResize, outName, toCanvas, useDebounced, useObjectUrl, type Fmt } from './_img/kit'
 
 export type F = { brightness: number; contrast: number; saturation: number; hue: number; exposure: number; temperature: number; blur: number; sharpen: number; vignette: number; grayscale: number; sepia: number; invert: number }
@@ -133,7 +134,15 @@ export default function ImageFilters() {
     if (!['png', 'jpg', 'webp'].includes(ff)) ff = 'png'
     // Nothing changed and the format is the same: hand back the original file instead of a bigger re-encode.
     if (!changed && ff === fmtFromMime(file.type, file.name)) { downloadBlob(file, outName(file.name, ff, '-edited')); return }
-    downloadBlob(await exportCanvas(res, ff, 0.93), outName(file.name, ff, preset ? `-${preset.toLowerCase().replace(/\W+/g, '')}` : '-edited'))
+    const srcFmt = fmtFromMime(file.type, file.name)
+    let blob: Blob
+    if (ff === srcFmt && (ff === 'jpg' || ff === 'webp')) {
+      // Same lossy format: start near the source quality and step down so the edit is not bigger than the original.
+      const est = ff === 'jpg' ? estimateJpegQuality(await file.slice(0, 256 * 1024).arrayBuffer()) : null
+      const start = est ? Math.min(0.93, Math.max(0.5, est / 100)) : 0.9
+      blob = await encodeNotBigger((q) => exportCanvas(res, ff, q), file.size, start)
+    } else blob = await exportCanvas(res, ff, 0.93)
+    downloadBlob(blob, outName(file.name, ff, preset ? `-${preset.toLowerCase().replace(/\W+/g, '')}` : '-edited'))
   })
   const reset = () => { setFile(null); setSrc(null); setOut(null); setThumbs({}) }
 

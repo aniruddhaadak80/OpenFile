@@ -5,7 +5,7 @@ import { downloadBlob } from '@/lib/files'
 import { useVision, EnginePanel, VisionProgress } from '@/lib/bcat/aiui'
 import { VMODELS } from '@/lib/bcat/vision'
 import { useTextInput, TextInput } from '@/lib/bcat/textin'
-import { cardsToAnki, cardsToCsv, clozeTarget, makeCloze, rankByEmbedding, rankSentencesQuick, sentenceSplit, wordFreq, type Card as FCard } from '@/lib/cf/study'
+import { cardsToAnki, cardsToCsv, clozeContext, clozeTarget, makeCloze, rankByEmbedding, rankSentencesQuick, sentenceSplit, wordFreq, type Card as FCard } from '@/lib/cf/study'
 import { cardsPdf } from '@/lib/cf/print'
 
 const SAMPLE = `The water cycle describes how water moves between the land, the oceans and the air. Evaporation happens when the Sun heats water in oceans and lakes and turns it into water vapour. Plants also release water vapour from their leaves in a process called transpiration. As warm air rises it cools, and the vapour condenses into tiny droplets that form clouds. When the droplets join and grow heavy, they fall as precipitation such as rain, snow or hail. About 97 percent of the water on Earth is salt water in the oceans. Only around 3 percent is fresh water, and most of that is frozen in glaciers and ice caps. Water that soaks into the ground becomes groundwater and can stay underground for thousands of years. Rivers carry runoff back to the sea, which completes the cycle.`
@@ -26,7 +26,7 @@ export default function NotesToFlashcards() {
       order = rankByEmbedding(vecs, Math.min(n * 2, sents.length))
     } else order = rankSentencesQuick(sents).map((x) => x.i)
     const freq = wordFreq(text), out: FCard[] = [], used = new Set<string>()
-    for (const i of order) { const t = clozeTarget(sents[i], freq); if (!t || used.has(t.toLowerCase())) continue; used.add(t.toLowerCase()); out.push(makeCloze(sents[i], t)); if (out.length >= n) break }
+    for (const i of order) { const t = clozeTarget(sents[i], freq); if (!t || used.has(t.toLowerCase())) continue; used.add(t.toLowerCase()); const c = makeCloze(sents[i], t); out.push({ ...c, front: clozeContext(sents, i, t) + c.front }); if (out.length >= n) break }
     if (!out.length) throw new Error('Could not find key terms. Try longer notes.')
     setCards(out)
   })

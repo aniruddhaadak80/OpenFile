@@ -9,10 +9,31 @@ import { toast } from '@/components/toast'
 import { canvasToBlob, createCanvas, loadImage, formatBytes } from '@/lib/files'
 import { pdfBlob } from '@/lib/pdf'
 import { PAGE_SIZES, PdfPreview, heicToBlob, isHeic, mm, Reveal } from './_conv/shared'
+import { estimateJpegQuality } from '@/lib/img/jpegQuality'
 
 type SizeKey = 'a4' | 'letter' | 'legal' | 'fit'
 type Orient = 'auto' | 'portrait' | 'landscape'
 type FitMode = 'contain' | 'cover'
+/** EXIF orientation of a JPEG (1 when there is none), so a rotated phone photo is never embedded sideways. */
+function jpegOrientation(b: Uint8Array): number {
+  if (b[0] !== 0xff || b[1] !== 0xd8) return 0
+  let i = 2
+  while (i + 4 < b.length && b[i] === 0xff) {
+    const m = b[i + 1], len = (b[i + 2] << 8) | b[i + 3]
+    if (m === 0xda) break
+    if (m === 0xe1 && String.fromCharCode(b[i + 4], b[i + 5], b[i + 6], b[i + 7]) === 'Exif') {
+      const t = i + 10, le = b[t] === 0x49
+      const u16 = (o: number) => (le ? b[t + o] | (b[t + o + 1] << 8) : (b[t + o] << 8) | b[t + o + 1])
+      const u32 = (o: number) => (le ? (b[t + o] | (b[t + o + 1] << 8) | (b[t + o + 2] << 16)) + b[t + o + 3] * 2 ** 24 : b[t + o] * 2 ** 24 + ((b[t + o + 1] << 16) | (b[t + o + 2] << 8) | b[t + o + 3]))
+      const ifd = u32(4), n = u16(ifd)
+      for (let k = 0; k < n; k++) { const e = ifd + 2 + k * 12; if (u16(e) === 0x0112) return u16(e + 8) || 1 }
+      return 1
+    }
+    i += 2 + len
+  }
+  return 1
+}
+
 interface Img { id: string; name: string; size: number; blob: Blob | null; url: string | null; w: number; h: number; rot: number; status: 'loading' | 'ready' | 'error'; err?: string }
 
 let uid = 0
@@ -142,9 +163,16 @@ export default function ImageToPdf() {
       ctx.rotate((im.rot * Math.PI) / 180)
       ctx.drawImage(el, -im.w / 2, -im.h / 2)
       ctx.restore()
-      const blob = await canvasToBlob(canvas, lossless ? 'image/png' : 'image/jpeg', lossless ? undefined : quality / 100)
-      const bytes = new Uint8Array(await blob.arrayBuffer())
-      const emb = lossless ? await doc.embedPng(bytes) : await doc.embedJpg(bytes)
+      // a JPEG source is re-encoded no higher than the quality it was saved at, so a rotated or cropped photo does not grow
+      const srcQ = !lossless && im.blob?.type === 'image/jpeg' ? estimateJpegQuality(await im.blob.slice(0, 256 * 1024).arrayBuffer()) : null
+      const blob = await canvasToBlob(canvas, lossless ? 'image/png' : 'image/jpeg', lossless ? undefined : Math.min(quality, srcQ ?? quality) / 100)
+      let bytes = new Uint8Array(await blob.arrayBuffer()), png = lossless
+      // an untouched JPEG or PNG goes in as it is when that is smaller than the re-encoded copy (no quality loss either)
+      if (im.blob && im.rot === 0 && sx === 0 && sy === 0 && s === 1 && im.blob.size < bytes.length && /^image\/(jpeg|png)$/.test(im.blob.type)) {
+        const orig = new Uint8Array(await im.blob.arrayBuffer())
+        if (im.blob.type === 'image/png' || jpegOrientation(orig) === 1) { bytes = orig; png = im.blob.type === 'image/png' }
+      }
+      const emb = png ? await doc.embedPng(bytes) : await doc.embedJpg(bytes)
       const page = doc.addPage([pw, ph])
       const scale = Math.min(cw / sw, chh / sh)
       const dw = sw * scale, dh = sh * scale

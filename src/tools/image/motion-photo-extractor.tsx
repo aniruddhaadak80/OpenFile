@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Download, Film, Image as ImageIcon } from 'lucide-react'
 import { Button, Dropzone, ErrorNote, Label, Segmented, Slider, ToolGrid } from '@/components/ui'
 import { baseName, downloadBlob } from '@/lib/files'
@@ -18,9 +18,11 @@ export default function MotionPhotoExtractor() {
   const [anim, setAnim] = useState<Anim | null>(null)
   const [fps, setFps] = useState(12), [width, setWidth] = useState('480')
   const job = useMediaJob()
-  const videoBlob = parts ? new Blob([parts.video as BlobPart], { type: parts.videoExt === 'mov' ? 'video/quicktime' : 'video/mp4' }) : null
+  // Keep one Blob per extracted file, so the preview URLs are not revoked and remade on every render
+  const videoBlob = useMemo(() => (parts ? new Blob([parts.video as BlobPart], { type: parts.videoExt === 'mov' ? 'video/quicktime' : 'video/mp4' }) : null), [parts])
+  const stillBlob = useMemo(() => (parts && parts.still.length && parts.stillExt !== 'heic' ? new Blob([parts.still as BlobPart], { type: 'image/jpeg' }) : null), [parts])
   const videoUrl = useObjectUrl(videoBlob)
-  const stillUrl = useObjectUrl(parts && parts.still.length && parts.stillExt !== 'heic' ? new Blob([parts.still as BlobPart], { type: 'image/jpeg' }) : null)
+  const stillUrl = useObjectUrl(stillBlob)
   const open = async (f: File) => {
     setFile(f); setError(null); setParts(null); setAnim(null)
     try { setParts(extractMotion(new Uint8Array(await f.arrayBuffer()), f.name)) } catch (e: any) { setError(e?.message || String(e)) }

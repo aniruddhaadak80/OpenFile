@@ -61,14 +61,22 @@ export function clozeTarget(sentence: string, freq: Map<string, number>): string
   let best: string | null = null, bestScore = 0
   const cap = sentence.match(/(?:[A-Z][\p{L}-]+\s){1,3}[A-Z][\p{L}-]+/u)?.[0]
   words.forEach((w, i) => {
-    const lw = w.toLowerCase(); if (STOP.has(lw) || w.length < 4) return
+    const lw = w.toLowerCase(), acronym = /^[A-Z][A-Z0-9]{1,6}s?$/.test(w)
+    if (STOP.has(lw) || (w.length < 4 && !acronym)) return
     let s = Math.min(w.length, 12) / (1 + (freq.get(lw) ?? 0) * 0.3)
+    if (acronym) s += 5
     if (/\d/.test(w)) s += 6
     if (i > 0 && /^[A-Z]/.test(w)) s += 4
     if (s > bestScore) { bestScore = s; best = w }
   })
   if (cap && cap.split(' ').length > 1 && !sentence.startsWith(cap)) return cap
   return best
+}
+/** A sentence that opens with a pronoun (It, This, They...) needs the one before it to make sense on its own. */
+export function clozeContext(sents: string[], i: number, target: string) {
+  if (i === 0 || !/^(It|Its|This|These|Those|They|Their|He|She|His|Her|That)\b/.test(sents[i])) return ''
+  const prev = sents[i - 1]
+  return prev.toLowerCase().includes(target.toLowerCase()) ? '' : prev + ' '
 }
 export function makeCloze(sentence: string, target: string): Card {
   const i = sentence.indexOf(target)

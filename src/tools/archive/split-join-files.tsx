@@ -77,7 +77,7 @@ function Join() {
     <ToolGrid
       main={<>
         <Label hint={`${parts.length} parts, ${formatBytes(total)}`}>In this order</Label>
-        <div className="scrollbar-thin max-h-[440px] space-y-1.5 overflow-auto">{ordered.map((p, i) => <div key={p.name + i} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2 text-sm"><span className="w-8 text-xs text-muted">{i + 1}</span><span className="min-w-0 flex-1 truncate font-mono text-xs">{p.name}</span><span className="text-xs text-muted">{formatBytes(p.size)}</span><Button size="sm" variant="ghost" aria-label="Remove" onClick={() => setParts(parts.filter((x) => x !== p))}><X className="size-4" /></Button></div>)}</div>
+        <div className="scrollbar-thin max-h-[440px] space-y-1.5 overflow-auto">{ordered.map((p, i) => <div key={p.name + i} className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2 text-sm"><span className="w-8 text-xs text-muted">{i + 1}</span><span className="min-w-0 flex-1 truncate font-mono text-xs">{p.name}</span><span className="text-xs text-muted">{formatBytes(p.size)}</span><Button size="sm" variant="ghost" aria-label={`Remove ${p.name}`} onClick={() => setParts(parts.filter((x) => x !== p))}><X className="size-4" /></Button></div>)}</div>
         {ord.gaps.length > 0 && <p className="rounded-xl border border-warn/40 bg-warn/10 p-3 text-sm text-warn">Part {ord.gaps.join(', ')} seems to be missing. The joined file will be broken without it.</p>}
         <OpenButton multiple onFiles={(f) => setParts([...parts, ...f])} label="Add parts" />
       </>}

@@ -68,16 +68,16 @@ await t('args: constant rate, even size, reverse last, explicit encoder settings
   assert.ok(F.reverseJoinOp('list.txt').args.includes('-an'))
 })
 
-await t('encoder: pieces and the forward half share one fast setting; a low bitrate source caps the parts', () => {
+await t('encoder: pieces and the forward half share one fast setting; the source rate caps the parts', () => {
   const p = F.reversePlan({ duration: 20, width: 1920, height: 1080, fps: 30, kbps: 1600 })
-  assert.equal(p.maxKbps, 3200)
+  assert.equal(p.maxKbps, 1440)
   const enc = (a: string[]) => a.slice(a.indexOf('-c:v'), a.indexOf('-pix_fmt') + 2).join(' ')
   const piece = F.reversePieceOp('in.mp4', p, 0).args, fwd = F.forwardPieceOp('in.mp4', p).args
   assert.equal(enc(piece), enc(fwd), 'the join copies the parts, so their encoder settings must match')
-  assert.match(enc(piece), /-preset ultrafast -x264-params cabac=1:bframes=3:b-adapt=0:deblock=0,0 -crf 25 -maxrate 3200k -bufsize 6400k/)
-  // a high bitrate phone clip is not capped below its own quality, and an unknown rate adds no cap
-  assert.equal(F.reversePlan({ duration: 20, width: 1920, height: 1080, fps: 30, kbps: 16000 }).maxKbps, 32000)
-  assert.equal(F.reversePlan({ duration: 20, width: 640, height: 360, fps: 30, kbps: 100 }).maxKbps, 200)
+  assert.match(enc(piece), /-preset ultrafast -x264-params cabac=1:bframes=3:b-adapt=0:deblock=0,0 -crf 25 -maxrate 1440k -bufsize 1440k/)
+  // the cap follows the source rate, with a small floor for tiny sources, and an unknown rate adds no cap
+  assert.equal(F.reversePlan({ duration: 20, width: 1920, height: 1080, fps: 30, kbps: 16000 }).maxKbps, 14400)
+  assert.equal(F.reversePlan({ duration: 20, width: 640, height: 360, fps: 30, kbps: 100 }).maxKbps, 90)
   assert.ok(!F.reversePieceOp('in.mp4', F.reversePlan({ duration: 20, width: 640, height: 360 }), 0).args.includes('-maxrate'))
 })
 
