@@ -26,11 +26,11 @@ export function UpdatesPanel({ Row }: { Row: (p: { title: string; sub?: string; 
       <div className="flex flex-wrap items-center justify-between gap-4 py-4">
         <div className="max-w-md">
           <div className="flex items-center gap-2 font-medium">Current version
-            <span className="rounded-md bg-amber-400/15 px-2 py-0.5 font-mono text-xs text-amber-300">{s.current ? `v${s.current}` : 'unknown'}</span>
+            <span className="rounded-md bg-amber-400/15 px-2 py-0.5 font-mono text-xs text-warn">{s.current ? `v${s.current}` : 'unknown'}</span>
             {s.hosted && <span className="rounded-md bg-cyan-400/15 px-2 py-0.5 text-xs text-cyan-300">latest web version</span>}
           </div>
           <p className="text-sm text-muted">{PLATFORM[s.platform]}{s.build ? ` · build ${s.build}` : ''} · last checked {relTime(last).toLowerCase()}</p>
-          {s.message && <p className="mt-1 text-sm text-emerald-400">{s.message}</p>}
+          {s.message && <p className="mt-1 text-sm text-success">{s.message}</p>}
           {s.error && s.error !== 'metered' && <p className="mt-1 text-sm text-orange-400">{s.error}</p>}
         </div>
         <div className="flex flex-wrap gap-2">
@@ -50,11 +50,11 @@ export function UpdatesPanel({ Row }: { Row: (p: { title: string; sub?: string; 
             <Segmented value={p.frequency} onChange={(v: Frequency) => void savePrefs({ frequency: v })} options={[{ value: 'launch', label: 'On launch' }, { value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'off', label: 'Off' }]} />
           </Row>
           <Row title={s.platform === 'android' ? 'Download updates automatically' : 'Auto install updates'} sub={s.platform === 'android' ? 'Downloads in the background. Android always asks before installing.' : p.autoInstall ? 'Downloads in the background and installs when you quit OpenFile.' : 'Off: OpenFile asks before downloading and installing.'}>
-            <Switch checked={p.autoInstall} onChange={(v) => void savePrefs({ autoInstall: v })} />
+            <Switch checked={p.autoInstall} onChange={(v) => void savePrefs({ autoInstall: v })} ariaLabel={s.platform === 'android' ? 'Download updates automatically' : 'Auto install updates'} />
           </Row>
           {s.platform === 'android' && (
             <Row title="Only on Wi-Fi" sub="Download updates only on Wi-Fi or another unmetered connection. You can still choose to download on mobile data.">
-              <Switch checked={p.wifiOnly} onChange={(v) => void savePrefs({ wifiOnly: v })} />
+              <Switch checked={p.wifiOnly} onChange={(v) => void savePrefs({ wifiOnly: v })} ariaLabel="Only on Wi-Fi" />
             </Row>
           )}
           {(p.skipVersion || (p.snoozeVersion && p.snoozeUntil > Date.now())) && (
@@ -85,7 +85,7 @@ export function UpdatesPanel({ Row }: { Row: (p: { title: string; sub?: string; 
 
       {s.platform === 'web' && (
         <Row title="Automatic updates" sub={pwa.supported ? 'The web app checks every 30 minutes and whenever you come back to it, downloads in the background and asks before reloading. On iPhone and iPad this works from the home screen too.' : 'This browser has no service worker, so each visit loads the newest version.'}>
-          <span className={cn('rounded-full px-3 py-1 text-xs font-medium', pwa.waiting ? 'bg-amber-400/15 text-amber-300' : 'bg-emerald-400/10 text-emerald-400')}>{pwa.waiting ? 'Update waiting' : pwa.ready ? 'On' : 'Starting'}</span>
+          <span className={cn('rounded-full px-3 py-1 text-xs font-medium', pwa.waiting ? 'bg-amber-400/15 text-warn' : 'bg-emerald-400/10 text-success')}>{pwa.waiting ? 'Update waiting' : pwa.ready ? 'On' : 'Starting'}</span>
         </Row>
       )}
       {s.platform === 'ios' && (

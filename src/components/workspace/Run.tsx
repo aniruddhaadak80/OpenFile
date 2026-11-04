@@ -49,7 +49,7 @@ export function RunPanel({ info, files, conc, auto, onConc, onAuto, keep, onKeep
         <div className="mt-3 space-y-3">
           <Slider label={<span className="flex items-center gap-1"><Cpu className="size-3.5" /> Files at once</span>} value={conc} min={1} max={8} onChange={onConc} />
           <button onClick={onAuto} className="text-[11px] text-accent hover:underline cursor-pointer">Use the device default ({auto})</button>
-          <label className="flex items-center justify-between gap-2"><span>Keep the original when a result is bigger</span><Switch checked={keep} onChange={onKeep} /></label>
+          <div className="flex items-center justify-between gap-2"><span>Keep the original when a result is bigger</span><Switch checked={keep} onChange={onKeep} ariaLabel="Keep the original when a result is bigger" /></div>
           <p className="text-[11px] leading-snug text-muted">Image steps run in a pool of Web Workers. Video, OCR and AI steps share one engine, so they take one file at a time. When memory gets tight the engine waits and runs fewer files at once.</p>
         </div>
       </details>

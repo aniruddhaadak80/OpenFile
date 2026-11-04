@@ -84,7 +84,7 @@ export function MyRecipes({ name, onName, recipes, onSave, onLoad, onDelete, onI
         <Button size="sm" variant="ghost" icon={<Upload className="size-3.5" />} onClick={() => fileRef.current?.click()}>Import</Button>
         <input ref={fileRef} type="file" accept=".json,application/json" hidden onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; if (f.size > 200_000) return toast('That file is too large to be a recipe', 'error'); onImport(await f.text()) }} />
       </div>
-      <label className="flex items-center justify-between gap-2 text-xs text-muted"><span className="flex items-center gap-1.5"><Radio className="size-3.5" /> Mirror this pipeline in my other tabs</span><Switch checked={mirror} onChange={onMirror} /></label>
+      <div className="flex items-center justify-between gap-2 text-xs text-muted"><span className="flex items-center gap-1.5"><Radio className="size-3.5" /> Mirror this pipeline in my other tabs</span><Switch checked={mirror} onChange={onMirror} ariaLabel="Mirror this pipeline in my other tabs" /></div>
       {recipes.length === 0 && <div className="text-xs text-muted">Saved recipes stay in this browser and show up in every open tab.</div>}
       <ul className="max-h-60 space-y-1.5 overflow-auto scrollbar-thin">
         {recipes.map((r) => (

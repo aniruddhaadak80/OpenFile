@@ -87,7 +87,7 @@ export default function FileTray(p: Props) {
         <input ref={fileRef} type="file" multiple hidden onChange={(e) => { p.onAdd(fromPicker(e.target.files)); e.target.value = '' }} />
         <input ref={dirRef} type="file" multiple hidden {...({ webkitdirectory: '', directory: '' } as any)} onChange={(e) => { p.onAdd(fromPicker(e.target.files, true)); e.target.value = '' }} />
       </div>
-      <div className="grid grid-cols-2 gap-1.5 min-[420px]:grid-cols-4 lg:grid-cols-2">
+      <div className="grid grid-cols-2 gap-1.5 min-[420px]:max-md:grid-cols-4">
         <Button size="sm" variant="outline" icon={<FolderUp className="size-3.5" />} onClick={() => dirRef.current?.click()}>Folder</Button>
         <Button size="sm" variant="outline" icon={<ClipboardPaste className="size-3.5" />} onClick={async () => { try { const f = await fromClipboardApi(); f.length ? p.onAdd(f) : toast('The clipboard has no image or text', 'error') } catch { toast('Press Ctrl+V on the page to paste instead', 'error') } }}>Paste</Button>
         <Button size="sm" variant="outline" icon={<Sparkles className="size-3.5" />} onClick={p.onSamples} data-tour="samples">Samples</Button>
@@ -100,7 +100,7 @@ export default function FileTray(p: Props) {
         <Button size="sm" type="submit" loading={fetching} disabled={!url}>Add</Button>
       </form>
       <p className="-mt-1 text-[10px] leading-snug text-muted">Links work when the other site allows cross-site reads (CORS). If it does not, download the file and drop it here.</p>
-      <label className="flex items-center justify-between gap-2 text-xs text-muted"><span>Unpack ZIPs when added</span><Switch checked={p.unpack} onChange={p.onUnpack} /></label>
+      <div className="flex items-center justify-between gap-2 text-xs text-muted"><span>Unpack ZIPs when added</span><Switch checked={p.unpack} onChange={p.onUnpack} ariaLabel="Unpack ZIPs when added" /></div>
 
       {p.files.length > 0 && (
         <div className="rounded-2xl border border-border bg-surface">

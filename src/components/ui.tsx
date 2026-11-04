@@ -82,7 +82,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
 
 export function Select<T extends string>({ value, onChange, options, className, ...rest }: { value: T; onChange: (v: T) => void; options: (T | { value: T; label: string })[]; className?: string } & Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'value' | 'onChange' | 'className' | 'children'>) {
   return (
-    <select {...rest} value={value} onChange={(e) => onChange(e.target.value as T)} className={cn(inputCls, 'h-10 cursor-pointer', className)}>
+    <select title={(() => { const o = options.find((x) => (typeof x === 'string' ? x : x.value) === value); return o == null ? undefined : typeof o === 'string' ? o : o.label })()} {...rest} value={value} onChange={(e) => onChange(e.target.value as T)} className={cn(inputCls, 'h-10 cursor-pointer', className)}>
       {options.map((o) => { const v = typeof o === 'string' ? o : o.value; const l = typeof o === 'string' ? o : o.label; return <option key={v} value={v}>{l}</option> })}
     </select>
   )
@@ -98,10 +98,10 @@ export function Slider({ label, ariaLabel, value, onChange, min = 0, max = 100, 
   )
 }
 
-export function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label?: React.ReactNode }) {
+export function Switch({ checked, onChange, label, ariaLabel }: { checked: boolean; onChange: (v: boolean) => void; label?: React.ReactNode; ariaLabel?: string }) {
   return (
     <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm select-none">
-      <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className={cn('relative h-6 w-11 shrink-0 rounded-full transition focus-visible:outline-offset-2', checked ? 'bg-accent' : 'bg-border')}>
+      <button type="button" role="switch" aria-checked={checked} aria-label={ariaLabel ?? (typeof label === 'string' ? label : undefined)} onClick={() => onChange(!checked)} className={cn('relative h-6 w-11 shrink-0 rounded-full transition focus-visible:outline-offset-2', checked ? 'bg-accent' : 'bg-border')}>
         <span className={cn('absolute top-0.5 size-5 rounded-full bg-white shadow transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
       </button>
       {label}

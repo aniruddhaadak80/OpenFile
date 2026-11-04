@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Search, ArrowRight } from 'lucide-react'
+import { Search, ArrowRight, Home } from 'lucide-react'
 import { CATEGORIES, TOOLS } from '@/tools/registry'
 import { searchTools } from '@/components/CommandPalette'
 import { EmptyState } from '@/components/EmptyState'
@@ -31,8 +31,8 @@ export default function NotFound() {
   return (
     <div className="mx-auto max-w-5xl px-4 pb-10 pt-12 sm:px-6">
       <QuickBar className="mb-6" />
-      <EmptyState kind="lost" title={<><span className="font-display text-5xl font-bold text-gradient">404</span><span className="mt-2 block">That page wandered off</span></>}
-        actions={<Link to="/tools" className="flex min-h-11 items-center gap-1.5 rounded-xl bg-gradient-brand px-5 text-sm font-medium">Browse all {TOOLS.length} tools <ArrowRight className="size-4" /></Link>}>
+      <EmptyState kind="lost" titleAs="h1" title={<><span className="font-display text-5xl font-bold text-gradient">404</span><span className="mt-2 block">That page wandered off</span></>}
+        actions={<div className="flex flex-wrap justify-center gap-2"><Link to="/" className="flex min-h-11 items-center gap-1.5 rounded-xl border border-border px-5 text-sm font-medium hover:border-accent"><Home className="size-4" /> Go to the home page</Link><Link to="/tools" className="flex min-h-11 items-center gap-1.5 rounded-xl bg-gradient-brand px-5 text-sm font-medium text-on-accent">Browse all {TOOLS.length} tools <ArrowRight className="size-4" /></Link></div>}>
         The link may be old or mistyped. Search below, press Ctrl K, or pick a category.
       </EmptyState>
       <form onSubmit={(e) => { e.preventDefault(); nav(`/tools?q=${encodeURIComponent(q.trim())}`) }} className="mx-auto mt-6 flex max-w-xl items-center gap-2 of-field-wrap rounded-2xl border border-border bg-surface px-4" role="search">

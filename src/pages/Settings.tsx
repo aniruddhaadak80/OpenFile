@@ -147,7 +147,7 @@ export default function Settings() {
 
             <Section id="privacy" icon={ShieldCheck} title="Privacy & data" sub="Everything below lives only on this device.">
               <Row title="Record activity" sub="Log opened tools and downloads on the History page.">
-                <Switch checked={prefs.historyEnabled} onChange={(v) => { void update({ historyEnabled: v }); toast(v ? 'Activity recording on' : 'Activity recording paused') }} />
+                <Switch checked={prefs.historyEnabled} onChange={(v) => { void update({ historyEnabled: v }); toast(v ? 'Activity recording on' : 'Activity recording paused') }} ariaLabel="Record activity" />
               </Row>
               <div className="grid gap-3 border-t border-border py-4 sm:grid-cols-3">
                 <DataTile icon={Star} label="Favorites" value={fav.length} onClear={() => { const keep = favRows; void clearFavorites(); toast('Favorites cleared', 'info', { undo: () => void restoreFavorites(keep) }) }} />

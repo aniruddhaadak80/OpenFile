@@ -83,7 +83,7 @@ export function DeviceShowcase() {
   return (
     <div className="relative mx-auto w-full min-w-0 max-w-[620px]">
       {/* switcher */}
-      <div role="tablist" ref={tabsRef} aria-label="Choose a device" className="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1 [mask-image:linear-gradient(90deg,#000_85%,transparent)] [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible sm:[mask-image:none] [&::-webkit-scrollbar]:hidden"
+      <div role="tablist" ref={tabsRef} aria-label="Choose a device" className="-mx-1 flex max-w-full gap-1.5 overflow-x-auto px-1 pb-1 [mask-image:linear-gradient(90deg,transparent,#000_7%,#000_88%,transparent)] [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible sm:[mask-image:none] [&::-webkit-scrollbar]:hidden"
         onKeyDown={(e) => { if (e.key === 'ArrowRight') { e.preventDefault(); go(1) } if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1) } }}>
         {SHOWCASE.map((id) => {
           const I = ICON[id]

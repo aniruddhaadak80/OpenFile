@@ -117,14 +117,14 @@ export function Layout() {
   return (
     <MotionConfig reducedMotion={reduce ? 'always' : 'never'}>
     <div className="flex min-h-screen flex-col">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-on-accent">Skip to content</a>
       <header className={cn('sticky top-0 z-50 transition-all duration-300', scrolled ? 'glass border-b border-border' : 'border-b border-transparent bg-transparent')}>
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-on-accent">Skip to content</a>
         <motion.div className="absolute inset-x-0 bottom-0 h-px origin-left bg-gradient-brand" style={{ scaleX: progress, opacity: scrolled ? 1 : 0 }} aria-hidden="true" />
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6 md:gap-2 lg:gap-4">
           <Link to="/" className="flex items-center gap-2.5 font-display text-lg font-bold tracking-tight">
             <span className="transition-transform duration-500 hover:rotate-[-8deg]"><Logo size={30} /></span> OpenFile <span className="hidden rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-accent sm:inline md:hidden lg:inline">v{__APP_VERSION__.split('.').slice(0, 2).join('.')}</span>
           </Link>
-          <nav className="ml-1 hidden items-center gap-0.5 whitespace-nowrap text-sm md:flex lg:ml-4 lg:gap-1">
+          <nav aria-label="Main" className="ml-1 hidden items-center gap-0.5 whitespace-nowrap text-sm md:flex lg:ml-4 lg:gap-1">
             <div ref={megaWrap} className="relative" onPointerEnter={(e) => { if (e.pointerType === 'mouse') { hoverAt.current = Date.now(); setMega(true) } }} onPointerLeave={(e) => { if (e.pointerType === 'mouse') setMega(false) }} onKeyDown={(e) => { if (e.key === 'Escape') setMega(false) }} onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setMega(false) }}>
               <button onClick={() => { if (Date.now() - hoverAt.current < 500) setMega(true); else setMega((v) => !v) }} aria-expanded={mega} aria-haspopup="true" className="nav-pill flex items-center gap-1 rounded-lg px-2 py-2 text-muted hover:text-fg cursor-pointer lg:px-3">Tools <ChevronDown className={cn('size-3.5 transition', mega && 'rotate-180')} /></button>
               <AnimatePresence>

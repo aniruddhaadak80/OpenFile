@@ -37,7 +37,7 @@ export default function Privacy() {
           <ul className="space-y-3">
             <li className="flex gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" /><span>Zero uploads, by design</span></li>
             <li className="flex gap-2"><WifiOff className="mt-0.5 size-4 shrink-0 text-accent" /><span>Works offline after the first load</span></li>
-            <li className="flex gap-2"><Database className="mt-0.5 size-4 shrink-0 text-accent" /><span>Settings and history live in this browser. <Link to="/settings#privacy" className="text-accent hover:underline">Manage or clear them</Link></span></li>
+            <li className="flex gap-2"><Database className="mt-0.5 size-4 shrink-0 text-accent" /><span>Settings and history live in this browser. <Link to="/settings#privacy" className="text-accent underline underline-offset-2 hover:decoration-2">Manage or clear them</Link></span></li>
             <li className="flex gap-2"><Github className="mt-0.5 size-4 shrink-0 text-accent" /><span>Open source. <a href={REPO_URL} target="_blank" rel="noreferrer" className="text-accent hover:underline">Read the code</a></span></li>
           </ul>
           <Link to="/blog/how-openfile-keeps-files-private" className="mt-4 block text-accent hover:underline">How OpenFile keeps files private</Link>

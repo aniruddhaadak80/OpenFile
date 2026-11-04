@@ -15,7 +15,7 @@ export default function CalendarFiles() {
     </ul>
     <p>Lines longer than 75 bytes are folded onto the next line with a leading space, and commas and semicolons in text are escaped with a backslash. Small details, but a file that gets them wrong may import with odd titles or not at all. <T to="ics-creator">Calendar Event Maker (ICS)</T> handles all of this and also gives you Add to Google Calendar and Add to Outlook links for people who would rather click than download.</p>
     <H2>Repeat rules, in plain words</H2>
-    <p>The RRULE line packs a lot into a short string. FREQ says how often (daily, weekly, monthly or yearly), INTERVAL says every how many, BYDAY picks weekdays, and COUNT or UNTIL says when to stop. A number in front of a day means which one in the month: 1MO is the first Monday and -1FR is the last Friday. BYSETPOS picks one match from a set, so the first weekday of each month is FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1.</p>
+    <p>The RRULE line packs a lot into a short string. FREQ says how often (daily, weekly, monthly or yearly), INTERVAL says every how many, BYDAY picks weekdays, and COUNT or UNTIL says when to stop. A number in front of a day means which one in the month: 1MO is the first Monday and -1FR is the last Friday. BYSETPOS picks one match from a set, so the first weekday of each month is <code>FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1</code>.</p>
     <p>Pick a rule below, or type your own, to see it in words with the next dates it falls on:</p>
     <RepeatRuleDemo />
     <p><T to="recurring-dates">Recurring Dates &amp; RRULE</T> builds rules like these from simple choices, explains any rule you paste, and lists every date so you can check it before sending an invite.</p>

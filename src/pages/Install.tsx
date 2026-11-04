@@ -142,14 +142,14 @@ export default function Install() {
                   <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl" style={{ background: `color-mix(in oklab, ${c.color} 16%, transparent)` }}><c.icon className="size-5" style={{ color: c.color }} /></span><div className="font-display text-lg font-bold">{c.title}</div></div>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{c.tagline}</p>
                   <div className="mt-3 text-xs text-muted/90">{c.formats}{c.opts[0]?.asset && rel?.assets[c.opts[0].asset] ? <> · {mb(rel.assets[c.opts[0].asset].size)}</> : null}</div>
-                  {c.note && <div className="mt-1 text-xs text-accent/90">{c.note}</div>}
+                  {c.note && <div className="mt-1 text-xs text-accent">{c.note}</div>}
                   <div className="mt-4 flex flex-wrap gap-2"><CardButtons card={c} href={href} /></div>
                   <a href={`#guide-${c.guide}`} onClick={() => setTimeout(() => document.getElementById('guide')?.scrollIntoView({ behavior: 'smooth' }), 0)} className="mt-3 text-xs font-medium text-muted hover:text-accent">Step by step guide</a>
                 </motion.div>
               </StaggerItem>
             ))}
           </Stagger>
-          <p className="mt-4 text-sm text-muted">All downloads come from the <a className="text-accent hover:underline" href={RELEASES} target="_blank" rel="noreferrer">latest GitHub release</a>, built in public by GitHub Actions from the open source code.</p>
+          <p className="mt-4 text-sm text-muted">All downloads come from the <a className="text-accent underline underline-offset-2 hover:decoration-2" href={RELEASES} target="_blank" rel="noreferrer">latest GitHub release</a>, built in public by GitHub Actions from the open source code.</p>
         </section>
 
         {/* ---------- video ---------- */}
@@ -190,7 +190,7 @@ export default function Install() {
               </div>
               <div className="rounded-2xl border border-border bg-surface p-5">
                 <div className="flex items-center gap-2 font-semibold"><ShieldCheck className="size-4 text-success" /> Private by design</div>
-                <p className="mt-2 text-sm text-muted">No account, no tracking of your files, nothing uploaded. Read the <Link to="/privacy" className="text-accent hover:underline">privacy page</Link>.</p>
+                <p className="mt-2 text-sm text-muted">No account, no tracking of your files, nothing uploaded. Read the <Link to="/privacy" className="text-accent underline underline-offset-2 hover:decoration-2">privacy page</Link>.</p>
               </div>
             </div>
           </Reveal>
@@ -207,7 +207,7 @@ export default function Install() {
           <Reveal>
             <div className="rounded-2xl border border-border bg-surface p-5 sm:p-7">
               <div className="flex items-center gap-2 font-semibold"><GhIcon className="size-4" /> Build the apps yourself</div>
-              <p className="mt-2 text-sm text-muted">The desktop app uses Tauri and the mobile apps use Capacitor, both wrapping the same web build. Full notes live in <a className="text-accent hover:underline" href={`${REPO}/blob/main/docs/INSTALL.md`} target="_blank" rel="noreferrer">docs/INSTALL.md</a>.</p>
+              <p className="mt-2 text-sm text-muted">The desktop app uses Tauri and the mobile apps use Capacitor, both wrapping the same web build. Full notes live in <a className="text-accent underline underline-offset-2 hover:decoration-2" href={`${REPO}/blob/main/docs/INSTALL.md`} target="_blank" rel="noreferrer">docs/INSTALL.md</a>.</p>
               <div className="mt-4 grid gap-3 md:grid-cols-3">
                 {[['Desktop (needs Rust)', 'npm run app:desktop'], ['Android (needs JDK 21 and Android SDK)', 'npm run app:android'], ['iOS simulator (needs Xcode)', 'npm run app:ios']].map(([t, c]) => (
                   <div key={c} className="rounded-xl border border-border bg-black p-3"><div className="text-xs text-white/60">{t}</div><div className="mt-1 flex items-center gap-2"><code className="flex-1 font-mono text-[13px] text-[#e5e7eb]"><span className="text-emerald">$ </span>{c}</code><CopyButton text={c} /></div></div>

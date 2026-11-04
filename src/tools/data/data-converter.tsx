@@ -67,12 +67,12 @@ export default function DataConverter() {
       <Bar>
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted">From</span>
-          <Select aria-label="From format" value={from} onChange={(v) => setFrom(v as any)} options={[{ value: 'auto', label: `Auto (${fmtLabel(effFrom)})` }, ...FORMATS.map((f) => ({ value: f.id, label: f.label }))]} className="w-44" />
+          <Select aria-label="From format" value={from} onChange={(v) => setFrom(v as any)} options={[{ value: 'auto', label: `Auto (${fmtLabel(effFrom)})` }, ...FORMATS.map((f) => ({ value: f.id, label: f.label }))]} className="w-44 shrink-0" />
         </div>
         <Button size="sm" variant="outline" icon={<ArrowLeftRight className="size-4" />} onClick={swap} disabled={!res || !('out' in res)} aria-label="Swap input and output">Swap</Button>
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted">To</span>
-          <Select aria-label="To format" value={to} onChange={setTo} options={FORMATS.map((f) => ({ value: f.id, label: f.label }))} className="w-40" />
+          <Select aria-label="To format" value={to} onChange={setTo} options={FORMATS.map((f) => ({ value: f.id, label: f.label }))} className="w-40 shrink-0" />
         </div>
         <div className="ml-auto flex gap-1">
           <Button size="sm" variant="ghost" icon={<FileCode2 className="size-4" />} onClick={() => { setBin(null); setText(SAMPLE); setFrom('auto') }}>Sample</Button>
@@ -95,7 +95,7 @@ export default function DataConverter() {
             : <Status kind="ok">{fmtLabel(effFrom)} converted to {fmtLabel(to)}{outBytes ? ` · ${formatBytes(outBytes.length)}` : outText ? ` · ${formatBytes(new Blob([outText]).size)}` : ''}</Status>}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Pane title={bin ? `${fmtLabel(effFrom)} file` : fmtLabel(effFrom)} className="h-[520px]" actions={<Button size="sm" variant="ghost" onClick={() => { setBin(null); setText('') }}>Clear</Button>}>
+        <Pane title={bin ? `${fmtLabel(effFrom)} file` : fmtLabel(effFrom)} className="h-[360px] lg:h-[520px]" actions={<Button size="sm" variant="ghost" onClick={() => { setBin(null); setText('') }}>Clear</Button>}>
           {bin ? (
             <div className="space-y-3 p-4">
               <div className="text-sm"><span className="font-medium">{bin.name}</span> <span className="text-muted">· {formatBytes(bin.bytes.length)}</span></div>
@@ -103,7 +103,7 @@ export default function DataConverter() {
             </div>
           ) : <CodeArea value={text} onChange={(v) => { setText(v) }} placeholder="Paste JSON, YAML, XML, TOML, INI, CSV or NDJSON" />}
         </Pane>
-        <Pane title={meta.label} className="h-[520px]" actions={res && 'out' in res ? <>{outText != null && <CopyButton text={outText} variant="ghost" />}<Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={download}>Download</Button></> : null}>
+        <Pane title={meta.label} className="h-[360px] lg:h-[520px]" actions={res && 'out' in res ? <>{outText != null && <CopyButton text={outText} variant="ghost" />}<Button size="sm" variant="ghost" icon={<Download className="size-4" />} onClick={download}>Download</Button></> : null}>
           {outText != null ? <CodeView code={outText} lang={to === 'json' || to === 'ndjson' ? 'json' : 'generic'} className="h-full" />
             : outBytes ? <div className="space-y-3 p-4"><div className="text-sm text-muted">Binary output, {formatBytes(outBytes.length)}. Hex preview:</div><pre className="scrollbar-thin max-h-[400px] overflow-auto rounded-lg bg-surface-2/50 p-3 font-mono text-[11px] leading-5">{hexPreview(outBytes)}</pre></div>
               : <div className="grid h-full place-items-center p-6 text-sm text-muted">Output appears here</div>}

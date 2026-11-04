@@ -240,6 +240,9 @@ html[data-theme="light"] .text-success { color: #047857; }
 html[data-theme="light"] .text-warn { color: #a15c07; }
 html[data-theme="light"] .text-danger { color: #b91c1c; }
 html[data-theme="light"] .text-muted\/70 { color: var(--muted); }
+/* faded mermaid source and the cyan code token need more contrast on the light theme */
+html[data-theme="light"] .docs-prose .mermaid-block:not(.is-rendered) pre { opacity: 1; color: var(--muted); }
+html[data-theme="light"] .text-\[\#22d3ee\] { color: #0e7490; }
 
 /* ---------- links: animated underline ---------- */
 .link-underline { position: relative; text-decoration: none; }
@@ -429,7 +432,8 @@ textarea:focus-visible, select:focus-visible, [contenteditable]:not([contentedit
   .of-field-wrap:hover:not(:focus-within) { border-color: color-mix(in oklab, var(--accent) 35%, var(--border)); }
   .of-field:disabled { opacity: .55; cursor: not-allowed; }
   /* selects: on-brand chevron instead of the platform arrow */
-  select.of-field { appearance: none; -webkit-appearance: none; padding-right: 2.25rem; text-overflow: ellipsis;
+  /* padding-right is important so px-* utilities on a Select never push text under the chevron */
+  select.of-field { appearance: none; -webkit-appearance: none; padding-right: 2.25rem !important; text-overflow: ellipsis;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238B929C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right .7rem center; background-size: 1rem; }
   select.of-field option, select.of-field optgroup { background: var(--surface); color: var(--fg); }

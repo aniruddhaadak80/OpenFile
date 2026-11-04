@@ -43,7 +43,7 @@ export function HoverCard({ info, ringW, touch }: { info: HoverInfo | null; ring
         {info.media && <Preview slug={info.media} />}
         <div className="flex items-center gap-1.5">
           <span className="size-1.5 shrink-0 rounded-full" style={{ background: info.color }} />
-          <span className="truncate text-[13px] font-semibold" style={{ color: info.color }}>{info.title}</span>
+          <span className="cat-ink truncate text-[13px] font-semibold" style={{ ['--cat' as string]: info.color }}>{info.title}</span>
           {info.extra && <span className="ml-auto shrink-0 rounded border border-border px-1 font-mono text-[9px] text-muted">{info.extra}</span>}
         </div>
         <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted">{info.desc}</p>

@@ -40,7 +40,7 @@ export function ProgressRing({ value, size = 44, stroke = 4, color = 'var(--acce
   const v = Math.max(0, Math.min(1, value || 0))
   const m = useMotion()
   return (
-    <div className="relative grid shrink-0 place-items-center" style={{ width: size, height: size }} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(v * 100)}>
+    <div className="relative grid shrink-0 place-items-center" style={{ width: size, height: size }} role="progressbar" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(v * 100)}>
       <svg width={size} height={size} className={cn('-rotate-90', spin && m !== 'off' && v === 0 && 'animate-spin')} aria-hidden="true">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={spin && v === 0 ? c * 0.75 : c * (1 - v)} style={{ transition: m === 'off' ? 'none' : 'stroke-dashoffset .35s ease' }} />

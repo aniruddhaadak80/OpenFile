@@ -53,8 +53,8 @@ export default function Metronome() {
     <ToolGrid
       main={<div className="rounded-2xl border border-border bg-surface p-6">
         <div className="text-center">
-          <div className="font-display text-7xl font-semibold tabular-nums">{bpm}</div>
-          <div className="text-sm text-muted">BPM, {tempoName(bpm)}</div>
+          <div className="font-display text-7xl font-semibold leading-none tabular-nums">{bpm}</div>
+          <div className="mt-2 text-sm text-muted">BPM, {tempoName(bpm)}</div>
         </div>
         <div className="mx-auto mt-6 flex max-w-md items-center gap-3">
           <Button variant="outline" size="sm" aria-label="Slower" onClick={() => setBpm((b) => Math.max(20, b - 1))}><Minus className="size-4" /></Button>

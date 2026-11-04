@@ -71,7 +71,7 @@ export default function EbookCoverMaker() {
   }
   return (
     <ToolGrid
-      main={<div className="grid place-items-center rounded-2xl border border-border bg-surface-2/40 p-4"><canvas ref={canvas} className="h-auto max-h-[640px] w-auto max-w-full rounded-md shadow-2xl" aria-label="Cover preview" /></div>}
+      main={<div className="grid place-items-center rounded-2xl border border-border bg-surface-2/40 p-4"><canvas ref={canvas} className="h-auto max-h-[min(640px,45vh)] w-auto max-w-full rounded-md shadow-2xl sm:max-h-[640px]" aria-label="Cover preview" /></div>}
       side={<>
         <Field label="Title"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
         <Field label="Subtitle"><Input value={sub} onChange={(e) => setSub(e.target.value)} /></Field>

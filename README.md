@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tools-590-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
+  <img src="https://img.shields.io/badge/tools-590-F5A524?style=flat-square&labelColor=0B0D10" alt="590 tools"/>
   <img src="https://img.shields.io/badge/categories-28-14B8A6?style=flat-square&labelColor=0B0D10" alt="28 categories"/>
   <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest"><img src="https://img.shields.io/github/v/release/aniruddhaadak80/OpenFile?style=flat-square&label=release&color=F5A524&labelColor=0B0D10" alt="latest release"/></a>
   <img src="https://img.shields.io/badge/uploads-0_bytes-10B981?style=flat-square&labelColor=0B0D10" alt="0 uploads"/>

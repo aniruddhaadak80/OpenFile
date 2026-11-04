@@ -14,14 +14,14 @@ export const MODELS = {
     // NLLB q8 is about 900 MB (encoder 419 MB plus decoder 475 MB); loading it crashed CPU-only tabs, so it is kept for WebGPU
     { id: 'Xenova/nllb-200-distilled-600M', label: 'NLLB-200 (200 languages, best with a GPU)', size: 'about 900 MB', dtype: { wasm: 'q8', webgpu: 'q8' }, note: 'Meta NLLB, CC-BY-NC 4.0 weights: free for personal, non-commercial use. Without a GPU it can run the tab out of memory.' },
     // CPU default: Helsinki-NLP OPUS-MT (CC-BY 4.0), about 115 MB per language pair, picked per pair by opusPlan()
-    { id: OPUS_ID, label: 'OPUS-MT (light, best without a GPU)', size: 'about 115 MB per language pair (twice that when neither language is English)', dtype: { wasm: 'q8', webgpu: 'fp32' }, cpuDefault: true, note: 'Helsinki-NLP OPUS-MT, CC-BY 4.0. One small model per language pair, through English when neither side is English. Simpler wording than NLLB.' },
+    { id: OPUS_ID, label: 'OPUS-MT (light, for CPU)', size: 'about 115 MB per language pair (twice that when neither language is English)', dtype: { wasm: 'q8', webgpu: 'fp32' }, cpuDefault: true, note: 'Helsinki-NLP OPUS-MT, CC-BY 4.0. One small model per language pair, through English when neither side is English. Simpler wording than NLLB.' },
   ],
   summarize: [{ id: 'Xenova/distilbart-cnn-6-6', label: 'DistilBART (fast summary)', size: 'about 300 MB', dtype: { wasm: 'q8', webgpu: 'fp32' } }],
   chat: [
     // wasm uses q8 (488 MB): Qwen's q4 file keeps the embeddings in fp32 and is 749 MB, which crashed CPU-only tabs while loading
     { id: 'onnx-community/Qwen2.5-0.5B-Instruct', label: 'Qwen2.5 0.5B (better answers)', size: 'about 500 MB', dtype: { wasm: 'q8', webgpu: 'q4f16' } },
     // CPU default: in a local check on an invoice it answered correctly where the 135M model looped and made up amounts
-    { id: 'HuggingFaceTB/SmolLM2-360M-Instruct', label: 'SmolLM2 360M (light, best without a GPU)', size: 'about 350 MB', dtype: { wasm: 'q8', webgpu: 'fp16' }, cpuDefault: true, note: 'Short, plain answers in English.' },
+    { id: 'HuggingFaceTB/SmolLM2-360M-Instruct', label: 'SmolLM2 360M (light, for CPU)', size: 'about 350 MB', dtype: { wasm: 'q8', webgpu: 'fp16' }, cpuDefault: true, note: 'Short, plain answers in English.' },
     { id: 'onnx-community/Qwen2.5-1.5B-Instruct', label: 'Qwen2.5 1.5B (smarter, needs WebGPU)', size: 'about 1.3 GB', dtype: { wasm: 'q4', webgpu: 'q4f16' } },
   ],
   embed: [{ id: 'Xenova/all-MiniLM-L6-v2', label: 'MiniLM embeddings', size: 'about 25 MB', dtype: { wasm: 'q8', webgpu: 'fp32' } }],

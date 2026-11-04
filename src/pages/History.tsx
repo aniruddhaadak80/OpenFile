@@ -171,7 +171,7 @@ export default function History() {
                 </ul>
               ) : <p className="mt-2 text-sm text-muted">Nothing yet.</p>}
             </div>
-            <p className="px-1 text-xs leading-relaxed text-muted">Keeps the latest 2,000 entries. File contents are never stored, only names and sizes. {TOOLS.length} tools available. <Link to="/docs/local-data" className="text-accent hover:underline">How local data works</Link></p>
+            <p className="px-1 text-xs leading-relaxed text-muted">Keeps the latest 2,000 entries. File contents are never stored, only names and sizes. {TOOLS.length} tools available. <Link to="/docs/local-data" className="text-accent underline underline-offset-2 hover:decoration-2">How local data works</Link></p>
           </aside>
         </div>
       </div>

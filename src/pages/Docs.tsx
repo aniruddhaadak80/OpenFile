@@ -138,7 +138,7 @@ export default function Docs() {
               <AnimatePresence mode="wait">
                 <motion.article key={page.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="mt-4">
                   <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
-                    <span className="font-semibold uppercase tracking-widest" style={{ color: color ?? 'var(--accent)' }}>{page.parent ? 'Tool guide' : page.group}</span>
+                    <span className="cat-ink font-semibold uppercase tracking-widest" style={{ ['--cat' as string]: color ?? 'var(--accent)' }}>{page.parent ? 'Tool guide' : page.group}</span>
                     <span className="inline-flex items-center gap-1"><Clock className="size-3.5" aria-hidden />{minutes} min read</span>
                     {updated && <span className="inline-flex items-center gap-1"><CalendarClock className="size-3.5" aria-hidden />Updated <time dateTime={updated}>{fmtDate(updated)}</time></span>}
                   </div>
@@ -201,7 +201,7 @@ function Sidebar({ current, headings, active, onPick }: { current?: DocPage; hea
           {isActive && <motion.span layoutId="docs-active" className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-accent" />}
           {c ? <span className="ml-1 mr-0.5 size-2 shrink-0 rounded-full" style={{ background: c }} /> : <I className={cn('size-4 shrink-0', isActive && 'text-accent')} />}
           <span className="min-w-0 leading-snug">{p.title}</span>
-          {p.source === 'category' && <span className="ml-auto text-[11px] tabular-nums text-muted/70">{toolCountFor(p.id.slice(6))}</span>}
+          {p.source === 'category' && <span className="ml-auto text-[11px] tabular-nums text-muted">{toolCountFor(p.id.slice(6))}</span>}
         </Link>
         {isActive && sub.length > 1 && (
           <ul className="my-1 ml-[1.1rem] border-l border-border pl-2">

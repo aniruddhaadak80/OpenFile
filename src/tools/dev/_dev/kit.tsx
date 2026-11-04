@@ -73,7 +73,7 @@ export function CodeArea({ value, onChange, placeholder, readOnly, className, li
   return (
     <div className={cn('relative flex h-full min-h-0', className)} style={{ minHeight: minRows * 20 + 16 }}>
       {lineNumbers && (
-        <div ref={gut} aria-hidden className="w-11 shrink-0 select-none overflow-hidden border-r border-border bg-surface-2/40 py-2 pr-2 text-right font-mono text-[11px] leading-5 text-muted/70">
+        <div ref={gut} aria-hidden className="w-11 shrink-0 select-none overflow-hidden border-r border-border bg-surface-2/40 py-2 pr-2 text-right font-mono text-[11px] leading-5 text-muted">
           {Array.from({ length: Math.min(lines, 20000) }, (_, i) => <div key={i} className={cn(errorLine === i + 1 && 'bg-danger/20 text-danger font-bold')}>{i + 1}</div>)}
         </div>
       )}

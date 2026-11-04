@@ -362,8 +362,8 @@ export function PipelineDemo() {
               <label className="flex cursor-pointer items-center gap-2.5">
                 <input type="checkbox" checked={!!on[d.id]} onChange={(e) => setOn((o) => ({ ...o, [d.id]: e.target.checked }))} className="size-4 accent-[var(--accent)]" />
                 <span className="grid size-5 place-items-center rounded-md bg-surface-2 font-mono text-[10px] text-muted">{i + 1}</span>
-                <span className="text-sm font-medium">{d.name}</span>
-                <span className="ml-auto truncate text-[11px] text-muted">{d.desc}</span>
+                <span className="shrink-0 text-sm font-medium">{d.name}</span>
+                <span className="ml-auto min-w-0 text-right text-[11px] leading-snug text-muted">{d.desc}</span>
               </label>
               {on[d.id] && main && (
                 <div className="mt-2 flex items-center gap-2 pl-7 text-xs">

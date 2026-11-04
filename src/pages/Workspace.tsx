@@ -303,7 +303,7 @@ export default function Workspace() {
               <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted"><span><b className="text-fg">{CATALOG.length}</b> steps</span><span><b className="text-fg">{BUILTINS.length}</b> recipes</span><span><b className="text-fg">{auto}</b> {auto === 1 ? 'worker' : 'workers'} on this device</span><span>Works offline</span></div>
             </div>
             <motion.div initial={motionLevel === 'off' ? false : { opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.6 }} className="relative">
-              <div className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--accent)_28%,transparent),transparent)] blur-2xl" aria-hidden="true" />
+              <div className="absolute -inset-2 -z-10 rounded-[2.5rem] sm:-inset-6 bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--accent)_28%,transparent),transparent)] blur-2xl" aria-hidden="true" />
               <div className="overflow-hidden rounded-3xl border border-border bg-black shadow-2xl">
                 {motionLevel === 'off' ? <img src={media('hero.jpg')} alt="Files flowing through a pipeline of steps" className="aspect-video w-full object-cover" />
                   : <video autoPlay muted loop playsInline poster={media('hero.jpg')} className="aspect-video w-full object-cover" aria-label="Files flowing through a pipeline of steps"><source src={media('hero.mp4')} type="video/mp4" /></video>}

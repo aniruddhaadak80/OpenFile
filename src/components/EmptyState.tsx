@@ -33,11 +33,11 @@ function Art({ kind }: { kind: EmptyKind }) {
   )
 }
 
-export function EmptyState({ kind = 'search', title, children, actions, className, compact }: { kind?: EmptyKind; title: React.ReactNode; children?: React.ReactNode; actions?: React.ReactNode; className?: string; compact?: boolean }) {
+export function EmptyState({ kind = 'search', title, children, actions, className, compact, titleAs: T = 'div' }: { kind?: EmptyKind; title: React.ReactNode; children?: React.ReactNode; actions?: React.ReactNode; className?: string; compact?: boolean; titleAs?: 'div' | 'h1' | 'h2' }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className={cn('flex flex-col items-center rounded-3xl border border-dashed border-border bg-surface/40 text-center', compact ? 'gap-2 p-6' : 'gap-3 p-10', className)}>
       <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} className={compact ? 'scale-75' : undefined}><Art kind={kind} /></motion.div>
-      <div className="font-display text-lg font-semibold">{title}</div>
+      <T className="font-display text-lg font-semibold">{title}</T>
       {children && <div className="max-w-md text-sm leading-relaxed text-muted">{children}</div>}
       {actions && <div className="mt-2 flex flex-wrap justify-center gap-2">{actions}</div>}
     </motion.div>
