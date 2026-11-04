@@ -158,7 +158,7 @@ jobs:
         run: |
           if [ "${{ matrix.kind }}" = deb ]; then F=OpenFile-linux-amd64.deb; else F=OpenFile-linux-x86_64.AppImage; fi
           curl -fsSL -o "before-$F" "https://github.com/${{ github.repository }}/releases/download/$BEFORE_TAG/$F"
-          bash tests/apps/linux-launch.sh ${{ matrix.display }} ${{ matrix.kind }} "before-$F" "before-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
+          NO_DIAG=1 bash tests/apps/linux-launch.sh ${{ matrix.display }} ${{ matrix.kind }} "before-$F" "before-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
       - name: After (this commit)
         run: |
           if [ "${{ matrix.kind }}" = deb ]; then F=OpenFile-linux-amd64.deb; else F=OpenFile-linux-x86_64.AppImage; fi
@@ -212,7 +212,7 @@ jobs:
         continue-on-error: true
         run: |
           curl -fsSL -o "before-$F" "https://github.com/${{ github.repository }}/releases/download/$BEFORE_TAG/$F"
-          bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "before-$F" "before-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
+          NO_DIAG=1 bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "before-$F" "before-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
       - name: After (this commit)
         run: bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "dl/$F" "after-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25
       - uses: actions/upload-artifact@v7
