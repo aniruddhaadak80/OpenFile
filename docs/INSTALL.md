@@ -102,6 +102,8 @@ sudo dnf install ./OpenFile-linux-x86_64.rpm
 
 Update: the app updates itself (see [Updates](#updates)). The `.deb` and `.rpm` packages can also be updated by installing the new package the same way. Uninstall: `sudo apt remove open-file` or `sudo dnf remove open-file` (the package is named `open-file`), or delete the AppImage.
 
+Empty or black window on start (OpenFile 1.2.0 on some GPUs, drivers and Wayland desktops): run `WEBKIT_DISABLE_DMABUF_RENDERER=1 openfile`, or the AppImage the same way. Later releases do this on their own. Details in [Troubleshooting](TROUBLESHOOTING.md#desktop-app-does-not-start).
+
 ## Android app (APK)
 
 1. On your phone, download `OpenFile-android.apk`.

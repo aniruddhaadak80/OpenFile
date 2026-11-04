@@ -45,6 +45,7 @@
       "icons/icon.ico"
     ],
     "windows": {
+      "minimumWebview2Version": "110.0.1587.40",
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
       },

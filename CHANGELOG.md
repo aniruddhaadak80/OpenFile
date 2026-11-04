@@ -13,6 +13,18 @@
 
 All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are shown in the app at [/changelog](https://openfile-studio.vercel.app/changelog).
 
+## Unreleased (desktop app 1.2.1)
+
+### Fixed
+
+- **desktop**: Linux no longer opens an empty black window on some systems ([#10](https://github.com/aniruddhaadak80/OpenFile/issues/10), Fedora 44 with GNOME on Wayland). The app turns off the WebKitGTK DMA-BUF renderer that fails with some GPU drivers and compositors, sets `__NV_DISABLE_EXPLICIT_SYNC=1` on NVIDIA with Wayland, and when the window has not loaded after 30 seconds it restarts once in safe graphics mode and remembers it. `OPENFILE_SAFE_GPU=1` starts in safe mode, `OPENFILE_GPU=1` keeps the WebKitGTK defaults. On 1.2.0, start the app with `WEBKIT_DISABLE_DMABUF_RENDERER=1 openfile` (or the AppImage the same way).
+- **desktop**: when the window cannot be created (for example Windows without WebView2), the app explains what to install and opens the troubleshooting guide instead of closing silently. The Windows installer updates a WebView2 older than version 110.
+- **app**: the start screen says when start up takes longer than usual and, if the app code cannot load, shows a clear message with a Try again button instead of an empty window.
+
+### Tests
+
+- **ci**: new Desktop app start test workflow builds the app from each change and starts it with no workarounds on Ubuntu 22.04 and 24.04, Fedora, Debian and Arch (each on X11 and on Wayland), Windows Server 2022 and 2025, and macOS on Apple silicon and Intel. It fails on a blank window or a start-up error and uploads the screenshots.
+
 ## v2.5.0 (2026-10-30)
 
 71 new tools across the original 16 studios, filling the gaps people asked about most: everyday audio tools, PDF stamps and Bates numbers, Markdown from anything, Mermaid diagrams, charts, video effects, G-code and point clouds.

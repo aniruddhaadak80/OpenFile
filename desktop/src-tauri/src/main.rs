@@ -18,6 +18,15 @@
 //
 // Navigation stays inside the bundled app or the hosted copy at aniruddhaadak80.github.io/OpenFile/.
 // Every other web link opens in the default browser.
+//
+// Start up on Linux (issue #10, a black window on Fedora 44 GNOME Wayland): WebKitGTK 2.42 and newer draws pages
+// through a DMA-BUF renderer that fails on many GPU, driver and compositor mixes (NVIDIA most often, also some
+// Mesa and Wayland setups). The page never paints and the window stays the colour of its background. See
+// linux_gpu below: OpenFile turns that renderer off by default, and if the page still has not loaded after
+// BOOT_TIMEOUT it restarts itself once in safe graphics mode (no GPU compositing) and remembers that choice.
+//   OPENFILE_SAFE_GPU=1   start in safe graphics mode right away
+//   OPENFILE_GPU=1        keep the WebKitGTK defaults (DMA-BUF renderer on) and ignore the remembered safe mode
+// Any WEBKIT_* variable you set yourself always wins.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::path::PathBuf;
@@ -35,6 +44,100 @@ const HOSTED_PATH: &str = "/OpenFile";
 const RELEASES: &str = "https://github.com/aniruddhaadak80/OpenFile/releases";
 /// starts without reaching a healthy interface before OpenFile offers a rollback
 const FAILED_STARTS: u32 = 3;
+/// how long the first page may take to load before Linux restarts OpenFile in safe graphics mode
+#[cfg(target_os = "linux")]
+const BOOT_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(30);
+const TROUBLESHOOTING: &str = "https://aniruddhaadak80.github.io/OpenFile/docs/troubleshooting";
+
+/// WebKitGTK graphics settings, applied in main() before GTK or any thread starts (env changes are only safe then).
+#[cfg(target_os = "linux")]
+mod linux_gpu {
+    use std::env;
+    use std::path::PathBuf;
+
+    const IDENTIFIER: &str = "com.aniruddhaadak.openfile";
+    const MARKER: &str = "safe-graphics";
+
+    fn flag(name: &str) -> bool {
+        matches!(env::var(name).as_deref(), Ok("1") | Ok("true") | Ok("yes"))
+    }
+
+    /// sets a variable only when the user has not set it already
+    fn set_default(name: &str, value: &str) {
+        if env::var_os(name).is_none() {
+            env::set_var(name, value);
+        }
+    }
+
+    /// the app config folder (the same one Tauri uses), found without starting Tauri
+    pub fn config_dir() -> Option<PathBuf> {
+        let base = env::var_os("XDG_CONFIG_HOME")
+            .map(PathBuf::from)
+            .filter(|p| p.is_absolute())
+            .or_else(|| env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")))?;
+        Some(base.join(IDENTIFIER))
+    }
+
+    fn marker() -> Option<PathBuf> {
+        config_dir().map(|d| d.join(MARKER))
+    }
+
+    /// remembers safe graphics mode for the next starts
+    pub fn remember_safe_mode() {
+        if let Some(p) = marker() {
+            if let Some(dir) = p.parent() {
+                let _ = std::fs::create_dir_all(dir);
+            }
+            let _ = std::fs::write(p, "OpenFile starts in safe graphics mode. Delete this file, or start once with OPENFILE_GPU=1, to try the faster mode again.\n");
+        }
+    }
+
+    /// Returns true when this start runs in safe graphics mode.
+    pub fn prepare() -> bool {
+        let keep_gpu = flag("OPENFILE_GPU");
+        let safe = !keep_gpu && (flag("OPENFILE_SAFE_GPU") || marker().is_some_and(|p| p.exists()));
+        if !keep_gpu {
+            // the renderer behind most blank and black windows; pages still use the GPU through the older path
+            set_default("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+        }
+        if safe {
+            set_default("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+        }
+        // NVIDIA on Wayland: explicit sync in older WebKitGTK builds ends in "Error 71 (Protocol error)"
+        let wayland = env::var_os("WAYLAND_DISPLAY").is_some() || env::var("XDG_SESSION_TYPE").as_deref() == Ok("wayland");
+        if wayland && std::path::Path::new("/proc/driver/nvidia/version").exists() {
+            set_default("__NV_DISABLE_EXPLICIT_SYNC", "1");
+        }
+        eprintln!(
+            "OpenFile: {} graphics mode (WEBKIT_DISABLE_DMABUF_RENDERER={}, WEBKIT_DISABLE_COMPOSITING_MODE={})",
+            if safe { "safe" } else if keep_gpu { "full GPU" } else { "standard" },
+            env::var("WEBKIT_DISABLE_DMABUF_RENDERER").unwrap_or_else(|_| "unset".into()),
+            env::var("WEBKIT_DISABLE_COMPOSITING_MODE").unwrap_or_else(|_| "unset".into()),
+        );
+        safe
+    }
+
+    /// Starts a new OpenFile in safe graphics mode. For an AppImage this is the AppImage file itself, because the
+    /// running copy lives in a mount that goes away when this process exits.
+    pub fn relaunch_safe() -> std::io::Result<()> {
+        let appimage = env::var_os("APPIMAGE").map(PathBuf::from).filter(|p| p.exists());
+        let exe = match appimage.clone() {
+            Some(p) => p,
+            None => env::current_exe()?,
+        };
+        let mut cmd = std::process::Command::new(exe);
+        if appimage.is_some() {
+            // the new AppImage mounts itself again; paths into this copy's mount stop working when it exits
+            cmd.env_remove("APPDIR");
+        }
+        cmd.args(env::args_os().skip(1))
+            .env("OPENFILE_SAFE_GPU", "1")
+            .env("WEBKIT_DISABLE_COMPOSITING_MODE", "1")
+            .env("WEBKIT_DISABLE_DMABUF_RENDERER", "1")
+            .spawn()
+            .map(|_| ())
+    }
+}
 
 #[derive(Default)]
 struct Updates {
@@ -367,7 +470,50 @@ fn allowed_in_window(url: &Url) -> bool {
     }
 }
 
+/// Linux: when the first page has not loaded after BOOT_TIMEOUT, the web process is stuck (usually in GPU setup).
+/// Remember safe graphics mode and restart once in it, instead of leaving an empty window.
+#[cfg(target_os = "linux")]
+fn boot_watchdog(app: AppHandle, loaded: std::sync::Arc<AtomicBool>, safe: bool) {
+    if safe {
+        return; // already in safe mode: nothing safer to restart into
+    }
+    std::thread::spawn(move || {
+        std::thread::sleep(BOOT_TIMEOUT);
+        if loaded.load(Ordering::SeqCst) {
+            return;
+        }
+        eprintln!("OpenFile: the window did not load in {} s, restarting in safe graphics mode (OPENFILE_GPU=1 turns this off)", BOOT_TIMEOUT.as_secs());
+        linux_gpu::remember_safe_mode();
+        match linux_gpu::relaunch_safe() {
+            Ok(()) => app.exit(0),
+            Err(e) => eprintln!("OpenFile: could not restart: {e}. Start it with OPENFILE_SAFE_GPU=1, see {TROUBLESHOOTING}"),
+        }
+    });
+}
+
+/// The window could not be created (Windows without the WebView2 runtime, Linux without WebKitGTK or a display).
+/// Say what to do instead of exiting silently.
+fn startup_failed(err: tauri::Error) -> ! {
+    eprintln!("OpenFile could not open its window: {err}");
+    #[cfg(target_os = "windows")]
+    {
+        eprintln!("OpenFile needs the Microsoft Edge WebView2 Runtime. Install it from https://developer.microsoft.com/microsoft-edge/webview2/ and start OpenFile again.");
+        let _ = std::process::Command::new("explorer.exe").arg(format!("{TROUBLESHOOTING}#desktop-app-does-not-start")).spawn();
+    }
+    #[cfg(target_os = "linux")]
+    {
+        eprintln!("Try OPENFILE_SAFE_GPU=1 openfile, and make sure WebKitGTK 4.1 (libwebkit2gtk-4.1) is installed.");
+    }
+    eprintln!("Help: {TROUBLESHOOTING}");
+    std::process::exit(1);
+}
+
 fn main() {
+    #[cfg(target_os = "linux")]
+    let safe_gpu = linux_gpu::prepare();
+    let loaded = std::sync::Arc::new(AtomicBool::new(false));
+    let loaded_flag = loaded.clone();
+
     let navigation = tauri::plugin::Builder::<tauri::Wry>::new("of-navigation")
         .on_navigation(|webview, url| {
             if allowed_in_window(url) {
@@ -386,8 +532,17 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(navigation)
         .manage(Updates::default())
-        .setup(|app| {
+        .on_page_load(move |_webview, payload| {
+            if matches!(payload.event(), tauri::webview::PageLoadEvent::Finished) {
+                loaded_flag.store(true, Ordering::SeqCst);
+            }
+        })
+        .setup(move |app| {
             startup_health(app.handle());
+            #[cfg(target_os = "linux")]
+            boot_watchdog(app.handle().clone(), loaded.clone(), safe_gpu);
+            #[cfg(not(target_os = "linux"))]
+            let _ = &loaded;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -404,7 +559,7 @@ fn main() {
             of_prefs_set
         ])
         .build(tauri::generate_context!())
-        .expect("error while running OpenFile")
+        .unwrap_or_else(|e| startup_failed(e))
         .run(|app, event| {
             if let RunEvent::Exit = event {
                 let state = app.state::<Updates>();
