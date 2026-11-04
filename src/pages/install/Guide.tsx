@@ -57,9 +57,9 @@ export function InstallGuide({ initial }: { initial: GuideId }) {
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <div className="inline-flex rounded-xl border border-border bg-surface p-1" role="tablist" aria-label="What to do">
           {PHASES.map((p) => (
-            <button key={p.id} role="tab" aria-selected={phase === p.id} onClick={() => setPhase(p.id)} className={cn('relative flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm cursor-pointer', phase === p.id ? 'text-on-accent' : 'text-muted hover:text-fg')}>
+            <button key={p.id} role="tab" aria-selected={phase === p.id} onClick={() => setPhase(p.id)} className={cn('relative flex min-h-10 items-center gap-1.5 rounded-lg px-2.5 text-sm cursor-pointer min-[360px]:px-3', phase === p.id ? 'text-on-accent' : 'text-muted hover:text-fg')}>
               {phase === p.id && <motion.span layoutId="guide-phase" className="absolute inset-0 rounded-lg bg-accent" transition={{ type: 'spring', stiffness: 400, damping: 34 }} />}
-              <p.icon className="relative size-3.5" /><span className="relative">{p.label}</span>
+              <p.icon className="relative hidden size-3.5 min-[360px]:block" /><span className="relative">{p.label}</span>
             </button>
           ))}
         </div>

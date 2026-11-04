@@ -38,7 +38,7 @@ function Row({ n, i, total, p }: { n: GNode; i: number; total: number; p: Props 
         <button {...attributes} {...listeners} aria-label={`Drag ${m.name}`} className="touch-none rounded p-1 text-muted hover:text-fg cursor-grab"><GripVertical className="size-4" /></button>
         {r && (r.state === 'run' || r.state === 'done') ? <ProgressRing value={r.state === 'done' ? 1 : r.frac} size={32} stroke={3} color={col} spin label={<StepIcon step={n.step} className="size-3.5" />} />
           : <span className="grid size-8 shrink-0 place-items-center rounded-xl text-xs font-bold" style={{ background: col + '22', color: col }}><StepIcon step={n.step} className="size-4" /></span>}
-        <div className="min-w-0 flex-1"><div className="truncate text-sm font-semibold"><span className="mr-1.5 font-mono text-xs text-muted">{i + 1}</span>{m.name}</div><div className="truncate text-xs text-muted">{m.desc}</div></div>
+        <div className="min-w-0 flex-1"><div className="line-clamp-2 break-words text-sm font-semibold"><span className="mr-1.5 font-mono text-xs text-muted">{i + 1}</span>{m.name}</div><div className="line-clamp-2 text-xs text-muted" title={m.desc}>{m.desc}</div></div>
         <Switch checked={n.enabled} onChange={(v) => p.onToggle(n.id, v)} ariaLabel={`Turn ${m.name} on or off`} />
         <div className="hidden items-center sm:flex">
           <button onClick={(e) => { e.stopPropagation(); move(-1) }} aria-label="Move up" className="rounded p-1 text-muted hover:text-fg cursor-pointer"><ArrowUp className="size-4" /></button>

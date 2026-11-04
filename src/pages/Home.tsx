@@ -74,13 +74,13 @@ function Hero({ onFilm }: { onFilm: () => void }) {
     <section ref={ref} className="relative overflow-hidden">
       <Aurora />
       <div className="grid-bg pointer-events-none absolute inset-0 opacity-60" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-[1.1fr_1fr]">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)] items-center gap-10 px-4 pb-16 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-[1.1fr_1fr]">
         <div className="text-center lg:text-left">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-3 py-1 text-xs text-muted backdrop-blur">
             <span className="relative flex size-2"><span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-75" /><span className="relative inline-flex size-2 rounded-full bg-accent" /></span>
             {TOOLS.length} tools | open source | zero uploads
           </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.6 }} className="mt-6 font-display text-5xl font-bold leading-[1.02] tracking-tight sm:text-6xl xl:text-7xl">
+          <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.6 }} className="mt-6 font-display text-4xl font-bold leading-[1.02] tracking-tight min-[360px]:text-5xl sm:text-6xl xl:text-7xl">
             Every file tool.<br /><span className="text-gradient text-gradient-anim">One private tab.</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.6 }} className="mx-auto mt-6 max-w-xl text-lg text-muted lg:mx-0">
@@ -586,7 +586,7 @@ function SmartDrop() {
     <section className="mx-auto mt-16 max-w-6xl px-4 sm:px-6" data-tour="drop">
       <div onPointerMove={spotlightMove} className="spotlight relative overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-10">
         <div className="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full bg-accent/20 blur-3xl" />
-        <div className="relative grid items-center gap-8 lg:grid-cols-2">
+        <div className="relative grid grid-cols-[minmax(0,1fr)] items-center gap-8 lg:grid-cols-2">
           <div>
             <div className="text-xs font-bold uppercase tracking-widest text-accent">Smart drop | live sandbox</div>
             <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Drop any file. OpenFile knows what to do.</h2>
@@ -648,7 +648,7 @@ function WorkspacePromo() {
   return (
     <section className="mx-auto mt-28 max-w-6xl px-4 sm:px-6">
       <div onPointerMove={spotlightMove} className="spotlight relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-accent/12 via-surface to-accent-2/10 p-8 sm:p-12">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-10 lg:grid-cols-2">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-accent/15 px-3 py-1 text-xs font-bold text-accent"><Workflow className="size-3.5" /> OPENFILE WORKSPACE</div>
             <h2 className="mt-4 font-display text-3xl font-bold sm:text-4xl">Chain tools into one automated pipeline.</h2>

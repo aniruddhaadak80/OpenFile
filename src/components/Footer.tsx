@@ -83,7 +83,7 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(270px,1.2fr)_repeat(3,minmax(0,1fr))] xl:grid-cols-[290px_repeat(6,minmax(0,1fr))]">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(270px,1.2fr)_repeat(3,minmax(0,1fr))] xl:grid-cols-[290px_repeat(6,minmax(0,1fr))]">
           {/* brand + author */}
           <div className="sm:col-span-2 md:col-span-3 lg:col-span-1 lg:row-span-2 xl:row-span-1">
             <Link to="/" className="inline-flex items-center gap-2.5 font-display text-lg font-bold"><Logo size={28} /> OpenFile</Link>
