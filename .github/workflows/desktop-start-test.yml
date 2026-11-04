@@ -4,7 +4,7 @@ name: Desktop app start test
 # the window is not blank and the app printed no start-up error (tests/apps/screen-check.py). Added for issue #10
 # (a black window on Fedora 44 Wayland). Screenshots and logs are uploaded as artifacts.
 #   Linux:   Ubuntu 22.04 and 24.04 runners, plus Fedora, Debian and Arch containers. Each on X11 (Xvfb) and on
-#            Wayland (cage with its headless backend). AppImage everywhere, .deb on Ubuntu and Debian, .rpm on Fedora.
+#            Wayland (cage with its headless backend), except Ubuntu 22.04 on Wayland (see the exclude below). AppImage everywhere, .deb on Ubuntu and Debian, .rpm on Fedora.
 #            The same runs with the previous release (BEFORE_TAG) give the before picture; they never fail the job.
 #   Windows: NSIS setup on windows-2022 and windows-2025 (install, start, screenshot, uninstall).
 #   macOS:   .dmg on macos-latest (Apple silicon) and macos-15-intel (Intel).
@@ -143,6 +143,11 @@ jobs:
         os: [ubuntu-22.04, ubuntu-24.04]
         display: [x11, wayland]
         kind: [appimage, deb]
+        exclude:
+          # cage 0.1.4 on Ubuntu 22.04 (wlroots 0.15) fails its own headless output test ("Basic output test
+          # failed for HEADLESS-1") and draws nothing, even in safe graphics mode, so its pictures say nothing about
+          # OpenFile. Ubuntu 22.04 runs on X11 here; Wayland runs on Ubuntu 24.04 and in the distro containers.
+          - { os: ubuntu-22.04, display: wayland }
     steps:
       - uses: actions/checkout@v7
         with:
