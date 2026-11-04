@@ -59,7 +59,8 @@ else
 fi
 
 ALIVE=0
-if pgrep -f 'AppRun.wrapped|/usr/bin/openfile|/openfile( |$)' >/dev/null && kill -0 "$APP_PID" 2>/dev/null; then ALIVE=1; fi
+# the app process is named openfile for every package kind (the AppImage runs it from its extracted copy)
+if pgrep -x openfile >/dev/null || pgrep -f 'AppRun.wrapped|/usr/bin/openfile' >/dev/null; then ALIVE=1; fi
 echo "alive=$ALIVE window=${WIN:-none}"
 ps -eo pid,ppid,stat,etime,args | grep -iE 'openfile|AppRun|WebKit|cage' | grep -v grep | head -n 12 || true
 echo "---- app output ($LOG)"; tail -n 40 "$LOG" || true; echo "----"
@@ -69,7 +70,7 @@ FAILED=0
 [ -n "$WIN" ] || { echo "::error::$LABEL: no OpenFile window"; FAILED=1; }
 python3 "$HERE/screen-check.py" "$SHOT" "$LOG" "$LABEL" || FAILED=1
 
-pkill -f 'AppRun.wrapped|/usr/bin/openfile' 2>/dev/null; pkill -f WebKitWebProcess 2>/dev/null; sleep 1
+pkill -x openfile 2>/dev/null; pkill -f 'AppRun.wrapped|/usr/bin/openfile' 2>/dev/null; pkill -f WebKitWebProcess 2>/dev/null; sleep 1
 kill "$COMP_PID" 2>/dev/null; pkill -x cage 2>/dev/null; pkill -x Xvfb 2>/dev/null; sleep 1
 case "$KIND" in
   deb) $SUDO apt-get remove -y -qq open-file >/dev/null || true ;;
