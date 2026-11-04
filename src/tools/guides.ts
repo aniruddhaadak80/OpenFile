@@ -98,6 +98,15 @@ const CAT_DEFAULTS: Partial<Record<Category, { steps: (t: ToolMeta) => string[];
     steps: (t) => [`Open ${t.name} and drop your workout or health file, or type your numbers.`, 'Set your age, max heart rate or units in the side panel.', 'Read the results and charts.', 'Download CSV, GPX or Excel.'],
     tips: ['Most watches can export FIT files from their app or website.', 'Health files reveal a lot about you. Here they never leave your device.', 'These tools give training information, not medical advice.'],
   },
+  llm: {
+    steps: (t) => [`Open ${t.name} and paste your text, or drop your dataset, config or model file.`, 'Pick the model, format or app in the side panel.', 'Check the result and any warnings.', 'Copy it or download the file.'],
+    tips: ['Prompts, datasets and API keys never leave your device, so these tools are safe for private work.', 'Tokenizers and AI models download once and are cached by your browser.'],
+  },
+  exports: {
+    steps: (t) => [`Ask the service for a copy of your data, then open ${t.name}.`, 'Drop the ZIP or the files from inside it.', 'Read the stats, charts and lists, and narrow them by date.', 'Download CSV, JSON or the other formats offered.'],
+    tips: ['Exports hold your private messages, places and habits. Here they are read inside the tab and never uploaded.', 'Most services take from a few minutes to a few days to prepare an export, so ask early.', 'Keep the original ZIP. These tools never change it.'],
+    inputs: ['ZIP', 'JSON', 'CSV'],
+  },
   pdf: {
     steps: (t) => [`Drop your PDF onto the ${t.name} area, or click to choose it.`, 'Wait a moment while page thumbnails render locally.', 'Choose the pages and options you need. Previews update as you go.', 'Press the main action button and download the finished PDF.'],
     tips: ['Encrypted PDFs must be unlocked first with Unlock PDF.', 'Large scanned PDFs are mostly images. Compress PDF shrinks them the most.', 'Your original file is never modified; you always download a new copy.'],

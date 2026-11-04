@@ -2495,6 +2495,262 @@ def d_cf(c, g, t, d, P):
 
 
 
+R15_GOLD = hexrgb('#EAB308')
+R15_EM = hexrgb('#6EE7B7')
+
+
+def _bubble(c, x, y, w, txt, col, k, right=False, size=14):
+    if k <= 0:
+        return
+    rrect(c, x, y, w, 40, 14, fill=SURF2 if not right else col, stroke=None if right else LINE, alpha=k)
+    text(c, txt, font(SANS, size, 'Medium'), x + 14, y + 20, color=BLACK if right else TEXT, anchor='lm', alpha=k)
+
+
+def _bars_v(c, x, y, vals, col, t, t0, bw=18, gap=8, h=150):
+    for i, v in enumerate(vals):
+        k = ease_out((t - t0 - i * 0.05) / 0.5)
+        rrect(c, x + i * (bw + gap), y - h * v * k, bw, max(1, h * v * k), 4, fill=col)
+
+
+def _hbars(c, x, y, items, col, t, t0, w=230, lh=40):
+    for i, (lab, v) in enumerate(items):
+        k = ease_out((t - t0 - i * 0.18) / 0.5)
+        text(c, lab, font(SANS, 14, 'SemiBold'), x, y + i * lh, anchor='lm', alpha=k)
+        rrect(c, x + 150, y + i * lh - 8, w, 16, 8, fill=SURF2, alpha=k)
+        rrect(c, x + 150, y + i * lh - 8, max(1, w * v * k), 16, 8, fill=col)
+
+
+def _drop_zip(c, x, y, t, label, col):
+    k = ease_out_back(t / 0.6)
+    fmt_card(c, x, y - 30 * (1 - k), label, col, min(1, k), kind='doc', seed=3, w=130, h=170)
+
+
+def d_r15(c, g, t, d, P):
+    """Templates for the AI Builder and Data Exports tools (round 15)."""
+    slug, s = P['slug'], P['seed']
+    # ---------------- AI Builder ----------------
+    if slug == 'token-counter':
+        words_ = ['You', ' are', ' a', ' helpful', ' assistant', '.', ' Summ', 'arize', ' this', ' email', ' in', ' two', ' lines', '.']
+        cols = [GOLD, TEAL, CYAN, EMERALD, SKY, R15_GOLD]
+        x, y = CX - 330, CY - 70
+        for i, w_ in enumerate(words_):
+            k = ease_out((t - 0.3 - i * 0.12) / 0.3)
+            fw = text_width(w_, font(MONO, 20, 'Medium')) + 10
+            if x + fw > CX + 330:
+                x, y = CX - 330, y + 54
+            rrect(c, x, y - 18, fw, 36, 6, fill=cols[i % 6], alpha=0.28 * k)
+            line(c, x + 2, y + 18, x + fw - 2, y + 18, cols[i % 6], 3, k)
+            text(c, w_, font(MONO, 20, 'Medium'), x + 5, y, anchor='lm', alpha=k)
+            x += fw + 4
+        n = min(len(words_), int(max(0, t - 0.3) / 0.12) + 1)
+        badge(c, CX - 200, CY + 120, f'{n} tokens', GOLD, 1, 18)
+        badge(c, CX + 20, CY + 120, 'o200k', TEAL, ease_out((t - 1.2) / 0.4), 15)
+        badge(c, CX + 200, CY + 120, '0.01% of 128K', SKY, ease_out((t - 1.8) / 0.4), 15)
+        return
+    if slug == 'rag-chunker':
+        page(c, CX - 240, CY, 200, 280, 1, R15_GOLD, lines=9, seed=s)
+        arrow(c, CX - 120, CY, CX - 30, GOLD, 1, t)
+        for i in range(4):
+            k = ease_out((t - 0.8 - i * 0.35) / 0.4)
+            y = CY - 135 + i * 72
+            rrect(c, CX, y, 300, 60, 10, fill=SURF, stroke=[GOLD, TEAL, CYAN, EMERALD][i], lw=2, alpha=k)
+            rrect(c, CX + 12, y + 14, 60, 10, 4, fill=GOLD, alpha=0.5 * k if i else 0)
+            for j in range(2):
+                rrect(c, CX + (80 if j == 0 and i else 12), y + 14 + j * 20, 200 - j * 40, 10, 4, fill=LINE, alpha=k)
+            text(c, f'#{i}  256 tokens', font(MONO, 12, 'Medium'), CX + 290, y + 48, color=MUTED, anchor='rm', alpha=k)
+        badge(c, CX + 150, CY + 170, 'overlap 32', GOLD, ease_out((t - 2.4) / 0.4), 14)
+        return
+    if slug == 'finetune-dataset-checker':
+        rows = [('{"messages": [...]}', True), ('{"messages": [...]}', True), ('{"messages": [user]}', False), ('{"prompt": ...', False), ('{"messages": [...]}', True)]
+        for i, (r_, ok) in enumerate(rows):
+            k = ease_out((t - 0.3 - i * 0.25) / 0.35)
+            y = CY - 120 + i * 52
+            rrect(c, CX - 330, y - 20, 420, 40, 8, fill=SURF, stroke=LINE, alpha=k)
+            text(c, f'{i + 1}', font(MONO, 13, 'Medium'), CX - 312, y, color=MUTED, anchor='lm', alpha=k)
+            text(c, r_, font(MONO, 15, 'Medium'), CX - 290, y, anchor='lm', alpha=k)
+            kk = ease_out_back((t - 1.6 - i * 0.2) / 0.4)
+            circle(c, CX + 60, y, 12 * min(1, kk), fill=EMERALD if ok else hexrgb('#F87171'), alpha=min(1, max(0, kk)))
+        _hbars(c, CX + 110, CY - 70, [('train', 0.9), ('valid', 0.1)], TEAL, t, 2.4, w=110)
+        badge(c, CX + 220, CY + 60, '3 of 5 ready', GOLD, ease_out((t - 2.8) / 0.4), 14)
+        return
+    if slug == 'dataset-converter':
+        fmts = ['Alpaca', 'ShareGPT', 'CSV']
+        i = int(t / 1.2) % 3
+        fmt_card(c, CX - 240, CY, fmts[i], SKY, 1, kind='doc', seed=s + i)
+        arrow(c, CX - 140, CY, CX - 40, GOLD, 1, t)
+        lines_ = ['{"messages": [', '  {"role": "system", ...},', '  {"role": "user", ...},', '  {"role": "assistant", ...}', ']}']
+        k = ease_out((t - 0.8) / 0.4)
+        rrect(c, CX - 20, CY - 110, 350, 220, 12, fill=SURF, stroke=R15_GOLD, lw=2, alpha=k)
+        for j, ln in enumerate(lines_):
+            text(c, ln, font(MONO, 14, 'Medium'), CX, CY - 80 + j * 38, color=R15_GOLD if j in (0, 4) else TEXT, anchor='lm', alpha=ease_out((t - 1.0 - j * 0.15) / 0.3))
+        badge(c, CX + 150, CY + 150, 'chat JSONL', GOLD, ease_out((t - 2.0) / 0.4), 14)
+        return
+    if slug == 'model-file-inspector':
+        k = ease_out(t / 0.5)
+        rrect(c, CX - 340, CY - 40, 260, 80, 12, fill=SURF, stroke=LINE, alpha=k)
+        rrect(c, CX - 340, CY - 40, 40, 80, 12, fill=R15_GOLD, alpha=0.8 * k)
+        text(c, 'model.gguf', font(MONO, 16, 'Bold'), CX - 285, CY - 10, anchor='lm', alpha=k)
+        text(c, '4.9 GB', font(SANS, 13, 'Medium'), CX - 285, CY + 16, color=MUTED, anchor='lm', alpha=k)
+        sc = clamp((t - 0.6) / 0.8)
+        rrect(g, CX - 300, CY - 40, 40 * sc, 80, 6, fill=GOLD, alpha=0.4)
+        fields = [('Architecture', 'llama'), ('Quantization', 'Q4_K_M'), ('Parameters', '8.03 B'), ('Context', '131072'), ('Tensors', '292')]
+        for i, (a, b) in enumerate(fields):
+            kk = ease_out((t - 1.2 - i * 0.25) / 0.4)
+            y = CY - 120 + i * 56
+            rrect(c, CX - 20, y - 22, 340, 44, 10, fill=SURF, stroke=LINE, alpha=kk)
+            text(c, a, font(SANS, 14, 'SemiBold'), CX, y, color=MUTED, anchor='lm', alpha=kk)
+            text(c, b, font(MONO, 16, 'Bold'), CX + 300, y, color=GOLD if i == 1 else TEXT, anchor='rm', alpha=kk)
+        return
+    if slug == 'prompt-template-filler':
+        tpl = ['Write to {{name}} about', 'order {{order_id}} in a', '{{tone}} tone.']
+        vals = {'{{name}}': 'Priya', '{{order_id}}': 'GL-209', '{{tone}}': 'friendly'}
+        for j, ln in enumerate(tpl):
+            k = ease_out((t - 0.2 - j * 0.2) / 0.3)
+            out = ln
+            for a, b in vals.items():
+                if t > 1.8:
+                    out = out.replace(a, b)
+            text(c, out, font(MONO, 19, 'Medium'), CX - 330, CY - 90 + j * 44, color=TEXT, anchor='lm', alpha=k)
+        for i, (a, b) in enumerate(vals.items()):
+            k = ease_out((t - 0.9 - i * 0.2) / 0.3)
+            y = CY - 80 + i * 60
+            text(c, a.strip('{}'), font(SANS, 13, 'SemiBold'), CX + 110, y - 18, color=MUTED, anchor='lm', alpha=k)
+            rrect(c, CX + 110, y - 6, 220, 34, 8, fill=SURF, stroke=R15_GOLD if t > 1.2 + i * 0.2 else LINE, alpha=k)
+            text(c, typed(b, t - 1.2 - i * 0.2, 14), font(MONO, 15, 'Medium'), CX + 122, y + 11, anchor='lm', alpha=k)
+        badge(c, CX - 180, CY + 120, '3 variables', GOLD, ease_out((t - 2.2) / 0.4), 14)
+        return
+    if slug == 'mcp-config-builder':
+        apps = ['Claude Desktop', 'Cursor', 'VS Code', 'Windsurf']
+        for i, a in enumerate(apps):
+            k = ease_out((t - 0.2 - i * 0.15) / 0.3)
+            on = int(t / 0.9) % 4 == i
+            rrect(c, CX - 340, CY - 120 + i * 60, 190, 44, 10, fill=R15_GOLD if on else SURF, stroke=LINE, alpha=k)
+            text(c, a, font(SANS, 15, 'SemiBold'), CX - 245, CY - 98 + i * 60, color=BLACK if on else TEXT, alpha=k)
+        lines_ = ['{', '  "mcpServers": {', '    "filesystem": {', '      "command": "npx",', '      "args": ["-y", ...]', '    }', '  }', '}']
+        k = ease_out((t - 0.6) / 0.4)
+        rrect(c, CX - 110, CY - 140, 440, 280, 12, fill=SURF, stroke=LINE, alpha=k)
+        for j, ln in enumerate(lines_):
+            text(c, ln, font(MONO, 15, 'Medium'), CX - 90, CY - 112 + j * 32, color=GOLD if '"' in ln and ':' in ln and j < 3 else TEXT, anchor='lm', alpha=ease_out((t - 0.8 - j * 0.1) / 0.3))
+        return
+    if slug == 'embedding-playground':
+        pts = [(-0.7, -0.5, GOLD, 'reset password'), (-0.6, -0.35, GOLD, 'forgot login'), (0.5, -0.4, TEAL, 'where is my parcel'), (0.62, -0.25, TEAL, 'order not arrived'), (0.0, 0.55, SKY, 'pay by card'), (0.15, 0.68, SKY, 'payment methods')]
+        for i, (x, y, col, lab) in enumerate(pts):
+            k = ease_out_back((t - 0.3 - i * 0.2) / 0.5)
+            px, py = CX + x * 300, CY + y * 170
+            circle(g, px, py, 18, fill=col, alpha=0.3 * max(0, min(1, k)))
+            circle(c, px, py, 8 * max(0, min(1.2, k)), fill=col)
+            text(c, lab, font(SANS, 14, 'Medium'), px + 14, py, anchor='lm', alpha=clamp(k))
+        for a, b in ((0, 1), (2, 3), (4, 5)):
+            kk = ease_out((t - 2.0) / 0.5)
+            line(c, CX + pts[a][0] * 300, CY + pts[a][1] * 170, CX + pts[b][0] * 300, CY + pts[b][1] * 170, pts[a][2], 2, kk)
+        badge(c, CX, CY + 165, 'similarity 0.86', GOLD, ease_out((t - 2.6) / 0.4), 14)
+        return
+    if slug == 'llm-stream-viewer':
+        evs = ['data: {"delta":"The"}', 'data: {"delta":" weather"}', 'data: {"delta":" is"}', 'data: {"tool":"get_weather"}', 'data: [DONE]']
+        for i, e in enumerate(evs):
+            k = ease_out((t - 0.2 - i * 0.3) / 0.3)
+            text(c, e, font(MONO, 14, 'Medium'), CX - 340, CY - 110 + i * 40, color=MUTED if i < 4 else TEAL, anchor='lm', alpha=k)
+        arrow(c, CX - 40, CY, CX + 20, GOLD, 1, t)
+        k = ease_out((t - 1.6) / 0.4)
+        rrect(c, CX + 40, CY - 110, 290, 220, 12, fill=SURF, stroke=R15_GOLD, lw=2, alpha=k)
+        text(c, typed('The weather is', t - 1.8, 16), font(SANS, 18, 'SemiBold'), CX + 60, CY - 70, anchor='lm', alpha=k)
+        badge(c, CX + 140, CY - 10, 'get_weather', TEAL, ease_out((t - 2.6) / 0.3), 13)
+        text(c, '61 in  24 out', font(MONO, 14, 'Medium'), CX + 60, CY + 60, color=GOLD, anchor='lm', alpha=ease_out((t - 3.0) / 0.3))
+        return
+    # ---------------- Data Exports ----------------
+    if slug == 'whatsapp-chat-analyzer':
+        msgs = [('Running late, 10 min', False), ('No problem', True), ('Pizza tonight?', False), ('Yes please', True)]
+        for i, (m, r) in enumerate(msgs):
+            k = ease_out((t - 0.2 - i * 0.3) / 0.3)
+            _bubble(c, CX - 330 + (90 if r else 0), CY - 130 + i * 56, 200, m, R15_EM, k, right=r)
+        _bars_v(c, CX + 40, CY + 120, [0.2, 0.1, 0.05, 0.3, 0.6, 0.8, 0.5, 0.9, 1.0, 0.7], R15_EM, t, 1.4)
+        text(c, 'messages by hour', font(SANS, 13, 'Medium'), CX + 40, CY + 145, color=MUTED, anchor='lm', alpha=ease_out((t - 1.4) / 0.4))
+        badge(c, CX + 160, CY - 120, 'Ann 54%  Bob 46%', GOLD, ease_out((t - 2.4) / 0.4), 14)
+        return
+    if slug == 'spotify-history-stats':
+        _drop_zip(c, CX - 260, CY, t, 'JSON', R15_EM)
+        _hbars(c, CX - 120, CY - 100, [('Artist one', 1.0), ('Artist two', 0.78), ('Artist three', 0.6), ('Artist four', 0.45), ('Artist five', 0.3)], R15_EM, t, 0.8, w=260, lh=46)
+        badge(c, CX + 120, CY + 150, '412 hours', GOLD, ease_out((t - 2.4) / 0.4), 16)
+        return
+    if slug == 'instagram-followers-checker':
+        users = ['@ann', '@bob', '@cat', '@dan', '@eve']
+        back = [True, False, True, False, True]
+        for i, u in enumerate(users):
+            k = ease_out((t - 0.2 - i * 0.2) / 0.3)
+            y = CY - 120 + i * 54
+            rrect(c, CX - 300, y - 20, 300, 42, 10, fill=SURF, stroke=LINE, alpha=k)
+            circle(c, CX - 278, y + 1, 12, fill=[GOLD, TEAL, CYAN, EMERALD, SKY][i], alpha=k)
+            text(c, u, font(SANS, 16, 'SemiBold'), CX - 256, y + 1, anchor='lm', alpha=k)
+            kk = ease_out((t - 1.6 - i * 0.15) / 0.3)
+            text(c, 'follows back' if back[i] else 'not back', font(SANS, 13, 'SemiBold'), CX - 20, y + 1, color=EMERALD if back[i] else hexrgb('#F87171'), anchor='rm', alpha=kk)
+        badge(c, CX + 170, CY - 40, '2 not following back', GOLD, ease_out((t - 2.6) / 0.4), 15)
+        badge(c, CX + 170, CY + 20, 'no login needed', TEAL, ease_out((t - 3.0) / 0.4), 14)
+        return
+    if slug == 'ai-chat-export-viewer':
+        titles = ['Trip to Goa', 'Fix my SQL', 'Cover letter', 'Bread recipe']
+        for i, ti in enumerate(titles):
+            k = ease_out((t - 0.2 - i * 0.15) / 0.3)
+            on = i == 1
+            rrect(c, CX - 340, CY - 120 + i * 54, 200, 42, 10, fill=SURF2 if on else SURF, stroke=R15_EM if on else LINE, alpha=k)
+            text(c, ti, font(SANS, 14, 'SemiBold'), CX - 326, CY - 99 + i * 54, anchor='lm', alpha=k)
+        _bubble(c, CX - 100, CY - 120, 260, 'Why is this query slow?', R15_EM, ease_out((t - 0.9) / 0.3), right=True)
+        _bubble(c, CX - 120, CY - 60, 330, 'Add an index on user_id.', R15_EM, ease_out((t - 1.4) / 0.3))
+        fmt_card(c, CX + 260, CY + 60, 'MD', GOLD, ease_out((t - 2.2) / 0.4), kind='doc', seed=s, w=100, h=130)
+        return
+    if slug == 'location-history-converter':
+        _grid(c, CX - 340, CY - 140, 380, 280, step=28, color=SKY, a=0.08)
+        pts = _track(s, n=40, w=340, h=240)
+        _poly(c, [(CX - 150 + x, CY + y) for x, y in pts], R15_EM, 3, 1, ease_in_out((t - 0.2) / 1.6))
+        for i in (0, 13, 27, 39):
+            x, y = pts[i]
+            kk = ease_out_back((t - 0.5 - i * 0.03) / 0.4)
+            circle(c, CX - 150 + x, CY + y, 7 * clamp(kk, 0, 1.2), fill=GOLD)
+        for i, f in enumerate(['GPX', 'KML', 'GeoJSON', 'CSV']):
+            badge(c, CX + 200, CY - 90 + i * 56, f, [GOLD, TEAL, SKY, EMERALD][i], ease_out((t - 2.0 - i * 0.2) / 0.3), 15)
+        return
+    if slug == 'youtube-history-stats':
+        for i in range(3):
+            k = ease_out((t - 0.2 - i * 0.2) / 0.4)
+            photo(c, CX - 330, CY - 130 + i * 90, 140, 78, s + i, alpha=k)
+            circle(c, CX - 260, CY - 91 + i * 90, 14, fill=BLACK, alpha=0.6 * k)
+            text(c, 'Watched', font(SANS, 12, 'Medium'), CX - 175, CY - 105 + i * 90, color=MUTED, anchor='lm', alpha=k)
+            rrect(c, CX - 175, CY - 90 + i * 90, 120, 10, 4, fill=LINE, alpha=k)
+        _bars_v(c, CX + 20, CY + 110, [0.3, 0.5, 0.4, 0.7, 0.6, 0.9, 1.0, 0.8, 0.6, 0.75], R15_EM, t, 1.0)
+        text(c, 'videos per month', font(SANS, 13, 'Medium'), CX + 20, CY + 135, color=MUTED, anchor='lm', alpha=ease_out((t - 1.0) / 0.4))
+        badge(c, CX + 140, CY - 120, '3,481 videos', GOLD, ease_out((t - 2.2) / 0.4), 15)
+        return
+    if slug == 'netflix-history-stats':
+        _sheet(c, CX - 340, CY - 110, 3, 6, 76, 32, R15_EM, 0.2, t, title='ViewingActivity.csv')
+        arrow(c, CX - 90, CY, CX - 20, GOLD, 1, t)
+        _hbars(c, CX - 10, CY - 80, [('Show one', 1.0), ('Show two', 0.7), ('Show three', 0.5), ('A film', 0.25)], GOLD, t, 1.2, w=150, lh=46)
+        badge(c, CX + 150, CY + 130, '286 hours', R15_EM, ease_out((t - 2.6) / 0.4), 15)
+        return
+    if slug == 'x-archive-viewer':
+        posts = ['Learning Rust this week', 'Shipped the new release', 'Coffee, then code']
+        for i, p_ in enumerate(posts):
+            k = ease_out((t - 0.2 - i * 0.3) / 0.35)
+            y = CY - 120 + i * 80
+            rrect(c, CX - 340, y - 30, 330, 64, 12, fill=SURF, stroke=LINE, alpha=k)
+            circle(c, CX - 312, y - 6, 12, fill=SKY, alpha=k)
+            text(c, p_, font(SANS, 15, 'SemiBold'), CX - 290, y - 6, anchor='lm', alpha=k)
+            text(c, f'{12 + i * 7} likes', font(SANS, 12, 'Medium'), CX - 290, y + 16, color=MUTED, anchor='lm', alpha=k)
+        _bars_v(c, CX + 30, CY + 110, [0.4, 0.6, 0.3, 0.8, 1.0, 0.7, 0.5, 0.65], R15_EM, t, 1.2, bw=22)
+        badge(c, CX + 140, CY - 120, '2,140 posts', GOLD, ease_out((t - 2.4) / 0.4), 15)
+        return
+    if slug == 'data-export-explorer':
+        _drop_zip(c, CX - 270, CY, t, 'ZIP', R15_EM)
+        files = [('messages.json', '12,480 records'), ('logins.json', '342 records'), ('ads_interests.json', '1,206 records'), ('searches.json', '5,031 records')]
+        for i, (f, r_) in enumerate(files):
+            k = ease_out((t - 0.8 - i * 0.25) / 0.35)
+            y = CY - 110 + i * 60
+            rrect(c, CX - 140, y - 22, 470, 46, 10, fill=SURF, stroke=LINE, alpha=k)
+            text(c, f, font(MONO, 15, 'Medium'), CX - 124, y + 1, anchor='lm', alpha=k)
+            text(c, r_, font(SANS, 14, 'SemiBold'), CX + 314, y + 1, color=R15_EM, anchor='rm', alpha=k)
+        badge(c, CX + 100, CY + 150, '2019 to 2026', GOLD, ease_out((t - 2.4) / 0.4), 14)
+        return
+    d_doc(c, g, t, d, dict(P, act='reader'))
+
+
 def plan(tool):
     slug, cat, name = tool['slug'], tool['category'], tool['name']
     seed = seed_of(slug)
@@ -2505,6 +2761,8 @@ def plan(tool):
         cols[0] = GOLD
     P = dict(slug=slug, name=name, cat=cat, desc=short_desc(tool['desc']), seed=seed % 1000, r=seed % 7, cols=cols, mirror=bool(seed & 1), n=3 + seed % 3)
     fn = None
+    if cat in ('llm', 'exports'):
+        return d_r15, P
     # ---- round 14 (originals-fill) routing
     B14 = {'video-contact-sheet': (d_split, {'kind': 'frames'}), 'remove-black-bars': (d_image, {'act': 'crop'}), 'video-effects': (d_image, {'act': 'filters'}),
            'countdown-video': (d_video, {'act': 'play'}), 'image-recolor': (d_image, {'act': 'filters'}), 'image-stitcher': (d_image, {'act': 'collage'}),

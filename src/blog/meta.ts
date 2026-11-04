@@ -2,7 +2,7 @@
 // with a regex to pre-render /blog/<slug>, add the posts to sitemap.xml and write /blog/rss.xml.
 // Post bodies: the first nine live in src/blog/posts.tsx, newer ones in src/blog/posts/<slug>.tsx, all registered in POST_BODIES.
 export type CoverKind = 'privacy' | 'pdf' | 'image' | 'video' | 'pipeline' | 'sketch' | 'formats' | 'dev' | 'voice'
-  | 'install' | 'ai' | 'mail' | 'photo' | 'gif' | 'signature' | 'ebook' | 'cad' | 'medical' | 'midi' | 'data' | 'subtitle' | 'money' | 'receipt' | 'markdown' | 'diagram' | 'printing' | 'fitness' | 'study' | 'web' | 'calendar'
+  | 'install' | 'ai' | 'mail' | 'photo' | 'gif' | 'signature' | 'ebook' | 'cad' | 'medical' | 'midi' | 'data' | 'subtitle' | 'money' | 'receipt' | 'markdown' | 'diagram' | 'printing' | 'fitness' | 'study' | 'web' | 'calendar' | 'llm' | 'exports'
 
 export interface PostMeta {
   slug: string
@@ -17,6 +17,8 @@ export interface PostMeta {
 }
 
 export const POSTS: PostMeta[] = [
+  { slug: 'tokens-chunks-and-mcp-configs', title: 'Tokens, chunks and MCP configs: the small files behind AI apps', description: 'How tokens are counted, how to cut documents for RAG, what makes a fine-tuning file valid, what is inside a GGUF model, and how to write MCP configs for every app.', date: '2026-11-04', tags: ['ai', 'developer', 'privacy'], minutes: 7, cover: 'llm', tools: ['token-counter', 'rag-chunker', 'finetune-dataset-checker', 'model-file-inspector', 'mcp-config-builder', 'embedding-playground'] },
+  { slug: 'read-your-data-exports-privately', title: 'What apps know about you: read your data exports without uploading them', description: 'How to ask Spotify, WhatsApp, Instagram, Google and others for your data, and how to turn their ZIP files into stats, lists and maps inside your browser.', date: '2026-11-04', tags: ['privacy', 'data', 'formats'], minutes: 7, cover: 'exports', tools: ['whatsapp-chat-analyzer', 'spotify-history-stats', 'instagram-followers-checker', 'location-history-converter', 'ai-chat-export-viewer', 'data-export-explorer'] },
   { slug: 'turn-any-document-into-markdown', title: 'Turn any document into Markdown for notes and AI chats', description: 'Why Markdown is worth it, how PDF, Word, PowerPoint, Excel, email and notebooks are read in the browser, and how to deal with saved web pages and old Windows drawings.', date: '2026-10-30', tags: ['formats', 'markdown', 'ai'], minutes: 6, cover: 'markdown', tools: ['any-to-markdown', 'notebook-converter', 'mhtml-viewer', 'emf-wmf-converter'] },
   { slug: 'diagrams-and-charts-from-plain-text', title: 'Diagrams, charts and code pictures from plain text', description: 'Write a flowchart in three lines, paste a table for a chart, and turn code into a clean picture. Plus blobs, waves and printable graph paper, all in the browser.', date: '2026-10-30', tags: ['design', 'diagrams', 'tips'], minutes: 6, cover: 'diagram', tools: ['diagram-renderer', 'chart-maker', 'code-to-image', 'svg-blob-wave', 'printable-paper'] },
   { slug: '3d-printing-files-in-a-browser', title: 'From logo to G-code to turntable: 3D printing files in a browser', description: 'Turn a flat logo into a solid, read G-code layer by layer, film a spinning turntable video, and convert point clouds from scanners and drones.', date: '2026-10-30', tags: ['3d', 'printing', 'formats'], minutes: 6, cover: 'printing', tools: ['extrude-to-3d', 'gcode-viewer', '3d-turntable', 'point-cloud-converter'] },

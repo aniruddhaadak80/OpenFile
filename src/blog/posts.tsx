@@ -22,6 +22,8 @@ import RobotsSitemapsRedirects from './posts/robots-txt-sitemaps-and-redirects'
 import CalendarFiles from './posts/calendar-files-and-repeat-rules'
 import InsideFitFile from './posts/what-is-inside-a-fit-file'
 import ScanReceipts from './posts/scan-receipts-privately'
+import TokensChunksMcp from './posts/tokens-chunks-and-mcp-configs'
+import ReadYourDataExports from './posts/read-your-data-exports-privately'
 import AnyDocumentToMarkdown from './posts/turn-any-document-into-markdown'
 import DiagramsFromText from './posts/diagrams-and-charts-from-plain-text'
 import PrintingFilesInBrowser from './posts/3d-printing-files-in-a-browser'
@@ -271,4 +273,6 @@ export const POST_BODIES: Record<string, () => ReactNode> = {
   'calendar-files-and-repeat-rules': CalendarFiles,
   'what-is-inside-a-fit-file': InsideFitFile,
   'scan-receipts-privately': ScanReceipts,
+  'tokens-chunks-and-mcp-configs': TokensChunksMcp,
+  'read-your-data-exports-privately': ReadYourDataExports,
 }

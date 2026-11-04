@@ -13,8 +13,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/tools-572-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
-  <img src="https://img.shields.io/badge/categories-26-14B8A6?style=flat-square&labelColor=0B0D10" alt="26 categories"/>
+  <img src="https://img.shields.io/badge/tools-590-F5A524?style=flat-square&labelColor=0B0D10" alt="411 tools"/>
+  <img src="https://img.shields.io/badge/categories-28-14B8A6?style=flat-square&labelColor=0B0D10" alt="28 categories"/>
   <a href="https://github.com/aniruddhaadak80/OpenFile/releases/latest"><img src="https://img.shields.io/github/v/release/aniruddhaadak80/OpenFile?style=flat-square&label=release&color=F5A524&labelColor=0B0D10" alt="latest release"/></a>
   <img src="https://img.shields.io/badge/uploads-0_bytes-10B981?style=flat-square&labelColor=0B0D10" alt="0 uploads"/>
   <img src="https://img.shields.io/badge/runs-in_your_browser-14B8A6?style=flat-square&logo=googlechrome&logoColor=14B8A6&labelColor=0B0D10" alt="runs in your browser"/>
@@ -36,7 +36,7 @@
 </p>
 
 <p align="center">
-  <b>572 free, open-source tools</b> in <b>26 studios</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data, code, <br/>
+  <b>590 free, open-source tools</b> in <b>28 studios</b> for PDFs, images, video, audio, 3D, fonts, archives, eBooks, data, code, <br/>
   maps, office files, science, privacy and creators, processed <b>entirely inside your browser tab</b>. No uploads. No sign-up. No watermarks. No limits.
 </p>
 
@@ -74,14 +74,19 @@
 
 </details>
 
-<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="572 tools · 26 categories · 0 uploads · 100% open source"/></p>
+<p align="center"><img src="docs/assets/stats.svg" width="100%" alt="590 tools · 28 categories · 0 uploads · 100% open source"/></p>
 
 <p align="center"><img src="docs/assets/divider-wave.svg" width="100%" alt=""/></p>
 
 ## 🆕 What's new
 
 <!-- whatsnew:start -->
-OpenFile now has **572 tools in 26 studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.
+OpenFile now has **590 tools in 28 studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.
+
+**AI Builder and Data Exports (v2.6.0)**
+
+- 🧠 [AI Builder](https://openfile-studio.vercel.app/category/llm) (9 tools): [Token Counter](https://openfile-studio.vercel.app/token-counter), [RAG Text Chunker](https://openfile-studio.vercel.app/rag-chunker), [Fine-tune Dataset Checker](https://openfile-studio.vercel.app/finetune-dataset-checker), [GGUF & Safetensors Inspector](https://openfile-studio.vercel.app/model-file-inspector), [MCP Config Builder](https://openfile-studio.vercel.app/mcp-config-builder), [Embedding Playground](https://openfile-studio.vercel.app/embedding-playground) and more.
+- 📦 [Data Exports](https://openfile-studio.vercel.app/category/exports) (9 tools): [WhatsApp Chat Analyzer](https://openfile-studio.vercel.app/whatsapp-chat-analyzer), [Spotify History Stats](https://openfile-studio.vercel.app/spotify-history-stats), [Instagram Followers Checker](https://openfile-studio.vercel.app/instagram-followers-checker), [ChatGPT & Claude Export Viewer](https://openfile-studio.vercel.app/ai-chat-export-viewer), [Location History Converter](https://openfile-studio.vercel.app/location-history-converter), [Data Export Explorer](https://openfile-studio.vercel.app/data-export-explorer) and more.
 
 **71 new tools in the original studios (v2.5.0)**
 
@@ -136,7 +141,7 @@ OpenFile now has **572 tools in 26 studios**, apps for every device that update 
 - 📊 **Data**: [SQLite Browser](https://openfile-studio.vercel.app/sqlite-viewer), [Parquet / Arrow / Avro Viewer](https://openfile-studio.vercel.app/parquet-viewer), [CSV & Spreadsheet Editor](https://openfile-studio.vercel.app/csv-editor) and [GPS / GIS Converter](https://openfile-studio.vercel.app/geo-converter).
 - 🤖 **On-device AI**: [Chat with PDF](https://openfile-studio.vercel.app/chat-pdf), [Colorize Black and White Photo](https://openfile-studio.vercel.app/colorize-photo), [Magic Eraser (Remove Objects)](https://openfile-studio.vercel.app/object-remover), [Photo Enhancer](https://openfile-studio.vercel.app/photo-enhancer) and [AI Summarizer](https://openfile-studio.vercel.app/pdf-summarizer).
 - 🧑‍💻 **Text and developer tools**: [Readability Checker](https://openfile-studio.vercel.app/readability-score), [Secret Scanner](https://openfile-studio.vercel.app/secret-scanner), [JSON Repair & JSON5](https://openfile-studio.vercel.app/json-repair), [HAR File Viewer](https://openfile-studio.vercel.app/har-viewer) and more.
-- 🧲 **Drop anything**, ⚖️ **compare tools**, 📲 **share target** and 🎞️ **per-tool preview videos** (572 so far).
+- 🧲 **Drop anything**, ⚖️ **compare tools**, 📲 **share target** and 🎞️ **per-tool preview videos** (590 so far).
 
 </details>
 
@@ -317,7 +322,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 
 ## 🧰 The toolbox
 
-<p align="center"><img src="docs/assets/category-orbit.svg" width="82%" alt="26 studios orbiting the OpenFile core"/></p>
+<p align="center"><img src="docs/assets/category-orbit.svg" width="82%" alt="28 studios orbiting the OpenFile core"/></p>
 
 <!-- toolbox:start -->
 <table>
@@ -516,6 +521,20 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 <a href="https://openfile-studio.vercel.app/fit-file-converter">FIT File Converter &amp; Viewer</a><br/><a href="https://openfile-studio.vercel.app/heart-rate-zones">Heart Rate Zones</a><br/><a href="https://openfile-studio.vercel.app/apple-health-export">Apple Health Export to CSV</a><br/>
 <a href="https://openfile-studio.vercel.app/category/health"><b>Browse all →</b></a>
 </td>
+<td width="25%" valign="top" align="center">
+<h3>🧠<br/>AI Builder</h3>
+<img src="https://img.shields.io/badge/9-tools-EAB308?style=flat-square&labelColor=0B0D10" alt="9 tools"/><br/>
+<sub>Token counts, RAG chunks, fine-tune datasets, model files, prompts and MCP configs</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/token-counter">Token Counter</a><br/><a href="https://openfile-studio.vercel.app/mcp-config-builder">MCP Config Builder</a><br/><a href="https://openfile-studio.vercel.app/rag-chunker">RAG Text Chunker</a><br/>
+<a href="https://openfile-studio.vercel.app/category/llm"><b>Browse all →</b></a>
+</td>
+<td width="25%" valign="top" align="center">
+<h3>📦<br/>Data Exports</h3>
+<img src="https://img.shields.io/badge/9-tools-6EE7B7?style=flat-square&labelColor=0B0D10" alt="9 tools"/><br/>
+<sub>Open the data apps give you: chats, music, followers, AI chats, watch and location history</sub><br/><br/>
+<a href="https://openfile-studio.vercel.app/whatsapp-chat-analyzer">WhatsApp Chat Analyzer</a><br/><a href="https://openfile-studio.vercel.app/instagram-followers-checker">Instagram Followers Checker</a><br/><a href="https://openfile-studio.vercel.app/spotify-history-stats">Spotify History Stats</a><br/>
+<a href="https://openfile-studio.vercel.app/category/exports"><b>Browse all →</b></a>
+</td>
 </tr>
 </table>
 <!-- toolbox:end -->
@@ -523,7 +542,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ### 📚 Every tool, one click away
 
 <!-- catalog:start -->
-> **572 tools across 26 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
+> **590 tools across 28 studios.** Each name is a deep link, `https://openfile-studio.vercel.app/<slug>`, that opens the tool directly.
 > Legend: 🔥 Hot · ✨ New · 🤖 AI · ⭐ Popular · 🔁 Usable as a Workspace pipeline step
 
 <details open>
@@ -1331,6 +1350,42 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 </table>
 <p align="right"><a href="https://openfile-studio.vercel.app/category/health">Open the Health &amp; Fitness studio ↗</a></p>
 </details>
+
+<details>
+<summary><b>🧠 AI Builder</b>, 9 tools · <i>Token counts, RAG chunks, fine-tune datasets, model files, prompts and MCP configs</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/token-counter"><b>Token Counter</b></a></td><td>Count tokens with the real GPT-4o, GPT-4, Llama 3, Mistral, Qwen, Gemma or DeepSeek tokenizer, see each token, context use and cost.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/rag-chunker"><b>RAG Text Chunker</b></a></td><td>Split documents into overlapping chunks by characters, words or tokens for embeddings and RAG, then export JSONL, JSON or CSV.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/finetune-dataset-checker"><b>Fine-tune Dataset Checker</b></a></td><td>Validate a JSONL fine-tuning file line by line: roles, empty replies, duplicates, token limits, then download clean train and validation splits.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/dataset-converter"><b>Dataset Format Converter</b></a></td><td>Convert fine-tuning data between OpenAI chat JSONL, ShareGPT, Alpaca, prompt and completion, and CSV, with an optional system prompt.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/model-file-inspector"><b>GGUF &amp; Safetensors Inspector</b></a></td><td>Read a GGUF or safetensors model header: architecture, quantization, context length, parameter count, tokenizer and every tensor, without loading the weights.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/prompt-template-filler"><b>Prompt Template Filler</b></a></td><td>Turn {{variables}} in a prompt into a form, fill it live, or fill it from a CSV to make many prompts or a batch JSONL file.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/mcp-config-builder"><b>MCP Config Builder</b></a></td><td>Build Model Context Protocol server configs for Claude Desktop, Cursor, VS Code, Windsurf, Claude Code and Gemini CLI, or convert one app's config to another.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/embedding-playground"><b>Embedding Playground</b></a></td><td>See how an AI embedding model measures meaning: a similarity grid, the closest pairs, a 2D meaning map and search, all on your device.</td><td><sub>🤖 AI</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/llm-stream-viewer"><b>LLM Stream Viewer</b></a></td><td>Paste a streamed or plain LLM API response (OpenAI, Anthropic, Gemini, Ollama) and get the full text, reasoning, tool calls and token usage.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/llm">Open the AI Builder studio ↗</a></p>
+</details>
+
+<details>
+<summary><b>📦 Data Exports</b>, 9 tools · <i>Open the data apps give you: chats, music, followers, AI chats, watch and location history</i></summary>
+<br/>
+<table>
+<tr><th align="left">Tool</th><th align="left">What it does</th><th align="left">Tags</th></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/whatsapp-chat-analyzer"><b>WhatsApp Chat Analyzer</b></a></td><td>Stats for an exported WhatsApp chat: who writes most, reply times, busiest hours and days, top words and emoji, with search and CSV.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/spotify-history-stats"><b>Spotify History Stats</b></a></td><td>Open your Spotify data export and see listening hours, top artists, tracks, albums and podcasts, by month and hour, with skips and CSV.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/instagram-followers-checker"><b>Instagram Followers Checker</b></a></td><td>See who does not follow you back, your fans and mutuals from your Instagram data download, with no login and nothing uploaded.</td><td><sub>✨ New · ⭐ Popular</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/ai-chat-export-viewer"><b>ChatGPT &amp; Claude Export Viewer</b></a></td><td>Read and search every chat from a ChatGPT or Claude data export, then save one chat or all of them as Markdown.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/location-history-converter"><b>Location History Converter</b></a></td><td>Turn Google Timeline or Takeout location history into GPX, KML, GeoJSON or CSV, with distances by month and your most visited places.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/youtube-history-stats"><b>YouTube History Stats</b></a></td><td>See your YouTube watch history from Google Takeout: videos per month, top channels, rewatched videos and your viewing hours, with CSV.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/netflix-history-stats"><b>Netflix History Stats</b></a></td><td>See hours watched, top shows, films and binges from your Netflix viewing history CSV.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/x-archive-viewer"><b>X (Twitter) Archive Viewer</b></a></td><td>Browse and search the posts in your X or Twitter archive, with stats, top words and your best posts.</td><td><sub>✨ New</sub></td></tr>
+<tr><td><a href="https://openfile-studio.vercel.app/data-export-explorer"><b>Data Export Explorer</b></a></td><td>Drop any &quot;download your data&quot; ZIP and see what is inside: every file, every list of records with its date range, as tables you can save.</td><td><sub>✨ New</sub></td></tr>
+</table>
+<p align="right"><a href="https://openfile-studio.vercel.app/category/exports">Open the Data Exports studio ↗</a></p>
+</details>
 <!-- catalog:end -->
 
 <!-- charts:start -->
@@ -1339,7 +1394,7 @@ Command palette (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd>), smart file drop
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'pie1':'#F5A524','pie2':'#F97316','pie3':'#10B981','pie4':'#38BDF8','pie5':'#14B8A6','pie6':'#22D3EE','pie7':'#84CC16','pie8':'#60A5FA','pie9':'#0EA5E9','pie10':'#FBBF24','pie11':'#2DD4BF','pie12':'#A3A3A3','pieTitleTextSize':'20px','pieTitleTextColor':'#F5A524','pieSectionTextColor':'#050505','pieLegendTextColor':'#A8A29E','pieStrokeColor':'#050505','pieStrokeWidth':'2px','pieOuterStrokeColor':'#F5A524','pieOuterStrokeWidth':'2px','pieOpacity':'1'}}}%%
 pie showData
-    title 572 tools across 26 studios
+    title 590 tools across 28 studios
     "PDF Tools" : 63
     "Convert" : 35
     "Image" : 60
@@ -1366,6 +1421,8 @@ pie showData
     "Calendar and Time" : 12
     "Money and Finance" : 10
     "Health and Fitness" : 6
+    "AI Builder" : 9
+    "Data Exports" : 9
 ```
 
 ### 🧭 Category map
@@ -1373,7 +1430,7 @@ pie showData
 ```mermaid
 %%{init: {'theme':'base','themeVariables':{'primaryColor':'#F5A524','primaryTextColor':'#050505','primaryBorderColor':'#FFB224','lineColor':'#F5A524','fontFamily':'system-ui, sans-serif','cScale0':'#F5A524','cScaleLabel0':'#050505','cScaleInv0':'#050505','cScale1':'#F97316','cScaleLabel1':'#050505','cScaleInv1':'#050505','cScale2':'#10B981','cScaleLabel2':'#050505','cScaleInv2':'#050505','cScale3':'#38BDF8','cScaleLabel3':'#050505','cScaleInv3':'#050505','cScale4':'#14B8A6','cScaleLabel4':'#050505','cScaleInv4':'#050505','cScale5':'#22D3EE','cScaleLabel5':'#050505','cScaleInv5':'#050505','cScale6':'#84CC16','cScaleLabel6':'#050505','cScaleInv6':'#050505','cScale7':'#60A5FA','cScaleLabel7':'#050505','cScaleInv7':'#050505','cScale8':'#0EA5E9','cScaleLabel8':'#050505','cScaleInv8':'#050505','cScale9':'#FBBF24','cScaleLabel9':'#050505','cScaleInv9':'#050505','cScale10':'#2DD4BF','cScaleLabel10':'#050505','cScaleInv10':'#050505','cScale11':'#A3A3A3','cScaleLabel11':'#050505','cScaleInv11':'#050505'}}}%%
 mindmap
-  root(("OpenFile · 572 tools"))
+  root(("OpenFile · 590 tools"))
     PDF
       Merge PDF · Split PDF · Compress PDF
       Sign PDF · Invoice Generator · Create Fillable PDF Form
@@ -1452,6 +1509,12 @@ mindmap
     Health
       FIT File Converter and Viewer · Heart Rate Zones · Apple Health Export to CSV
       Running Pace Calculator · BMI, BMR and Calorie Calculator · AI Meal Photo Logger
+    AI Builder
+      Token Counter · MCP Config Builder · RAG Text Chunker
+      Fine-tune Dataset Checker · Dataset Format Converter · GGUF and Safetensors Inspector
+    Exports
+      WhatsApp Chat Analyzer · Instagram Followers Checker · Spotify History Stats
+      ChatGPT and Claude Export Viewer · Location History Converter · YouTube History Stats
 ```
 <!-- charts:end -->
 
@@ -1522,7 +1585,7 @@ flowchart LR
     U["👤 You<br/>drop or pick files"]:::user --> BR
     subgraph BR["🌐 Your browser tab, nothing leaves it"]
         direction LR
-        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>572 tools · import.meta.glob"]:::ui
+        RR["⚛️ React 19 + React Router<br/>lazy routes /:slug"]:::ui --> REG["🗂️ Tool registry<br/>590 tools · import.meta.glob"]:::ui
         REG --> E1["📄 pdf-lib · PDF.js<br/>@cantoo/pdf-lib"]:::pdf
         REG --> E2["🎬 ffmpeg.wasm<br/>MediaRecorder · Web Audio"]:::media
         REG --> E3["🔤 Tesseract.js OCR"]:::ai
@@ -1573,7 +1636,7 @@ sequenceDiagram
     Note over U,B: The file never crosses the network. Closing the tab frees all memory.
 ```
 
-- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 572 tools.
+- **One component per tool** at `src/tools/<category>/<slug>.tsx`, discovered with `import.meta.glob` and code-split automatically, the homepage stays light even with 590 tools.
 - **Heavy engines load on demand** (ffmpeg core, OCR language data, AI weights) and are cached by the browser and the service worker.
 - **Zero-upload guarantee:** the optional Vercel functions (`/api/health`, `/api/fetch-page`, `/api/meta`) only ever receive a **URL you type**, never a file.
 
@@ -1833,11 +1896,11 @@ OpenFile/
 │  ├─ pages/                 # Home, Tools, ToolPage, Workspace, Docs, Blog, History, Settings
 │  │  └─ workspace/steps.ts  # pipeline steps + presets
 │  └─ tools/
-│     ├─ registry.ts         # the catalog, 572 tools, 26 categories
-│     ├─ batches/            # more catalog entries: b-cat1, b-cat2, b-cat3, b-cf, b1, b10, b11, b12, b13, b14, b2, b3, b4, b5
+│     ├─ registry.ts         # the catalog, 590 tools, 28 categories
+│     ├─ batches/            # more catalog entries: b-cat1, b-cat2, b-cat3, b-cf, b1, b10, b11, b12, b13, b14, b15, b2, b3, b4, b5
 │     ├─ engines.ts · guides.ts  # "How it works" content for every tool page
-│     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/ data/ ai/ 3d/ archive/ ebook/
-│        font/ cad/ subtitle/ privacy/ geo/ office/ science/ creator/ study/ web/ time/ finance/ health/
+│     └─ pdf/ convert/ image/ video/ audio/ dev/ text/ design/ data/ ai/ 3d/ archive/ ebook/ font/
+│        cad/ subtitle/ privacy/ geo/ office/ science/ creator/ study/ web/ time/ finance/ health/ llm/ exports/
 ├─ .github/                  # Pages deploy, app releases, packages, CodeQL, Dependabot
 ├─ CHANGELOG.md              # release notes
 └─ vercel.json               # SPA rewrites + security headers
@@ -1882,7 +1945,7 @@ timeline
         v1.0 core : First in-browser studios : Command palette and smart drop
         Power features : Batch Workspace : Presets and saved recipes : On-device AI
         Everywhere : Installable PWA : Offline mode : Vercel and GitHub Pages
-        v2.0 catalog : 572 in-browser tools : 26 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
+        v2.0 catalog : 590 in-browser tools : 28 studios : 3D · Archive · Font · Ebook · CAD · Subtitle
         v2.0 polish : Per-tool preview videos : Drop anything and share target : Compare tools and new hero
         v1.2 apps : Desktop and Android apps : Signed auto updates : Rollback
         v2.2 studios : Privacy · Maps · Office · Science · Creator : Local AI in Web Workers
@@ -1892,7 +1955,7 @@ timeline
         Global : UI translations i18n
 ```
 
-- [x] 572 in-browser tools across 26 studios
+- [x] 590 in-browser tools across 28 studios
 - [x] Batch Workspace with presets and saved recipes
 - [x] On-device AI, background removal, OCR, upscaling, transcription
 - [x] Installable PWA + offline mode

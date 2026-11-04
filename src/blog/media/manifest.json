@@ -1,6 +1,184 @@
 {
  "release": "https://github.com/aniruddhaadak80/OpenFile/releases/download/media-v1/",
  "posts": {
+  "tokens-chunks-and-mcp-configs": {
+   "hash": "b9c8f2c50011",
+   "loop": true,
+   "video": {
+    "dur": 86.36,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 7.48,
+      "label": "In this post"
+     },
+     {
+      "t": 21.19,
+      "label": "Tokens are not words"
+     },
+     {
+      "t": 26.72,
+      "label": "Chunking documents for RAG"
+     },
+     {
+      "t": 40.73,
+      "label": "What is inside a model file"
+     },
+     {
+      "t": 53.38,
+      "label": "MCP configs without the guesswork"
+     },
+     {
+      "t": 65.62,
+      "label": "Try the tool"
+     },
+     {
+      "t": 78.62,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 3449479,
+    "webm": 2499991
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: Tokens are not words; Chunking documents for RAG; Fine-tuning files; What is inside a model file; MCP configs without the guesswork.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through Token Counter, RAG Text Chunker, Fine-tune Dataset Checker, GGUF & Safetensors Inspector, MCP Config Builder, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Chunking documents for RAG\". Retrieval augmented generation, or RAG, means finding the few passages of your documents that answer a question and putting only those into the prompt.",
+     "caption": "From the explainer film: Chunking documents for RAG.",
+     "heading": "chunking-documents-for-rag"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"MCP configs without the guesswork\". The Model Context Protocol lets an assistant use tools you run, such as a file system, a browser or a database.",
+     "caption": "From the explainer film: MCP configs without the guesswork.",
+     "heading": "mcp-configs-without-the-guesswork"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 343.91,
+     "words": 990,
+     "mp3": 2064224
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 312.31,
+     "words": 990,
+     "mp3": 1874574
+    }
+   ]
+  },
+  "read-your-data-exports-privately": {
+   "hash": "8bcb13b02201",
+   "loop": true,
+   "video": {
+    "dur": 69.64,
+    "chapters": [
+     {
+      "t": 0.0,
+      "label": "Intro"
+     },
+     {
+      "t": 5.8,
+      "label": "In this post"
+     },
+     {
+      "t": 17.18,
+      "label": "How to ask for your data"
+     },
+     {
+      "t": 25.2,
+      "label": "Chats: who talks most, and when"
+     },
+     {
+      "t": 33.95,
+      "label": "Places you have been"
+     },
+     {
+      "t": 39.73,
+      "label": "Anything else"
+     },
+     {
+      "t": 49.65,
+      "label": "Try the tool"
+     },
+     {
+      "t": 62.65,
+      "label": "Read more"
+     }
+    ],
+    "mp4": 2795739,
+    "webm": 1906928
+   },
+   "images": [
+    {
+     "src": "map.webp",
+     "alt": "Route map of the post with 5 chapters: How to ask for your data; Chats: who talks most, and when; Listening and watching; Places you have been; Anything else.",
+     "caption": "The route through this post. Every stop is a chapter you can jump to.",
+     "after": 0
+    },
+    {
+     "src": "flow.webp",
+     "alt": "Diagram: your FILE file goes through WhatsApp Chat Analyzer, Spotify History Stats, Instagram Followers Checker, Location History Converter, ChatGPT & Claude Export Viewer, all inside the browser tab on your device, and comes out as the result. Nothing is uploaded.",
+     "caption": "The tools from this post. Everything runs inside the tab, so the file never leaves your device.",
+     "after": "end"
+    },
+    {
+     "src": "scene-1.webp",
+     "alt": "Layer diagram for the chapter \"Chats: who talks most, and when\". A WhatsApp export is plain text: a date, a time, a name, a colon and the message.",
+     "caption": "From the explainer film: Chats: who talks most, and when.",
+     "heading": "chats-who-talks-most-and-when"
+    },
+    {
+     "src": "scene-2.webp",
+     "alt": "Layer diagram for the chapter \"Anything else\". For services without a tool of their own, Data Export Explorer opens any export ZIP, guesses which service it came from.",
+     "caption": "From the explainer film: Anything else.",
+     "heading": "anything-else"
+    }
+   ],
+   "voices": [
+    {
+     "id": "lessac",
+     "label": "Lessac",
+     "gender": "female",
+     "accent": "US English",
+     "dur": 265.07,
+     "words": 748,
+     "mp3": 1591193
+    },
+    {
+     "id": "ryan",
+     "label": "Ryan",
+     "gender": "male",
+     "accent": "US English",
+     "dur": 245.27,
+     "words": 748,
+     "mp3": 1472391
+    }
+   ]
+  },
   "make-flashcards-and-quizzes-that-stick": {
    "hash": "3fe2fca4d36c",
    "loop": true,

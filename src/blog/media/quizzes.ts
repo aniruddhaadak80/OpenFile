@@ -107,6 +107,15 @@ export const QUIZZES: Record<string, QuizQ[]> = {
     { q: 'Why is OFX a good choice for importing into a money app?', options: ['Each transaction has a unique id, so importing twice does not double it', 'It is the smallest format', 'It always has categories'], a: 0, why: 'The FITID lets the app skip rows it has already imported.' },
     { q: 'What can you do when your bank only gives a PDF statement?', options: ['Convert it with PDF Statement to CSV, then check the totals', 'Nothing', 'Rename it to .csv'], a: 0, why: 'The tool rebuilds rows from the text positions on each page.' },
   ],
+  'tokens-chunks-and-mcp-configs': [
+    { q: 'Why does Token Counter ask which model you use?', options: ['Each model family has its own tokenizer, so counts differ', 'Only to pick a colour', 'Because some models do not use tokens'], a: 0, why: 'GPT-4o, Llama 3 and Mistral split the same text into different tokens.' },
+    { q: 'What does overlap do when you chunk a document for RAG?', options: ['It repeats the end of one chunk at the start of the next, so facts on a boundary are not lost', 'It makes every chunk the same size', 'It removes duplicate chunks'], a: 0, why: 'A sentence that falls on a cut still appears whole in one of the two chunks.' },
+    { q: 'Why can the GGUF inspector open a 40 GB model in a second?', options: ['It reads only the header at the start of the file', 'It uploads the file to a fast server', 'It skips every other tensor'], a: 0, why: 'The header lists the metadata and every tensor, so the weights never need to be read.' },
+  ],
+  'read-your-data-exports-privately': [
+    { q: 'How does the Instagram Followers Checker find who does not follow you back?', options: ['It compares the followers and following lists in your own export', 'It signs in to your account', 'It asks Instagram for a report'], a: 0, why: 'Anyone you follow who is not in your followers list does not follow you back. No login is involved.' },
+    { q: 'Why does the location tool draw dots instead of loading a map?', options: ['A map tile request would tell a server roughly where you were', 'Maps are too slow', 'GPX files cannot be shown on maps'], a: 0, why: 'Keeping the preview to your own points means nothing about your places leaves the tab.' },
+  ],
   'scan-receipts-privately': [
     { q: 'Why does the scanner turn the photo grey and stretch the contrast first?', options: ['OCR reads dark text on a light background more accurately', 'To make the file prettier', 'To hide the shop name'], a: 0, why: 'Faded thermal paper reads much better after a contrast stretch.' },
     { q: 'Where does the OCR model run?', options: ['In a Web Worker on your device, no GPU needed', 'On a cloud server', 'Only on phones with a GPU'], a: 0, why: 'Tesseract runs as WebAssembly in a background worker on the CPU.' },

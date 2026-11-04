@@ -4574,5 +4574,149 @@
     "voice": "bm_daniel 50% + bm_george 50%",
     "bytes": 340697,
     "music": "G 87 bpm marimba"
+  },
+  "token-counter": {
+    "video": "media/tools/token-counter.mp4",
+    "poster": "media/tools/token-counter.jpg",
+    "duration": 10.87,
+    "voice": "af_alloy 50% + af_heart 50%",
+    "bytes": 254246,
+    "music": "F 79 bpm glass"
+  },
+  "rag-chunker": {
+    "video": "media/tools/rag-chunker.mp4",
+    "poster": "media/tools/rag-chunker.jpg",
+    "duration": 10.6,
+    "voice": "af_sky 50% + af_heart 50%",
+    "bytes": 248727,
+    "music": "G 100 bpm glass"
+  },
+  "finetune-dataset-checker": {
+    "video": "media/tools/finetune-dataset-checker.mp4",
+    "poster": "media/tools/finetune-dataset-checker.jpg",
+    "duration": 8.0,
+    "voice": "af_jessica 50% + af_heart 50%",
+    "bytes": 205961,
+    "music": "F 83 bpm rhodes"
+  },
+  "dataset-converter": {
+    "video": "media/tools/dataset-converter.mp4",
+    "poster": "media/tools/dataset-converter.jpg",
+    "duration": 10.87,
+    "voice": "af_river 50% + af_heart 50%",
+    "bytes": 274009,
+    "music": "C 88 bpm kalimba"
+  },
+  "model-file-inspector": {
+    "video": "media/tools/model-file-inspector.mp4",
+    "poster": "media/tools/model-file-inspector.jpg",
+    "duration": 9.13,
+    "voice": "af_bella 50% + af_nicole 50%",
+    "bytes": 213143,
+    "music": "G 95 bpm piano"
+  },
+  "prompt-template-filler": {
+    "video": "media/tools/prompt-template-filler.mp4",
+    "poster": "media/tools/prompt-template-filler.jpg",
+    "duration": 8.0,
+    "voice": "am_fenrir 50% + am_puck 50%",
+    "bytes": 199627,
+    "music": "C# 97 bpm glass"
+  },
+  "mcp-config-builder": {
+    "video": "media/tools/mcp-config-builder.mp4",
+    "poster": "media/tools/mcp-config-builder.jpg",
+    "duration": 10.33,
+    "voice": "bf_isabella 50% + bf_alice 50%",
+    "bytes": 259821,
+    "music": "C 85 bpm kalimba"
+  },
+  "embedding-playground": {
+    "video": "media/tools/embedding-playground.mp4",
+    "poster": "media/tools/embedding-playground.jpg",
+    "duration": 8.0,
+    "voice": "bm_fable 50% + bm_lewis 50%",
+    "bytes": 192880,
+    "music": "B 84 bpm harp"
+  },
+  "llm-stream-viewer": {
+    "video": "media/tools/llm-stream-viewer.mp4",
+    "poster": "media/tools/llm-stream-viewer.jpg",
+    "duration": 10.63,
+    "voice": "af_aoede 50% + af_bella 50%",
+    "bytes": 260360,
+    "music": "C# 87 bpm bell"
+  },
+  "whatsapp-chat-analyzer": {
+    "video": "media/tools/whatsapp-chat-analyzer.mp4",
+    "poster": "media/tools/whatsapp-chat-analyzer.jpg",
+    "duration": 8.0,
+    "voice": "am_echo 50% + am_fenrir 50%",
+    "bytes": 197667,
+    "music": "F# 105 bpm marimba"
+  },
+  "spotify-history-stats": {
+    "video": "media/tools/spotify-history-stats.mp4",
+    "poster": "media/tools/spotify-history-stats.jpg",
+    "duration": 10.73,
+    "voice": "af_kore 50% + af_bella 50%",
+    "bytes": 258757,
+    "music": "G 76 bpm kalimba"
+  },
+  "instagram-followers-checker": {
+    "video": "media/tools/instagram-followers-checker.mp4",
+    "poster": "media/tools/instagram-followers-checker.jpg",
+    "duration": 9.67,
+    "voice": "am_eric 50% + am_fenrir 50%",
+    "bytes": 239102,
+    "music": "D# 81 bpm piano"
+  },
+  "ai-chat-export-viewer": {
+    "video": "media/tools/ai-chat-export-viewer.mp4",
+    "poster": "media/tools/ai-chat-export-viewer.jpg",
+    "duration": 10.3,
+    "voice": "af_sarah 50% + af_bella 50%",
+    "bytes": 247525,
+    "music": "D# 91 bpm marimba"
+  },
+  "location-history-converter": {
+    "video": "media/tools/location-history-converter.mp4",
+    "poster": "media/tools/location-history-converter.jpg",
+    "duration": 10.8,
+    "voice": "am_liam 50% + am_fenrir 50%",
+    "bytes": 256009,
+    "music": "A# 83 bpm rhodes"
+  },
+  "youtube-history-stats": {
+    "video": "media/tools/youtube-history-stats.mp4",
+    "poster": "media/tools/youtube-history-stats.jpg",
+    "duration": 8.0,
+    "voice": "af_nova 50% + af_bella 50%",
+    "bytes": 195162,
+    "music": "E 86 bpm marimba"
+  },
+  "netflix-history-stats": {
+    "video": "media/tools/netflix-history-stats.mp4",
+    "poster": "media/tools/netflix-history-stats.jpg",
+    "duration": 10.23,
+    "voice": "am_onyx 50% + am_fenrir 50%",
+    "bytes": 234326,
+    "music": "F# 101 bpm glass"
+  },
+  "x-archive-viewer": {
+    "video": "media/tools/x-archive-viewer.mp4",
+    "poster": "media/tools/x-archive-viewer.jpg",
+    "duration": 9.57,
+    "voice": "bf_lily 50% + bf_isabella 50%",
+    "bytes": 244025,
+    "music": "B 100 bpm rhodes"
+  },
+  "data-export-explorer": {
+    "video": "media/tools/data-export-explorer.mp4",
+    "poster": "media/tools/data-export-explorer.jpg",
+    "duration": 8.0,
+    "voice": "bm_daniel 50% + bm_fable 50%",
+    "bytes": 202711,
+    "music": "D 83 bpm piano"
   }
 }

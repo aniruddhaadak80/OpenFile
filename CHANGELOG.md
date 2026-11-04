@@ -25,6 +25,17 @@ All notable changes to OpenFile. Dates are in YYYY-MM-DD. The same notes are sho
 
 - **ci**: new Desktop app start test workflow builds the app from each change and starts it with no workarounds on Ubuntu 22.04 and 24.04, Fedora, Debian and Arch (each on X11 and on Wayland), Windows Server 2022 and 2025, and macOS on Apple silicon and Intel. It fails on a blank window or a start-up error and uploads the screenshots.
 
+## v2.6.0 (2026-11-04)
+
+Two new studios for things people now do every day: building with language models, and reading the data exports that apps send you. 18 tools, all in the browser.
+
+### Added
+
+- **llm** (AI Builder, new): Token Counter (real GPT-4o, GPT-4, Llama 3, Mistral, Qwen, Gemma and DeepSeek tokenizers, token view, context share, cost from your own prices), RAG Text Chunker (recursive split by headings, paragraphs and sentences, size in characters, words or tokens, overlap, JSONL export), Fine-tune Dataset Checker (line by line checks, duplicates, token limits, seeded train and validation split), Dataset Format Converter (chat JSONL, ShareGPT, Alpaca, prompt and completion, CSV), GGUF and Safetensors Inspector (reads only the header, so big models open in a second), Prompt Template Filler (variables become a form, batch fill from CSV to JSONL), MCP Config Builder (Claude Desktop, Cursor, VS Code, Windsurf, Claude Code and Gemini CLI, import and convert, secret warnings), Embedding Playground (MiniLM on device, similarity grid, meaning map, search), LLM Stream Viewer (OpenAI, Anthropic, Gemini and Ollama streams back to text, tool calls and usage).
+- **exports** (Data Exports, new): WhatsApp Chat Analyzer, Spotify History Stats, Instagram Followers Checker (no login), ChatGPT and Claude Export Viewer (search, Markdown ZIP), Location History Converter (Google Timeline and Takeout to GPX, KML, GeoJSON, CSV), YouTube History Stats, Netflix History Stats, X (Twitter) Archive Viewer, Data Export Explorer (any export ZIP as tables).
+- **blog**: two posts with films, cover loops, read aloud and quizzes: tokens, chunks and MCP configs, and reading your data exports without uploading them.
+- **menu**: the Tools menu block of newer studios now has 12 categories in three full rows.
+
 ## v2.5.0 (2026-10-30)
 
 71 new tools across the original 16 studios, filling the gaps people asked about most: everyday audio tools, PDF stamps and Bates numbers, Markdown from anything, Mermaid diagrams, charts, video effects, G-code and point clouds.

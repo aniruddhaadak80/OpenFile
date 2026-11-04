@@ -1,6 +1,6 @@
 // Central catalog of every OpenFile tool.
 // Each tool's UI lives at src/tools/<category>/<slug>.tsx (default export) and is lazy-loaded.
-export type Category = 'pdf' | 'convert' | 'image' | 'video' | 'audio' | 'dev' | 'text' | 'design' | 'data' | 'ai' | '3d' | 'archive' | 'ebook' | 'font' | 'cad' | 'subtitle' | 'privacy' | 'geo' | 'office' | 'science' | 'creator' | 'study' | 'web' | 'time' | 'finance' | 'health'
+export type Category = 'pdf' | 'convert' | 'image' | 'video' | 'audio' | 'dev' | 'text' | 'design' | 'data' | 'ai' | '3d' | 'archive' | 'ebook' | 'font' | 'cad' | 'subtitle' | 'privacy' | 'geo' | 'office' | 'science' | 'creator' | 'study' | 'web' | 'time' | 'finance' | 'health' | 'llm' | 'exports'
 import { BATCH_1 } from './batches/b1'
 import { BATCH_2 } from './batches/b2'
 import { BATCH_3 } from './batches/b3'
@@ -15,6 +15,7 @@ import { BATCH_CAT3 } from './batches/b-cat3'
 import { BATCH_13 } from './batches/b13'
 import { CF_TOOLS } from './batches/b-cf'
 import { BATCH_14 } from './batches/b14'
+import { BATCH_15 } from './batches/b15'
 
 export interface ToolMeta {
   slug: string
@@ -72,6 +73,8 @@ const ALL_CATEGORIES: { id: Category; name: string; blurb: string; color: string
   { id: 'time', name: 'Calendar & Time', blurb: 'Calendar files, repeat rules, rotas, timesheets and printable planners', color: '#86EFAC' },
   { id: 'finance', name: 'Money & Finance', blurb: 'Bank statements, receipts, loans, tax and shared expenses', color: '#BEF264' },
   { id: 'health', name: 'Health & Fitness', blurb: 'FIT workouts, heart rate zones, Apple Health data, pace and body measures', color: '#5EEAD4' },
+  { id: 'llm', name: 'AI Builder', blurb: 'Token counts, RAG chunks, fine-tune datasets, model files, prompts and MCP configs', color: '#EAB308' },
+  { id: 'exports', name: 'Data Exports', blurb: 'Open the data apps give you: chats, music, followers, AI chats, watch and location history', color: '#6EE7B7' },
 ]
 
 const CORE_TOOLS: ToolMeta[] = [
@@ -209,7 +212,7 @@ const CORE_TOOLS: ToolMeta[] = [
   { slug: 'placeholder-image', name: 'Placeholder Image', desc: 'Generate placeholder images in any size, color and text.', category: 'design', icon: 'ImageIcon' },
 ]
 
-export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5, ...BATCH_10, ...BATCH_11, ...BATCH_12, ...BATCH_CAT1, ...BATCH_CAT2, ...BATCH_CAT3, ...BATCH_13, ...CF_TOOLS, ...BATCH_14]
+export const TOOLS: ToolMeta[] = [...CORE_TOOLS, ...BATCH_1, ...BATCH_2, ...BATCH_3, ...BATCH_4, ...BATCH_5, ...BATCH_10, ...BATCH_11, ...BATCH_12, ...BATCH_CAT1, ...BATCH_CAT2, ...BATCH_CAT3, ...BATCH_13, ...CF_TOOLS, ...BATCH_14, ...BATCH_15]
 
 /** Only categories that have at least one tool are shown in the UI. */
 export const CATEGORIES = ALL_CATEGORIES.filter((c) => TOOLS.some((t) => t.category === c.id))

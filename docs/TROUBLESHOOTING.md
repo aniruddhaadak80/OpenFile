@@ -109,5 +109,5 @@ The app shows this message, with a **Try again** button, instead of an empty win
 Open an [issue](https://github.com/aniruddhaadak80/OpenFile/issues) with your browser and system, what you did, and what the Status page shows.
 
 <!-- gen:counts:start -->
-OpenFile has **572 tools in 26 categories**. PDF Tools 63, Convert 35, Image 60, Video 40, Audio 26, Developer 65, Text & Data 47, Design 21, Data 15, AI 21, 3D 9, Archives 8, eBooks 8, Fonts 7, CAD 6, Subtitles 10, Security & Privacy 15, Maps & GPS 15, Office & Sheets 19, Science & Education 15, Creator Studio 14, Study & Classroom 12, Web & SEO 13, Calendar & Time 12, Money & Finance 10, Health & Fitness 6.
+OpenFile has **590 tools in 28 categories**. PDF Tools 63, Convert 35, Image 60, Video 40, Audio 26, Developer 65, Text & Data 47, Design 21, Data 15, AI 21, 3D 9, Archives 8, eBooks 8, Fonts 7, CAD 6, Subtitles 10, Security & Privacy 15, Maps & GPS 15, Office & Sheets 19, Science & Education 15, Creator Studio 14, Study & Classroom 12, Web & SEO 13, Calendar & Time 12, Money & Finance 10, Health & Fitness 6, AI Builder 9, Data Exports 9.
 <!-- gen:counts:end -->

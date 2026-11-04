@@ -2,7 +2,7 @@
 
 <p align="center"><img src="assets/privacy.svg" width="100%" alt="Files never leave your device"/></p>
 
-OpenFile is a static single-page app. Every one of its 572 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
+OpenFile is a static single-page app. Every one of its 590 tools runs inside the user's browser tab; the build output (`dist/`) is plain HTML, JS, CSS and WASM loaders that any static host can serve.
 
 ## 1. The big picture
 
@@ -66,7 +66,9 @@ flowchart TB
 | 📅 Calendar & Time | 12 |
 | 💰 Money & Finance | 10 |
 | ❤️ Health & Fitness | 6 |
-| **Total** | **572** |
+| 🧠 AI Builder | 9 |
+| 📦 Data Exports | 9 |
+| **Total** | **590** |
 <!-- arch-counts:end -->
 
 ## 3. Engines
@@ -191,7 +193,7 @@ flowchart LR
 Nothing that counts or lists things in the docs is typed by hand. The docs site reads the registry, `src/lib/formats.ts`, the Workspace steps and the preferences at runtime, and reads everything else from `generated.json`, which `scripts/gen-docs.mjs` rebuilds before every build.
 
 <!-- gen:counts:start -->
-OpenFile has **572 tools in 26 categories**. PDF Tools 63, Convert 35, Image 60, Video 40, Audio 26, Developer 65, Text & Data 47, Design 21, Data 15, AI 21, 3D 9, Archives 8, eBooks 8, Fonts 7, CAD 6, Subtitles 10, Security & Privacy 15, Maps & GPS 15, Office & Sheets 19, Science & Education 15, Creator Studio 14, Study & Classroom 12, Web & SEO 13, Calendar & Time 12, Money & Finance 10, Health & Fitness 6.
+OpenFile has **590 tools in 28 categories**. PDF Tools 63, Convert 35, Image 60, Video 40, Audio 26, Developer 65, Text & Data 47, Design 21, Data 15, AI 21, 3D 9, Archives 8, eBooks 8, Fonts 7, CAD 6, Subtitles 10, Security & Privacy 15, Maps & GPS 15, Office & Sheets 19, Science & Education 15, Creator Studio 14, Study & Classroom 12, Web & SEO 13, Calendar & Time 12, Money & Finance 10, Health & Fitness 6, AI Builder 9, Data Exports 9.
 <!-- gen:counts:end -->
 
 Back to the [README](../README.md) · Writing a tool: [TOOL_GUIDE.md](TOOL_GUIDE.md) · [AI.md](AI.md) · [PRIVACY.md](PRIVACY.md) · [TROUBLESHOOTING.md](TROUBLESHOOTING.md) · [SHORTCUTS.md](SHORTCUTS.md)

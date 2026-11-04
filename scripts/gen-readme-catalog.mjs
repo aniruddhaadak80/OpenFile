@@ -117,10 +117,10 @@ async function loadCatalog() {
 const EMOJI = {
   pdf: '📄', convert: '🔄', image: '🖼️', video: '🎬', audio: '🎧', dev: '🧑‍💻', text: '📝', design: '🖌️',
   data: '📊', ai: '🤖', '3d': '🧊', archive: '🗜️', ebook: '📚', font: '🔤', cad: '📐', subtitle: '💬',
-  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️', study: '🎓', web: '🌐', time: '📅', finance: '💰', health: '❤️',
+  privacy: '🔐', geo: '🗺️', office: '🗂️', science: '🧪', creator: '🎙️', study: '🎓', web: '🌐', time: '📅', finance: '💰', health: '❤️', llm: '🧠', exports: '📦',
 }
 // Short labels for the orbit and mindmap where the full name is too long.
-const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator', study: 'Study', web: 'Web', time: 'Calendar', finance: 'Money', health: 'Health' }
+const SHORT = { pdf: 'PDF', dev: 'Developer', text: 'Text', archive: 'Archives', ebook: 'eBooks', font: 'Fonts', subtitle: 'Subtitles', privacy: 'Privacy', geo: 'Maps', office: 'Office', science: 'Science', creator: 'Creator', study: 'Study', web: 'Web', time: 'Calendar', finance: 'Money', health: 'Health', llm: 'AI Builder', exports: 'Exports' }
 
 // Colors that must never appear (brand rule). Anything in this range is swapped for gold.
 function safeColor(hex) {
@@ -197,6 +197,11 @@ function whatsNew() {
   }
   const L = []
   L.push(`OpenFile now has **${TOTAL} tools in ${NCAT} studios**, apps for every device that update themselves, a full docs site and a blog with films, read aloud and quizzes.`)
+  L.push('')
+  L.push('**AI Builder and Data Exports (v2.6.0)**')
+  L.push('')
+  L.push(`- 🧠 ${catLine('llm')}: ${tl('token-counter')}, ${tl('rag-chunker')}, ${tl('finetune-dataset-checker')}, ${tl('model-file-inspector')}, ${tl('mcp-config-builder')}, ${tl('embedding-playground')} and more.`)
+  L.push(`- 📦 ${catLine('exports')}: ${tl('whatsapp-chat-analyzer')}, ${tl('spotify-history-stats')}, ${tl('instagram-followers-checker')}, ${tl('ai-chat-export-viewer')}, ${tl('location-history-converter')}, ${tl('data-export-explorer')} and more.`)
   L.push('')
   L.push('**71 new tools in the original studios (v2.5.0)**')
   L.push('')
