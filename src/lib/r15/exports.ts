@@ -320,7 +320,9 @@ export function parseYouTubeJson(arr: any[]): Watch[] {
   }
   return out.sort((a, b) => a.t.getTime() - b.t.getTime())
 }
-const ent = (s: string) => s.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\u202f/g, ' ')
+const ENT: Record<string, string> = { nbsp: ' ', amp: '&', quot: '"', '#39': "'", lt: '<', gt: '>' }
+const ent = (s: string) => s.replace(/&(nbsp|amp|quot|#39|lt|gt);|\u202f/g, (m, k) => (k ? ENT[k] : ' '))
+const stripTags = (s: string) => { let p = ''; while (p !== s) { p = s; s = s.replace(/<[^>]*>/g, '') } return s }
 /** Takeout watch-history.html: each outer cell holds the video link, the channel link and the date. */
 export function parseYouTubeHtml(html: string): Watch[] {
   const out: Watch[] = []
@@ -332,7 +334,7 @@ export function parseYouTubeHtml(html: string): Watch[] {
     const video = links.find((l) => /watch\?v=|youtu\.be\//.test(l[1]))
     if (!video) continue
     const channel = links.find((l) => /\/channel\/|\/@|\/c\/|\/user\//.test(l[1]))
-    const lastText = ent(body.replace(/<a [\s\S]*?<\/a>/g, '').split(/<br\s*\/?>/).map((s) => s.replace(/<[^>]+>/g, '').trim()).filter(Boolean).pop() ?? '')
+    const lastText = ent(stripTags(body.replace(/<a [\s\S]*?<\/a>/g, '').replace(/<br\s*\/?>/g, '\n')).split('\n').map((s) => s.trim()).filter(Boolean).pop() ?? '')
     const t = new Date(lastText.replace(/\s+[A-Z]{2,5}([+-]\d+(:\d+)?)?$/, ''))
     if (!valid(t)) continue
     out.push({ t, title: ent(video[2]).trim(), url: ent(video[1]), channel: channel ? ent(channel[2]).trim() : 'Unknown or removed', music: /YouTube Music/.test(c.slice(0, 400)) })
