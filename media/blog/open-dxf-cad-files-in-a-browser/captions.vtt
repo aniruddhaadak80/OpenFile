@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:03.908
+Opening DXF and CAD drawings in a browser.
+
+2
+00:00:05.408 --> 00:00:10.031
+What a DXF file really contains, how to view layers and measure without
+
+3
+00:00:10.031 --> 00:00:14.133
+AutoCAD, and how to turn a drawing into a PDF anyone can print.
+
+4
+00:00:15.533 --> 00:00:19.949
+DWG and DXF. AutoCAD has two file formats.
+
+5
+00:00:21.249 --> 00:00:26.032
+A DXF file is just text. The most common form of DXF is plain text made
+
+6
+00:00:26.032 --> 00:00:27.244
+of pairs of lines.
+
+7
+00:00:28.544 --> 00:00:30.441
+Converting for people without CAD.
+
+8
+00:00:30.441 --> 00:00:34.347
+Most people who receive a drawing just want to look at it or print it.
+
+9
+00:00:35.647 --> 00:00:39.719
+What it does not do. Drawings are often confidential: unreleased buildings,
+
+10
+00:00:39.719 --> 00:00:42.217
+product designs, the layout of someone's home.
+
+11
+00:00:43.517 --> 00:00:46.008
+To try it, open DXF Viewer in OpenFile.
+
+12
+00:00:46.008 --> 00:00:49.647
+Drop in a file, adjust the settings and press the button.
+
+13
+00:00:49.647 --> 00:00:52.904
+It all runs on your device, so nothing is uploaded.
+
+14
+00:00:56.617 --> 00:01:00.095
+Read the full post, with live demos, on the OpenFile blog.

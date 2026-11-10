@@ -1,0 +1,1 @@
+var e=()=>new Worker(new URL(`/OpenFile/assets/tts.worker-B1gcFnjz.js`,``+import.meta.url),{type:`module`});export{e as makeTtsWorker};

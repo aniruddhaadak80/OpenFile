@@ -1,0 +1,1 @@
+function e(e){return e.toLowerCase().replace(/<[^>]+>/g,``).replace(/[`*_~[\]()]/g,``).replace(/&[a-z]+;/g,``).replace(/[^\p{L}\p{N}\s-]/gu,``).trim().replace(/\s+/g,`-`).replace(/-+/g,`-`)||`section`}export{e as t};

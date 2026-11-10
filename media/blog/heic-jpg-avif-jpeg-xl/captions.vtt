@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.377
+HEIC, JPG, AVIF and JPEG XL compared.
+
+2
+00:00:05.877 --> 00:00:10.199
+Four photo formats, what each one is good at, which browsers open them,
+
+3
+00:00:10.199 --> 00:00:13.608
+and which I use for sharing, the web and my own archive.
+
+4
+00:00:13.608 --> 00:00:15.008
+Test your browser live.
+
+5
+00:00:16.408 --> 00:00:20.611
+What each format is. JPEG dates from 1992.
+
+6
+00:00:21.911 --> 00:00:24.833
+Side by side. The size column is a rough guide.
+
+7
+00:00:26.133 --> 00:00:32.443
+How OpenFile handles each one. OpenFile's JPEG XL encoder works from decoded
+
+8
+00:00:32.443 --> 00:00:33.024
+pixels.
+
+9
+00:00:34.324 --> 00:00:39.724
+Mistakes I see a lot. On an iPhone you can switch the camera to Most Compatible
+
+10
+00:00:39.724 --> 00:00:44.372
+in Settings, Camera, Formats, and it will shoot JPG instead of HEIC.
+
+11
+00:00:45.672 --> 00:00:48.588
+To try it, open HEIC Converter in OpenFile.
+
+12
+00:00:48.588 --> 00:00:52.453
+Drop in a file, adjust the settings and press the button.
+
+13
+00:00:52.453 --> 00:00:55.912
+It all runs on your device, so nothing is uploaded.
+
+14
+00:00:58.772 --> 00:01:02.377
+Read the full post, with live demos, on the OpenFile blog.

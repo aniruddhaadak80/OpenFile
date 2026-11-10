@@ -1,0 +1,1 @@
+import{t as e}from"./maker-DevsJlZo.js";import{Vt as t}from"./ui-v8VrfU8u.js";var n=t();function r(){return(0,n.jsx)(e,{fmt:`webp`,title:`animated WebP`})}export{r as default};

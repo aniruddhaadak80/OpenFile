@@ -1,0 +1,3 @@
+import{o as e}from"./rolldown-runtime-BCiCTKAo.js";import{z as t}from"./files-DNe_5uDt.js";import{a as n}from"./shell-yAzhKcwn.js";import{m as r}from"./kit-BgrzCddC.js";import{i}from"./text-DR1xj83d.js";import{Vt as a}from"./ui-v8VrfU8u.js";var o=e(t(),1),s=a();function c(){let[e,t]=r(`b11:roman`,`1994
+MMXXVI
+49`),a=(0,o.useMemo)(()=>i(e),[e]);return(0,s.jsxs)(`div`,{className:`space-y-4`,children:[(0,s.jsx)(`p`,{className:`text-sm text-muted`,children:`One number or numeral per line. Numbers 1 to 3999 become Roman numerals and numerals become numbers.`}),(0,s.jsx)(n,{input:e,setInput:t,output:a,outputLang:`generic`,outName:`roman.txt`,outMime:`text/plain`})]})}export{c as default};

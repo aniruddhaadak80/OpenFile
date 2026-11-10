@@ -1,0 +1,53 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:03.887
+How OpenFile keeps your files private.
+
+2
+00:00:05.387 --> 00:00:09.995
+What really happens when you drop a file into OpenFile, why nothing gets
+
+3
+00:00:09.995 --> 00:00:13.771
+uploaded, and how you can check it yourself in two minutes.
+
+4
+00:00:16.106 --> 00:00:20.434
+What does get downloaded. Some tools need a heavy engine the first time
+
+5
+00:00:20.434 --> 00:00:21.226
+you use them.
+
+6
+00:00:23.462 --> 00:00:25.783
+The few things that are not local.
+
+7
+00:00:25.783 --> 00:00:27.558
+I want to be precise here.
+
+8
+00:00:29.794 --> 00:00:34.995
+Why I built it this way. Most free file tools on the web upload your document
+
+9
+00:00:34.995 --> 00:00:39.927
+to a server, process it there, and ask you to trust that it gets deleted.
+
+10
+00:00:42.163 --> 00:00:45.061
+To try it, open Merge PDF in OpenFile.
+
+11
+00:00:45.061 --> 00:00:49.409
+Drop in a file, adjust the settings and press the button.
+
+12
+00:00:49.409 --> 00:00:53.299
+It all runs on your device, so nothing is uploaded.
+
+13
+00:00:55.263 --> 00:00:59.700
+Read the full post, with live demos, on the OpenFile blog.

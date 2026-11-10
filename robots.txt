@@ -1,0 +1,9 @@
+# OpenFile: every file tool, private, in your browser
+User-agent: *
+Allow: /
+Disallow: /OpenFile/history
+Disallow: /OpenFile/settings
+Disallow: /OpenFile/share-target
+
+Sitemap: https://aniruddhaadak80.github.io/OpenFile/sitemap.xml
+# AI and LLM summary: https://aniruddhaadak80.github.io/OpenFile/llms.txt

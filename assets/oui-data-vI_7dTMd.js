@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/index-G7E4CEwu.json`;export{e as default};
