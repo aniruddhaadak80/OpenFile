@@ -62,7 +62,9 @@ AppImages need to be executable: `chmod +x OpenFile-linux-x86_64.AppImage`. The 
 
 On some Linux systems OpenFile 1.2.0 opens a window that stays empty (black in the dark theme). The terminal may show `WebProcess didn't exit as expected after the UI process connection was closed`. The cause is the graphics renderer in WebKitGTK, the web engine Linux apps like OpenFile use. Since version 2.42 it draws pages through a DMA-BUF path that fails with some GPU drivers and compositors (NVIDIA most often, also some Mesa and Wayland setups, for example Fedora 44 with GNOME on Wayland). The page loads but is never drawn.
 
-The next desktop release (1.2.1) fixes this on its own: it turns that renderer off, and if the window still has not loaded after 30 seconds it restarts once in safe graphics mode and remembers it. On 1.2.0, start OpenFile like this:
+The next desktop release (1.2.1) fixes this on its own. It turns that renderer off, and the page tells the app when its first frame is on screen. If no frame arrives within 30 seconds, OpenFile restarts one graphics mode up (standard, then safe, then software) and remembers it. If even software mode draws nothing, it offers to open the same tools in your web browser instead of leaving an empty window. Systems where the open source nouveau driver runs the only GPU (older NVIDIA cards such as the GeForce GT 730) start in software mode right away, because nouveau's OpenGL can hang the web engine whatever else is turned off.
+
+On 1.2.0, start OpenFile like this:
 
 ```bash
 # .rpm or .deb
@@ -77,17 +79,24 @@ If the window is still empty, also turn off GPU compositing:
 WEBKIT_DISABLE_DMABUF_RENDERER=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 openfile
 ```
 
-To keep the fix for the menu launcher, copy the OpenFile `.desktop` file from `/usr/share/applications` to `~/.local/share/applications` and change its `Exec=` line to `Exec=env WEBKIT_DISABLE_DMABUF_RENDERER=1 openfile %U`.
+Still empty, or the nouveau driver (`lspci -k | grep -A3 VGA` shows `Kernel driver in use: nouveau`): draw without the GPU at all. Pages scroll a little slower, every tool works the same.
+
+```bash
+WEBKIT_DISABLE_DMABUF_RENDERER=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 LIBGL_ALWAYS_SOFTWARE=1 WEBKIT_SKIA_ENABLE_CPU_RENDERING=1 openfile
+```
+
+To keep the fix for the menu launcher, copy the OpenFile `.desktop` file from `/usr/share/applications` to `~/.local/share/applications` and change its `Exec=` line to `Exec=env WEBKIT_DISABLE_DMABUF_RENDERER=1 openfile %U` (add the other variables from the command that worked the same way).
 
 Settings from 1.2.1 on:
 
 | Variable | What it does |
 | --- | --- |
 | `OPENFILE_SAFE_GPU=1` | Start in safe graphics mode right away (no DMA-BUF renderer, no GPU compositing) |
-| `OPENFILE_GPU=1` | Keep the WebKitGTK defaults and ignore a remembered safe mode |
-| `WEBKIT_*` | Any WebKitGTK variable you set yourself always wins |
+| `OPENFILE_SAFE_GPU=2` | Start in software mode right away (also no GPU drawing at all, Mesa and Skia draw on the CPU) |
+| `OPENFILE_GPU=1` | Keep the WebKitGTK defaults, ignore a remembered mode and the nouveau check |
+| `WEBKIT_*`, `LIBGL_*` | Any WebKitGTK or Mesa variable you set yourself always wins |
 
-Safe mode is remembered in `~/.config/com.aniruddhaadak.openfile/safe-graphics`. Delete that file to try the faster mode again. On NVIDIA with Wayland, OpenFile also sets `__NV_DISABLE_EXPLICIT_SYNC=1`, which avoids the `Error 71 (Protocol error)` crash.
+The mode OpenFile moved to is remembered in `~/.config/com.aniruddhaadak.openfile/safe-graphics`. Delete that file to try the faster mode again. The first line OpenFile prints in a terminal names the mode it started in, and `OpenFile: first frame drawn` follows once the window draws. On NVIDIA's own driver with Wayland, OpenFile also sets `__NV_DISABLE_EXPLICIT_SYNC=1`, which avoids the `Error 71 (Protocol error)` crash.
 
 Other Linux start problems:
 

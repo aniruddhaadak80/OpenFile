@@ -91,6 +91,14 @@
         addEventListener('error', function (e) { if (e.target === window || e.target === undefined) setTimeout(function () { var el = document.getElementById('root'); if (!el || !el.firstChild) fail() }, 4000) });
         setTimeout(function () { if (r.classList.contains('of-boot')) r.classList.add('of-slow') }, 12000);
         setTimeout(fail, 30000);
+        // desktop app: tell the shell once the first frame is on screen, so its Linux start check knows the window draws
+        // (issue #10). A hidden window draws no frames, so it counts as drawn rather than restarting for nothing.
+        var ti = window.__TAURI_INTERNALS__;
+        if (ti && typeof ti.invoke === 'function') {
+          var shown = false, drawn = function () { if (shown) return; shown = true; try { Promise.resolve(ti.invoke('of_boot_ok')).catch(function () {}) } catch (e) {} };
+          requestAnimationFrame(function () { requestAnimationFrame(drawn) });
+          if (document.visibilityState === 'hidden') drawn();
+        }
         // keep the install prompt event even if it fires before the app bundle is ready (src/lib/ux.ts reads it)
         addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__ofBIP = e; dispatchEvent(new Event('of:bip')) });
         addEventListener('appinstalled', function () { window.__ofBIP = undefined });

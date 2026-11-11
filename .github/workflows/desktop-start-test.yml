@@ -8,6 +8,8 @@ name: Desktop app start test
 #            The same runs with the previous release (BEFORE_TAG) give the before picture; they never fail the job.
 #   Windows: NSIS setup on windows-2022 and windows-2025 (install, start, screenshot, uninstall).
 #   macOS:   .dmg on macos-latest (Apple silicon) and macos-15-intel (Intel).
+# Linux "after" runs also start the app in software graphics mode (OPENFILE_SAFE_GPU=2, the mode nouveau systems
+# start in) and require the "first frame drawn" line the start check waits for.
 # CI machines have no GPU, so WebKitGTK draws with Mesa's software renderer here. GPU driver problems (NVIDIA,
 # some Mesa versions) only show on real hardware; the safe defaults in desktop/src-tauri/src/main.rs cover those.
 
@@ -108,6 +110,11 @@ jobs:
         with:
           workspaces: desktop/src-tauri -> target
           key: start-${{ matrix.os }}
+      - name: Linux graphics mode unit tests (desktop/src-tauri/src/linux_gpu.rs)
+        if: runner.os == 'Linux'
+        run: |
+          rustc --edition 2021 --test -D warnings desktop/src-tauri/src/linux_gpu.rs -o "$RUNNER_TEMP/linux-gpu-tests"
+          "$RUNNER_TEMP/linux-gpu-tests"
       - name: Build
         working-directory: desktop
         run: |
@@ -165,6 +172,9 @@ jobs:
           curl -fsSL -o "before-$F" "https://github.com/${{ github.repository }}/releases/download/$BEFORE_TAG/$F"
           NO_DIAG=1 bash tests/apps/linux-launch.sh ${{ matrix.display }} ${{ matrix.kind }} "before-$F" "before-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
       - name: After (this commit)
+        env:
+          OF_REQUIRE_FRAME: '1'
+          SOFTWARE_CHECK: '1'
         run: |
           if [ "${{ matrix.kind }}" = deb ]; then F=OpenFile-linux-amd64.deb; else F=OpenFile-linux-x86_64.AppImage; fi
           bash tests/apps/linux-launch.sh ${{ matrix.display }} ${{ matrix.kind }} "dl/$F" "after-${{ matrix.os }}-${{ matrix.display }}-${{ matrix.kind }}" app-start 25
@@ -219,6 +229,9 @@ jobs:
           curl -fsSL -o "before-$F" "https://github.com/${{ github.repository }}/releases/download/$BEFORE_TAG/$F"
           NO_DIAG=1 bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "before-$F" "before-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25 || echo "::warning::$BEFORE_TAG does not pass here"
       - name: After (this commit)
+        env:
+          OF_REQUIRE_FRAME: '1'
+          SOFTWARE_CHECK: '1'
         run: bash tests/apps/linux-launch.sh ${{ matrix.display }} $K "dl/$F" "after-${{ matrix.distro }}-${{ matrix.display }}-$K" app-start 25
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
