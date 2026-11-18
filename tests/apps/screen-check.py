@@ -7,8 +7,12 @@ Looks at the middle of the screen (half the width and half the height), which th
 covers. A blank window (one flat colour, like the black window in issue #10) or a window still showing only the
 start-up splash has one colour on nearly every pixel there. The real interface has text, icons and gradients.
 The app output fails the check when it has a known start-up error from WebKitGTK, Mesa, Wayland or a crash.
+With OF_REQUIRE_FRAME=1 the output must also say "OpenFile: first frame drawn" (the page told the app it drew, which
+is what the Linux start check in desktop/src-tauri/src/main.rs waits for) and, with OF_EXPECT_MODE=<mode>, name the
+graphics mode it started in (standard, safe, software).
 Prints one result line and exits 1 on failure. Needs Pillow.
 """
+import os
 import re
 import sys
 from collections import Counter
@@ -29,7 +33,9 @@ FATAL = [
     r"Segmentation fault",
     r"core dumped",
     r"OpenFile could not open its window",
-    r"restarting in safe graphics mode",
+    r"restarting in \w+ graphics mode",
+    r"could not draw its window",
+    r"drew nothing",
 ]
 
 
@@ -67,6 +73,11 @@ def main() -> int:
                     msg = f"start-up error in the app output: {line.strip()[:200]}"
                     if msg not in problems:
                         problems.append(msg)
+            if os.environ.get("OF_REQUIRE_FRAME") == "1" and "OpenFile: first frame drawn" not in text:
+                problems.append("the page never told the app it drew a frame (no 'OpenFile: first frame drawn')")
+            mode = os.environ.get("OF_EXPECT_MODE")
+            if mode and f"OpenFile: {mode} graphics mode" not in text:
+                problems.append(f"the app did not start in {mode} graphics mode")
         except OSError as e:
             problems.append(f"app output not readable ({e})")
     if problems:

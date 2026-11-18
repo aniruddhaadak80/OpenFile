@@ -2,6 +2,7 @@
 //  1. a normal start ends with the app on screen and the fallback hidden
 //  2. when the app code cannot load, the "OpenFile did not finish starting" screen with Try again shows instead of
 //     an empty window
+//  3. inside the desktop app the page tells the shell once its first frame is drawn (of_boot_ok, issue #10), once only
 // Screenshots go to OUT (default app-start). Usage: node tests/apps/fallback-check.mjs
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
@@ -31,6 +32,18 @@ const retry = await bad.isVisible('#of-fallback button')
 await bad.screenshot({ path: `${OUT}/web-start-fallback.png` })
 console.log('app code blocked: fallback visible:', badFallback, 'Try again button:', retry)
 if (!badFallback || !retry) { console.log('::error::the fallback screen did not show when the app code could not load'); failed = true }
+
+const app = await browser.newPage({ viewport: { width: 1280, height: 840 } })
+await app.addInitScript(() => {
+  const w = /** @type {any} */ (window)
+  w.__ofCalls = []
+  w.__TAURI_INTERNALS__ = { invoke: (cmd) => { w.__ofCalls.push(cmd); return Promise.reject(new Error('not in the desktop app')) } }
+})
+await app.goto(BASE, { waitUntil: 'load' })
+await app.waitForTimeout(1500)
+const calls = await app.evaluate(() => /** @type {any} */ (window).__ofCalls.filter((c) => c === 'of_boot_ok').length)
+console.log('desktop shell told the first frame was drawn:', calls, 'time(s)')
+if (calls !== 1) { console.log('::error::the page should send of_boot_ok exactly once after its first frame'); failed = true }
 
 await browser.close()
 console.log(failed ? 'FAIL: start screen' : 'PASS: start screen')

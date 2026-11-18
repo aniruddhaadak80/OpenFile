@@ -8,13 +8,16 @@
 #   bin       runs the given binary as it is
 # Exit code 0 means PASS. Needs the tools from tests/apps/linux-deps.sh. On a failure it starts the app again with
 # other graphics settings and prints DIAG lines saying which one draws (NO_DIAG=1 skips that).
+# SOFTWARE_CHECK=1 also starts it in software graphics mode (OPENFILE_SAFE_GPU=2, the mode nouveau systems start in,
+# issue #10) and fails when that window is blank. OF_REQUIRE_FRAME=1 (read by screen-check.py) requires the
+# "first frame drawn" line the Linux start check waits for.
 set -uo pipefail
 MODE="$1"; KIND="$2"; PKG="$(realpath "$3")"; LABEL="$4"; OUT="$(mkdir -p "${5:-app-start}" && realpath "${5:-app-start}")"; WAIT="${6:-25}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SUDO=""; [ "$(id -u)" = 0 ] || SUDO="sudo"
 . /etc/os-release
 echo "== $LABEL: $PRETTY_NAME, kernel $(uname -r), $MODE, $KIND"
-unset WEBKIT_DISABLE_DMABUF_RENDERER WEBKIT_DISABLE_COMPOSITING_MODE LIBGL_ALWAYS_SOFTWARE OPENFILE_SAFE_GPU OPENFILE_GPU
+unset WEBKIT_DISABLE_DMABUF_RENDERER WEBKIT_DISABLE_COMPOSITING_MODE LIBGL_ALWAYS_SOFTWARE WEBKIT_SKIA_ENABLE_CPU_RENDERING OPENFILE_SAFE_GPU OPENFILE_GPU
 export NO_AT_BRIDGE=1
 # a clean profile, like a first start
 export HOME="$(mktemp -d /tmp/openfile-home.XXXX)"
@@ -74,6 +77,16 @@ run_once() {
 
 run_once "$LABEL"
 FAILED=$FAILED_ONCE
+if [ -n "${SOFTWARE_CHECK:-}" ]; then
+  # a fresh profile, so the run above cannot have left a remembered mode behind
+  HOME_MAIN="$HOME"; export HOME="$(mktemp -d /tmp/openfile-home.XXXX)"
+  export OF_EXPECT_MODE=software
+  run_once "$LABEL-software" OPENFILE_SAFE_GPU=2
+  unset OF_EXPECT_MODE
+  [ "$FAILED_ONCE" = 0 ] || FAILED=1
+  echo "SOFTWARE $LABEL: software graphics mode $([ "$FAILED_ONCE" = 0 ] && echo draws || echo 'does not draw')"
+  export HOME="$HOME_MAIN"
+fi
 if [ "$FAILED" = 1 ] && [ -z "${NO_DIAG:-}" ]; then
   # Diagnostics only (they never change the result): which setting makes the window draw on this system
   echo "::group::Diagnostics for $LABEL"
