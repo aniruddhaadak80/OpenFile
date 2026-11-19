@@ -16,6 +16,11 @@ name: Cross-platform tests
 # The desktop and Android jobs test release assets, which only change when a release is built, so they run on
 # workflow_dispatch and the weekly schedule, not on every push.
 
+# onnxruntime-node auto-downloads CUDA binaries on Linux x64, and the 1.21.0 GPU archive is no longer published (404), so npm install fails before the build.
+# The app uses onnxruntime-web; skip the CUDA download.
+env:
+  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
+
 on:
   workflow_dispatch:
     inputs:

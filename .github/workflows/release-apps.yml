@@ -16,6 +16,11 @@ name: Release apps
 # Secrets (Settings, Secrets and variables, Actions). Without them the build still succeeds and says what is missing:
 #   TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD   desktop update signing (public key in tauri.conf.json)
 #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD   stable APK signing
+# onnxruntime-node auto-downloads CUDA binaries on Linux x64, and the 1.21.0 GPU archive is no longer published (404), so npm install fails before the build.
+# The app uses onnxruntime-web; skip the CUDA download.
+env:
+  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
+
 on:
   push:
     tags: ['v*']

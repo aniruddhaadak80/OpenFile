@@ -13,6 +13,11 @@ name: Desktop app start test
 # CI machines have no GPU, so WebKitGTK draws with Mesa's software renderer here. GPU driver problems (NVIDIA,
 # some Mesa versions) only show on real hardware; the safe defaults in desktop/src-tauri/src/main.rs cover those.
 
+# onnxruntime-node auto-downloads CUDA binaries on Linux x64, and the 1.21.0 GPU archive is no longer published (404), so npm install fails before the build.
+# The app uses onnxruntime-web; skip the CUDA download.
+env:
+  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
+
 on:
   workflow_dispatch:
     inputs:
