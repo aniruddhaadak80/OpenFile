@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.420
+Fill and sign PDFs without uploading them.
+
+2
+00:00:05.920 --> 00:00:11.392
+Form fields, signature images and certificate signatures explained, plus
+
+3
+00:00:11.392 --> 00:00:16.864
+the order I fill, sign and flatten documents in, all inside the browser.
+
+4
+00:00:18.264 --> 00:00:20.964
+Two very different things called signing.
+
+5
+00:00:20.964 --> 00:00:25.048
+Before the how, one distinction that confuses a lot of people.
+
+6
+00:00:26.348 --> 00:00:32.293
+Filling in a form. Many PDFs from banks, schools and government offices
+
+7
+00:00:32.293 --> 00:00:38.572
+have real form fields: text boxes, checkboxes, dropdowns and radio buttons.
+
+8
+00:00:39.872 --> 00:00:45.282
+Signing the page. Sign PDF gives you three ways to make a signature: draw
+
+9
+00:00:45.282 --> 00:00:50.691
+it, type your name in a handwriting style font, or upload a photo of your
+
+10
+00:00:50.691 --> 00:00:52.544
+signature on white paper.
+
+11
+00:00:53.844 --> 00:00:57.600
+Certificate signatures without uploading your key.
+
+12
+00:00:57.600 --> 00:01:03.459
+If you have a personal or company certificate, Digital Signature (Certificate)
+
+13
+00:01:03.459 --> 00:01:07.967
+opens your .p12 or .pfx file locally, asks for its password.
+
+14
+00:01:09.267 --> 00:01:12.201
+To try it, open Sign PDF in OpenFile.
+
+15
+00:01:12.201 --> 00:01:16.721
+Drop in a file, adjust the settings and press the button.
+
+16
+00:01:16.721 --> 00:01:20.765
+It all runs on your device, so nothing is uploaded.
+
+17
+00:01:22.465 --> 00:01:26.753
+Read the full post, with live demos, on the OpenFile blog.

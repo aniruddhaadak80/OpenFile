@@ -1,0 +1,57 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:03.652
+Calendar files and repeat rules, explained.
+
+2
+00:00:05.152 --> 00:00:09.836
+What is inside an .ics file, how repeat rules like last Friday of the month
+
+3
+00:00:09.836 --> 00:00:14.645
+work, and how to turn a spreadsheet or a shift pattern into calendar invites.
+
+4
+00:00:16.045 --> 00:00:23.817
+What is inside an .ics file. An .ics file is plain text, defined by a standard
+
+5
+00:00:23.817 --> 00:00:25.411
+called RFC 5545.
+
+6
+00:00:26.711 --> 00:00:32.279
+Repeat rules, in plain words. The RRULE line packs a lot into a short string.
+
+7
+00:00:33.579 --> 00:00:35.563
+Merging and cleaning calendars.
+
+8
+00:00:35.563 --> 00:00:40.555
+If you export calendars from several places, you often end up with duplicates.
+
+9
+00:00:41.855 --> 00:00:44.417
+Week numbers and other small questions.
+
+10
+00:00:44.417 --> 00:00:46.783
+Many workplaces plan by week number.
+
+11
+00:00:48.083 --> 00:00:51.934
+To try it, open Calendar Event Maker (ICS) in OpenFile.
+
+12
+00:00:51.934 --> 00:00:55.925
+Drop in a file, adjust the settings and press the button.
+
+13
+00:00:55.925 --> 00:00:59.496
+It all runs on your device, so nothing is uploaded.
+
+14
+00:01:01.196 --> 00:01:05.143
+Read the full post, with live demos, on the OpenFile blog.

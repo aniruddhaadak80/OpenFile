@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/sql-wasm-browser-CXIAVl5-.wasm`;export{e as default};

@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.548
+Scan receipts into a spreadsheet without uploading them.
+
+2
+00:00:06.048 --> 00:00:11.288
+How on-device OCR reads a receipt photo, how the shop, date, tax and total
+
+3
+00:00:11.288 --> 00:00:16.245
+are picked out, and tips for scans that come out right the first time.
+
+4
+00:00:17.645 --> 00:00:22.773
+Step 1: clean up the photo. Text recognition works best on dark text on
+
+5
+00:00:22.773 --> 00:00:25.517
+a light background with good contrast.
+
+6
+00:00:26.817 --> 00:00:29.333
+Step 2: read the text with OCR.
+
+7
+00:00:29.333 --> 00:00:35.094
+The reading is done by Tesseract, an open source OCR engine that uses a
+
+8
+00:00:35.094 --> 00:00:40.044
+small LSTM neural network trained to recognise lines of text.
+
+9
+00:00:41.344 --> 00:00:46.488
+Using the results. Each receipt shows its photo next to editable fields
+
+10
+00:00:46.488 --> 00:00:48.661
+for shop, date, tax and total.
+
+11
+00:00:49.961 --> 00:00:54.853
+Privacy. Receipts can show your card's last digits, your address for deliveries,
+
+12
+00:00:54.853 --> 00:00:56.809
+and where you were at what time.
+
+13
+00:00:58.109 --> 00:01:01.454
+To try it, open AI Receipt Scanner in OpenFile.
+
+14
+00:01:01.454 --> 00:01:05.510
+Drop in a file, adjust the settings and press the button.
+
+15
+00:01:05.510 --> 00:01:09.139
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:11.209 --> 00:01:15.647
+Read the full post, with live demos, on the OpenFile blog.

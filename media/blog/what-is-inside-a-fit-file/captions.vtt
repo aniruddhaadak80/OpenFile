@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.121
+What is inside a FIT file from your watch.
+
+2
+00:00:05.621 --> 00:00:11.558
+The binary format behind every Garmin, Wahoo and Coros workout, how to turn
+
+3
+00:00:11.558 --> 00:00:17.337
+it into CSV or GPX, and how heart rate zones and training load are worked
+
+4
+00:00:17.337 --> 00:00:17.653
+out.
+
+5
+00:00:19.053 --> 00:00:24.941
+What a FIT file is. FIT means Flexible and Interoperable Data Transfer.
+
+6
+00:00:26.241 --> 00:00:28.303
+Heart rate zones in plain words.
+
+7
+00:00:28.303 --> 00:00:32.620
+Zones are bands of heart rate that match different kinds of effort.
+
+8
+00:00:33.920 --> 00:00:36.117
+Time in zone and training load.
+
+9
+00:00:36.117 --> 00:00:41.148
+Heart Rate Zones takes a workout file and adds up the seconds you spent
+
+10
+00:00:41.148 --> 00:00:42.069
+in each zone.
+
+11
+00:00:43.369 --> 00:00:48.201
+Why read it locally. Workout files show where you live, the routes you take,
+
+12
+00:00:48.201 --> 00:00:49.727
+and when you leave home.
+
+13
+00:00:51.027 --> 00:00:55.368
+To try it, open FIT File Converter & Viewer in OpenFile.
+
+14
+00:00:55.368 --> 00:00:59.787
+Drop in a file, adjust the settings and press the button.
+
+15
+00:00:59.787 --> 00:01:03.741
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:05.441 --> 00:01:09.729
+Read the full post, with live demos, on the OpenFile blog.

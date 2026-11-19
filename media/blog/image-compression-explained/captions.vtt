@@ -1,0 +1,49 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.399
+Image compression explained, with a slider you can drag.
+
+2
+00:00:05.899 --> 00:00:09.936
+Lossy, lossless, JPG, WebP and AVIF in plain words.
+
+3
+00:00:09.936 --> 00:00:15.477
+Drag the slider to see what quality settings actually do to a picture.
+
+4
+00:00:17.728 --> 00:00:22.144
+Lossless and lossy. Lossless compression keeps every pixel exactly.
+
+5
+00:00:24.294 --> 00:00:29.812
+Drag the slider. The image below is drawn in your browser and encoded with
+
+6
+00:00:29.812 --> 00:00:32.870
+your browser's own JPG and WebP encoders.
+
+7
+00:00:35.020 --> 00:00:39.547
+Resize before you compress. The biggest saving is often not the quality
+
+8
+00:00:39.547 --> 00:00:40.503
+setting at all.
+
+9
+00:00:42.653 --> 00:00:45.784
+To try it, open Image Compressor in OpenFile.
+
+10
+00:00:45.784 --> 00:00:49.750
+Drop in a file, adjust the settings and press the button.
+
+11
+00:00:49.750 --> 00:00:53.299
+It all runs on your device, so nothing is uploaded.
+
+12
+00:00:55.753 --> 00:00:59.700
+Read the full post, with live demos, on the OpenFile blog.

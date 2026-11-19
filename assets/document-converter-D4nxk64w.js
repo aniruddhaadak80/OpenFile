@@ -1,0 +1,1 @@
+import{t as e}from"./DocConvert-DjF_pqFx.js";import{Vt as t}from"./ui-BHuET80z.js";var n=t();function r(){return(0,n.jsx)(e,{dropLabel:`Drop a document to convert`,dropSub:`DOCX, ODT, RTF, Markdown, HTML, TXT or EPUB to Word, PDF, Markdown, HTML, TXT, RTF or EPUB.`,paste:`md`})}export{r as default};

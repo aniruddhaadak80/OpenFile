@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en" class="dark" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="object-src 'self' blob:" />
+    <title>Getting started | OpenFile Docs</title>
+    <meta name="description" content="What OpenFile is, how to use your first tool, install it as an app and work offline." />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href="/OpenFile/favicon.svg" />
+    <link rel="apple-touch-icon" href="/OpenFile/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="OpenFile" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="application-name" content="OpenFile" />
+    <link rel="manifest" href="/OpenFile/manifest.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="OpenFile Blog" href="/OpenFile/blog/rss.xml" />
+    <meta property="og:title" content="Getting started | OpenFile Docs" />
+    <meta property="og:description" content="What OpenFile is, how to use your first tool, install it as an app and work offline." />
+    <meta property="og:image" content="https://aniruddhaadak80.github.io/OpenFile/og.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="OpenFile" />
+    <meta name="twitter:title" content="Getting started | OpenFile Docs" />
+    <meta name="twitter:description" content="What OpenFile is, how to use your first tool, install it as an app and work offline." />
+    <meta name="twitter:image" content="https://aniruddhaadak80.github.io/OpenFile/og.png" />
+    <meta name="author" content="Aniruddha Adak" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:alt" content="OpenFile: every file tool, private, in your browser" />
+    <meta name="twitter:image:alt" content="OpenFile: every file tool, private, in your browser" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="author" href="/OpenFile/humans.txt" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="preload" as="font" type="font/woff2" href="/OpenFile/fonts/inter-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/OpenFile/fonts/space-grotesk-latin.woff2" crossorigin />
+    <style id="of-fonts">@font-face{font-family:Inter;font-style:normal;font-weight:400 700;font-display:swap;src:url(/OpenFile/fonts/inter-latin-ext.woff2)format("woff2");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Inter;font-style:normal;font-weight:400 700;font-display:swap;src:url(/OpenFile/fonts/inter-latin.woff2)format("woff2");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Space Grotesk;font-style:normal;font-weight:500 700;font-display:swap;src:url(/OpenFile/fonts/space-grotesk-latin-ext.woff2)format("woff2");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Space Grotesk;font-style:normal;font-weight:500 700;font-display:swap;src:url(/OpenFile/fonts/space-grotesk-latin.woff2)format("woff2");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:JetBrains Mono;font-style:normal;font-weight:400 500;font-display:swap;src:url(/OpenFile/fonts/jetbrains-mono-latin-ext.woff2)format("woff2");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:JetBrains Mono;font-style:normal;font-weight:400 500;font-display:swap;src:url(/OpenFile/fonts/jetbrains-mono-latin.woff2)format("woff2");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+    <style id="of-critical">html{background:#0b0d10}html[data-theme=black]{background:#000}html[data-theme=light]{background:#fafaf7}body{margin:0}#prerender{clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;opacity:0;pointer-events:none;border:0;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;position:absolute!important}#of-splash{display:none}.of-boot #root{opacity:0}.of-ready #root{opacity:1;transition:opacity .45s}.of-boot #of-splash,.of-ready #of-splash{z-index:2147483000;background:#000;place-items:center;display:grid;position:fixed;inset:0}html[data-theme=dark] #of-splash{background:#0b0d10}html[data-theme=light] #of-splash{background:#fafaf7}.of-ready #of-splash{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s,visibility 0s linear .45s}.of-mark{place-items:center;width:84px;height:84px;display:grid;position:relative}.of-mark svg{width:56px;height:56px;animation:1.8s ease-in-out infinite of-breathe}.of-mark:before,.of-mark:after{content:"";border:1.5px solid #f5a5248c;border-radius:50%;animation:1.8s cubic-bezier(.2,.6,.3,1) infinite of-pulse;position:absolute;inset:0}.of-mark:after{border:2px solid #ffd27a;border-color:#ffd27a #14b8a699 #0000 #0000;animation:1.1s linear infinite of-spin;inset:-2px}@keyframes of-pulse{0%{opacity:.9;transform:scale(.82)}to{opacity:0;transform:scale(1.35)}}@keyframes of-spin{to{transform:rotate(360deg)}}@keyframes of-breathe{0%,to{opacity:.85;transform:scale(.97)}50%{opacity:1;transform:scale(1)}}@media (prefers-reduced-motion:reduce){html:not(.motion-full) .of-mark svg,html:not(.motion-full) .of-mark:before,html:not(.motion-full) .of-mark:after{animation:none}html:not(.motion-full) .of-ready #root,html:not(.motion-full) .of-ready #of-splash{transition:none}}html.reduce-motion .of-mark svg,html.reduce-motion .of-mark:before,html.reduce-motion .of-mark:after{animation:none}#of-splash .of-hint{text-align:center;color:#9aa3ae;font:500 14px/1.5 system-ui,sans-serif;display:none;position:absolute;top:calc(50% + 64px);left:0;right:0}.of-slow #of-splash .of-hint{display:block}#of-fallback{display:none}.of-fail #of-fallback{color:#e6e8eb;background:#12151a;border:1px solid #f5a52473;border-radius:14px;max-width:560px;margin:48px auto 24px;padding:24px;font:15px/1.55 system-ui,sans-serif;display:block}html[data-theme=light].of-fail #of-fallback{color:#1a1d21;background:#fff}#of-fallback .of-fb-title{margin:0 0 8px;font-size:20px;font-weight:600}#of-fallback p{margin:0 0 14px}#of-fallback button{color:#000;cursor:pointer;background:#f5a524;border:0;border-radius:10px;margin-right:12px;padding:10px 18px;font:600 15px system-ui,sans-serif}#of-fallback a{color:#f5a524}</style>
+    <noscript><style>.of-boot #root{opacity:1}#of-splash{display:none!important}#prerender{clip:auto;clip-path:none;white-space:normal;opacity:1;pointer-events:auto;width:auto;height:auto;margin:0 auto;overflow:visible;position:static!important}</style></noscript>
+    <script>
+      // before first paint: apply the saved theme and motion preference (full logic lives in src/lib/prefs.ts) and turn on the boot splash
+      (function () { var r = document.documentElement; r.classList.add('of-boot');
+        try { var p = JSON.parse(localStorage.getItem('of:prefs') || '{}'), t = p.theme || 'system';
+          if (t === 'system') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          r.dataset.theme = t; r.classList.toggle('dark', t !== 'light');
+          if (p.reducedMotion === 'reduce') r.classList.add('reduce-motion'); if (p.reducedMotion === 'full') r.classList.add('motion-full');
+          var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', t === 'light' ? '#FAFAF7' : t === 'black' ? '#000000' : '#0B0D10');
+        } catch (e) {}
+        // failsafe: if the app bundle cannot load, drop the splash and show the plain guide instead of a blank page
+        var fail = function () { if (!r.classList.contains('of-boot')) return; r.classList.remove('of-boot'); r.classList.add('of-fail') };
+        addEventListener('error', function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && /\/assets\//.test(t.src || '')) fail() }, true);
+        // a script error before the app has drawn anything (for example an old WebView that cannot run the bundle)
+        addEventListener('error', function (e) { if (e.target === window || e.target === undefined) setTimeout(function () { var el = document.getElementById('root'); if (!el || !el.firstChild) fail() }, 4000) });
+        setTimeout(function () { if (r.classList.contains('of-boot')) r.classList.add('of-slow') }, 12000);
+        setTimeout(fail, 30000);
+        // desktop app: tell the shell once the first frame is on screen, so its Linux start check knows the window draws
+        // (issue #10). A hidden window draws no frames, so it counts as drawn rather than restarting for nothing.
+        var ti = window.__TAURI_INTERNALS__;
+        if (ti && typeof ti.invoke === 'function') {
+          var shown = false, drawn = function () { if (shown) return; shown = true; try { Promise.resolve(ti.invoke('of_boot_ok')).catch(function () {}) } catch (e) {} };
+          requestAnimationFrame(function () { requestAnimationFrame(drawn) });
+          if (document.visibilityState === 'hidden') drawn();
+        }
+        // keep the install prompt event even if it fires before the app bundle is ready (src/lib/ux.ts reads it)
+        addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__ofBIP = e; dispatchEvent(new Event('of:bip')) });
+        addEventListener('appinstalled', function () { window.__ofBIP = undefined });
+      })();
+    </script>
+    <style>.of-fail #prerender{clip:auto;clip-path:none;white-space:normal;opacity:1;pointer-events:auto;width:auto;height:auto;margin:0 auto;overflow:visible;position:static!important}</style>
+    <script type="module" crossorigin src="/OpenFile/assets/index-DaynVZHO.js"></script>
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rolldown-runtime-BCiCTKAo.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/browser-BOcwnBRW.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/purify.es-Cm0RpNuY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/safe-kR-jJp7X.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/files-DNe_5uDt.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/chunk-6KYCQHYJ-DRLEeXFN.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/ui-BHuET80z.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/monitor-Dav2TJP1.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/palette-DARfdVkM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shield-check-D-PbPgKd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/keyboard-Ce5e_UhL.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/compass-BIXBvHWP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/platform-tlK_XIGi.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/refresh-cw-ClB6aysc.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calendar-clock-uRNFhOG-.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/clock-DBHDXDH3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/external-link-pQC1CmJw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/globe-DE1y0kMK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sparkles-BQ6EP7Nd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/corner-down-left-CWaTggJ3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-open-DGBmbilC.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/accessibility-D4n8iXKC.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/activity-DZwCn9Hr.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/text-align-start-Dpr-cxGO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/aperture-CZQ5fTgq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/archive-fdJQ0nRI.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-down-a-z-DHxuiBWy.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-down-up-B730HclH.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-left-right-CH1KfeMp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/arrow-right-left-lLvWAee7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/audio-lines-CWkiijiu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/audio-waveform-BKsFBjW-.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/badge-check-BTVQyRYF.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/chart-column-CaZu02r1.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/bell-ring-BlThCMgw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-check-DnzdrZ9p.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-image-DG029LXx.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/book-bookmark-CR2Cc7gp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/box-Dw1mFaS6.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/braces-BvRPaPYS.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/brain-circuit-qYl6yHPw.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/brush-cleaning-SKKy3ayd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calendar-range-CcbA702O.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calculator-CxXZrWjp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/calendar-days-BQiSHfxt.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/camera-DIYHmg4Q.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/captions-BEubQM_L.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/case-upper-BoAOA4ya.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/clapperboard-CeHuimla.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/clipboard-list-DHKWeRUv.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/code-BKwzXwbd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/code-xml-_RzfTFgz.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/cog-DiUQT6oG.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/columns-2-kRncReP8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/columns-3-QvjYorKt.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/combine-C2vp-uOs.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/contact-d1Tzrv5s.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/contrast-DLcy3ofj.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/copy-minus-aXPg9QQX.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/cpu-Depc-7_6.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/crop-FiU1J11r.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/database-CRixeyVM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/dices-S7o8bEkg.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/droplets-Cig73eJG.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/ear-CVHl1M4S.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eraser-BVy29kYp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eye-BfeRNtzJ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eye-off-Vu-IFor8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-archive-of_HUqiM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-check-corner-DL7FQd-H.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-code-CPcWgL2W.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-code-corner-CFywpv_w.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-cog-FWX1X0_w.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-digit-DI3P4lWp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-down-CpPBv9jy.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-image-OIBx1XeJ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-braces-Bxyx6M1p.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-key-BkmCxmMY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-lock-AOC87FW3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-output-Br9jaywE.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-pen-D9_pNEr_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-pen-line-C9h6Q6JW.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-plus-Dm4TCUP9.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-search-C02mgBUd.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-spreadsheet-Ce3n3Yqq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-stack--B83-NOS.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-text-sGY58EC4.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-type-B1L_-WY5.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-play-DDaY2Fes.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/file-x-corner-DT2GfX-A.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/film-ziX_qOlP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/workflow-B5RsfA6P.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/fingerprint-pattern-BTht-TgG.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/flame-Cv1HpqdH.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-centerline-dashed-horizontal-BuFXRLw1.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/triangles-centerline-dashed-horizontal-C_qSti_6.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-centerline-dashed-vertical-WIl4aYNN.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/folder-open-CfIRNlq5.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rectangle-ellipsis-DdDA7uZR.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/library-CpA6A1h8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/gallery-vertical-CWPdVc3r.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/gauge-DJf-rA82.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/gift-BTWTx7qc.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/git-compare-Ax5aoWfY.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/git-pull-request-CKB8HsG3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/earth-DFnZvQOE.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/graduation-cap-i_j_KnTc.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/grid-2x2-BkndQ3qg.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/grid-3x3-BoyLpBaP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/hash-C9U5BCQZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/highlighter-CrJ5t8XZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/image-down-Cq8Zc6U0.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/image-DgEch9TT.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/image-plus-DQ9BwjUM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/images-B9fXwNp7.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/key-round-BnEFrEbC.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/languages-BUmwXeCL.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/face-grinning-D8_QVfmq.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/layers-B4qX8_6i.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/layers-2-CJld4CAp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/layout-grid-DZWOEbPX.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/link-2-Dl9H1guO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-checks-DKTFY8lZ.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-music-0RHV7Gai.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-ordered-CO9IC5ry.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/list-tree-DlgnkScm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/locate-fixed-C2btAKDm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/lock-BJG2J6Mv.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/lock-keyhole-u9n-Dg_c.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/magnet-rcoWQwx5.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mail-DMDDUiYm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/map-pin-d5G7xyRX.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/map-pinned-BwE7UX_Q.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/merge-CuG_sTh3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/message-square-off-Dr2_Tc4q.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/message-square-text-CkDgKnsE.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mic-BjdNa97o.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mic-off-kSWYG2aK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/minimize-2-BKCeS9Oe.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/monitor-cog-Bu5r8lBt.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/monitor-play-CzhJgyls.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/mountain-BhgCjKRx.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eighth-notes-DRLLnMJ0.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/eighth-note-BAthdECO.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/paintbrush-DC5b19Lc.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/panel-top-ZB5gM5b_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/paperclip-DT8-Dr-O.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pen-line-BogyNGg8.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pen-tool-B_ioRaS9.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pencil-line-DMS6G98f.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/phone-Cg_yHsDR.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/picture-in-picture-2-CqO68bSf.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/pipette-D4vw76XM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/plug-BW4Xtv3H.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/presentation-B5iqGc69.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/printer-C4Yilwv1.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/qr-code-B6xbm3Wg.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/quote-BKf6xTEI.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/receipt-CHfYCtsp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/receipt-euro-D_YkdLQk.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/repeat-Q0CFfxSB.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/replace-ChtVZNJH.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rewind-CArp8-dA.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rotate-cw-DbG-sR0s.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/route-Cm9MaMab.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/rows-3-BcwyMeGn.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/ruler-3sawi5EU.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scaling-Bn2bUx2E.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-face-BGjIhwHL.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-line-CSr5ajet.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-search-CB6nB9fK.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scan-text-D19nbbuf.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/scissors-DgHZYYof.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shapes-D4bqsoQ_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sheet-DA3ogmYy.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shield-exclamation-point-DsQz0eEg.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shield-question-mark-DUSp94Ao.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/shuffle-a4SufEad.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sigma-Dwk8Y9Ly.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/signature-lLHwm4PN.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sliders-horizontal-BL16MfJu.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/sliders-vertical-D4X5WbXM.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/smartphone-CSb2vMPE.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/face-slightly-smiling-BFzY6ykF.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/snowflake-PoXZDLY0.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/spell-check-CS-QmKjo.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/spline-DkUrG5rG.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/split-05koYv0g.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-split-horizontal-BBVujaAP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/square-BB2EN7X5.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/stamp-DRywA7jN.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/table-DrKRlyIf.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/table-2-EiXGVLbj.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/tag-BZGA8JSh.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/tags-DBqEPk9T.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/target-Bu_RUfNb.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/terminal-C66IT2fo.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/timer-18UmnS0U.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/trash-Bs3goSLX.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/trending-up-CaKKDQM0.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/type-YSUiOHbm.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/unlink-BkJvUYo3.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/lock-open-C3rtoTur.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/utensils-hTAhpt_1.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/vibrate-w-T_rYu_.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/video-TC3nfFGe.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/volume-2-sZ5wBwgN.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/volume-x-72l_Wydr.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/wand-sparkles-Da7fNTFp.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/text-wrap-4X4XV4zV.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/wrench-9dr2kcSj.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/zap-C81E0_RP.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/zoom-in-CtNdtvbf.js">
+    <link rel="modulepreload" crossorigin href="/OpenFile/assets/icons-O0xpBuh4.js">
+    <link rel="stylesheet" crossorigin href="/OpenFile/assets/index-aA4mCu3e.css">
+      <meta property="og:url" content="https://aniruddhaadak80.github.io/OpenFile/docs" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <link rel="canonical" href="https://aniruddhaadak80.github.io/OpenFile/docs" />
+      <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aniruddhaadak80.github.io/OpenFile/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://aniruddhaadak80.github.io/OpenFile/docs"}]}]}</script>
+    <style id="pr-css">.pr{max-width:860px;margin:0 auto;padding:32px 20px 64px;font:16px/1.65 Inter,ui-sans-serif,system-ui,sans-serif;color:#ECEEF1;background:#0B0D10}.pr a{color:#F5A524}.pr h1{font:700 2.25rem/1.15 "Space Grotesk",Inter,sans-serif;margin:.8em 0 .4em}.pr h2{font-size:1.3rem;margin:1.6em 0 .5em}.pr nav{font-size:14px;opacity:.85}.pr li{margin:.3em 0}.pr dt{font-weight:600;margin-top:.8em}.pr dd{margin:0 0 0 1em;color:#B6BCC5}.pr-note{margin-top:2em;font-size:13px;color:#8B929C}html[data-theme=light] .pr{background:#FAFAF7;color:#16140F}html[data-theme=light] .pr a{color:#8a5a00}</style>
+  </head>
+  <body>
+    <noscript><p style="padding:16px;font-family:system-ui;color:#F5A524;background:#0B0D10">OpenFile runs in your browser and needs JavaScript for the tools. The page content below still works as a guide.</p></noscript>
+    <div id="of-fallback" role="alert"><p class="of-fb-title">OpenFile did not finish starting</p><p>Something stopped the app from loading. Your files are safe, nothing was uploaded. Try again, and if this keeps happening, the troubleshooting guide has fixes for each system.</p><p><button type="button" onclick="location.reload()">Try again</button><a href="https://aniruddhaadak80.github.io/OpenFile/docs/troubleshooting" target="_blank" rel="noopener">Troubleshooting guide</a></p></div>
+    <div id="of-splash" aria-hidden="true"><div class="of-mark"><svg viewBox="0 0 64 64" fill="none"><defs><linearGradient id="ofsg" x1="8" y1="6" x2="58" y2="60" gradientUnits="userSpaceOnUse"><stop stop-color="#FFD27A"/><stop offset=".45" stop-color="#FFB224"/><stop offset="1" stop-color="#E08A00"/></linearGradient></defs><path d="M22 13h14l10 10v25a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" stroke="url(#ofsg)" stroke-width="2.5" stroke-linejoin="round"/><path d="M36 13v8a2 2 0 0 0 2 2h8" stroke="url(#ofsg)" stroke-width="2.5" stroke-linejoin="round"/><circle cx="32" cy="38" r="6.5" stroke="url(#ofsg)" stroke-width="3"/></svg></div><p class="of-hint">Still starting OpenFile...</p></div>
+    <div id="root"><div id="prerender" class="pr"><nav aria-label="Site"><a href="/OpenFile/">OpenFile</a> | <a href="/OpenFile/tools">All tools</a> | <a href="/OpenFile/workspace">Workspace</a> | <a href="/OpenFile/docs">Docs</a> | <a href="/OpenFile/blog">Blog</a> | <a href="/OpenFile/install">Install</a> | <a href="/OpenFile/about">About</a></nav><main><p><a href="/OpenFile/docs">Docs</a></p><h1>Getting started</h1><p>What OpenFile is, how to use your first tool, install it as an app and work offline.</p><h2>All guides</h2><ul><li><a href="/OpenFile/docs">Getting started</a>: What OpenFile is, how to use your first tool, install it as an app and work offline.</li><li><a href="/OpenFile/docs/how-it-works">How OpenFile works</a>: The zero-upload privacy architecture, the processing engines and first-use model downloads.</li><li><a href="/OpenFile/docs/keyboard-shortcuts">Keyboard shortcuts</a>: Global, command palette, docs and Sketch board keyboard shortcuts.</li><li><a href="/OpenFile/docs/tools/pdf">PDF tools</a>: Guide to every PDF tool: merge, split, compress, sign, protect, OCR and more.</li><li><a href="/OpenFile/docs/tools/convert">Convert</a>: Guide to converting between PDF, Word, Excel, PowerPoint, Markdown, HTML and images.</li><li><a href="/OpenFile/docs/tools/image">Image tools</a>: Guide to compressing, resizing, converting, background removal, upscaling and editing images.</li><li><a href="/OpenFile/docs/tools/video">Video tools</a>: Guide to trimming, compressing, converting, GIFs and recording video in the browser.</li><li><a href="/OpenFile/docs/tools/audio">Audio tools</a>: Guide to editing, converting, recording and transcribing audio on-device.</li><li><a href="/OpenFile/docs/tools/dev">Developer tools</a>: Guide to JSON, JWT, hashes, regex, QR codes, cURL conversion and other developer utilities.</li><li><a href="/OpenFile/docs/tools/text">Text &amp; data tools</a>: Guide to diffing, counting, case conversion, Markdown and text cleanup tools.</li><li><a href="/OpenFile/docs/tools/design">Design tools</a>: Guide to colors, gradients, CSS, favicons, SVG and the Sketch whiteboard.</li><li><a href="/OpenFile/docs/workspace">Workspace pipelines</a>: Chain steps into reusable recipes and batch-process hundreds of images or PDFs.</li><li><a href="/OpenFile/docs/sketch-board">Sketch board</a>: The infinite whiteboard: tools, boards, sharing, presenting, exporting and shortcuts.</li><li><a href="/OpenFile/docs/local-data">Favorites, history &amp; settings</a>: How favorites, recent tools, activity history and settings are stored locally in IndexedDB.</li><li><a href="/OpenFile/docs/self-hosting">Self-hosting</a>: Deploy OpenFile to Vercel, GitHub Pages, any static host or Docker with nginx.</li><li><a href="/OpenFile/docs/api">API reference</a>: The optional Vercel serverless routes: /api/health, /api/fetch-page and /api/meta.</li><li><a href="/OpenFile/docs/browser-support">Browser support</a>: Which browsers and platform features each group of tools needs.</li><li><a href="/OpenFile/docs/faq">FAQ</a>: Answers to common questions about privacy, limits, offline use and troubleshooting.</li><li><a href="/OpenFile/docs/contributing">Contributing &amp; adding a tool</a>: Set up the project, follow the tool conventions and add a new tool to the registry.</li><li><a href="/OpenFile/changelog">Changelog</a>: Release notes for every OpenFile version.</li><li><a href="/OpenFile/docs/install">Install on every device</a>: Install OpenFile as a web app, a desktop app for Windows, macOS and Linux, an Android APK or on iPhone.</li><li><a href="/OpenFile/docs/using-tools">Using tools</a>: Drop zones, batches, page ranges, presets, history, undo and where your downloads go.</li><li><a href="/OpenFile/docs/themes-accessibility">Themes and accessibility</a>: Black, dark, light and system themes, accent colors, fonts, density, reduced motion and keyboard use.</li><li><a href="/OpenFile/docs/offline">Offline and PWA</a>: How the service worker caches the app, engines and models, how updates work and how to clear data.</li><li><a href="/OpenFile/docs/open-with">Open with and share target</a>: Open files from your system with OpenFile and send files to it from the share sheet.</li><li><a href="/OpenFile/docs/local-ai">Local AI</a>: Which AI models run on your device, their sizes, first-run downloads, WebGPU or CPU, cancelling and privacy.</li><li><a href="/OpenFile/docs/privacy-security">Privacy and security</a>: No uploads, how to verify it yourself in the DevTools network tab, headers and what is stored locally.</li><li><a href="/OpenFile/docs/formats">Formats supported</a>: A searchable matrix of every input and output format, generated from the tool registry.</li><li><a href="/OpenFile/docs/tools">Full tools reference</a>: Every tool with its description, formats and link, generated from the registry. Filter and search.</li><li><a href="/OpenFile/docs/troubleshooting">Troubleshooting</a>: Large files, memory, browser support, Safari quirks, unsigned app warnings and quick fixes.</li><li><a href="/OpenFile/docs/developer">Developer guide</a>: Architecture, adding a tool, batch files, tests, builds, Pages and Vercel base paths and releasing the apps.</li><li><a href="/OpenFile/docs/roadmap">Roadmap</a>: What has shipped and what comes next, generated from the project roadmap.</li><li><a href="/OpenFile/docs/tools/data">Data</a>: Guide to every Data tool: csv, excel, json, sqlite, parquet, maps and gps.</li><li><a href="/OpenFile/docs/tools/ai">AI</a>: Guide to every AI tool: on-device ai for images, text and documents.</li><li><a href="/OpenFile/docs/tools/3d">3D</a>: Guide to every 3D tool: view and convert glb, gltf, obj, stl, ply and more.</li><li><a href="/OpenFile/docs/tools/archive">Archives</a>: Guide to every Archives tool: open and create zip, 7z, tar, gz and rar.</li><li><a href="/OpenFile/docs/tools/ebook">eBooks</a>: Guide to every eBooks tool: read and convert epub, mobi, fb2 and comics.</li><li><a href="/OpenFile/docs/tools/font">Fonts</a>: Guide to every Fonts tool: convert, inspect and subset ttf, otf, woff.</li><li><a href="/OpenFile/docs/tools/cad">CAD</a>: Guide to every CAD tool: view and convert dxf and other drawings.</li><li><a href="/OpenFile/docs/tools/subtitle">Subtitles</a>: Guide to every Subtitles tool: convert, sync and edit srt, vtt, ass.</li><li><a href="/OpenFile/docs/tools/privacy">Security &amp; Privacy</a>: Guide to every Security &amp; Privacy tool: scrub metadata, lock files, hide messages, redact personal data.</li><li><a href="/OpenFile/docs/tools/geo">Maps &amp; GPS</a>: Guide to every Maps &amp; GPS tool: gpx elevation, splits, heatmaps, privacy zones and location codes.</li><li><a href="/OpenFile/docs/tools/office">Office &amp; Sheets</a>: Guide to every Office &amp; Sheets tool: merge, split, compare and pivot spreadsheets, clean word files.</li><li><a href="/OpenFile/docs/tools/science">Science &amp; Education</a>: Guide to every Science &amp; Education tool: equations, graphs, chemistry, matrices, logic and primes.</li><li><a href="/OpenFile/docs/tools/creator">Creator Studio</a>: Guide to every Creator Studio tool: audiograms, vertical video, carousels, word clouds and chapters.</li><li><a href="/OpenFile/docs/tools/study">Study &amp; Classroom</a>: Guide to every Study &amp; Classroom tool: flashcards, quizzes, worksheets, puzzles, citations and grades.</li><li><a href="/OpenFile/docs/tools/web">Web &amp; SEO</a>: Guide to every Web &amp; SEO tool: robots.txt, sitemaps, redirects, schema, headers and on-page checks.</li><li><a href="/OpenFile/docs/tools/time">Calendar &amp; Time</a>: Guide to every Calendar &amp; Time tool: calendar files, repeat rules, rotas, timesheets and printable planners.</li><li><a href="/OpenFile/docs/tools/finance">Money &amp; Finance</a>: Guide to every Money &amp; Finance tool: bank statements, receipts, loans, tax and shared expenses.</li><li><a href="/OpenFile/docs/tools/health">Health &amp; Fitness</a>: Guide to every Health &amp; Fitness tool: fit workouts, heart rate zones, apple health data, pace and body measures.</li><li><a href="/OpenFile/docs/tools/llm">AI Builder</a>: Guide to every AI Builder tool: token counts, rag chunks, fine-tune datasets, model files, prompts and mcp configs.</li><li><a href="/OpenFile/docs/tools/exports">Data Exports</a>: Guide to every Data Exports tool: open the data apps give you: chats, music, followers, ai chats, watch and location history.</li></ul></main><p class="pr-note">OpenFile runs in your browser. Turn on JavaScript to use the tools.</p></div></div>
+  </body>
+</html>

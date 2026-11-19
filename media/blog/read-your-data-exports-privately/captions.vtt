@@ -1,0 +1,61 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.697
+What apps know about you: read your data exports without uploading them.
+
+2
+00:00:06.197 --> 00:00:10.992
+How to ask Spotify, WhatsApp, Instagram, Google and others for your data,
+
+3
+00:00:10.992 --> 00:00:16.181
+and how to turn their ZIP files into stats, lists and maps inside your browser.
+
+4
+00:00:17.581 --> 00:00:22.146
+How to ask for your data. The request is always in the settings, usually
+
+5
+00:00:22.146 --> 00:00:24.301
+under privacy or your information.
+
+6
+00:00:25.601 --> 00:00:27.729
+Chats: who talks most, and when.
+
+7
+00:00:27.729 --> 00:00:32.515
+A WhatsApp export is plain text: a date, a time, a name, a colon and the
+
+8
+00:00:32.515 --> 00:00:33.047
+message.
+
+9
+00:00:34.347 --> 00:00:38.827
+Places you have been. Location history is the most sensitive file of all.
+
+10
+00:00:40.127 --> 00:00:45.079
+Anything else. For services without a tool of their own, Data Export Explorer
+
+11
+00:00:45.079 --> 00:00:48.745
+opens any export ZIP, guesses which service it came from.
+
+12
+00:00:50.045 --> 00:00:53.467
+To try it, open WhatsApp Chat Analyzer in OpenFile.
+
+13
+00:00:53.467 --> 00:00:57.291
+Drop in a file, adjust the settings and press the button.
+
+14
+00:00:57.291 --> 00:01:00.712
+It all runs on your device, so nothing is uploaded.
+
+15
+00:01:03.145 --> 00:01:06.836
+Read the full post, with live demos, on the OpenFile blog.

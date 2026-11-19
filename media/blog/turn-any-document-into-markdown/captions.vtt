@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.847
+Turn any document into Markdown for notes and AI chats.
+
+2
+00:00:06.347 --> 00:00:12.536
+Why Markdown is worth it, how PDF, Word, PowerPoint, Excel, email and notebooks
+
+3
+00:00:12.536 --> 00:00:18.569
+are read in the browser, and how to deal with saved web pages and old Windows
+
+4
+00:00:18.569 --> 00:00:19.275
+drawings.
+
+5
+00:00:20.675 --> 00:00:23.070
+Why Markdown is worth the trouble.
+
+6
+00:00:23.070 --> 00:00:28.141
+A Markdown file is plain text with a few marks for structure: a hash for
+
+7
+00:00:28.141 --> 00:00:31.875
+a heading, a dash for a list item, pipes for a table.
+
+8
+00:00:33.175 --> 00:00:37.569
+How each kind of file is read. Every format needs its own reader.
+
+9
+00:00:38.869 --> 00:00:44.101
+Notebooks without Jupyter. A Jupyter notebook is JSON with code, text and
+
+10
+00:00:44.101 --> 00:00:46.251
+the outputs from the last run.
+
+11
+00:00:47.551 --> 00:00:52.672
+Privacy. Documents are often the most private files we have: contracts,
+
+12
+00:00:52.672 --> 00:00:54.548
+payslips, medical letters.
+
+13
+00:00:55.848 --> 00:00:59.397
+To try it, open Anything to Markdown in OpenFile.
+
+14
+00:00:59.397 --> 00:01:03.525
+Drop in a file, adjust the settings and press the button.
+
+15
+00:01:03.525 --> 00:01:07.219
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:08.948 --> 00:01:13.236
+Read the full post, with live demos, on the OpenFile blog.

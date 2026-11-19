@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#000000" />
+<meta name="robots" content="noindex" />
+<title>Update Android System WebView | OpenFile</title>
+<!-- Shown by the Android app (Capacitor server.errorPath) when the phone's WebView is older than
+     android.minWebViewVersion in mobile/capacitor.config.json, or when the app page fails to load.
+     Plain HTML and ES5 only, so it renders on very old WebViews. -->
+<style>
+  html,body{margin:0;height:100%;background:#000;color:#F4F4F5;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  main{min-height:100%;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;padding:24px;box-sizing:border-box;text-align:center}
+  .mark{width:72px;height:72px;margin:0 auto 20px;display:block}
+  h1{font-size:26px;margin:0 0 10px}
+  p{color:#A1A1AA;max-width:440px;line-height:1.6;margin:0 auto 18px}
+  a.btn,button{display:inline-block;min-height:44px;line-height:44px;padding:0 20px;margin:4px;border:0;border-radius:12px;background:#F5A524;color:#000;font-weight:700;font-size:15px;text-decoration:none;cursor:pointer}
+  button{background:#27272A;color:#F4F4F5}
+  .small{font-size:13px}
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <svg class="mark" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M22 13h14l10 10v25a4 4 0 0 1-4 4H22a4 4 0 0 1-4-4V17a4 4 0 0 1 4-4Z" stroke="#FFB224" stroke-width="2.5" stroke-linejoin="round"/><path d="M36 13v8a2 2 0 0 0 2 2h8" stroke="#FFB224" stroke-width="2.5" stroke-linejoin="round"/><circle cx="32" cy="38" r="6.5" stroke="#FFB224" stroke-width="3"/></svg>
+    <h1>OpenFile needs a newer WebView</h1>
+    <p>OpenFile runs inside Android System WebView, and the version on this phone is too old to start it. Update Android System WebView (or Google Chrome) from Google Play, then open OpenFile again.</p>
+    <a class="btn" href="https://play.google.com/store/apps/details?id=com.google.android.webview">Update WebView</a>
+    <button onclick="location.href='/'">Try again</button>
+    <p class="small" style="margin-top:22px">You can also use OpenFile in any up-to-date browser at aniruddhaadak80.github.io/OpenFile</p>
+  </div>
+</main>
+</body>
+</html>

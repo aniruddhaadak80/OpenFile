@@ -1,0 +1,16 @@
+WEBVTT
+
+00:00:00.300 --> 00:00:07.700
+Your files stay in this tab. Nothing is uploaded. No server, no account.
+
+00:00:08.300 --> 00:00:15.699
+A graph of steps. Each step takes the files it understands. Branches copy, merges join.
+
+00:00:16.300 --> 00:00:23.699
+A worker pool runs it. Image steps run side by side in Web Workers. Video takes one at a time.
+
+00:00:24.300 --> 00:00:31.699
+Never bigger. If a result is bigger than your file, you get your original back.
+
+00:00:32.299 --> 00:00:39.700
+One ZIP, done. Grab every result at once, or save the recipe for next time.

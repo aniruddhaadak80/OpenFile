@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/LiberationSans-Regular-cbskN6YR.ttf`,t=`/OpenFile/assets/LiberationSans-Bold-BPt4bU5Z.ttf`;export{e as n,t};

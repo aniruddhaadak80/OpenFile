@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:03.844
+How AI models run inside your browser tab.
+
+2
+00:00:05.344 --> 00:00:10.709
+What happens when you press the button in the background remover, upscaler
+
+3
+00:00:10.709 --> 00:00:16.147
+or transcriber: model downloads, workers, WebGPU and the WebAssembly safety
+
+4
+00:00:16.147 --> 00:00:16.437
+net.
+
+5
+00:00:17.837 --> 00:00:22.980
+A model is just a big file. A trained AI model is a file full of numbers,
+
+6
+00:00:22.980 --> 00:00:27.629
+called weights, plus a description of the math that combines them.
+
+7
+00:00:28.929 --> 00:00:33.972
+The models behind each tool. Sizes are approximate and depend on the exact
+
+8
+00:00:33.972 --> 00:00:36.289
+variant, but they give you a feel.
+
+9
+00:00:37.589 --> 00:00:41.116
+WebGPU first, WebAssembly as the safety net.
+
+10
+00:00:41.116 --> 00:00:46.967
+WebGPU lets a web page use the graphics card for general math, and neural
+
+11
+00:00:46.967 --> 00:00:51.456
+networks are mostly the kind of math GPUs are built for.
+
+12
+00:00:52.756 --> 00:00:57.869
+Why bother doing it this way. Cloud AI tools are fast because they run on
+
+13
+00:00:57.869 --> 00:01:01.652
+expensive servers, and someone pays for those servers.
+
+14
+00:01:02.952 --> 00:01:06.419
+To try it, open Background Remover in OpenFile.
+
+15
+00:01:06.419 --> 00:01:10.624
+Drop in a file, adjust the settings and press the button.
+
+16
+00:01:10.624 --> 00:01:14.387
+It all runs on your device, so nothing is uploaded.
+
+17
+00:01:16.087 --> 00:01:20.375
+Read the full post, with live demos, on the OpenFile blog.

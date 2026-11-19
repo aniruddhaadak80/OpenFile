@@ -1,0 +1,1 @@
+import{t as e}from"./DocConvert-DjF_pqFx.js";import{Vt as t}from"./ui-BHuET80z.js";var n=t();function r(){return(0,n.jsx)(e,{accept:`.docx,.odt,.rtf,.html,.htm`,dropLabel:`Drop a Word document`,dropSub:`Convert DOCX to clean Markdown with headings, lists, links and tables. Images are embedded.`,defaultOut:`md`,outs:[`md`,`html`,`txt`]})}export{r as default};
