@@ -4,11 +4,6 @@ name: Publish packages
 #   ghcr.io/aniruddhaadak80/openfile   container image, linux/amd64 + linux/arm64, signed, with SBOM and provenance
 #   @aniruddhaadak80/openfile          npm CLI on npm.pkg.github.com that serves the app offline
 # The version comes from the tag (v1.2.0 -> 1.2.0), or from package.json on a manual run.
-# onnxruntime-node auto-downloads CUDA binaries on Linux x64, and the 1.21.0 GPU archive is no longer published (404), so npm install fails before the build.
-# The app uses onnxruntime-web; skip the CUDA download.
-env:
-  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
-
 on:
   push:
     tags: ['v*']
@@ -29,6 +24,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  # onnxruntime-node's 1.21.0 CUDA archive is gone (404); the app uses onnxruntime-web.
+  ONNXRUNTIME_NODE_INSTALL_CUDA: skip
   IMAGE: ghcr.io/aniruddhaadak80/openfile
   NPM_PACKAGE: '@aniruddhaadak80/openfile'
   NPM_REGISTRY: https://npm.pkg.github.com

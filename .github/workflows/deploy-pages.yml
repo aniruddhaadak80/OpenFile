@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 # onnxruntime-node auto-downloads CUDA binaries on Linux x64, and the 1.21.0 GPU archive is no longer published (404), so npm install fails before the build.
 # The app uses onnxruntime-web; skip the CUDA download.
 env:
+  # onnxruntime-node's 1.21.0 CUDA archive is gone (404); the app uses onnxruntime-web.
   ONNXRUNTIME_NODE_INSTALL_CUDA: skip
 
 on:
