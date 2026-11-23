@@ -1,0 +1,61 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:07.535
+OFX, QIF, CSV, CAMT and MT940: bank statement files explained.
+
+2
+00:00:09.035 --> 00:00:13.516
+What each bank download format holds, which one to pick for a money app
+
+3
+00:00:13.516 --> 00:00:18.251
+or a spreadsheet, and how to convert them without uploading your statement.
+
+4
+00:00:19.651 --> 00:00:25.069
+Why the format matters. A bank statement is a list of rows: a date, an amount,
+
+5
+00:00:25.069 --> 00:00:30.488
+some text about who you paid, and sometimes a reference and a running balance.
+
+6
+00:00:31.788 --> 00:00:36.631
+The formats you will meet. OFX stands for Open Financial Exchange.
+
+7
+00:00:37.931 --> 00:00:40.077
+What to do once it is converted.
+
+8
+00:00:40.077 --> 00:00:43.499
+Converting is usually the first step, not the goal.
+
+9
+00:00:44.799 --> 00:00:47.009
+Why I keep this on my own device.
+
+10
+00:00:47.009 --> 00:00:51.764
+A statement shows where you live, where you shop, what you earn and who
+
+11
+00:00:51.764 --> 00:00:52.969
+you send money to.
+
+12
+00:00:54.269 --> 00:00:58.069
+To try it, open Bank Statement Converter in OpenFile.
+
+13
+00:00:58.069 --> 00:01:02.155
+Drop in a file, adjust the settings and press the button.
+
+14
+00:01:02.155 --> 00:01:05.811
+It all runs on your device, so nothing is uploaded.
+
+15
+00:01:07.511 --> 00:01:11.799
+Read the full post, with live demos, on the OpenFile blog.

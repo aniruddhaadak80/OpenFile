@@ -1,0 +1,53 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.057
+Looking at your own CT and MRI scans, privately.
+
+2
+00:00:05.557 --> 00:00:09.826
+What DICOM files are, why window and level matter so much, and how to view
+
+3
+00:00:09.826 --> 00:00:13.344
+and share your scans without uploading medical data anywhere.
+
+4
+00:00:14.744 --> 00:00:19.565
+What DICOM is. DICOM stands for Digital Imaging and Communications in Medicine.
+
+5
+00:00:20.865 --> 00:00:24.407
+Numbers, not colours. Here is the part that surprised me most.
+
+6
+00:00:25.707 --> 00:00:30.057
+Patient data and sharing. Because DICOM files carry names, dates of birth
+
+7
+00:00:30.057 --> 00:00:34.645
+and hospital details inside them, I treat them like any other medical record.
+
+8
+00:00:35.945 --> 00:00:40.374
+Why do this locally. Search for an online DICOM viewer and many of the results
+
+9
+00:00:40.374 --> 00:00:42.985
+upload your files to a server to process them.
+
+10
+00:00:44.285 --> 00:00:46.809
+To try it, open DICOM Viewer in OpenFile.
+
+11
+00:00:46.809 --> 00:00:50.319
+Drop in a file, adjust the settings and press the button.
+
+12
+00:00:50.319 --> 00:00:53.459
+It all runs on your device, so nothing is uploaded.
+
+13
+00:00:57.385 --> 00:01:00.863
+Read the full post, with live demos, on the OpenFile blog.

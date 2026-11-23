@@ -1,0 +1,1 @@
+import{t as e}from"./maker-CJ2_j6F4.js";import{Vt as t}from"./ui-CciUr1vH.js";var n=t();function r(){return(0,n.jsx)(e,{fmt:`apng`,title:`APNG`})}export{r as default};

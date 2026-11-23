@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/sql-wasm-browser-Bu87Kycj.wasm`;export{e as default};

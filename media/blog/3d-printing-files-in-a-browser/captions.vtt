@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:06.297
+From logo to G-code to turntable: 3D printing files in a browser.
+
+2
+00:00:07.797 --> 00:00:13.004
+Turn a flat logo into a solid, read G-code layer by layer, film a spinning
+
+3
+00:00:13.004 --> 00:00:17.717
+turntable video, and convert point clouds from scanners and drones.
+
+4
+00:00:19.117 --> 00:00:24.960
+From a flat logo to a solid. SVG and Image to 3D takes a flat shape and
+
+5
+00:00:24.960 --> 00:00:27.181
+pushes it out into a solid.
+
+6
+00:00:28.481 --> 00:00:34.324
+Reading G-code. G-code is the list of moves your printer, CNC router or
+
+7
+00:00:34.324 --> 00:00:35.969
+laser actually runs.
+
+8
+00:00:37.269 --> 00:00:40.056
+Point clouds from scanners and drones.
+
+9
+00:00:40.056 --> 00:00:45.629
+A point cloud is a list of points in space, often with colours, from a LiDAR
+
+10
+00:00:45.629 --> 00:00:49.003
+scanner, a phone scanning app or drone photos.
+
+11
+00:00:50.303 --> 00:00:55.522
+Privacy. Designs for products, scans of rooms and drone surveys of private
+
+12
+00:00:55.522 --> 00:00:59.049
+land are not things I want on a stranger's server.
+
+13
+00:01:00.349 --> 00:01:04.020
+To try it, open SVG & Image to 3D in OpenFile.
+
+14
+00:01:04.020 --> 00:01:08.568
+Drop in a file, adjust the settings and press the button.
+
+15
+00:01:08.568 --> 00:01:12.637
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:14.337 --> 00:01:18.775
+Read the full post, with live demos, on the OpenFile blog.

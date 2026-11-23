@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:05.252
+EPUB, MOBI, PDF and comics: an ebook conversion guide.
+
+2
+00:00:06.752 --> 00:00:11.796
+Reflowable versus fixed layout, which ebook format to keep, and how to convert,
+
+3
+00:00:11.796 --> 00:00:13.966
+fix and read books on your device.
+
+4
+00:00:13.966 --> 00:00:15.499
+With a live reflow demo.
+
+5
+00:00:16.899 --> 00:00:19.204
+The one idea: reflowable or fixed.
+
+6
+00:00:19.204 --> 00:00:22.595
+Every ebook format falls into one of two families.
+
+7
+00:00:23.895 --> 00:00:31.133
+Converting books. E-book Converter reads EPUB, MOBI, AZW, AZW3, FB2, CBZ,
+
+8
+00:00:31.133 --> 00:00:38.273
+DOCX, RTF, ODT, TXT, HTML, Markdown and PDF, and writes EPUB, PDF, Word,
+
+9
+00:00:38.273 --> 00:00:41.644
+HTML, plain text, Markdown or FB2.
+
+10
+00:00:42.944 --> 00:00:45.231
+Fixing a book without converting it.
+
+11
+00:00:45.231 --> 00:00:49.931
+Sometimes the file is fine but the details are wrong: a missing cover, the
+
+12
+00:00:49.931 --> 00:00:54.187
+author's name in the title field, a series number nobody filled in.
+
+13
+00:00:55.487 --> 00:00:59.369
+Just reading. You do not have to convert at all if you only want to read.
+
+14
+00:01:00.669 --> 00:01:03.668
+To try it, open E-book Converter in OpenFile.
+
+15
+00:01:03.668 --> 00:01:07.467
+Drop in a file, adjust the settings and press the button.
+
+16
+00:01:07.467 --> 00:01:10.867
+It all runs on your device, so nothing is uploaded.
+
+17
+00:01:13.769 --> 00:01:17.460
+Read the full post, with live demos, on the OpenFile blog.

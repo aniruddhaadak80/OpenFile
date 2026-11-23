@@ -1,0 +1,1 @@
+var e=`of:blog-list`,t=-1,n=null,r=()=>{let e=window.history.state?.idx;return typeof e==`number`?e:-1};function i(i){n=i,t=r();try{sessionStorage.setItem(e,i)}catch{}}function a(){let e=r();return e>0&&t>=0&&e===t+1}function o(){let t=n;if(t==null)try{t=sessionStorage.getItem(e)}catch{t=null}return`/blog`+(t&&t.startsWith(`?`)?t:``)}export{a as n,i as r,o as t};

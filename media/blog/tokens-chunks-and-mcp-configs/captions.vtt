@@ -1,0 +1,69 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:06.383
+Tokens, chunks and MCP configs: the small files behind AI apps.
+
+2
+00:00:07.883 --> 00:00:13.846
+How tokens are counted, how to cut documents for RAG, what makes a fine-tuning
+
+3
+00:00:13.846 --> 00:00:19.427
+file valid, what is inside a GGUF model, and how to write MCP configs for
+
+4
+00:00:19.427 --> 00:00:20.192
+every app.
+
+5
+00:00:21.592 --> 00:00:25.816
+Tokens are not words. Models do not read letters or words.
+
+6
+00:00:27.116 --> 00:00:32.360
+Chunking documents for RAG. Retrieval augmented generation, or RAG, means
+
+7
+00:00:32.360 --> 00:00:37.891
+finding the few passages of your documents that answer a question and putting
+
+8
+00:00:37.891 --> 00:00:39.831
+only those into the prompt.
+
+9
+00:00:41.131 --> 00:00:47.254
+What is inside a model file. Local models come as GGUF files for llama.cpp,
+
+10
+00:00:47.254 --> 00:00:52.480
+Ollama and LM Studio, or as safetensors files from Hugging Face.
+
+11
+00:00:53.780 --> 00:00:56.364
+MCP configs without the guesswork.
+
+12
+00:00:56.364 --> 00:01:01.760
+The Model Context Protocol lets an assistant use tools you run, such as
+
+13
+00:01:01.760 --> 00:01:04.724
+a file system, a browser or a database.
+
+14
+00:01:06.024 --> 00:01:09.046
+To try it, open Token Counter in OpenFile.
+
+15
+00:01:09.046 --> 00:01:13.148
+Drop in a file, adjust the settings and press the button.
+
+16
+00:01:13.148 --> 00:01:16.819
+It all runs on your device, so nothing is uploaded.
+
+17
+00:01:19.124 --> 00:01:23.561
+Read the full post, with live demos, on the OpenFile blog.

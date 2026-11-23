@@ -1,0 +1,1 @@
+var e=`/OpenFile/assets/index-CmfKht-g.dic`;export{e as default};

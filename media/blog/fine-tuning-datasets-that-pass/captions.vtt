@@ -1,0 +1,65 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:05.789
+Fine-tuning datasets that pass the first time: JSONL, formats and token
+
+2
+00:00:05.789 --> 00:00:06.340
+budgets.
+
+3
+00:00:07.840 --> 00:00:12.051
+The shapes of a fine-tuning file, the mistakes that fail a training job,
+
+4
+00:00:12.051 --> 00:00:16.672
+how to convert between formats and count the cost, all checked in your browser.
+
+5
+00:00:18.072 --> 00:00:23.177
+What a fine-tuning file is. Almost every trainer reads JSONL: plain text
+
+6
+00:00:23.177 --> 00:00:25.304
+with one JSON object per line.
+
+7
+00:00:26.604 --> 00:00:30.487
+The mistakes that fail a job. Most failures come from a short list.
+
+8
+00:00:31.787 --> 00:00:34.232
+Making many examples from one template.
+
+9
+00:00:34.232 --> 00:00:39.373
+A lot of good training data starts as a template and a table: the same instruction
+
+10
+00:00:39.373 --> 00:00:43.072
+with a different product, customer or question on each row.
+
+11
+00:00:44.372 --> 00:00:48.449
+Split, then check again. Keep part of the data back to see whether the model
+
+12
+00:00:48.449 --> 00:00:49.791
+really learned something.
+
+13
+00:00:51.091 --> 00:00:54.760
+To try it, open Fine-tune Dataset Checker in OpenFile.
+
+14
+00:00:54.760 --> 00:00:58.633
+Drop in a file, adjust the settings and press the button.
+
+15
+00:00:58.633 --> 00:01:02.099
+It all runs on your device, so nothing is uploaded.
+
+16
+00:01:04.191 --> 00:01:07.881
+Read the full post, with live demos, on the OpenFile blog.

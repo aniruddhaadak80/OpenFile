@@ -1,0 +1,49 @@
+WEBVTT
+
+1
+00:00:00.900 --> 00:00:04.079
+Building a batch pipeline for 200 product photos.
+
+2
+00:00:05.579 --> 00:00:10.280
+A real walk through of the Workspace: resize, watermark, strip metadata,
+
+3
+00:00:10.280 --> 00:00:14.197
+convert and zip, then save it as a recipe you can run again.
+
+4
+00:00:16.692 --> 00:00:19.849
+Plan the steps. I start by writing the steps down in order.
+
+5
+00:00:22.243 --> 00:00:26.596
+Build it in the Workspace. Open the Workspace, drop the folder of photos,
+
+6
+00:00:26.596 --> 00:00:29.219
+and add the steps from the list on the left.
+
+7
+00:00:31.614 --> 00:00:36.222
+Save it as a recipe. Once it looks right, save the pipeline as a recipe.
+
+8
+00:00:38.616 --> 00:00:40.600
+Why it is fast. There is no upload.
+
+9
+00:00:42.995 --> 00:00:45.910
+To try it, open Image Resizer in OpenFile.
+
+10
+00:00:45.910 --> 00:00:49.866
+Drop in a file, adjust the settings and press the button.
+
+11
+00:00:49.866 --> 00:00:53.405
+It all runs on your device, so nothing is uploaded.
+
+12
+00:00:56.095 --> 00:00:59.700
+Read the full post, with live demos, on the OpenFile blog.
